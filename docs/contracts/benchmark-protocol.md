@@ -1,15 +1,17 @@
 # Evolution Benchmark Protocol
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 The V1 formal benchmark is restricted to earnings-quality analysis. Its purpose is to test whether a repeated, verifier-confirmed omission can be reduced by a bounded research-skill patch without damaging other behavior.
 
 ## 1. Case Population
 
-- Target size: 24–36 high-quality company-quarter cases.
-- Company count: 4–6.
+- Primary V1.4 size: exactly 24 high-quality company-report cases.
+- Primary companies and whole-company splits: CATL and EVE Energy in Evolution, Gotion High-Tech in Validation, and Sunwoda in Final Test.
+- Each company contributes exactly six target reports: `2023Q3`, `2023FY`, `2024Q1`, `2024H1`, `2024Q3`, and `2024FY`.
+- A separately pre-frozen V1.5 contingency package uses exactly 24 cases from Great Power, Farasis Energy, BYD, and Zhuhai CosMX; no company, case, evidence package, or answer key may cross suites.
 - Each case contains frozen financial facts, allowed filing evidence, reporting period, research time, verifier-only ground truth, and package hashes.
-- Ground truth SHOULD be independently annotated by two reviewers and adjudicated when they disagree.
+- Numeric and period ground truth MUST be deterministic and source-reconciled. Any advisory narrative label records its author/model and disagreement; it cannot override deterministic checks.
 - Every case MUST pass point-in-time, period, source-locator, and package-integrity checks before freezing.
 
 This dataset supports an engineering proof of concept. Results MUST NOT be presented as broad evidence across all companies, markets, or models.
@@ -23,7 +25,7 @@ Cases are assigned to `evolution`, `validation`, or `final_test` before experime
 - Duplicate facts, evidence chunks, ground-truth wording, or derived case variants MUST not cross splits.
 - Final Test is sealed before the first Evolution run.
 
-Recommended allocation is approximately 50% Evolution, 25% Validation, and 25% Final Test while preserving whole groups. Exact counts and group assignments are recorded in the experiment manifest before running.
+The primary split is exactly 12 Evolution cases, 6 Validation cases, and 6 Final Test cases. The contingency suite uses the same 12/6/6 allocation under a separately hashed V1.5 manifest. Exact case IDs and group assignments are recorded before any primary formal run.
 
 ## 3. Access Matrix
 
@@ -79,7 +81,7 @@ Before running Final Test, freeze and hash:
 - metric formulas and adoption thresholds;
 - exclusion/retry rules.
 
-The Final Test can be run once for the declared V1.3 result and only after Validation adoption. A failed Final Test cannot be silently reclassified as Validation or rerun after tuning.
+The Final Test can be run once for the declared V1.4 result and only after Validation adoption. A failed Final Test cannot be silently reclassified as Validation or rerun after tuning. One later V1.5 experiment may use only the separately pre-frozen, disjoint contingency suite.
 
 ## 8. Reporting
 

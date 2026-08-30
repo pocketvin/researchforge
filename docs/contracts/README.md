@@ -1,10 +1,10 @@
-# ResearchForge V1.3 Contract Catalog
+# ResearchForge V1.4 Contract Catalog
 
-This directory translates the active V1.3 scope baseline into rules that are implementable, testable, and reviewable. Contract changes that alter scope require an explicit decision and changelog entry.
+This directory translates the active V1.4 scope baseline into rules that are implementable, testable, and reviewable. Contract changes that alter scope require an explicit decision and changelog entry.
 
 ## Normative Language
 
-- **MUST / MUST NOT**: required for V1.3 acceptance.
+- **MUST / MUST NOT**: required for V1.4 acceptance.
 - **SHOULD / SHOULD NOT**: default behavior; deviations require a recorded reason.
 - **MAY**: optional and non-blocking.
 
@@ -24,7 +24,7 @@ This directory translates the active V1.3 scope baseline into rules that are imp
 
 ## Machine-Readable Schemas
 
-All schemas use JSON Schema Draft 2020-12 and live under `schemas/v1.3/`.
+All current schemas use JSON Schema Draft 2020-12 and live under `schemas/v1.4/`.
 
 | Schema | Persisted artifact |
 |---|---|
@@ -35,6 +35,14 @@ All schemas use JSON Schema Draft 2020-12 and live under `schemas/v1.3/`.
 | `research-result.schema.json` | Structured result rendered into the Research report |
 | `run-manifest.schema.json` | Reproducible run configuration, lifecycle, and usage record |
 | `workflow-trace.schema.json` | Sanitized LangGraph stage events, versions, artifacts, terminal state, and usage |
+| `source-document.schema.json` | Source identity, reporting period, publication time, hash, license, and public-package boundary |
+| `calculation-record.schema.json` | Deterministic formula inputs, outcome, value, and explanation |
+| `tool-record.schema.json` | Sanitized tool/adapter call audit record |
+| `skill-version.schema.json` | Immutable Seed, Candidate, active, rejected, or rolled-back skill version |
+| `experience.schema.json` | Reusable procedure distilled from eligible verified failures |
+| `evolution-experiment.schema.json` | Pre-registration, split isolation, budget, run/evaluation links, and terminal outcome |
+| `retrieval-evaluation.schema.json` | Deterministic-versus-semantic retrieval adoption evidence |
+| `simulated-usability-evaluation.schema.json` | Explicitly simulated usability evidence that cannot represent a human pilot |
 | `skill-patch.schema.json` | Constrained proposed/adopted/rejected research-procedure patch |
 | `benchmark-case.schema.json` | Frozen case package manifest and split classification |
 | `evaluation-result.schema.json` | Verifier checks, failures, metrics, and version provenance |
@@ -51,16 +59,16 @@ All schemas use JSON Schema Draft 2020-12 and live under `schemas/v1.3/`.
 7. **Version pinning:** an in-flight run uses one immutable skill version and one formula version.
 8. **No hidden reasoning storage:** traces contain explicit, user-auditable artifacts rather than private chain-of-thought.
 9. **Framework containment:** LangGraph owns orchestration and lifecycle routing only; financial and experimental meaning remains in deterministic services and contracts.
-10. **Evidence-backed usefulness:** product claims use recorded correctness, reliability, cost/latency, and target-user evidence rather than demo fluency.
+10. **Evidence-backed engineering usefulness:** product claims use recorded correctness, reliability, cost/latency, and labeled simulations rather than demo fluency; human value remains unvalidated.
 11. **Recoverability:** every stopped work session leaves one schema-valid checkpoint and one next action.
 
 ## Versioning
 
-- Current contract package version is `1.3.0`.
-- V1.2 schemas remain read-only historical contracts under `schemas/v1.2/`; new artifacts use `schemas/v1.3/`.
+- Current contract package version is `1.4.0`.
+- V1.2 and V1.3 schemas remain read-only historical contracts; new artifacts use `schemas/v1.4/`.
 - Backward-compatible clarifications increment the patch component.
 - A new required field, changed financial meaning, changed metric denominator, or changed split policy requires a new minor contract version.
-- The V1.3 scope baseline is changed only through an explicit decision and change note.
+- The V1.4 scope baseline is changed only through an explicit decision and change note.
 
 ## Validation
 

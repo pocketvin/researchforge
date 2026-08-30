@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.4/retrieval-evaluation.schema.json",
+  "title": "ResearchForge Retrieval Evaluation",
+  "description": "Frozen comparison that decides whether semantic retrieval and pgvector are justified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "retrieval_evaluation_id",
+    "case_ids",
+    "baseline",
+    "candidate",
+    "thresholds",
+    "decision",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "retrieval_evaluation_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "case_ids": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "minItems": 5,
+      "uniqueItems": true
+    },
+    "baseline": { "$ref": "#/$defs/metrics" },
+    "candidate": { "$ref": "#/$defs/metrics" },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recall_at_5_gain_min", "new_citation_mismatches_max", "p95_latency_multiplier_max"],
+      "properties": {
+        "recall_at_5_gain_min": { "type": "number", "const": 0.1 },
+        "new_citation_mismatches_max": { "type": "integer", "const": 0 },
+        "p95_latency_multiplier_max": { "type": "number", "const": 2 }
+      }
+    },
+    "decision": { "type": "string", "enum": ["KEEP_DETERMINISTIC", "ADOPT_SEMANTIC"] },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retriever_version", "recall_at_5", "citation_mismatch_count", "p95_latency_ms"],
+      "properties": {
+        "retriever_version": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "recall_at_5": { "type": "number", "minimum": 0, "maximum": 1 },
+        "citation_mismatch_count": { "type": "integer", "minimum": 0 },
+        "p95_latency_ms": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

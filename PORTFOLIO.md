@@ -81,7 +81,7 @@ Be prepared to explain:
 - why an LLM judge cannot be the sole adoption criterion;
 - why file-backed frozen packages come before pgvector in the thin slice;
 - why LangGraph owns orchestration and recovery but not finance, retrieval, or Evolution semantics;
-- why V1.3 separates product usefulness from whether the research hypothesis succeeds;
+- why V1.4 separates product usefulness from whether the research hypothesis succeeds;
 - how idempotency, version hashes, and immutable artifacts support reproducibility;
 - what evidence would cause the project to reject a patch or report insufficient data.
 

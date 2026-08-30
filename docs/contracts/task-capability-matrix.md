@@ -1,6 +1,6 @@
 # Task Capability Matrix
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 V1 supports an allowlisted universe of companies for which normalized financial facts and official filing evidence have been prepared. “Supported” does not mean full A-share coverage.
 

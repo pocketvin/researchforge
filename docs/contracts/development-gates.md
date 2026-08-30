@@ -1,8 +1,8 @@
 # Development and Acceptance Gates
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
-The V1.3 baseline keeps gates G0–G4, adds a prerequisite Contract Gate, and separates a thin vertical slice from full G1 breadth so the hardest assumptions are tested early.
+The V1.4 baseline keeps gates G0–G4, adds a prerequisite Contract Gate, and separates a thin vertical slice from full G1 breadth so the hardest assumptions are tested early.
 
 Recommended working order:
 
@@ -17,12 +17,13 @@ G1 is not formally passed until all five product modes meet its exit criteria.
 
 Required evidence:
 
-- active V1.3 scope and V1.2→V1.3 change note stored in the project;
-- contract catalog and all V1.3 JSON schemas;
+- active V1.4 scope and V1.3→V1.4 change note stored in the project;
+- contract catalog and all V1.4 JSON schemas;
 - financial methodology, task matrix, benchmark protocol, evolution policy, and run lifecycle;
 - data-source, product-success, and single-agent LangGraph workflow contracts;
 - human-readable and schema-valid machine project checkpoints;
-- a V1.3 Workflow Trace schema and valid example;
+- a V1.4 Workflow Trace schema and valid example;
+- eight V1.4 runtime/experiment supporting schemas and valid examples;
 - contract validator passes;
 - at least one schema-valid benchmark-case example.
 
@@ -51,7 +52,7 @@ question → plan → facts → filing retrieval → deterministic calculations
 → cross-check → structured result → trace
 ```
 
-The result and Run Manifest must validate against V1.3 schemas. The single-agent workflow MUST use the bounded LangGraph contract in `research-workflow.md`; domain and formula behavior remains independently testable plain Python.
+The result and Run Manifest must validate against V1.4 schemas. The single-agent workflow MUST use the bounded LangGraph contract in `research-workflow.md`; domain and formula behavior remains independently testable plain Python.
 
 This checkpoint is L1 Resume Ready only when the golden-case correctness requirements in `product-success-metrics.md` pass and the exported trace/report support the claims in `PORTFOLIO.md`.
 
@@ -88,14 +89,14 @@ Common required evidence:
 - frozen Evolution/Validation/Final Test manifests with non-overlapping group keys;
 - exact counts, denominators, exclusions, costs, and limitations reported.
 
-G3 completes with one of these honest outcomes:
+One experiment reaches one of these honest terminal outcomes:
 
 1. **NO_ELIGIBLE_CLUSTER** — all eligible Evolution evidence is processed, no cluster meets the pre-registered support threshold, no Candidate is generated, and Validation/Final Test remain sealed.
 2. **REJECTED_VALIDATION** — a real cluster, experience, and bounded Candidate exist, but paired identical-configuration Validation rejects it; Final Test remains sealed.
 3. **REJECTED_FINAL** — Validation adopts the frozen Candidate, one sealed Final Test is run, and the target/generalization guardrail fails; operational rollback is proven.
 4. **SUPPORTED** — Validation adopts the Candidate and one sealed Final Test improves the target metric without catastrophic regression; skill history and rollback are proven.
 
-Metrics come from immutable evaluation records and all automatic decisions follow `evolution-adoption-policy.md`. Outcomes 1–3 prove honest experimental engineering but do **not** satisfy the V1.3 Research Hypothesis Supported label. Product/portfolio levels remain valid.
+Metrics come from immutable evaluation records and all automatic decisions follow `evolution-adoption-policy.md`. Only outcome 4 passes G3 and satisfies the V1.4 Research Hypothesis Supported label. Outcomes 1–3 freeze valid negative engineering evidence but leave G3 unmet; they authorize at most one disjoint, pre-frozen V1.5 contingency experiment. If that experiment also ends in outcomes 1–3, G3 and the overall project remain blocked rather than being relabeled as supported.
 
 ## G4 — Productization
 
@@ -108,7 +109,7 @@ Required evidence:
 - CI runs formatting, lint, type-check, unit, schema, integration, and smoke checks;
 - README documents setup, supported scope, data licensing, costs, limitations, and financial-research disclaimer;
 - demo video follows the actual system and measured results.
-- the bounded target-user pilot in `product-success-metrics.md` is complete and dissenting feedback is retained.
+- three isolated simulated-usability records pass `product-success-metrics.md`, retain dissenting findings, and disclose that no human value was validated.
 - Skill Lab renders the actual G3 outcome, including no-cluster and rejection states.
 
 ## Completion Evidence Format
@@ -123,3 +124,5 @@ Every gate record SHOULD include:
 - reviewer and date.
 
 Passing a later gate does not waive an earlier failed gate.
+
+ResearchForge is complete only when G4 Full Engineering Product Ready, a `SUPPORTED` sealed result, the USD 20 aggregate cost cap, and final independent Reviewer PASS all hold.

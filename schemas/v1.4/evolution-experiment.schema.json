@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.4/evolution-experiment.schema.json",
+  "title": "ResearchForge Evolution Experiment",
+  "description": "Pre-registered, immutable experiment configuration, split isolation, budget, and terminal decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "scope_version",
+    "suite_id",
+    "suite_hash",
+    "status",
+    "outcome",
+    "model",
+    "graph_version",
+    "seed_skill_version_id",
+    "candidate_skill_version_id",
+    "split_case_ids",
+    "thresholds",
+    "run_ids",
+    "evaluation_ids",
+    "budget",
+    "final_test_consumed",
+    "preregistered_at",
+    "finished_at"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "experiment_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "scope_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "suite_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "suite_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+    "status": { "type": "string", "enum": ["preregistered", "running", "completed"] },
+    "outcome": { "type": "string", "enum": ["PENDING", "NO_ELIGIBLE_CLUSTER", "REJECTED_VALIDATION", "REJECTED_FINAL", "SUPPORTED"] },
+    "model": { "$ref": "common.schema.json#/$defs/modelConfig" },
+    "graph_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "seed_skill_version_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "candidate_skill_version_id": {
+      "oneOf": [
+        { "$ref": "common.schema.json#/$defs/identifier" },
+        { "type": "null" }
+      ]
+    },
+    "split_case_ids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evolution", "validation", "final_test"],
+      "properties": {
+        "evolution": { "$ref": "#/$defs/caseIds" },
+        "validation": { "$ref": "#/$defs/caseIds" },
+        "final_test": { "$ref": "#/$defs/caseIds" }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repair_rate_min", "regression_rate_max", "task_score_drop_max", "cluster_support_min", "cluster_share_min"],
+      "properties": {
+        "repair_rate_min": { "type": "number", "const": 0.5 },
+        "regression_rate_max": { "type": "number", "const": 0.05 },
+        "task_score_drop_max": { "type": "number", "const": 0.02 },
+        "cluster_support_min": { "type": "integer", "const": 3 },
+        "cluster_share_min": { "type": "number", "const": 0.2 }
+      }
+    },
+    "run_ids": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "evaluation_ids": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["currency", "cap", "spent"],
+      "properties": {
+        "currency": { "type": "string", "const": "USD" },
+        "cap": { "type": "number", "minimum": 0, "maximum": 20 },
+        "spent": { "type": "number", "minimum": 0, "maximum": 20 }
+      }
+    },
+    "final_test_consumed": { "type": "boolean" },
+    "preregistered_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "$defs": {
+    "caseIds": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "outcome": { "enum": ["REJECTED_FINAL", "SUPPORTED"] } }, "required": ["outcome"] },
+      "then": { "properties": { "final_test_consumed": { "const": true } } }
+    },
+    {
+      "if": { "properties": { "outcome": { "enum": ["PENDING", "NO_ELIGIBLE_CLUSTER", "REJECTED_VALIDATION"] } }, "required": ["outcome"] },
+      "then": { "properties": { "final_test_consumed": { "const": false } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "outcome": { "enum": ["NO_ELIGIBLE_CLUSTER", "REJECTED_VALIDATION", "REJECTED_FINAL", "SUPPORTED"] },
+          "finished_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  ]
+}

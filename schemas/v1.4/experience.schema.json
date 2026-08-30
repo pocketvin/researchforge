@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.4/experience.schema.json",
+  "title": "ResearchForge Experience",
+  "description": "Distilled reusable procedure derived only from eligible verified failures.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "experience_id",
+    "cluster_id",
+    "failure_label",
+    "failure_signature",
+    "observed_behavior",
+    "applicable_condition",
+    "required_procedure",
+    "exceptions",
+    "supporting_failure_ids",
+    "source_evaluation_ids",
+    "content_hash",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "experience_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "cluster_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "failure_label": {
+      "type": "string",
+      "enum": ["CALCULATION_ERROR", "PERIOD_ERROR", "CRITICAL_OMISSION", "EVIDENCE_MISMATCH", "ONE_SIDED_REASONING", "OVERCLAIM", "TOOL_MISUSE", "CITATION_ERROR"]
+    },
+    "failure_signature": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "observed_behavior": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "applicable_condition": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "required_procedure": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "exceptions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 2000 },
+      "maxItems": 20
+    },
+    "supporting_failure_ids": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "minItems": 3,
+      "uniqueItems": true
+    },
+    "source_evaluation_ids": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

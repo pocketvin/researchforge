@@ -1,0 +1,261 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.4/evaluation-result.schema.json",
+  "title": "ResearchForge Evaluation Result",
+  "description": "Versioned verifier output containing deterministic, coverage, and advisory qualitative checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "run_id",
+    "case_id",
+    "skill_version",
+    "skill_hash",
+    "verifier_version",
+    "ground_truth_hash",
+    "deterministic_checks",
+    "coverage_checks",
+    "qualitative_checks",
+    "failure_events",
+    "metrics",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "evaluation_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "run_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "case_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "skill_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-candidate\\.[0-9]+)?$"
+    },
+    "skill_hash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "verifier_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "ground_truth_hash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "deterministic_checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "minItems": 1
+    },
+    "coverage_checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "minItems": 1
+    },
+    "qualitative_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "check_code",
+          "status",
+          "score",
+          "rationale",
+          "judge_model",
+          "advisory_only"
+        ],
+        "properties": {
+          "check_code": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "score": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "judge_model": {
+            "$ref": "common.schema.json#/$defs/modelConfig"
+          },
+          "advisory_only": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      }
+    },
+    "failure_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "failure_id",
+          "failure_label",
+          "signature",
+          "severity",
+          "check_codes",
+          "description"
+        ],
+        "properties": {
+          "failure_id": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "failure_label": {
+            "type": "string",
+            "enum": [
+              "CALCULATION_ERROR",
+              "PERIOD_ERROR",
+              "CRITICAL_OMISSION",
+              "EVIDENCE_MISMATCH",
+              "ONE_SIDED_REASONING",
+              "OVERCLAIM",
+              "TOOL_MISUSE",
+              "CITATION_ERROR"
+            ]
+          },
+          "signature": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "major",
+              "minor"
+            ]
+          },
+          "check_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_score",
+        "calculation_accuracy",
+        "evidence_coverage",
+        "critical_omission_rate",
+        "citation_accuracy"
+      ],
+      "properties": {
+        "task_score": {
+          "$ref": "#/$defs/rate"
+        },
+        "calculation_accuracy": {
+          "$ref": "#/$defs/rate"
+        },
+        "evidence_coverage": {
+          "$ref": "#/$defs/rate"
+        },
+        "critical_omission_rate": {
+          "$ref": "#/$defs/rate"
+        },
+        "citation_accuracy": {
+          "$ref": "#/$defs/rate"
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_code",
+        "status",
+        "expected",
+        "observed",
+        "fact_ids",
+        "evidence_ids"
+      ],
+      "properties": {
+        "check_code": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "expected": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "observed": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "fact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

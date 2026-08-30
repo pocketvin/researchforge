@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.4.0",
+  "tool_record_id": "tool_record_001",
+  "run_id": "run_demo_research_001",
+  "stage": "calculating",
+  "tool_name": "cash_conversion",
+  "tool_version": "1.0.0",
+  "input_artifact_ids": ["fact_ocf_001", "fact_net_income_001"],
+  "output_artifact_ids": ["calc_cash_conversion_001"],
+  "status": "succeeded",
+  "started_at": "2026-08-30T09:10:00+08:00",
+  "finished_at": "2026-08-30T09:10:00.004000+08:00",
+  "latency_ms": 4,
+  "sanitized_summary": "Calculated cash conversion from two compatible facts.",
+  "error_code": null
+}

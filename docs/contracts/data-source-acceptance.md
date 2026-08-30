@@ -1,6 +1,6 @@
 # Data-Source Acceptance Contract
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 A data source is accepted only after evidence shows it can support correct, point-in-time research. A feature list or successful API call is insufficient.
 
@@ -29,7 +29,9 @@ Use:
 - revenue, net income, operating cash flow, receivables, inventory, and one margin input where reported;
 - the corresponding official filings available at the recorded research time.
 
-The spike MAY compare Candidate A and Candidate B. It MUST NOT start application infrastructure.
+The V1.4 spike compares an official-filing-derived frozen package with one structured-data reconciliation candidate. It MUST NOT start application infrastructure.
+
+The intended runtime outcome is `FIXTURE-ONLY`: public artifacts include normalized facts, short evidence only when the publication basis is documented, hashes, source locators, and official links. Full filing PDFs and uncertain-license raw provider payloads MUST NOT be committed.
 
 ## Reconciliation Protocol
 
@@ -56,20 +58,19 @@ The decision record MUST state its scope. Acceptance for two A-share companies d
 
 ## Candidate Scorecard
 
-| Check | Candidate A evidence/result | Candidate B evidence/result |
+| Check | Official-derived frozen package | Structured reconciliation candidate |
 |---|---|---|
-| Identity and access | pending | pending |
-| License/redistribution | pending | pending |
-| Metric and company coverage | pending | pending |
-| Period/scope metadata | pending | pending |
-| Publication-time history | pending | pending |
-| Filing locators | pending | pending |
-| Numeric reconciliation | pending | pending |
-| Missing/correction behavior | pending | pending |
-| Latency/cost/rate limits | pending | pending |
-| Final outcome and scope | pending | pending |
+| Identity and access | CNInfo/SSE official filing links; extraction workflow pending | Provider identity/account pending G0 spike |
+| License/redistribution | Derived facts, documented short evidence, hashes, and links only | Terms and caching/derived-artifact rights pending |
+| Metric and company coverage | Eight named A-share companies; source validation pending | Same-company reconciliation coverage pending |
+| Period/scope metadata | CAS consolidated, six target reports; mapping pending | Publication/period/report-type fields pending |
+| Publication-time history | Official disclosure timestamps required | Historical announcement timestamps required |
+| Filing locators | Page/section/table locators required | Source-line and official filing back-reference required |
+| Numeric reconciliation | At least 20 non-missing facts pending | Compared against the same official facts |
+| Missing/correction behavior | Never coerce to zero; preserve old hashes | Provider correction/restatement behavior pending |
+| Latency/cost/rate limits | Offline after package freeze | Recorded but not a runtime dependency for V1.4 |
+| Final outcome and scope | Expected `FIXTURE-ONLY`, not yet accepted | ACCEPT/REJECT for reconciliation use only |
 
 ## Fallback
 
 If no candidate passes within the time box, create content-hashed fixtures from official, redistribution-safe material with manual reconciliation evidence. Continue L1 as an offline research prototype and disclose that live ingestion remains unresolved.
-

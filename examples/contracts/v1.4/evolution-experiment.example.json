@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.4.0",
+  "experiment_id": "experiment_primary_001",
+  "scope_version": "1.4",
+  "suite_id": "suite_primary_001",
+  "suite_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "status": "preregistered",
+  "outcome": "PENDING",
+  "model": {
+    "provider": "openai",
+    "model_id": "gpt-5.6-luna",
+    "model_snapshot": null,
+    "temperature": null,
+    "seed": null,
+    "reasoning_effort": "medium",
+    "max_output_tokens": 4000,
+    "tool_choice_policy": "controlled",
+    "store": false,
+    "built_in_tools": []
+  },
+  "graph_version": "1.0.0",
+  "seed_skill_version_id": "skill_fundamental_1_0_0",
+  "candidate_skill_version_id": null,
+  "split_case_ids": {
+    "evolution": [
+      "case_catl_2023_q3",
+      "case_catl_2023_fy",
+      "case_catl_2024_q1",
+      "case_catl_2024_h1",
+      "case_catl_2024_q3",
+      "case_catl_2024_fy",
+      "case_eve_2023_q3",
+      "case_eve_2023_fy",
+      "case_eve_2024_q1",
+      "case_eve_2024_h1",
+      "case_eve_2024_q3",
+      "case_eve_2024_fy"
+    ],
+    "validation": [
+      "case_gotion_2023_q3",
+      "case_gotion_2023_fy",
+      "case_gotion_2024_q1",
+      "case_gotion_2024_h1",
+      "case_gotion_2024_q3",
+      "case_gotion_2024_fy"
+    ],
+    "final_test": [
+      "case_sunwoda_2023_q3",
+      "case_sunwoda_2023_fy",
+      "case_sunwoda_2024_q1",
+      "case_sunwoda_2024_h1",
+      "case_sunwoda_2024_q3",
+      "case_sunwoda_2024_fy"
+    ]
+  },
+  "thresholds": {
+    "repair_rate_min": 0.5,
+    "regression_rate_max": 0.05,
+    "task_score_drop_max": 0.02,
+    "cluster_support_min": 3,
+    "cluster_share_min": 0.2
+  },
+  "run_ids": [],
+  "evaluation_ids": [],
+  "budget": {
+    "currency": "USD",
+    "cap": 9,
+    "spent": 0
+  },
+  "final_test_consumed": false,
+  "preregistered_at": "2026-08-30T09:25:00+08:00",
+  "finished_at": null
+}

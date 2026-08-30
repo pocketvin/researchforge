@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.4.0",
+  "evaluation_id": "simulated_usability_001",
+  "evidence_label": "SIMULATED",
+  "session_number": 1,
+  "persona_id": "persona_finance_learner",
+  "run_id": "run_demo_research_001",
+  "model": {
+    "provider": "openai",
+    "model_id": "gpt-5.6-luna",
+    "model_snapshot": null,
+    "temperature": null,
+    "seed": null,
+    "reasoning_effort": "medium",
+    "max_output_tokens": 2000,
+    "tool_choice_policy": "controlled",
+    "store": false,
+    "built_in_tools": []
+  },
+  "located_key_change": true,
+  "located_supporting_evidence": true,
+  "located_counter_evidence_or_limitation": true,
+  "located_monitoring_item": true,
+  "usefulness_score": 4,
+  "auditability_score": 4,
+  "findings": ["The claim-to-evidence path was identifiable from the persisted report view."],
+  "passed": true,
+  "human_user_value_validated": false,
+  "created_at": "2026-08-30T09:35:00+08:00"
+}

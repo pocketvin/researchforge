@@ -7,22 +7,30 @@ import hashlib
 import json
 import re
 import sys
+from collections.abc import Iterator
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_SCHEMA_VERSION = "v1.3"
-CURRENT_ARTIFACT_VERSION = "1.3.0"
-LEGACY_SCHEMA_VERSION = "v1.2"
+CURRENT_SCHEMA_VERSION = "v1.4"
+CURRENT_ARTIFACT_VERSION = "1.4.0"
+HISTORICAL_SCHEMA_VERSIONS = ("v1.3", "v1.2")
 SCHEMA_DIR = ROOT / "schemas" / CURRENT_SCHEMA_VERSION
-LEGACY_SCHEMA_DIR = ROOT / "schemas" / LEGACY_SCHEMA_VERSION
+HISTORICAL_SCHEMA_DIRS = {
+    version: ROOT / "schemas" / version for version in HISTORICAL_SCHEMA_VERSIONS
+}
 EXAMPLE_DIR = ROOT / "examples" / "contracts" / CURRENT_SCHEMA_VERSION
-LEGACY_EXAMPLE_DIR = ROOT / "examples" / "contracts"
-CONTRACT_PACKAGE_VERSION = "1.3.0"
-LEGACY_SCOPE_SHA256 = "513f4a9ae8eabab7a77cb34dedabf6b064a0f9a5710386856f93a7219250816e"
+HISTORICAL_EXAMPLE_DIRS = {
+    "v1.3": ROOT / "examples" / "contracts" / "v1.3",
+    "v1.2": ROOT / "examples" / "contracts",
+}
+CONTRACT_PACKAGE_VERSION = "1.4.0"
+HISTORICAL_SCOPE_SHA256 = {
+    "v1.3": "b7c1a17e705550122a97296ef255660879f060911a2c01d27d1793bb9ece68a7",
+    "v1.2": "513f4a9ae8eabab7a77cb34dedabf6b064a0f9a5710386856f93a7219250816e",
+}
 
 REQUIRED_SCHEMAS = {
     "common.schema.json",
@@ -36,19 +44,84 @@ REQUIRED_SCHEMAS = {
     "evaluation-result.schema.json",
     "project-checkpoint.schema.json",
     "workflow-trace.schema.json",
+    "source-document.schema.json",
+    "calculation-record.schema.json",
+    "tool-record.schema.json",
+    "skill-version.schema.json",
+    "experience.schema.json",
+    "evolution-experiment.schema.json",
+    "retrieval-evaluation.schema.json",
+    "simulated-usability-evaluation.schema.json",
 }
 
-LEGACY_REQUIRED_SCHEMAS = REQUIRED_SCHEMAS - {"workflow-trace.schema.json"}
+HISTORICAL_REQUIRED_SCHEMAS = {
+    "v1.3": REQUIRED_SCHEMAS
+    - {
+        "source-document.schema.json",
+        "calculation-record.schema.json",
+        "tool-record.schema.json",
+        "skill-version.schema.json",
+        "experience.schema.json",
+        "evolution-experiment.schema.json",
+        "retrieval-evaluation.schema.json",
+        "simulated-usability-evaluation.schema.json",
+    },
+    "v1.2": {
+        "common.schema.json",
+        "financial-fact.schema.json",
+        "evidence-chunk.schema.json",
+        "claim.schema.json",
+        "research-result.schema.json",
+        "run-manifest.schema.json",
+        "skill-patch.schema.json",
+        "benchmark-case.schema.json",
+        "evaluation-result.schema.json",
+        "project-checkpoint.schema.json",
+    },
+}
+
+CURRENT_EXAMPLES = {
+    "benchmark-case.example.json": "benchmark-case.schema.json",
+    "calculation-record.example.json": "calculation-record.schema.json",
+    "evolution-experiment.example.json": "evolution-experiment.schema.json",
+    "experience.example.json": "experience.schema.json",
+    "retrieval-evaluation.example.json": "retrieval-evaluation.schema.json",
+    "run-manifest.patch-generation.example.json": "run-manifest.schema.json",
+    "run-manifest.research.example.json": "run-manifest.schema.json",
+    "simulated-usability-evaluation.example.json": ("simulated-usability-evaluation.schema.json"),
+    "skill-version.example.json": "skill-version.schema.json",
+    "source-document.example.json": "source-document.schema.json",
+    "tool-record.example.json": "tool-record.schema.json",
+    "workflow-trace.example.json": "workflow-trace.schema.json",
+}
+
+HISTORICAL_EXAMPLES = {
+    "v1.3": {
+        "benchmark-case.example.json": "benchmark-case.schema.json",
+        "run-manifest.patch-generation.example.json": "run-manifest.schema.json",
+        "run-manifest.research.example.json": "run-manifest.schema.json",
+        "workflow-trace.example.json": "workflow-trace.schema.json",
+    },
+    "v1.2": {"benchmark-case.example.json": "benchmark-case.schema.json"},
+}
 
 REQUIRED_CONTRACTS = {
     ROOT / "README.md",
+    ROOT / ".env.example",
+    ROOT / ".python-version",
     ROOT / "AGENTS.md",
     ROOT / "CHANGELOG.md",
     ROOT / "DECISIONS.md",
+    ROOT / "DATA_NOTICE.md",
+    ROOT / "LICENSE",
     ROOT / "PORTFOLIO.md",
     ROOT / "PROJECT_STATUS.md",
     ROOT / "project-status.json",
+    ROOT / "pyproject.toml",
+    ROOT / "uv.lock",
     ROOT / "docs" / "architecture" / "implementation-blueprint.md",
+    ROOT / "docs" / "product" / "researchforge-v1.4-scope.md",
+    ROOT / "docs" / "product" / "v1.3-to-v1.4-change-note.md",
     ROOT / "docs" / "product" / "researchforge-v1.3-scope.md",
     ROOT / "docs" / "product" / "v1.2-to-v1.3-change-note.md",
     ROOT / "docs" / "product" / "researchforge-v1.2-scope-freeze.md",
@@ -66,11 +139,12 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "strategy" / "project-scorecard.md",
     ROOT / "docs" / "strategy" / "risk-register.md",
     ROOT / "docs" / "strategy" / "solo-success-plan.md",
-    EXAMPLE_DIR / "benchmark-case.example.json",
-    EXAMPLE_DIR / "run-manifest.research.example.json",
-    EXAMPLE_DIR / "run-manifest.patch-generation.example.json",
-    EXAMPLE_DIR / "workflow-trace.example.json",
-    LEGACY_EXAMPLE_DIR / "benchmark-case.example.json",
+    *{EXAMPLE_DIR / name for name in CURRENT_EXAMPLES},
+    *{
+        HISTORICAL_EXAMPLE_DIRS[version] / name
+        for version, example_map in HISTORICAL_EXAMPLES.items()
+        for name in example_map
+    },
 }
 
 ALLOWED_SCHEMA_KEYWORDS = {
@@ -135,7 +209,9 @@ def json_pointer(document: Any, fragment: str, label: str) -> Any:
     return current
 
 
-def iter_schema_nodes(node: dict[str, Any], location: str = "$"):
+def iter_schema_nodes(
+    node: dict[str, Any], location: str = "$"
+) -> Iterator[tuple[str, dict[str, Any]]]:
     """Yield schema objects without mistaking property-name maps for schemas."""
     yield location, node
 
@@ -164,7 +240,8 @@ def validate_schema_shape(path: Path, schema: dict[str, Any]) -> None:
     if schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
         raise ContractError(f"{relative}: must use JSON Schema Draft 2020-12")
     version_directory = path.parent.name
-    if version_directory not in {CURRENT_SCHEMA_VERSION, LEGACY_SCHEMA_VERSION}:
+    recognized_versions = {CURRENT_SCHEMA_VERSION, *HISTORICAL_SCHEMA_VERSIONS}
+    if version_directory not in recognized_versions:
         raise ContractError(f"{relative}: schema must live in a recognized version directory")
     expected_id = f"https://researchforge.local/schemas/{version_directory}/{path.name}"
     if schema.get("$id") != expected_id:
@@ -195,7 +272,9 @@ def validate_schema_shape(path: Path, schema: dict[str, Any]) -> None:
             raise ContractError(f"{relative}:{location}: $ref must be string")
 
 
-def resolve_ref(ref: str, current_path: Path, schemas: dict[Path, dict[str, Any]]) -> tuple[Any, Path]:
+def resolve_ref(
+    ref: str, current_path: Path, schemas: dict[Path, dict[str, Any]]
+) -> tuple[Any, Path]:
     file_part, separator, fragment = ref.partition("#")
     if file_part.startswith(("http://", "https://")):
         matching = [path for path, schema in schemas.items() if schema.get("$id") == file_part]
@@ -209,7 +288,9 @@ def resolve_ref(ref: str, current_path: Path, schemas: dict[Path, dict[str, Any]
 
     if target_path not in schemas:
         raise ContractError(f"{current_path.name}: unresolved local $ref {ref}")
-    target = json_pointer(schemas[target_path], fragment if separator else "", f"{current_path.name}:{ref}")
+    target = json_pointer(
+        schemas[target_path], fragment if separator else "", f"{current_path.name}:{ref}"
+    )
     return target, target_path
 
 
@@ -266,7 +347,9 @@ def validate_instance(
     if "type" in schema:
         expected_types = schema["type"] if isinstance(schema["type"], list) else [schema["type"]]
         if not any(is_type(instance, expected) for expected in expected_types):
-            raise ContractError(f"{location}: expected type {expected_types}, got {type(instance).__name__}")
+            raise ContractError(
+                f"{location}: expected type {expected_types}, got {type(instance).__name__}"
+            )
 
     if isinstance(instance, dict):
         required = schema.get("required", [])
@@ -303,7 +386,9 @@ def validate_instance(
                 raise ContractError(f"{location}: items must be unique")
         if isinstance(schema.get("items"), dict):
             for index, item in enumerate(instance):
-                validate_instance(item, schema["items"], schema_path, schemas, f"{location}/{index}")
+                validate_instance(
+                    item, schema["items"], schema_path, schemas, f"{location}/{index}"
+                )
 
     if isinstance(instance, str):
         if len(instance) < schema.get("minLength", 0):
@@ -335,7 +420,9 @@ def validate_instance(
                     pass
             valid = matches >= 1 if keyword == "anyOf" else matches == 1
             if not valid:
-                raise ContractError(f"{location}: {keyword} requires {expected_matches} match, got {matches}")
+                raise ContractError(
+                    f"{location}: {keyword} requires {expected_matches} match, got {matches}"
+                )
 
     if "not" in schema:
         try:
@@ -381,7 +468,9 @@ def validate_project_checkpoint(checkpoint: dict[str, Any]) -> int:
     completed_gates = checkpoint["completed_gates"]
     gate_status = checkpoint["gate_status"]
     if gate_status == "completed" and current_gate not in completed_gates:
-        raise ContractError("project-status.json: completed current gate missing from completed_gates")
+        raise ContractError(
+            "project-status.json: completed current gate missing from completed_gates"
+        )
     if gate_status != "completed" and current_gate in completed_gates:
         raise ContractError("project-status.json: active current gate cannot also be completed")
     if checkpoint["current_milestone"]["status"] != gate_status:
@@ -389,8 +478,7 @@ def validate_project_checkpoint(checkpoint: dict[str, Any]) -> int:
 
     path_count = 0
     referenced_paths = (
-        checkpoint["resumption"]["read_first"]
-        + checkpoint["last_session"]["files_changed"]
+        checkpoint["resumption"]["read_first"] + checkpoint["last_session"]["files_changed"]
     )
     for relative_path in referenced_paths:
         resolved = (ROOT / relative_path).resolve()
@@ -404,7 +492,7 @@ def validate_project_checkpoint(checkpoint: dict[str, Any]) -> int:
     required_mirror_text = (
         f"Contract package: {CONTRACT_PACKAGE_VERSION}",
         f"Current gate: {current_gate}",
-        "Scope: V1.3 active baseline",
+        "Scope: V1.4 active baseline",
     )
     for expected in required_mirror_text:
         if expected not in status_text:
@@ -426,43 +514,213 @@ def validate_workflow_trace(trace: dict[str, Any]) -> None:
         raise ContractError("workflow-trace example: terminal trace must have finished_at")
 
 
-def validate_legacy_scope_hash() -> None:
-    path = ROOT / "docs" / "product" / "researchforge-v1.2-scope-freeze.md"
-    digest = hashlib.sha256(path.read_bytes()).hexdigest()
-    if digest != LEGACY_SCOPE_SHA256:
-        raise ContractError("historical V1.2 scope hash changed")
+def validate_historical_scope_hashes() -> None:
+    paths = {
+        "v1.3": ROOT / "docs" / "product" / "researchforge-v1.3-scope.md",
+        "v1.2": ROOT / "docs" / "product" / "researchforge-v1.2-scope-freeze.md",
+    }
+    for version, path in paths.items():
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if digest != HISTORICAL_SCOPE_SHA256[version]:
+            raise ContractError(f"historical {version.upper()} scope hash changed")
+
+
+def require_text(path: Path, expected_fragments: tuple[str, ...]) -> None:
+    text = path.read_text(encoding="utf-8")
+    for fragment in expected_fragments:
+        if fragment not in text:
+            raise ContractError(
+                f"{path.relative_to(ROOT)}: missing required V1.4 text {fragment!r}"
+            )
+
+
+def validate_schema_catalog(directory: Path, expected: set[str], label: str) -> None:
+    actual = {path.name for path in directory.glob("*.schema.json")}
+    missing = expected - actual
+    unexpected = actual - expected
+    if missing or unexpected:
+        raise ContractError(
+            f"{label} schema catalog mismatch; missing={sorted(missing)}, "
+            f"unexpected={sorted(unexpected)}"
+        )
+
+
+def validate_example_catalog(
+    directory: Path,
+    expected: dict[str, str],
+    schema_directory: Path,
+    schemas: dict[Path, dict[str, Any]],
+    label: str,
+) -> dict[str, dict[str, Any]]:
+    actual_names = {path.name for path in directory.glob("*.json")}
+    expected_names = set(expected)
+    if actual_names != expected_names:
+        raise ContractError(
+            f"{label} example catalog mismatch; missing={sorted(expected_names - actual_names)}, "
+            f"unexpected={sorted(actual_names - expected_names)}"
+        )
+
+    examples: dict[str, dict[str, Any]] = {}
+    for example_name, schema_name in expected.items():
+        example = load_json(directory / example_name)
+        if not isinstance(example, dict):
+            raise ContractError(f"{label}/{example_name}: example root must be object")
+        schema_path = (schema_directory / schema_name).resolve()
+        validate_instance(example, schemas[schema_path], schema_path, schemas)
+        examples[example_name] = example
+    return examples
+
+
+def validate_v14_semantics(
+    schemas: dict[Path, dict[str, Any]],
+    examples: dict[str, dict[str, Any]],
+) -> None:
+    common = schemas[(SCHEMA_DIR / "common.schema.json").resolve()]
+    model_config = common["$defs"]["modelConfig"]
+    required_model_fields = {
+        "provider",
+        "model_id",
+        "model_snapshot",
+        "temperature",
+        "reasoning_effort",
+        "max_output_tokens",
+        "tool_choice_policy",
+        "store",
+        "built_in_tools",
+    }
+    if not required_model_fields.issubset(set(model_config["required"])):
+        raise ContractError("V1.4 model configuration is missing reproducibility fields")
+    if model_config["properties"]["store"].get("const") is not False:
+        raise ContractError("V1.4 model configuration must require store=false")
+    if model_config["properties"]["built_in_tools"].get("maxItems") != 0:
+        raise ContractError("V1.4 model configuration must prohibit built-in tools")
+
+    model_examples = (
+        examples["run-manifest.research.example.json"]["configuration"]["model"],
+        examples["run-manifest.patch-generation.example.json"]["configuration"]["model"],
+        examples["evolution-experiment.example.json"]["model"],
+        examples["simulated-usability-evaluation.example.json"]["model"],
+    )
+    for model in model_examples:
+        expected_values = {
+            "provider": "openai",
+            "model_id": "gpt-5.6-luna",
+            "reasoning_effort": "medium",
+            "store": False,
+            "built_in_tools": [],
+        }
+        for key, value in expected_values.items():
+            if model.get(key) != value:
+                raise ContractError(f"V1.4 example model must set {key}={value!r}")
+
+    simulation_schema = schemas[
+        (SCHEMA_DIR / "simulated-usability-evaluation.schema.json").resolve()
+    ]
+    simulation_properties = simulation_schema["properties"]
+    if simulation_properties["evidence_label"].get("const") != "SIMULATED":
+        raise ContractError("simulated usability evidence must be labeled SIMULATED")
+    if simulation_properties["human_user_value_validated"].get("const") is not False:
+        raise ContractError("simulated usability evidence cannot validate human value")
+    if simulation_properties["session_number"].get("maximum") != 3:
+        raise ContractError("simulated usability contract must be bounded to three sessions")
+
+    evolution_schema = schemas[(SCHEMA_DIR / "evolution-experiment.schema.json").resolve()]
+    threshold_properties = evolution_schema["properties"]["thresholds"]["properties"]
+    expected_evolution_thresholds = {
+        "repair_rate_min": 0.5,
+        "regression_rate_max": 0.05,
+        "task_score_drop_max": 0.02,
+        "cluster_support_min": 3,
+        "cluster_share_min": 0.2,
+    }
+    for key, value in expected_evolution_thresholds.items():
+        if threshold_properties[key].get("const") != value:
+            raise ContractError(f"evolution threshold {key} must remain {value}")
+    budget_properties = evolution_schema["properties"]["budget"]["properties"]
+    if budget_properties["cap"].get("maximum") != 20:
+        raise ContractError("evolution experiment budget must have a USD 20 ceiling")
+
+    retrieval_schema = schemas[(SCHEMA_DIR / "retrieval-evaluation.schema.json").resolve()]
+    retrieval_thresholds = retrieval_schema["properties"]["thresholds"]["properties"]
+    expected_retrieval_thresholds = {
+        "recall_at_5_gain_min": 0.1,
+        "new_citation_mismatches_max": 0,
+        "p95_latency_multiplier_max": 2,
+    }
+    for key, value in expected_retrieval_thresholds.items():
+        if retrieval_thresholds[key].get("const") != value:
+            raise ContractError(f"retrieval threshold {key} must remain {value}")
+
+    experiment = examples["evolution-experiment.example.json"]
+    splits = experiment["split_case_ids"]
+    expected_split_sizes = {"evolution": 12, "validation": 6, "final_test": 6}
+    all_case_ids: list[str] = []
+    for split_name, expected_size in expected_split_sizes.items():
+        case_ids = splits[split_name]
+        if len(case_ids) != expected_size:
+            raise ContractError(f"primary {split_name} split must contain {expected_size} cases")
+        all_case_ids.extend(case_ids)
+    if len(all_case_ids) != 24 or len(set(all_case_ids)) != 24:
+        raise ContractError("primary experiment must freeze 24 non-overlapping case IDs")
+    allowed_prefixes = {
+        "evolution": ("case_catl_", "case_eve_"),
+        "validation": ("case_gotion_",),
+        "final_test": ("case_sunwoda_",),
+    }
+    for split_name, prefixes in allowed_prefixes.items():
+        if not all(case_id.startswith(prefixes) for case_id in splits[split_name]):
+            raise ContractError(f"primary {split_name} company isolation changed")
+
+    active_requirements = {
+        ROOT / "docs" / "product" / "researchforge-v1.4-scope.md": (
+            "`SIMULATED`",
+            "`SUPPORTED`",
+            "USD 20",
+            "CATL (`300750.SZ`)",
+            "Sunwoda (`300207.SZ`)",
+            "Zhuhai CosMX (`688772.SH`)",
+        ),
+        ROOT / "docs" / "architecture" / "implementation-blueprint.md": (
+            "POST /v1/research-runs",
+            "GET /v1/research-runs/{run_id}/result",
+            "GET /v1/research-runs/{run_id}/trace",
+            "POST /v1/research-runs/{run_id}/cancel",
+            "GET /v1/catalog",
+            "gpt-5.6-luna",
+        ),
+        ROOT / "docs" / "contracts" / "product-success-metrics.md": (
+            "SIMULATED",
+            "human_user_value_validated: false",
+        ),
+        ROOT / "DATA_NOTICE.md": (
+            "complete third-party announcement or annual-report PDFs",
+            "synthetic evidence",
+        ),
+    }
+    for path, fragments in active_requirements.items():
+        require_text(path, fragments)
 
 
 def main() -> int:
     try:
-        missing_files = [str(path.relative_to(ROOT)) for path in REQUIRED_CONTRACTS if not path.is_file()]
+        missing_files = [
+            str(path.relative_to(ROOT)) for path in REQUIRED_CONTRACTS if not path.is_file()
+        ]
         if missing_files:
             raise ContractError(f"missing required contract files: {sorted(missing_files)}")
 
-        actual_schema_names = {path.name for path in SCHEMA_DIR.glob("*.schema.json")}
-        missing_schemas = REQUIRED_SCHEMAS - actual_schema_names
-        unexpected_schemas = actual_schema_names - REQUIRED_SCHEMAS
-        if missing_schemas or unexpected_schemas:
-            raise ContractError(
-                f"schema catalog mismatch; missing={sorted(missing_schemas)}, "
-                f"unexpected={sorted(unexpected_schemas)}"
-            )
-
-        legacy_schema_names = {
-            path.name for path in LEGACY_SCHEMA_DIR.glob("*.schema.json")
-        }
-        legacy_missing = LEGACY_REQUIRED_SCHEMAS - legacy_schema_names
-        legacy_unexpected = legacy_schema_names - LEGACY_REQUIRED_SCHEMAS
-        if legacy_missing or legacy_unexpected:
-            raise ContractError(
-                f"legacy schema catalog mismatch; missing={sorted(legacy_missing)}, "
-                f"unexpected={sorted(legacy_unexpected)}"
+        validate_schema_catalog(SCHEMA_DIR, REQUIRED_SCHEMAS, "current V1.4")
+        for version, directory in HISTORICAL_SCHEMA_DIRS.items():
+            validate_schema_catalog(
+                directory,
+                HISTORICAL_REQUIRED_SCHEMAS[version],
+                f"historical {version.upper()}",
             )
 
         schemas: dict[Path, dict[str, Any]] = {}
-        schema_paths = sorted(SCHEMA_DIR.glob("*.schema.json")) + sorted(
-            LEGACY_SCHEMA_DIR.glob("*.schema.json")
-        )
+        schema_paths = sorted(SCHEMA_DIR.glob("*.schema.json"))
+        for version in HISTORICAL_SCHEMA_VERSIONS:
+            schema_paths.extend(sorted(HISTORICAL_SCHEMA_DIRS[version].glob("*.schema.json")))
         for path in schema_paths:
             resolved = path.resolve()
             schema = load_json(path)
@@ -478,56 +736,38 @@ def main() -> int:
         current_common = schemas[(SCHEMA_DIR / "common.schema.json").resolve()]
         current_schema_const = current_common["$defs"]["schemaVersion"]["const"]
         if current_schema_const != CURRENT_ARTIFACT_VERSION:
-            raise ContractError("current common schema version does not match V1.3")
-        legacy_common = schemas[(LEGACY_SCHEMA_DIR / "common.schema.json").resolve()]
-        if legacy_common["$defs"]["schemaVersion"]["const"] != "1.2.0":
-            raise ContractError("historical common schema version changed")
+            raise ContractError("current common schema version does not match V1.4")
+        historical_versions = {"v1.3": "1.3.0", "v1.2": "1.2.0"}
+        for version, artifact_version in historical_versions.items():
+            historical_common = schemas[
+                (HISTORICAL_SCHEMA_DIRS[version] / "common.schema.json").resolve()
+            ]
+            if historical_common["$defs"]["schemaVersion"]["const"] != artifact_version:
+                raise ContractError(f"historical {version.upper()} common schema changed")
 
         reference_count = validate_all_refs(schemas)
 
-        example_path = EXAMPLE_DIR / "benchmark-case.example.json"
-        example = load_json(example_path)
-        benchmark_path = (SCHEMA_DIR / "benchmark-case.schema.json").resolve()
-        validate_instance(example, schemas[benchmark_path], benchmark_path, schemas)
-
-        legacy_example_path = LEGACY_EXAMPLE_DIR / "benchmark-case.example.json"
-        legacy_example = load_json(legacy_example_path)
-        legacy_benchmark_path = (
-            LEGACY_SCHEMA_DIR / "benchmark-case.schema.json"
-        ).resolve()
-        validate_instance(
-            legacy_example,
-            schemas[legacy_benchmark_path],
-            legacy_benchmark_path,
+        current_examples = validate_example_catalog(
+            EXAMPLE_DIR,
+            CURRENT_EXAMPLES,
+            SCHEMA_DIR,
             schemas,
+            "V1.4",
         )
+        for version, example_map in HISTORICAL_EXAMPLES.items():
+            validate_example_catalog(
+                HISTORICAL_EXAMPLE_DIRS[version],
+                example_map,
+                HISTORICAL_SCHEMA_DIRS[version],
+                schemas,
+                version.upper(),
+            )
 
-        workflow_example_path = EXAMPLE_DIR / "workflow-trace.example.json"
-        workflow_example = load_json(workflow_example_path)
-        workflow_schema_path = (SCHEMA_DIR / "workflow-trace.schema.json").resolve()
-        validate_instance(
-            workflow_example,
-            schemas[workflow_schema_path],
-            workflow_schema_path,
-            schemas,
-        )
+        workflow_example = current_examples["workflow-trace.example.json"]
         validate_workflow_trace(workflow_example)
 
         run_schema_path = (SCHEMA_DIR / "run-manifest.schema.json").resolve()
-        research_run_example: dict[str, Any] | None = None
-        for run_example_name in (
-            "run-manifest.research.example.json",
-            "run-manifest.patch-generation.example.json",
-        ):
-            run_example = load_json(EXAMPLE_DIR / run_example_name)
-            validate_instance(
-                run_example,
-                schemas[run_schema_path],
-                run_schema_path,
-                schemas,
-            )
-            if run_example_name == "run-manifest.research.example.json":
-                research_run_example = run_example
+        research_run_example = current_examples["run-manifest.research.example.json"]
 
         checkpoint_path = ROOT / "project-status.json"
         checkpoint = load_json(checkpoint_path)
@@ -544,21 +784,15 @@ def main() -> int:
         configuration_schema = run_schema["properties"]["configuration"]
         artifact_schema = run_schema["properties"]["artifacts"]
         if "workflow" not in configuration_schema["required"]:
-            raise ContractError("V1.3 Run Manifest must require workflow configuration")
+            raise ContractError("V1.4 Run Manifest must require workflow configuration")
         if "workflow_trace_id" not in artifact_schema["required"]:
-            raise ContractError("V1.3 Run Manifest must require workflow_trace_id")
+            raise ContractError("V1.4 Run Manifest must require workflow_trace_id")
 
-        research_result_schema = schemas[
-            (SCHEMA_DIR / "research-result.schema.json").resolve()
-        ]
+        research_result_schema = schemas[(SCHEMA_DIR / "research-result.schema.json").resolve()]
         result_status_schema = research_result_schema["properties"]["status"]
         if result_status_schema.get("const") != "completed":
-            raise ContractError(
-                "V1.3 Research Result must represent completed reports only"
-            )
+            raise ContractError("V1.4 Research Result must represent completed reports only")
 
-        if research_run_example is None:
-            raise ContractError("missing V1.3 Research Run example")
         invalid_insufficient_run = json.loads(json.dumps(research_run_example))
         invalid_insufficient_run["lifecycle_state"] = "insufficient_data"
         invalid_insufficient_run["started_at"] = "2026-08-30T16:00:01+08:00"
@@ -580,22 +814,27 @@ def main() -> int:
         except ContractError:
             pass
         else:
-            raise ContractError(
-                "V1.3 insufficient_data run must reject a Research Result artifact"
-            )
+            raise ContractError("V1.4 insufficient_data run must reject a Research Result artifact")
 
-        validate_legacy_scope_hash()
+        validate_v14_semantics(schemas, current_examples)
+        validate_historical_scope_hashes()
 
         markdown_link_count = validate_markdown_links()
 
         print(
-            f"PASS: {len(REQUIRED_SCHEMAS)} current V1.3 and "
-            f"{len(LEGACY_REQUIRED_SCHEMAS)} historical V1.2 schemas parsed"
+            f"PASS: {len(REQUIRED_SCHEMAS)} current V1.4, "
+            f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.3'])} historical V1.3, and "
+            f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.2'])} historical V1.2 schemas parsed"
         )
         print(f"PASS: {reference_count} local schema references resolved")
-        print("PASS: V1.3 Benchmark, Workflow Trace, and two Run Manifest examples validated")
+        print(
+            f"PASS: {len(CURRENT_EXAMPLES)} V1.4, "
+            f"{len(HISTORICAL_EXAMPLES['v1.3'])} V1.3, and "
+            f"{len(HISTORICAL_EXAMPLES['v1.2'])} V1.2 examples validated"
+        )
         print("PASS: insufficient_data cannot persist a Research Result artifact")
-        print("PASS: historical V1.2 Benchmark Case and scope hash validated")
+        print("PASS: model, simulation, budget, retrieval, and split semantics validated")
+        print("PASS: historical V1.3 and V1.2 scope hashes validated")
         print(
             "PASS: project-status.json validated "
             f"({checkpoint_path_count} referenced paths present)"

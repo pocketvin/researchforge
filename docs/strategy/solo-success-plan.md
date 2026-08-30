@@ -1,6 +1,6 @@
 # Solo Success Plan
 
-This plan improves the probability that one person can finish ResearchForge while keeping changes explicit against the active V1.3 scope baseline.
+This plan improves the probability that one person can finish ResearchForge while keeping changes explicit against the active V1.4 scope baseline.
 
 ## North-Star User
 
@@ -19,14 +19,14 @@ Planning ranges are capacity estimates, not delivery promises.
 | L0 Contract Ready | complete | Frozen scope, schemas, semantic contracts, validator | System and experiment design |
 | L1 Resume Ready | 1–2 focused weeks | One LangGraph-orchestrated earnings-quality slice, deterministic tools, schema-valid report, tests | Python, agent workflow, finance correctness, citations |
 | L2 Demo Ready | about 1 week | Verifier fixtures, trace inspection, replayable failure explanation | Evaluation and observability |
-| L3 Differentiated | 1–2 focused weeks | Controlled no-cluster, rejection, or supported held-out outcome | Research engineering; self-improvement only if evidence passes |
-| L4 Full V1.3 | 2–3 focused weeks | Five modes, two pages, supported storage, Docker, CI | Full-stack product delivery |
+| L3 Research Supported | 1–2 focused weeks | Candidate adopted on Validation and supported once on sealed Final Test | Controlled self-improvement evidence |
+| L4 Full Engineering Product | 2–3 focused weeks | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | Full-stack product delivery without a human-value claim |
 
 Each level must be independently demonstrable. Stopping at L1 or L2 is a valid portfolio outcome, but it is not a completed Evolution claim.
 
 ## Portfolio MVP
 
-L1 intentionally narrows the implementation sequence, not V1.3 scope:
+L1 intentionally narrows the implementation sequence, not V1.4 scope:
 
 - one task: earnings-quality analysis;
 - two approved companies and four comparable periods;
@@ -58,8 +58,8 @@ A new dependency or infrastructure component requires evidence that the current 
 | No acceptable structured-data source | Stop after two person-days of the source spike | Use manually reconciled frozen fixtures; make no live-data claim |
 | Filings cannot be parsed reliably | Do not build OCR infrastructure in V1 | Restrict initial companies to text-readable filings and record exclusions |
 | Semantic/vector retrieval does not beat deterministic section filters | Do not add pgvector for novelty | Use section/keyword filters over frozen chunks |
-| No repeated failure cluster reaches the support threshold | Do not manufacture cases or lower the threshold after seeing results | Report a negative research result and preserve the verifier/demo value |
-| Candidate patch fails guardrails | Do not tune on Final Test | Reject it, preserve evidence, and stop the Evolution claim honestly |
+| Primary experiment is unsupported | Freeze every artifact and threshold | Run at most one V1.5 experiment on the pre-frozen disjoint contingency suite |
+| Second experiment is unsupported | Do not manufacture cases or lower thresholds | Mark engineering delivery complete but the owner-selected project completion target blocked |
 | UI work blocks core correctness | Pause UI at the end of its time box | Demo through CLI/API and exported artifacts |
 
 ## Weekly Operating Rhythm
@@ -70,6 +70,6 @@ A new dependency or infrastructure component requires evidence that the current 
 4. Update the scorecard, decision log, and project checkpoint.
 5. Leave one next action that can be started without reconstructing chat history.
 
-## Definition of Useful
+## Definition of Engineering Usefulness
 
-The product is useful only when a target user can identify what changed, why it may matter, what evidence supports it, what contradicts it, and what remains unknown. Fluency, report length, and visual polish are not substitutes for these outcomes.
+The product passes its V1.4 presentation check only when three isolated simulated personas can identify what changed, why it may matter, what evidence supports it, what contradicts it, and what remains unknown. Fluency, report length, and visual polish are not substitutes for these outcomes. This is not evidence that real target users find the product useful.

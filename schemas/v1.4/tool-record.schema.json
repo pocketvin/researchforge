@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.4/tool-record.schema.json",
+  "title": "ResearchForge Tool Record",
+  "description": "Sanitized audit record for one deterministic or external adapter call.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "tool_record_id",
+    "run_id",
+    "stage",
+    "tool_name",
+    "tool_version",
+    "input_artifact_ids",
+    "output_artifact_ids",
+    "status",
+    "started_at",
+    "finished_at",
+    "latency_ms",
+    "sanitized_summary",
+    "error_code"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "tool_record_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "run_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "stage": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "tool_name": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "tool_version": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "input_artifact_ids": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "output_artifact_ids": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "status": { "type": "string", "enum": ["succeeded", "failed", "cancelled", "timed_out"] },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "latency_ms": { "type": "integer", "minimum": 0 },
+    "sanitized_summary": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "error_code": { "type": ["string", "null"], "maxLength": 128 }
+  }
+}

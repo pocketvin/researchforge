@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.4.0",
+  "run_id": "run_demo_research_001",
+  "run_kind": "product",
+  "case_id": null,
+  "split": null,
+  "lifecycle_state": "queued",
+  "input": {
+    "input_kind": "research",
+    "task_type": "filing_analysis",
+    "research_question": "Did reported profit improvement translate into operating cash generation?",
+    "company_ids": [
+      "company_demo_cny"
+    ],
+    "requested_period_labels": [
+      "2025Q3-YTD",
+      "2024Q3-YTD"
+    ],
+    "research_time": "2025-10-31T16:00:00+08:00"
+  },
+  "configuration": {
+    "model": {
+      "provider": "openai",
+      "model_id": "gpt-5.6-luna",
+      "model_snapshot": null,
+      "temperature": null,
+      "seed": null,
+      "reasoning_effort": "medium",
+      "max_output_tokens": 4000,
+      "tool_choice_policy": "controlled",
+      "store": false,
+      "built_in_tools": []
+    },
+    "workflow": {
+      "engine": "langgraph",
+      "graph_version": "1.0.0",
+      "checkpoint_schema_version": "1.0.0"
+    },
+    "skill_version": "1.0.0",
+    "skill_hash": "4444444444444444444444444444444444444444444444444444444444444444",
+    "formula_version": "1.0.0",
+    "prompt_hashes": {
+      "research_system": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "tool_versions": {
+      "financial_tools": "1.0.0",
+      "retrieval": "1.0.0"
+    },
+    "dataset_package_id": "package_demo_cny_q3_2025",
+    "dataset_package_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+    "evidence_cutoff": "2025-10-31T16:00:00+08:00"
+  },
+  "limits": {
+    "timeout_seconds": 300,
+    "max_tool_calls": 30,
+    "max_total_tokens": 12000,
+    "max_estimated_cost": null
+  },
+  "attempt": 1,
+  "idempotency_key": "demo-research-request-001",
+  "created_at": "2026-08-30T16:00:00+08:00",
+  "started_at": null,
+  "finished_at": null,
+  "artifacts": {
+    "explicit_plan_id": null,
+    "workflow_trace_id": null,
+    "tool_record_ids": [],
+    "result_id": null,
+    "patch_id": null,
+    "evaluation_id": null
+  },
+  "usage": null,
+  "failure": null
+}

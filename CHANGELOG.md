@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.4.0] — In Progress
+
+### Added
+
+- Active V1.4 scope and V1.3→V1.4 change note.
+- Eight schemas/examples for Source Document, Calculation Record, Tool Record, Skill Version, Experience, Evolution Experiment, Retrieval Evaluation, and Simulated Usability Evaluation.
+- Exact primary and contingency A-share experiment suites.
+- Explicit OpenAI Responses API and aggregate budget contract.
+
+### Changed
+
+- New artifacts use `schema_version: 1.4.0`; V1.2/V1.3 remain immutable history.
+- G4 uses three explicitly labeled simulations instead of a human pilot.
+- Overall completion requires Full Engineering Product Ready plus a `SUPPORTED` sealed result.
+- pgvector adoption now has explicit Recall@5, citation, and latency thresholds.
+
+### Preserved
+
+- Five bounded research modes and one LangGraph single-agent Research workflow.
+- Plain-Python finance, retrieval, verifier, persistence semantics, and Evolution.
+- No trading, real-time market data, multi-agent debate, or open-ended self-modification.
+
 All notable contract and planning changes are recorded here. Product-scope changes require a separate decision and change note.
 
 ## [Contract Package 1.3.0] — 2026-08-30

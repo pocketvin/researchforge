@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.4.0",
+  "experience_id": "experience_cash_conversion_001",
+  "cluster_id": "cluster_cash_conversion_missing",
+  "failure_label": "CRITICAL_OMISSION",
+  "failure_signature": "cash_conversion_check_missing",
+  "observed_behavior": "The report discussed profit growth without evaluating operating cash flow or cash conversion.",
+  "applicable_condition": "Apply when profit improvement or earnings quality is material to the research question.",
+  "required_procedure": "Compare profit with operating cash flow, receivables, inventory, and cash conversion before concluding that earnings quality improved.",
+  "exceptions": ["When net income is non-positive, mark the ratio not meaningful and compare signs and absolute divergence instead."],
+  "supporting_failure_ids": ["failure_001", "failure_002", "failure_003"],
+  "source_evaluation_ids": ["evaluation_001", "evaluation_002", "evaluation_003"],
+  "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "created_at": "2026-08-30T09:20:00+08:00"
+}

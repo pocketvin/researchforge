@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.4/simulated-usability-evaluation.schema.json",
+  "title": "ResearchForge Simulated Usability Evaluation",
+  "description": "One isolated AI-simulated usability session that cannot be represented as human evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "evidence_label",
+    "session_number",
+    "persona_id",
+    "run_id",
+    "model",
+    "located_key_change",
+    "located_supporting_evidence",
+    "located_counter_evidence_or_limitation",
+    "located_monitoring_item",
+    "usefulness_score",
+    "auditability_score",
+    "findings",
+    "passed",
+    "human_user_value_validated",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "evaluation_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "evidence_label": { "type": "string", "const": "SIMULATED" },
+    "session_number": { "type": "integer", "minimum": 1, "maximum": 3 },
+    "persona_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "run_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "model": { "$ref": "common.schema.json#/$defs/modelConfig" },
+    "located_key_change": { "type": "boolean" },
+    "located_supporting_evidence": { "type": "boolean" },
+    "located_counter_evidence_or_limitation": { "type": "boolean" },
+    "located_monitoring_item": { "type": "boolean" },
+    "usefulness_score": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "auditability_score": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "findings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 2000 },
+      "minItems": 1,
+      "maxItems": 30
+    },
+    "passed": { "type": "boolean" },
+    "human_user_value_validated": { "type": "boolean", "const": false },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

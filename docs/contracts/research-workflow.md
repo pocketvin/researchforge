@@ -1,6 +1,6 @@
 # Research Workflow and LangGraph Contract
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 ResearchForge uses one LangGraph workflow to make the versioned single-agent Research Procedure explicit, auditable, and recoverable. LangGraph is an orchestration boundary, not a second source of product or financial semantics.
 
@@ -81,6 +81,8 @@ Every node MUST:
 7. map expected failures to the codes in `run-lifecycle.md`.
 
 Model-facing nodes must validate structured output. Tool-facing nodes must not ask the model to perform important arithmetic.
+
+V1.4 model-facing nodes use the OpenAI Responses API with `store: false`, JSON Schema Structured Outputs, no built-in web/file tools, and only frozen fact/calculation/evidence inputs. Filing text remains quoted untrusted data and cannot alter system, skill, tool, budget, or experiment instructions.
 
 ## Versioning and Reproducibility
 

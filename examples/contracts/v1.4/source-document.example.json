@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.4.0",
+  "document_id": "doc_catl_2024_q3",
+  "source_id": "source_cninfo",
+  "company": {
+    "company_id": "cn_300750",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750",
+    "exchange": "SZSE",
+    "country_code": "CN"
+  },
+  "document_type": "quarterly_report",
+  "title": "2024年第三季度报告",
+  "published_at": "2024-10-19T00:00:00+08:00",
+  "retrieved_at": "2026-08-30T09:00:00+08:00",
+  "available_from": "2024-10-19T00:00:00+08:00",
+  "source_uri": "https://www.cninfo.com.cn/",
+  "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "mime_type": "application/pdf",
+  "language": "zh-CN",
+  "reporting_period": {
+    "period_start": "2024-01-01",
+    "period_end": "2024-09-30",
+    "fiscal_year": 2024,
+    "fiscal_period": "Q3",
+    "period_basis": "ytd",
+    "accounting_standard": "CAS",
+    "statement_scope": "consolidated",
+    "restatement_status": "as_reported"
+  },
+  "license": {
+    "license_id": null,
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false,
+    "notes": "Public package keeps derived facts, short evidence, hashes, and the official locator only."
+  },
+  "parser_version": "1.0.0",
+  "quality_flags": [],
+  "created_at": "2026-08-30T09:05:00+08:00"
+}

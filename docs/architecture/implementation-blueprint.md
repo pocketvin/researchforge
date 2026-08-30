@@ -1,6 +1,6 @@
 # Implementation Blueprint
 
-This blueprint sequences the active V1.3 architecture for a solo implementation. It does not replace the product scope or semantic contracts.
+This blueprint sequences the active V1.4 architecture for a solo implementation. It does not replace the product scope or semantic contracts.
 
 ## Two Delivery Shapes
 
@@ -14,7 +14,7 @@ This blueprint sequences the active V1.3 architecture for a solo implementation.
 - exported JSON artifacts and traces;
 - no database or UI required for L1.
 
-### Full V1.3 — L4
+### Full V1.4 — L4
 
 - the same domain and workflow expanded to five task types;
 - PostgreSQL for core records and supporting provenance/artifact records;
@@ -27,14 +27,14 @@ The MVP is a staging point, not a different product architecture.
 ## Target Repository Shape
 
 ```text
-backend/
+src/
   researchforge/
     domain/          # facts, periods, formulas, claims; no framework imports
     application/     # use cases, ports, limits, artifact assembly
     workflow/        # LangGraph topology, typed state, node adapters
     adapters/        # data, filing, model, storage implementations
     api/             # FastAPI transport
-  tests/
+tests/
 frontend/            # introduced after the core evidence exists
 skills/
   fundamental-research/
@@ -84,7 +84,16 @@ The first runtime needs only:
 - `POST /v1/research-runs` — validate and create one immutable run;
 - `GET /v1/research-runs/{run_id}` — lifecycle, progress, limits, and failure;
 - `GET /v1/research-runs/{run_id}/result` — schema-valid result after success;
-- `POST /v1/research-runs/{run_id}/cancel` — best-effort cancellation.
+- `GET /v1/research-runs/{run_id}/trace` — sanitized Workflow Trace after the run starts;
+- `POST /v1/research-runs/{run_id}/cancel` — best-effort cancellation;
+- `GET /v1/catalog` — allowlisted companies, periods, and task capabilities.
+
+`POST /v1/research-runs` accepts task type, question, one or two company IDs, requested period labels, research time, and an idempotency key. It returns `202` plus status/result/trace links. A pending result returns `425`; a terminal state without a Research Result returns `409` and the structured failure. Reusing a key with different input returns `409`.
+
+Evolution is started only through a controlled CLI. Skill Lab reads:
+
+- `GET /v1/evolution-experiments/{experiment_id}`;
+- `GET /v1/evolution-experiments/{experiment_id}/artifacts/{kind}`.
 
 Skill Lab and Evolution endpoints are added only at G3/G4. Endpoint names are implementation guidance; artifact semantics remain governed by the schemas.
 
@@ -92,7 +101,7 @@ Skill Lab and Evolution endpoints are added only at G3/G4. Endpoint names are im
 
 L1/L2 use content-hashed directories for fixtures, run artifacts, and trace events. This makes the thin slice reproducible without inventing database tables.
 
-Full V1.3 preserves five core product/experiment records:
+Full V1.4 preserves five core product/experiment records:
 
 ```text
 cases
@@ -102,7 +111,7 @@ evolution_runs
 evaluations
 ```
 
-V1.3 adds three supporting provenance/artifact records:
+V1.4 adds three supporting provenance/artifact records:
 
 ```text
 source_documents
@@ -110,7 +119,17 @@ evidence_chunks
 run_artifacts
 ```
 
-L1/L2 keep these in immutable file packages referenced by hash. Full V1.3 may persist them in PostgreSQL/object storage. An optional pgvector column/index belongs to `evidence_chunks` and is introduced only after retrieval evaluation.
+L1/L2 keep these in immutable file packages referenced by hash. Full V1.4 may persist them in PostgreSQL/object storage. An optional pgvector column/index belongs to `evidence_chunks` and is introduced only after retrieval evaluation.
+
+Semantic retrieval is adopted only when frozen evidence shows Recall@5 improves by at least `0.10`, introduces zero new citation mismatches, and keeps p95 latency at or below `2×` the deterministic baseline. Otherwise deterministic section/keyword retrieval remains final.
+
+## Model and Cost Boundary
+
+- OpenAI Responses API only; `store: false` and JSON Schema Structured Outputs.
+- `gpt-5.6-luna`, medium reasoning, no built-in tools, 4,000 output-token cap.
+- A formal run configuration is immutable; `gpt-5.4-mini` is a pre-formal-run-only availability fallback.
+- Calibration/primary/contingency/simulation/safety allocations are USD 1/9/6/2/2.
+- The adapter reserves worst-case request cost atomically and refuses dispatch if aggregate reserved plus spent cost could exceed USD 20.
 
 ## Complexity Decision Rules
 
@@ -121,4 +140,4 @@ Add a component only if all are true:
 3. its owner, failure mode, test, and removal path are documented;
 4. the decision is recorded in `DECISIONS.md`.
 
-V1.3 explicitly avoids distributed queues, multiple agents, agent debate, dynamic graph mutation, open-ended prompt optimization, and a general observability platform.
+V1.4 explicitly avoids distributed queues, multiple agents, agent debate, dynamic graph mutation, open-ended prompt optimization, and a general observability platform.

@@ -2,22 +2,22 @@
 
 > A Financial Research Agent with Verifiable Procedures and a Controlled Learning Experiment.
 
-ResearchForge V1.3 is a contract-first project for evidence-grounded company fundamental research and one controlled skill-evolution experiment. This repository currently contains the active product/research baseline and normative contracts that future implementation must satisfy. It does not yet contain the application runtime.
+ResearchForge V1.4 is a contract-first project for evidence-grounded company fundamental research and a controlled skill-evolution experiment. The repository is currently implementing the V1.4 contract gate; application runtime work remains gated on data-source acceptance.
 
 ## Status
 
-- Product/research scope: **V1.3 active baseline**
-- Contract package: **V1.3.0**
-- Completed/current gate: **C0 complete → G0 next**
+- Product/research scope: **V1.4 active baseline**
+- Contract package: **1.4.0**
+- Completed/current gate: **V1.4 C0 complete → G0 in progress**
 - Runtime implementation: **not started**
-- Supported deployment for V1.3: **local or controlled single-user demo**
+- Supported deployment for V1.4: **local or controlled single-user demo**
 
 Current critical path: complete the time-boxed data-source acceptance spike before application infrastructure.
 
 ## Start Here
 
 1. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — current gate, blockers, and one next action.
-2. [`docs/product/researchforge-v1.3-scope.md`](docs/product/researchforge-v1.3-scope.md) — current product and research authority.
+2. [`docs/product/researchforge-v1.4-scope.md`](docs/product/researchforge-v1.4-scope.md) — current product and research authority.
 3. [`DECISIONS.md`](DECISIONS.md) — accepted and pending architecture/data choices.
 4. [`docs/strategy/solo-success-plan.md`](docs/strategy/solo-success-plan.md) — L0–L4 delivery ladder and fallbacks.
 5. [`docs/contracts/research-workflow.md`](docs/contracts/research-workflow.md) — bounded LangGraph orchestration.
@@ -27,23 +27,23 @@ Current critical path: complete the time-boxed data-source acceptance spike befo
 
 When documents conflict, use this order:
 
-1. [`docs/product/researchforge-v1.3-scope.md`](docs/product/researchforge-v1.3-scope.md) defines active product and research scope.
+1. [`docs/product/researchforge-v1.4-scope.md`](docs/product/researchforge-v1.4-scope.md) defines active product and research scope.
 2. [`docs/contracts/`](docs/contracts/) defines executable behavior, financial semantics, experiment isolation, and acceptance rules.
-3. [`schemas/v1.3/`](schemas/v1.3/) defines current machine-readable artifact shapes.
+3. [`schemas/v1.4/`](schemas/v1.4/) defines current machine-readable artifact shapes.
 4. Application code and UI must conform to the three layers above.
 
-[`docs/product/v1.2-to-v1.3-change-note.md`](docs/product/v1.2-to-v1.3-change-note.md) records the upgrade. The V1.2 frozen scope and schemas remain immutable historical evidence; they are not current implementation authority.
+[`docs/product/v1.3-to-v1.4-change-note.md`](docs/product/v1.3-to-v1.4-change-note.md) records the current upgrade. V1.2 and V1.3 scope/schema packages remain immutable historical evidence; they are not current implementation authority.
 
 A scope change is allowed only through an explicit decision, change note, contract update, and version impact assessment.
 
-## V1.3 Outcomes
+## V1.4 Outcomes
 
-V1.3 has two separate outcomes:
+V1.4 has two separate outcomes:
 
 1. A useful, evidence-grounded fundamental research workflow.
 2. A controlled `failure → experience → skill patch → held-out validation` research experiment for earnings-quality omissions.
 
-The product can be useful even if the research hypothesis is rejected. A self-improvement claim requires adopted-patch and sealed-test evidence. V1.3 does not provide investment advice, price predictions, trading, portfolio optimization, real-time market data, or autonomous open-ended model training.
+Engineering delivery can remain useful after a negative experiment, but the owner-selected overall completion standard additionally requires a `SUPPORTED` sealed result. V1.4 does not provide investment advice, price predictions, trading, portfolio optimization, real-time market data, or autonomous open-ended model training.
 
 ## Delivery Ladder
 
@@ -52,8 +52,8 @@ The product can be useful even if the research hypothesis is rejected. A self-im
 | L0 Contract Ready | Scope, schemas, methods, validation | complete |
 | L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | not started |
 | L2 Demo Ready | Verifier, trace, and replayable failure evidence | not started |
-| L3 Differentiated | Controlled no-cluster/rejection/supported outcome | not started |
-| L4 Full V1.3 | Five modes, two pages, supported storage, Docker, CI | not started |
+| L3 Research Supported | Adopted Candidate and supported sealed Final Test | not started |
+| L4 Full Engineering Product | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | not started |
 
 Stopping earlier preserves honest portfolio value. “Self-improving” is not a completed claim until L3 adoption and sealed-test evidence exist.
 
@@ -61,19 +61,26 @@ Stopping earlier preserves honest portfolio value. “Self-improving” is not a
 
 ```text
 ResearchForge/
+├── .env.example
+├── .python-version
 ├── AGENTS.md
 ├── CHANGELOG.md
+├── DATA_NOTICE.md
 ├── DECISIONS.md
+├── LICENSE
 ├── PORTFOLIO.md
 ├── PROJECT_STATUS.md
 ├── README.md
+├── pyproject.toml
 ├── project-status.json
+├── uv.lock
 ├── docs/
 │   ├── architecture/
 │   │   └── implementation-blueprint.md
 │   ├── product/
-│   │   ├── researchforge-v1.3-scope.md
-│   │   ├── v1.2-to-v1.3-change-note.md
+│   │   ├── researchforge-v1.4-scope.md
+│   │   ├── v1.3-to-v1.4-change-note.md
+│   │   ├── researchforge-v1.3-scope.md          # historical
 │   │   └── researchforge-v1.2-scope-freeze.md  # historical
 │   ├── contracts/
 │   │   ├── README.md
@@ -95,17 +102,16 @@ ResearchForge/
 ├── examples/
 │   └── contracts/
 │       ├── benchmark-case.example.json         # historical V1.2
-│       └── v1.3/
-│           ├── benchmark-case.example.json
-│           ├── run-manifest.research.example.json
-│           ├── run-manifest.patch-generation.example.json
-│           └── workflow-trace.example.json
+│       └── v1.4/
+│           └── 12 current contract examples
 ├── schemas/
 │   ├── v1.2/                                  # historical contracts
-│   └── v1.3/                                  # 11 current schemas,
-│       └── workflow-trace.schema.json          # including LangGraph trace
-└── scripts/
+│   ├── v1.3/                                  # historical contracts
+│   └── v1.4/                                  # 19 current schemas
+├── scripts/
     └── validate_contracts.py
+└── src/
+    └── researchforge/                       # gated runtime package skeleton
 ```
 
 ## Contract Rules
@@ -137,7 +143,7 @@ Contracts and data-source acceptance
 python3 scripts/validate_contracts.py
 ```
 
-The dependency-free validator checks V1.3 JSON syntax, schema metadata, local `$ref` resolution, current examples and live project checkpoint, historical V1.2 integrity, Markdown links, and required project files.
+The dependency-free validator checks V1.4 JSON syntax, schema metadata, local `$ref` resolution, current examples and live project checkpoint, historical V1.2/V1.3 integrity, Markdown links, and required project files.
 
 ## Safety and Disclaimer
 

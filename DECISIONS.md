@@ -18,9 +18,13 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-003 | Portfolio MVP before full V1.3 breadth | ACCEPTED | 2026-08-29 | — |
 | RF-004 | Structured and filing data sources | PROPOSED | 2026-08-29 | G0 |
 | RF-005 | Evidence persistence and pgvector timing | ACCEPTED | 2026-08-30 | — |
-| RF-006 | Initial company universe | PROPOSED | 2026-08-29 | Golden cases |
+| RF-006 | Initial company universe | SUPERSEDED | 2026-08-29 | — |
 | RF-007 | Bounded LangGraph orchestration | ACCEPTED | 2026-08-30 | — |
 | RF-008 | Upgrade the active scope to V1.3 | ACCEPTED | 2026-08-30 | — |
+| RF-009 | Upgrade the active scope to V1.4 | ACCEPTED | 2026-08-30 | — |
+| RF-010 | Replace the human pilot with labeled simulations | ACCEPTED | 2026-08-30 | — |
+| RF-011 | OpenAI model and USD 20 budget boundary | ACCEPTED | 2026-08-30 | — |
+| RF-012 | Primary and contingency experiment suites | ACCEPTED | 2026-08-30 | G0 evidence |
 
 ## RF-001 — Contract-First Implementation
 
@@ -111,7 +115,7 @@ Any further logical record requires an explicit decision and migration evidence.
 
 ## RF-006 — Initial Company Universe
 
-Status: **PROPOSED**
+Status: **SUPERSEDED** by RF-012
 
 Preferred direction:
 
@@ -121,6 +125,8 @@ Preferred direction:
 Candidate pair:
 
 CATL and EVE Energy are suitable narrative candidates from the frozen demo, but they are not approved until source availability and metric reconciliation pass.
+
+RF-012 replaces this open-ended proposal with fixed primary and contingency suites. G0 still decides whether each fixed company has sufficient source/provenance evidence; it does not choose a different universe silently.
 
 ## RF-007 — Bounded LangGraph Orchestration
 
@@ -157,3 +163,69 @@ These changes directly improve feasibility, portfolio value, usefulness, complet
 Consequence:
 
 New artifacts use `schema_version: 1.3.0` and `schemas/v1.3/`. V1.2 artifacts are never silently interpreted as V1.3; any later migration creates a new artifact and preserves original provenance.
+
+## RF-009 — Upgrade the Active Scope to V1.4
+
+Status: **ACCEPTED**
+
+Decision:
+
+Supersede V1.3 with the active V1.4 scope and contract package `1.4.0`. Preserve the V1.3 scope, schemas, examples, and Git baseline as immutable history.
+
+Reason:
+
+The owner changed both the success-evidence meaning and the project completion rule. This is a minor contract change, not a clarification.
+
+Consequence:
+
+New artifacts use `schema_version: 1.4.0`. Any migration creates a new artifact and retains the V1.3 source hash.
+
+## RF-010 — Labeled Simulations Instead of a Human Pilot
+
+Status: **ACCEPTED**
+
+Decision:
+
+G4 requires exactly three isolated simulated-usability sessions. Every record uses `evidence_label: SIMULATED` and `human_user_value_validated: false`.
+
+Reason:
+
+The owner explicitly removed real-user recruitment from the project.
+
+Consequence:
+
+The final engineering label is `V1.4 Full Engineering Product Ready`. Documentation MUST state that human usefulness and market demand were not validated.
+
+## RF-011 — OpenAI Model and Budget Boundary
+
+Status: **ACCEPTED**
+
+Decision:
+
+Use the OpenAI Responses API with `store: false`, Structured Outputs, no built-in tools, `gpt-5.6-luna`, medium reasoning, and a USD 20 aggregate cap. `gpt-5.4-mini` is allowed only as a pre-formal-run fallback.
+
+Budget:
+
+- USD 1 calibration;
+- USD 9 primary experiment;
+- USD 6 contingency reserve;
+- USD 2 simulations;
+- USD 2 safety reserve.
+
+Consequence:
+
+A real request is rejected before dispatch if its worst-case estimate would breach the aggregate cap. Model/configuration changes after formal runs begin invalidate the experiment.
+
+## RF-012 — Primary and Contingency Experiment Suites
+
+Status: **ACCEPTED**
+
+Decision:
+
+- Primary V1.4: CATL and EVE Energy for Evolution, Gotion High-Tech for Validation, and Sunwoda for Final Test.
+- Contingency V1.5: Great Power, Farasis Energy, BYD, and Zhuhai CosMX in a wholly disjoint pre-frozen suite.
+- Six target reports per company: 2023Q3, 2023FY, 2024Q1, 2024H1, 2024Q3, and 2024FY.
+
+Consequence:
+
+Company inclusion still must pass G0 source/provenance evidence. Replacing a company or report period requires a new decision before any formal run. At most one contingency experiment may run after an unsupported primary result.

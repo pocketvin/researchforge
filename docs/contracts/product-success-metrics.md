@@ -1,6 +1,6 @@
 # Product Success Metrics
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 Product usefulness and Research/Evolution success are separate. Better benchmark metrics do not prove that a user receives a useful report, and user preference does not prove financial correctness.
 
@@ -8,7 +8,7 @@ Product usefulness and Research/Evolution success are separate. Better benchmark
 
 On the frozen thin-slice fixtures:
 
-- 100% of persisted artifacts validate against their V1.3 schemas;
+- 100% of persisted artifacts validate against their V1.4 schemas;
 - 100% of expected deterministic calculations and period classifications pass fixture assertions;
 - 100% of material numeric claims resolve to facts/calculations;
 - 100% of cited evidence IDs resolve to point-in-time-valid sources;
@@ -29,16 +29,17 @@ Run at least 20 fixed thin-slice executions across the accepted companies/cases.
 
 Cost and latency caps are resolved before each batch and stored in Run Manifests; this contract does not invent a provider-independent price target.
 
-## Target-User Pilot
+## Simulated Usability Evidence
 
-Before Product Usefulness is marked Green:
+V1.4 does not claim a real-user pilot. Before Full Engineering Product Ready is marked Green:
 
-- at least three target users complete the same bounded research task without project-owner coaching;
-- at least two of three rate both usefulness and auditability at 4/5 or higher;
-- users can locate the key change, supporting evidence, counter-evidence/limitation, and monitoring item within ten minutes;
-- every material factual error and usability blocker is recorded, including dissenting feedback.
+- exactly three isolated AI-simulated personas inspect the same persisted report and UI evidence under fresh contexts;
+- every record uses `evidence_label: SIMULATED` and `human_user_value_validated: false`;
+- at least two of three assign both usefulness and auditability scores of 4/5 or higher;
+- every session locates the key change, supporting evidence, counter-evidence/limitation, and monitoring item;
+- every material factual error and usability blocker is retained, including dissenting findings.
 
-Three users are a portfolio pilot, not evidence of market demand.
+Simulated evidence tests presentation and artifact navigation only. It is not a user study, cannot validate market demand, and cannot justify a claim that target users find the product useful.
 
 ## Fair Baseline Comparison
 
@@ -55,7 +56,6 @@ Only the explicit Research Procedure/orchestration condition may differ. Report 
 
 - L1/G1 thin slice: golden-case correctness plus one exported trace and report.
 - Formal G1: reliability batch and acceptance coverage across all five task modes.
-- G4: target-user pilot, reproducible demo startup, and UI behavior evidence.
+- G4: three labeled simulations, reproducible demo startup, and UI behavior evidence.
 
 No metric in this file supports an investment-performance, alpha, return, production-readiness, or broad-market accuracy claim.
-

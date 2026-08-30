@@ -9,16 +9,21 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
 .venv/
 
 # JavaScript
 node_modules/
 dist/
 coverage/
+playwright-report/
+test-results/
 
 # Local data and generated artifacts
 data/raw/
 data/licensed/
+data/private/
 artifacts/
 logs/
 *.sqlite3

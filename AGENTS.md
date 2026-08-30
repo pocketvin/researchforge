@@ -6,7 +6,7 @@ These instructions apply to all work under this project and supplement the Works
 
 Read, in order:
 
-1. `docs/product/researchforge-v1.3-scope.md`
+1. `docs/product/researchforge-v1.4-scope.md`
 2. `docs/contracts/README.md`
 3. The contract document and JSON schemas relevant to the change
 
@@ -14,9 +14,9 @@ Do not implement behavior from memory or from the demo narrative alone.
 
 ## Scope Control
 
-- V1.3 is the active versioned baseline. Do not add excluded capabilities such as trading, price prediction, multi-agent debate, complex RAG, full-market data, or open-ended optimization without an explicit scope decision.
+- V1.4 is the active versioned baseline. Do not add excluded capabilities such as trading, price prediction, multi-agent debate, complex RAG, full-market data, or open-ended optimization without an explicit scope decision.
 - A scope change requires a decision-log entry, change note, contract/schema impact assessment, and updated acceptance evidence.
-- Preserve V1.2 scope and schemas as read-only history. Never silently reinterpret a V1.2 artifact as V1.3.
+- Preserve V1.2 and V1.3 scope and schemas as read-only history. Never silently reinterpret an older artifact as V1.4.
 
 ## Execution Discipline
 
@@ -37,8 +37,8 @@ Do not implement behavior from memory or from the demo narrative alone.
 
 ## Contract-First Development
 
-- New persisted/API artifacts must validate against `schemas/v1.3/`.
-- Schema-breaking changes require a new schema version. Do not silently mutate V1.3 semantics.
+- New persisted/API artifacts must validate against `schemas/v1.4/`.
+- Schema-breaking changes require a new schema version. Do not silently mutate V1.4 semantics.
 - Deterministic finance formulas must follow `docs/contracts/financial-methodology.md` and carry a `formula_version`.
 - Every material research claim must link to fact IDs, evidence IDs, or be explicitly marked as a limitation/hypothesis.
 - Do not persist hidden chain-of-thought. Persist explicit plan steps, tool inputs/outputs, claim-evidence links, and concise decision summaries.
@@ -50,6 +50,8 @@ Do not implement behavior from memory or from the demo narrative alone.
 - Base, Seed, and Evolved comparisons must use the same model, tools, data, budgets, and runtime parameters. Only the skill may differ.
 - LLM qualitative judgment must never be the sole reason for patch adoption.
 - Never hard-code illustrative demo metrics such as `41% → 18%`.
+- Simulated usability evidence must always be labeled `SIMULATED` with `human_user_value_validated: false`.
+- Formal OpenAI calls must stop before aggregate worst-case spend can exceed USD 20.
 
 ## Financial Data Safety
 

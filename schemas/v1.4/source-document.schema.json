@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.4/source-document.schema.json",
+  "title": "ResearchForge Source Document",
+  "description": "Immutable source-document metadata and publication controls without requiring redistributable raw payloads.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "source_id",
+    "company",
+    "document_type",
+    "title",
+    "published_at",
+    "retrieved_at",
+    "available_from",
+    "source_uri",
+    "content_hash",
+    "mime_type",
+    "language",
+    "reporting_period",
+    "license",
+    "parser_version",
+    "quality_flags",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "document_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "source_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "company": { "$ref": "common.schema.json#/$defs/company" },
+    "document_type": {
+      "type": "string",
+      "enum": ["quarterly_report", "semiannual_report", "annual_report", "official_announcement", "synthetic_fixture"]
+    },
+    "title": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "published_at": { "type": "string", "format": "date-time" },
+    "retrieved_at": { "type": "string", "format": "date-time" },
+    "available_from": { "type": "string", "format": "date-time" },
+    "source_uri": { "type": "string", "format": "uri" },
+    "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+    "mime_type": { "type": "string", "minLength": 3, "maxLength": 128 },
+    "language": { "type": "string", "enum": ["zh-CN", "en"] },
+    "reporting_period": {
+      "oneOf": [
+        { "$ref": "common.schema.json#/$defs/reportingPeriod" },
+        { "type": "null" }
+      ]
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["license_id", "publication_mode", "raw_payload_committed", "notes"],
+      "properties": {
+        "license_id": { "type": ["string", "null"], "maxLength": 128 },
+        "publication_mode": {
+          "type": "string",
+          "enum": ["derived_facts_and_short_excerpts", "public_link_only", "redistribution_allowed", "synthetic"]
+        },
+        "raw_payload_committed": { "type": "boolean", "const": false },
+        "notes": { "type": "string", "minLength": 1, "maxLength": 2000 }
+      }
+    },
+    "parser_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "quality_flags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 128 },
+      "uniqueItems": true,
+      "maxItems": 20
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

@@ -1,6 +1,6 @@
 # Financial Methodology Contract
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 This contract defines the financial meanings used by ingestion, deterministic tools, the Researcher, and the Verifier. A component MUST NOT invent its own formula or reporting-period interpretation.
 

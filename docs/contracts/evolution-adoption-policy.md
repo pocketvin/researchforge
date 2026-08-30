@@ -1,6 +1,6 @@
 # Evolution and Patch Adoption Policy
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 V1 implements one controlled, failure-driven skill-improvement cycle. It is not open-ended self-modification.
 
@@ -126,10 +126,12 @@ Otherwise the Candidate is `REJECTED`. Thresholds are frozen before Validation i
 - New runs atomically resolve one active skill version at queue time and keep it for the entire run.
 - Rollback changes the active version pointer and records the reason; history remains intact.
 - Candidate content is frozen before Validation. Final Test is run once only when Validation produces `ADOPTED`; a Validation-rejected Candidate never consumes Final Test.
-- Final Test cannot be used to tune the same V1.3 candidate.
+- Final Test cannot be used to tune the same V1.4 candidate.
 - A catastrophic new deterministic failure found on Final Test triggers operational rollback and an honest failed-generalization report, not test-set tuning.
 
-If no Evolution cluster reaches the pre-registered minimum support, record `NO_ELIGIBLE_CLUSTER`, generate no Candidate, and leave Validation/Final Test sealed. This is a valid completed experimental outcome but not evidence of self-improvement.
+If no Evolution cluster reaches the pre-registered minimum support, record `NO_ELIGIBLE_CLUSTER`, generate no Candidate, and leave Validation/Final Test sealed. This is a valid terminal negative experimental outcome but does not pass G3 and is not evidence of self-improvement.
+
+V1.4 permits at most one later V1.5 experiment after any unsupported primary terminal outcome. It must use the separately pre-frozen contingency suite and a new experiment ID, hashes, manifests, and version record. A second unsupported outcome blocks the owner-selected ResearchForge completion target.
 
 ## 8. Human Control
 

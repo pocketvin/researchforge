@@ -1,6 +1,6 @@
 # Run Lifecycle Contract
 
-Contract version: `1.3.0`
+Contract version: `1.4.0`
 
 Research and patch-generation calls are asynchronous jobs. The API and UI MUST use the same lifecycle semantics.
 
@@ -108,6 +108,7 @@ At minimum distinguish:
 - `TOOL_FAILED`
 - `OUTPUT_SCHEMA_INVALID`
 - `LIMIT_EXCEEDED`
+- `BUDGET_EXCEEDED`
 - `CANCELLED_BY_USER`
 
 User-facing messages must be safe and actionable; internal errors remain in structured logs without secrets.
@@ -117,3 +118,7 @@ User-facing messages must be safe and actionable; internal errors remain in stru
 - Benchmark manifests, skill versions, patches, evaluations, and hashes are retained as immutable experiment evidence.
 - Product traces default to 90 days in the controlled demo unless the project owner configures a shorter period.
 - Licensed raw documents follow their license and may be referenced by hash/locator without being copied into the repository.
+
+## Aggregate API Budget
+
+V1.4 has a USD 20 project-wide OpenAI cap. Before dispatch, the adapter atomically reserves the request's worst-case estimate. A request that would make `spent + reserved + worst_case > 20` terminates before provider contact with a non-retryable `BUDGET_EXCEEDED` failure. Completion releases unused reservation and records actual usage/cost. The safety reserve cannot be borrowed silently by a formal experiment.
