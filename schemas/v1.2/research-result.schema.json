@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.2/research-result.schema.json",
+  "title": "ResearchForge Research Result",
+  "description": "The canonical structured output rendered by the Research page and consumed by verifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "run_id",
+    "task_type",
+    "research_question",
+    "companies",
+    "requested_periods",
+    "research_time",
+    "evidence_cutoff",
+    "status",
+    "research_plan",
+    "executive_summary",
+    "financial_snapshot_fact_ids",
+    "mandatory_checks",
+    "claims",
+    "risk_claim_ids",
+    "source_document_ids",
+    "limitations",
+    "skill_version",
+    "skill_hash",
+    "formula_version",
+    "generated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "result_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "run_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "company_research",
+        "filing_analysis",
+        "peer_comparison",
+        "thesis_investigation",
+        "risk_detection"
+      ]
+    },
+    "research_question": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "companies": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/company"
+      },
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "requested_periods": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/reportingPeriod"
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "research_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_cutoff": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "insufficient_data"
+      ]
+    },
+    "research_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step_id",
+          "description",
+          "status"
+        ],
+        "properties": {
+          "step_id": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "skipped",
+              "blocked"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 30
+    },
+    "executive_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8000
+    },
+    "financial_snapshot_fact_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "mandatory_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "check_code",
+          "status",
+          "fact_ids",
+          "evidence_ids",
+          "finding"
+        ],
+        "properties": {
+          "check_code": {
+            "type": "string",
+            "enum": [
+              "revenue_trend",
+              "profit_trend",
+              "gross_margin",
+              "operating_cash_flow",
+              "accounts_receivable",
+              "inventory",
+              "cash_conversion",
+              "capex",
+              "debt_and_cash",
+              "profit_cash_divergence",
+              "counter_evidence"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "performed",
+              "unavailable",
+              "not_applicable"
+            ]
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "uniqueItems": true
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "uniqueItems": true
+          },
+          "finding": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 30
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "claim.schema.json"
+      }
+    },
+    "risk_claim_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "source_document_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "maxItems": 30
+    },
+    "skill_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "skill_hash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "formula_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "task_type": {
+            "const": "peer_comparison"
+          }
+        },
+        "required": [
+          "task_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "companies": {
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "companies": {
+            "maxItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "financial_snapshot_fact_ids": {
+            "minItems": 1
+          },
+          "claims": {
+            "minItems": 1
+          },
+          "source_document_ids": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "limitations": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

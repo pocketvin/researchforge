@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.2/claim.schema.json",
+  "title": "ResearchForge Research Claim",
+  "description": "An auditable claim with facts, supporting evidence, counter-evidence search, alternatives, and calibrated confidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "claim_id",
+    "claim_type",
+    "epistemic_status",
+    "materiality",
+    "direction",
+    "text",
+    "fact_ids",
+    "support_evidence_ids",
+    "counter_evidence_search",
+    "alternative_explanations",
+    "confidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "claim_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "claim_type": {
+      "type": "string",
+      "enum": [
+        "observation",
+        "comparison",
+        "driver",
+        "earnings_quality",
+        "risk",
+        "outlook",
+        "limitation"
+      ]
+    },
+    "epistemic_status": {
+      "type": "string",
+      "enum": [
+        "verified_fact",
+        "supported_inference",
+        "causal_hypothesis",
+        "uncertain",
+        "limitation"
+      ]
+    },
+    "materiality": {
+      "type": "string",
+      "enum": [
+        "material",
+        "supporting"
+      ]
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "negative",
+        "mixed",
+        "neutral",
+        "not_applicable"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "fact_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "support_evidence_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "counter_evidence_search": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "performed",
+        "queries",
+        "result",
+        "evidence_ids",
+        "summary"
+      ],
+      "properties": {
+        "performed": {
+          "type": "boolean"
+        },
+        "queries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "maxItems": 20
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "found",
+            "not_found",
+            "not_applicable"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "performed": {
+                "const": true
+              }
+            },
+            "required": [
+              "performed"
+            ]
+          },
+          "then": {
+            "properties": {
+              "queries": {
+                "minItems": 1
+              },
+              "result": {
+                "enum": [
+                  "found",
+                  "not_found"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "queries": {
+                "maxItems": 0
+              },
+              "result": {
+                "const": "not_applicable"
+              },
+              "evidence_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "found"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_ids": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "evidence_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "alternative_explanations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "maxItems": 10
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "basis"
+      ],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "epistemic_status": {
+            "const": "limitation"
+          }
+        },
+        "required": [
+          "epistemic_status"
+        ]
+      },
+      "else": {
+        "anyOf": [
+          {
+            "properties": {
+              "fact_ids": {
+                "minItems": 1
+              }
+            }
+          },
+          {
+            "properties": {
+              "support_evidence_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "materiality": {
+            "const": "material"
+          },
+          "epistemic_status": {
+            "not": {
+              "const": "limitation"
+            }
+          }
+        },
+        "required": [
+          "materiality",
+          "epistemic_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "counter_evidence_search": {
+            "properties": {
+              "performed": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

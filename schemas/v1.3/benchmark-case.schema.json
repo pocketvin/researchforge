@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.3/benchmark-case.schema.json",
+  "title": "ResearchForge Benchmark Case Manifest",
+  "description": "A frozen earnings-quality benchmark case. Ground truth is referenced but stored in a verifier-only namespace.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "case_id",
+    "benchmark_focus",
+    "split",
+    "group_key",
+    "company",
+    "research_question",
+    "research_time",
+    "target_periods",
+    "package_id",
+    "package_hash",
+    "allowed_financial_fact_ids",
+    "allowed_evidence_chunk_ids",
+    "allowed_document_ids",
+    "verifier_ground_truth_ref",
+    "frozen",
+    "sealed",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "case_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "benchmark_focus": {
+      "type": "string",
+      "const": "earnings_quality"
+    },
+    "split": {
+      "type": "string",
+      "enum": [
+        "evolution",
+        "validation",
+        "final_test"
+      ]
+    },
+    "group_key": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 256,
+      "description": "A company or pre-registered temporal group used to prevent split leakage."
+    },
+    "company": {
+      "$ref": "common.schema.json#/$defs/company"
+    },
+    "research_question": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "research_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "target_periods": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/reportingPeriod"
+      },
+      "minItems": 2,
+      "maxItems": 8
+    },
+    "package_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "package_hash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "allowed_financial_fact_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "allowed_evidence_chunk_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "allowed_document_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "verifier_ground_truth_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_hash",
+        "access_class"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "artifact_hash": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "access_class": {
+          "type": "string",
+          "const": "verifier_only"
+        }
+      }
+    },
+    "frozen": {
+      "type": "boolean",
+      "const": true
+    },
+    "sealed": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "split": {
+            "const": "final_test"
+          }
+        },
+        "required": [
+          "split"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sealed": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}

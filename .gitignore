@@ -1,0 +1,29 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+
+# JavaScript
+node_modules/
+dist/
+coverage/
+
+# Local data and generated artifacts
+data/raw/
+data/licensed/
+artifacts/
+logs/
+*.sqlite3
+
+# Editors and operating system
+.DS_Store
+.idea/
+.vscode/

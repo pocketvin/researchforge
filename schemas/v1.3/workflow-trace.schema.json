@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.3/workflow-trace.schema.json",
+  "title": "ResearchForge V1.3 Workflow Trace",
+  "description": "A sanitized, auditable LangGraph execution trace. Hidden chain-of-thought and raw licensed documents are intentionally excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "trace_id",
+    "run_id",
+    "engine",
+    "graph_version",
+    "checkpoint_schema_version",
+    "started_at",
+    "finished_at",
+    "terminal_state",
+    "stages",
+    "repair_attempts",
+    "usage",
+    "trace_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "run_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "engine": {
+      "type": "string",
+      "const": "langgraph"
+    },
+    "graph_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "checkpoint_schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "terminal_state": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "succeeded",
+        "failed",
+        "cancelled",
+        "timed_out",
+        "insufficient_data",
+        null
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/stageEvent"
+      },
+      "minItems": 1,
+      "maxItems": 1000
+    },
+    "repair_attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "usage": {
+      "$ref": "common.schema.json#/$defs/usage"
+    },
+    "trace_hash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "stageName": {
+      "type": "string",
+      "enum": [
+        "understanding_question",
+        "planning",
+        "loading_financial_data",
+        "retrieving_evidence",
+        "calculating",
+        "cross_checking",
+        "searching_counter_evidence",
+        "forming_conclusion",
+        "validating_output",
+        "completed"
+      ]
+    },
+    "stageEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "stage",
+        "node_version",
+        "status",
+        "started_at",
+        "finished_at",
+        "input_artifact_ids",
+        "output_artifact_ids",
+        "tool_record_ids",
+        "sanitized_summary",
+        "failure_code"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "stage": {
+          "$ref": "#/$defs/stageName"
+        },
+        "node_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "started",
+            "succeeded",
+            "failed",
+            "skipped",
+            "cancelled"
+          ]
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "input_artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "output_artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "tool_record_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "sanitized_summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "failure_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        }
+      }
+    }
+  }
+}
+

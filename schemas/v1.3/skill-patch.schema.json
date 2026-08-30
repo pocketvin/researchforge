@@ -1,0 +1,422 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.3/skill-patch.schema.json",
+  "title": "ResearchForge Skill Patch",
+  "description": "A constrained, failure-supported patch to the fundamental research procedure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "patch_id",
+    "source_skill",
+    "candidate_version",
+    "target_failure_cluster",
+    "operations",
+    "guardrails",
+    "generated_by",
+    "status",
+    "validation_evaluation_ids",
+    "decision",
+    "created_at",
+    "decided_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "patch_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "source_skill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "content_hash"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "content_hash": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "candidate_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-candidate\\.[0-9]+$"
+    },
+    "target_failure_cluster": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cluster_id",
+        "failure_label",
+        "signature",
+        "eligible_run_count",
+        "support_count",
+        "supporting_failure_ids"
+      ],
+      "properties": {
+        "cluster_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "failure_label": {
+          "type": "string",
+          "enum": [
+            "CALCULATION_ERROR",
+            "PERIOD_ERROR",
+            "CRITICAL_OMISSION",
+            "EVIDENCE_MISMATCH",
+            "ONE_SIDED_REASONING",
+            "OVERCLAIM",
+            "TOOL_MISUSE",
+            "CITATION_ERROR"
+          ]
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "eligible_run_count": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "support_count": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "supporting_failure_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "minItems": 3,
+          "uniqueItems": true
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operation",
+          "target_section",
+          "current_text",
+          "new_rule",
+          "reason"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "ADD",
+              "MODIFY",
+              "REMOVE"
+            ]
+          },
+          "target_section": {
+            "type": "string",
+            "enum": [
+              "understand_research_question",
+              "financial_snapshot",
+              "earnings_quality",
+              "trend_and_driver_analysis",
+              "evidence_cross_check",
+              "research_thesis"
+            ]
+          },
+          "current_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4000
+          },
+          "new_rule": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "operation": {
+                  "const": "ADD"
+                }
+              },
+              "required": [
+                "operation"
+              ]
+            },
+            "then": {
+              "properties": {
+                "current_text": {
+                  "type": "null"
+                },
+                "new_rule": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "operation": {
+                  "const": "MODIFY"
+                }
+              },
+              "required": [
+                "operation"
+              ]
+            },
+            "then": {
+              "properties": {
+                "current_text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "new_rule": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "operation": {
+                  "const": "REMOVE"
+                }
+              },
+              "required": [
+                "operation"
+              ]
+            },
+            "then": {
+              "properties": {
+                "current_text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "new_rule": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 6
+    },
+    "guardrails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_sections_only",
+        "tools_unchanged",
+        "permissions_unchanged",
+        "experiment_policy_unchanged",
+        "static_lint_passed",
+        "conflict_check_passed",
+        "total_changed_characters"
+      ],
+      "properties": {
+        "allowed_sections_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "tools_unchanged": {
+          "type": "boolean",
+          "const": true
+        },
+        "permissions_unchanged": {
+          "type": "boolean",
+          "const": true
+        },
+        "experiment_policy_unchanged": {
+          "type": "boolean",
+          "const": true
+        },
+        "static_lint_passed": {
+          "type": "boolean"
+        },
+        "conflict_check_passed": {
+          "type": "boolean"
+        },
+        "total_changed_characters": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6000
+        }
+      }
+    },
+    "generated_by": {
+      "$ref": "common.schema.json#/$defs/modelConfig"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PROPOSED",
+        "ADOPTED",
+        "REJECTED"
+      ]
+    },
+    "validation_evaluation_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "decision": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "target_failure_reduced",
+        "deterministic_quality_preserved",
+        "overall_non_inferior",
+        "regression_within_threshold",
+        "decision_reason"
+      ],
+      "properties": {
+        "target_failure_reduced": {
+          "type": "boolean"
+        },
+        "deterministic_quality_preserved": {
+          "type": "boolean"
+        },
+        "overall_non_inferior": {
+          "type": "boolean"
+        },
+        "regression_within_threshold": {
+          "type": "boolean"
+        },
+        "decision_reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decided_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PROPOSED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "validation_evaluation_ids": {
+            "maxItems": 0
+          },
+          "decision": {
+            "type": "null"
+          },
+          "decided_at": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "validation_evaluation_ids": {
+            "minItems": 1
+          },
+          "decision": {
+            "type": "object"
+          },
+          "decided_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ADOPTED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "guardrails": {
+            "properties": {
+              "static_lint_passed": {
+                "const": true
+              },
+              "conflict_check_passed": {
+                "const": true
+              }
+            }
+          },
+          "decision": {
+            "properties": {
+              "target_failure_reduced": {
+                "const": true
+              },
+              "deterministic_quality_preserved": {
+                "const": true
+              },
+              "overall_non_inferior": {
+                "const": true
+              },
+              "regression_within_threshold": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

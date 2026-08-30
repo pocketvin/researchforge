@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.2.0",
+  "case_id": "case_demo_cny_q3_2025",
+  "benchmark_focus": "earnings_quality",
+  "split": "evolution",
+  "group_key": "company:demo_cny",
+  "company": {
+    "company_id": "company_demo_cny",
+    "legal_name": "Demo Battery Company Ltd.",
+    "ticker": "000000",
+    "exchange": "SZSE",
+    "country_code": "CN"
+  },
+  "research_question": "Did the recent improvement in reported profit translate into higher-quality operating cash generation?",
+  "research_time": "2025-10-31T16:00:00+08:00",
+  "target_periods": [
+    {
+      "period_start": "2025-01-01",
+      "period_end": "2025-09-30",
+      "fiscal_year": 2025,
+      "fiscal_period": "Q3",
+      "period_basis": "ytd",
+      "accounting_standard": "CAS",
+      "statement_scope": "consolidated",
+      "restatement_status": "as_reported"
+    },
+    {
+      "period_start": "2024-01-01",
+      "period_end": "2024-09-30",
+      "fiscal_year": 2024,
+      "fiscal_period": "Q3",
+      "period_basis": "ytd",
+      "accounting_standard": "CAS",
+      "statement_scope": "consolidated",
+      "restatement_status": "as_reported"
+    }
+  ],
+  "package_id": "package_demo_cny_q3_2025",
+  "package_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+  "allowed_financial_fact_ids": [
+    "fact_demo_revenue_2025_q3_ytd",
+    "fact_demo_profit_2025_q3_ytd",
+    "fact_demo_ocf_2025_q3_ytd",
+    "fact_demo_ar_2025_q3",
+    "fact_demo_inventory_2025_q3"
+  ],
+  "allowed_evidence_chunk_ids": [
+    "chunk_demo_management_explanation_01",
+    "chunk_demo_risk_disclosure_01"
+  ],
+  "allowed_document_ids": [
+    "document_demo_2025_q3_report"
+  ],
+  "verifier_ground_truth_ref": {
+    "artifact_id": "ground_truth_demo_cny_q3_2025",
+    "artifact_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+    "access_class": "verifier_only"
+  },
+  "frozen": true,
+  "sealed": false,
+  "created_at": "2026-08-29T20:00:00+08:00"
+}

@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.3/financial-fact.schema.json",
+  "title": "ResearchForge Financial Fact",
+  "description": "A normalized, point-in-time financial fact used by deterministic tools and research claims.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "fact_id",
+    "fact_kind",
+    "company",
+    "metric_code",
+    "value",
+    "measurement_unit",
+    "currency",
+    "canonical_scale",
+    "period",
+    "sign_convention",
+    "source",
+    "source_locator",
+    "availability",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "fact_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "fact_kind": {
+      "type": "string",
+      "enum": [
+        "reported",
+        "derived"
+      ]
+    },
+    "company": {
+      "$ref": "common.schema.json#/$defs/company"
+    },
+    "metric_code": {
+      "type": "string",
+      "enum": [
+        "revenue",
+        "net_income",
+        "gross_profit",
+        "gross_margin",
+        "operating_cash_flow",
+        "accounts_receivable",
+        "inventory",
+        "capex",
+        "total_debt",
+        "cash_and_equivalents"
+      ]
+    },
+    "value": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+    },
+    "measurement_unit": {
+      "type": "string",
+      "enum": [
+        "CURRENCY",
+        "PERCENT",
+        "RATIO",
+        "COUNT"
+      ]
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{3}$"
+    },
+    "canonical_scale": {
+      "type": "integer",
+      "const": 1,
+      "description": "All persisted values are normalized to base units; display scaling is a presentation concern."
+    },
+    "period": {
+      "$ref": "common.schema.json#/$defs/reportingPeriod"
+    },
+    "sign_convention": {
+      "type": "string",
+      "enum": [
+        "natural_statement_value",
+        "positive_outflow_magnitude",
+        "positive_ratio"
+      ]
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/sourceDocument"
+    },
+    "source_locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section"
+      ],
+      "properties": {
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "section": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "table": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "row_label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "column_label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        }
+      }
+    },
+    "formula_version": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "source_fact_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "derivation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    },
+    "availability": {
+      "type": "string",
+      "enum": [
+        "available",
+        "not_reported",
+        "not_applicable",
+        "unreliable"
+      ]
+    },
+    "quality_flags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "unit_normalized",
+          "currency_converted",
+          "derived_from_ytd",
+          "restated",
+          "source_conflict",
+          "manual_review_required"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "availability": {
+            "const": "available"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "value": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "measurement_unit": {
+            "const": "CURRENCY"
+          }
+        },
+        "required": [
+          "measurement_unit"
+        ]
+      },
+      "then": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "currency": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "fact_kind": {
+            "const": "derived"
+          }
+        },
+        "required": [
+          "fact_kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "formula_version",
+          "source_fact_ids",
+          "derivation"
+        ],
+        "properties": {
+          "formula_version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "source_fact_ids": {
+            "minItems": 1
+          },
+          "derivation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "formula_version": {
+            "type": "null"
+          },
+          "source_fact_ids": {
+            "maxItems": 0
+          },
+          "derivation": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

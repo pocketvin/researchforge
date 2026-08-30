@@ -1,0 +1,766 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.3/run-manifest.schema.json",
+  "title": "ResearchForge Run Manifest",
+  "description": "A reproducible, auditable run configuration and lifecycle record. Raw chain-of-thought is intentionally not part of this contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "run_kind",
+    "case_id",
+    "split",
+    "lifecycle_state",
+    "input",
+    "configuration",
+    "limits",
+    "attempt",
+    "idempotency_key",
+    "created_at",
+    "started_at",
+    "finished_at",
+    "artifacts",
+    "usage",
+    "failure"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "run_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "run_kind": {
+      "type": "string",
+      "enum": [
+        "product",
+        "benchmark_evolution",
+        "benchmark_validation",
+        "benchmark_final_test",
+        "patch_generation"
+      ]
+    },
+    "case_id": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "split": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "evolution",
+        "validation",
+        "final_test",
+        null
+      ]
+    },
+    "lifecycle_state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "succeeded",
+        "insufficient_data",
+        "failed",
+        "cancelled",
+        "timed_out"
+      ]
+    },
+    "input": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "input_kind",
+            "task_type",
+            "research_question",
+            "company_ids",
+            "requested_period_labels",
+            "research_time"
+          ],
+          "properties": {
+            "input_kind": {
+              "type": "string",
+              "const": "research"
+            },
+            "task_type": {
+              "type": "string",
+              "enum": [
+                "company_research",
+                "filing_analysis",
+                "peer_comparison",
+                "thesis_investigation",
+                "risk_detection"
+              ]
+            },
+            "research_question": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "company_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              },
+              "minItems": 1,
+              "maxItems": 2,
+              "uniqueItems": true
+            },
+            "requested_period_labels": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 32
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "research_time": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "input_kind",
+            "failure_cluster_id",
+            "supporting_failure_ids"
+          ],
+          "properties": {
+            "input_kind": {
+              "type": "string",
+              "const": "patch_generation"
+            },
+            "failure_cluster_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "supporting_failure_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              },
+              "minItems": 3,
+              "uniqueItems": true
+            }
+          }
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "workflow",
+        "skill_version",
+        "skill_hash",
+        "formula_version",
+        "prompt_hashes",
+        "tool_versions",
+        "dataset_package_id",
+        "dataset_package_hash",
+        "evidence_cutoff"
+      ],
+      "properties": {
+        "model": {
+          "$ref": "common.schema.json#/$defs/modelConfig"
+        },
+        "workflow": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/workflowConfiguration"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "skill_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "skill_hash": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "formula_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "prompt_hashes": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/sha256"
+          }
+        },
+        "tool_versions": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "dataset_package_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "dataset_package_hash": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "evidence_cutoff": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "timeout_seconds",
+        "max_tool_calls",
+        "max_total_tokens",
+        "max_estimated_cost"
+      ],
+      "properties": {
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 7200
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "max_total_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_estimated_cost": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 256
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "started_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "explicit_plan_id",
+        "workflow_trace_id",
+        "tool_record_ids",
+        "result_id",
+        "patch_id",
+        "evaluation_id"
+      ],
+      "properties": {
+        "explicit_plan_id": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workflow_trace_id": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tool_record_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "result_id": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "patch_id": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluation_id": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "usage": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/usage"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "failure": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "workflowConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine",
+        "graph_version",
+        "checkpoint_schema_version"
+      ],
+      "properties": {
+        "engine": {
+          "type": "string",
+          "const": "langgraph"
+        },
+        "graph_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "checkpoint_schema_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "not": {
+              "const": "patch_generation"
+            }
+          },
+          "lifecycle_state": {
+            "enum": [
+              "running",
+              "succeeded",
+              "insufficient_data",
+              "failed",
+              "cancelled",
+              "timed_out"
+            ]
+          }
+        },
+        "required": [
+          "run_kind",
+          "lifecycle_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "artifacts": {
+            "properties": {
+              "workflow_trace_id": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lifecycle_state": {
+            "const": "insufficient_data"
+          }
+        },
+        "required": [
+          "lifecycle_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "artifacts": {
+            "properties": {
+              "result_id": {
+                "type": "null"
+              }
+            }
+          },
+          "failure": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "const": "INSUFFICIENT_DATA"
+              },
+              "retryable": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "const": "patch_generation"
+          }
+        },
+        "required": [
+          "run_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "case_id": {
+            "type": "null"
+          },
+          "split": {
+            "type": "null"
+          },
+          "input": {
+            "properties": {
+              "input_kind": {
+                "const": "patch_generation"
+              }
+            }
+          },
+          "configuration": {
+            "properties": {
+              "workflow": {
+                "type": "null"
+              }
+            }
+          },
+          "artifacts": {
+            "properties": {
+              "workflow_trace_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "input": {
+            "properties": {
+              "input_kind": {
+                "const": "research"
+              }
+            }
+          },
+          "configuration": {
+            "properties": {
+              "workflow": {
+                "$ref": "#/$defs/workflowConfiguration"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "const": "product"
+          }
+        },
+        "required": [
+          "run_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "case_id": {
+            "type": "null"
+          },
+          "split": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "const": "benchmark_evolution"
+          }
+        },
+        "required": [
+          "run_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "case_id": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "split": {
+            "const": "evolution"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "const": "benchmark_validation"
+          }
+        },
+        "required": [
+          "run_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "case_id": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "split": {
+            "const": "validation"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "const": "benchmark_final_test"
+          }
+        },
+        "required": [
+          "run_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "case_id": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "split": {
+            "const": "final_test"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lifecycle_state": {
+            "const": "succeeded"
+          }
+        },
+        "required": [
+          "lifecycle_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "usage": {
+            "$ref": "common.schema.json#/$defs/usage"
+          },
+          "failure": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "const": "patch_generation"
+          },
+          "lifecycle_state": {
+            "const": "succeeded"
+          }
+        },
+        "required": [
+          "run_kind",
+          "lifecycle_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "artifacts": {
+            "properties": {
+              "result_id": {
+                "type": "null"
+              },
+              "patch_id": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "run_kind": {
+            "not": {
+              "const": "patch_generation"
+            }
+          },
+          "lifecycle_state": {
+            "const": "succeeded"
+          }
+        },
+        "required": [
+          "run_kind",
+          "lifecycle_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "artifacts": {
+            "properties": {
+              "result_id": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              },
+              "patch_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lifecycle_state": {
+            "enum": [
+              "failed",
+              "timed_out"
+            ]
+          }
+        },
+        "required": [
+          "lifecycle_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "failure": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  ]
+}

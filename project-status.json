@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.3.0",
+  "project_id": "researchforge",
+  "product_scope_version": "1.3",
+  "contract_package_version": "1.3.0",
+  "completed_gates": [
+    "C0"
+  ],
+  "current_gate": "G0",
+  "gate_status": "not_started",
+  "current_milestone": {
+    "id": "g0-data-source-spike",
+    "title": "Resolve the thin-slice data source",
+    "outcome": "Choose ACCEPT, REJECT, or FIXTURE-ONLY using reconciled company-period evidence.",
+    "status": "not_started"
+  },
+  "last_verified": {
+    "at": "2026-08-30T16:21:21+08:00",
+    "commands": [
+      {
+        "command": "python3 scripts/validate_contracts.py",
+        "exit_code": 0,
+        "summary": "V1.3 passed: 11 current and 10 historical schemas, 252 references, four current examples, insufficient-data result regression, historical V1.2 artifacts, project checkpoint, 23 links, and 30 required files."
+      },
+      {
+        "command": "verify-completion independent reviewer",
+        "exit_code": 0,
+        "summary": "Review 2 returned VERDICT: PASS; all V1.3 requirements were satisfied and no required implementation work remained."
+      }
+    ]
+  },
+  "next_action": {
+    "title": "Run the time-boxed data-source feasibility spike",
+    "why": "Data correctness, period semantics, provenance, and licensing determine whether the Research workflow can produce credible evidence.",
+    "first_step": "Complete the identity, access, and license rows for Candidate A and Candidate B in docs/contracts/data-source-acceptance.md.",
+    "acceptance_evidence": [
+      "One structured-data candidate and one official filing source are documented.",
+      "Two companies and four comparable periods are sampled.",
+      "At least 20 facts are reconciled using the contract thresholds.",
+      "An ACCEPT, REJECT, or FIXTURE-ONLY outcome is recorded in DECISIONS.md."
+    ]
+  },
+  "blockers": [
+    {
+      "id": "B-001",
+      "description": "Structured financial-data source and license are not selected.",
+      "blocks": [
+        "G0"
+      ],
+      "owner_action": "Run the source spike and choose or reject a provider."
+    },
+    {
+      "id": "B-002",
+      "description": "The initial company universe is not frozen.",
+      "blocks": [
+        "G0",
+        "G1_THIN"
+      ],
+      "owner_action": "Select two source-compatible companies and four comparable periods."
+    }
+  ],
+  "pending_decisions": [
+    {
+      "decision_id": "RF-004",
+      "question": "Which structured and official filing sources pass the acceptance contract?",
+      "blocks_gate": "G0"
+    },
+    {
+      "decision_id": "RF-006",
+      "question": "Which two companies form the first comparable thin slice?",
+      "blocks_gate": "G1_THIN"
+    }
+  ],
+  "resumption": {
+    "working_directory": ".",
+    "read_first": [
+      "PROJECT_STATUS.md",
+      "docs/product/researchforge-v1.3-scope.md",
+      "DECISIONS.md",
+      "docs/contracts/data-source-acceptance.md",
+      "docs/contracts/research-workflow.md"
+    ],
+    "commands": [
+      "python3 scripts/validate_contracts.py"
+    ]
+  },
+  "last_session": {
+    "ended_at": "2026-08-30T16:21:21+08:00",
+    "summary": "Superseded the V1.2 freeze with the active V1.3 baseline, retained bounded LangGraph orchestration, resolved evidence storage, added current schemas plus a Workflow Trace contract, and passed independent completion review after one repair cycle.",
+    "files_changed": [
+      "CHANGELOG.md",
+      "DECISIONS.md",
+      "PORTFOLIO.md",
+      "PROJECT_STATUS.md",
+      "README.md",
+      "AGENTS.md",
+      "docs/architecture/implementation-blueprint.md",
+      "docs/contracts/README.md",
+      "docs/contracts/benchmark-protocol.md",
+      "docs/contracts/data-source-acceptance.md",
+      "docs/contracts/development-gates.md",
+      "docs/contracts/evolution-adoption-policy.md",
+      "docs/contracts/financial-methodology.md",
+      "docs/contracts/product-success-metrics.md",
+      "docs/contracts/research-workflow.md",
+      "docs/contracts/run-lifecycle.md",
+      "docs/contracts/task-capability-matrix.md",
+      "docs/operations/resume-playbook.md",
+      "docs/product/researchforge-v1.3-scope.md",
+      "docs/product/v1.2-to-v1.3-change-note.md",
+      "docs/strategy/project-scorecard.md",
+      "docs/strategy/risk-register.md",
+      "docs/strategy/solo-success-plan.md",
+      "examples/contracts/v1.3/benchmark-case.example.json",
+      "examples/contracts/v1.3/run-manifest.patch-generation.example.json",
+      "examples/contracts/v1.3/run-manifest.research.example.json",
+      "examples/contracts/v1.3/workflow-trace.example.json",
+      "project-status.json",
+      "schemas/v1.3/benchmark-case.schema.json",
+      "schemas/v1.3/claim.schema.json",
+      "schemas/v1.3/common.schema.json",
+      "schemas/v1.3/evaluation-result.schema.json",
+      "schemas/v1.3/evidence-chunk.schema.json",
+      "schemas/v1.3/financial-fact.schema.json",
+      "schemas/v1.3/project-checkpoint.schema.json",
+      "schemas/v1.3/research-result.schema.json",
+      "schemas/v1.3/run-manifest.schema.json",
+      "schemas/v1.3/skill-patch.schema.json",
+      "schemas/v1.3/workflow-trace.schema.json",
+      "scripts/validate_contracts.py"
+    ]
+  },
+  "updated_at": "2026-08-30T16:21:21+08:00"
+}

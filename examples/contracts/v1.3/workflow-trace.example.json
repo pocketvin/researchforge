@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.3.0",
+  "trace_id": "trace_demo_research_001",
+  "run_id": "run_demo_research_001",
+  "engine": "langgraph",
+  "graph_version": "1.0.0",
+  "checkpoint_schema_version": "1.0.0",
+  "started_at": "2026-08-30T16:00:00+08:00",
+  "finished_at": "2026-08-30T16:00:02+08:00",
+  "terminal_state": "succeeded",
+  "stages": [
+    {
+      "sequence": 1,
+      "stage": "understanding_question",
+      "node_version": "1.0.0",
+      "status": "succeeded",
+      "started_at": "2026-08-30T16:00:00+08:00",
+      "finished_at": "2026-08-30T16:00:01+08:00",
+      "input_artifact_ids": [
+        "request_demo_001"
+      ],
+      "output_artifact_ids": [
+        "task_spec_demo_001"
+      ],
+      "tool_record_ids": [],
+      "sanitized_summary": "Validated one supported earnings-quality research question.",
+      "failure_code": null
+    },
+    {
+      "sequence": 2,
+      "stage": "completed",
+      "node_version": "1.0.0",
+      "status": "succeeded",
+      "started_at": "2026-08-30T16:00:01+08:00",
+      "finished_at": "2026-08-30T16:00:02+08:00",
+      "input_artifact_ids": [
+        "result_demo_001"
+      ],
+      "output_artifact_ids": [
+        "manifest_demo_001"
+      ],
+      "tool_record_ids": [],
+      "sanitized_summary": "Persisted schema-valid result, manifest, and trace artifacts.",
+      "failure_code": null
+    }
+  ],
+  "repair_attempts": 0,
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "latency_ms": 2000,
+    "tool_calls": 0,
+    "estimated_cost": null,
+    "cost_currency": null
+  },
+  "trace_hash": "3333333333333333333333333333333333333333333333333333333333333333"
+}
