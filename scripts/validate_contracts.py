@@ -471,6 +471,8 @@ def validate_markdown_links() -> int:
     count = 0
     link_pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
     for path in ROOT.rglob("*.md"):
+        if any(part in {"node_modules", "dist", "playwright-report"} for part in path.parts):
+            continue
         for target in link_pattern.findall(path.read_text(encoding="utf-8")):
             if target.startswith(("http://", "https://", "mailto:")) or target.startswith("#"):
                 continue

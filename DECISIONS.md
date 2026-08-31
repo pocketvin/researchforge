@@ -25,6 +25,7 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-010 | Replace the human pilot with labeled simulations | ACCEPTED | 2026-08-30 | — |
 | RF-011 | OpenAI model and USD 20 budget boundary | ACCEPTED | 2026-08-30 | — |
 | RF-012 | Primary and contingency experiment suites | ACCEPTED | 2026-08-30 | G0 evidence |
+| RF-013 | One final independent acceptance | ACCEPTED | 2026-09-01 | Final release |
 
 ## RF-001 — Contract-First Implementation
 
@@ -234,3 +235,19 @@ Decision:
 Consequence:
 
 Company inclusion still must pass G0 source/provenance evidence. Replacing a company or report period requires a new decision before any formal run. At most one contingency experiment may run after an unsupported primary result.
+
+## RF-013 — One Final Independent Acceptance
+
+Status: **ACCEPTED**
+
+Decision:
+
+Continue implementation in larger batches and defer new independent acceptance reviews until the full project is ready for final release. Existing C0 and G0 PASS verdicts remain historical evidence. G1/G2/G3/G4 local evidence must remain explicitly provisional until the final reviewer returns `VERDICT: PASS`.
+
+Reason:
+
+The owner prioritized development throughput and explicitly requested removal of repeated interim reviews.
+
+Consequence:
+
+Local test and evidence gates still run continuously, failures remain visible, and no interim milestone is described as independently accepted. The final release still requires the global completion workflow and independent read-only review.

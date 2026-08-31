@@ -11,6 +11,16 @@
 - Immutable Seed Skill `1.0.0`, deterministic Decimal finance domain, and versioned source-line mapping.
 - Public-safe G0 package with 8 Source Documents, 48 reconciled Financial Facts, artifact/package hashes, a representative 20-fact signoff sample, and 3 deterministic golden cases.
 - Contract validation and regression tests for source lineage, unit normalization, point-in-time cutoffs, golden calculations and corrected-filing behavior.
+- Zero-cost G1 filing-analysis thin slice with content-addressed JSON storage, a ten-stage LangGraph, deterministic earnings-quality analysis, CLI and asynchronous FastAPI resources.
+- OpenAI Responses adapter boundary with strict Structured Outputs, `store: false`, no built-in tools, medium reasoning and a pre-dispatch aggregate budget guard.
+- Lifecycle coverage for point-in-time insufficient data, honest counter-evidence `not_found`, one structure-only repair, second repair failure, queued cancellation and request idempotency.
+- Durable JSON LangGraph checkpoints, restart recovery, active cancellation, timeouts, and sanitized unexpected-failure traces.
+- Independent deterministic/coverage Verifier with stable failure signatures and persisted Evaluation Results.
+- Five-mode runtime breadth plus a fixed 20-run reliability batch and per-mode safe missing-data cases.
+- Hybrid SQLAlchemy/Alembic persistence for eight logical records while retaining immutable hash-addressed JSON artifacts.
+- React/TypeScript Research and Skill Lab pages with API-only financial values, read-only experiment state, cancellation, unit/E2E/accessibility checks, and responsive styling.
+- Docker Compose, backend/frontend images, and GitHub Actions CI definitions.
+- Controlled Evolution policy engine and content-addressed experiment repository, plus a grouping-only 24-case preregistration that keeps Final Test sealed.
 
 ### Changed
 
@@ -19,6 +29,7 @@
 - G4 uses three explicitly labeled simulations instead of a human pilot.
 - Overall completion requires Full Engineering Product Ready plus a `SUPPORTED` sealed result.
 - pgvector adoption now has explicit Recall@5, citation, and latency thresholds.
+- Intermediate independent acceptance is deferred to one final project review; local gate evidence remains provisional and is not recorded as independently passed.
 
 ### Preserved
 

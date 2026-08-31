@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: researchforge
+      POSTGRES_USER: researchforge
+      POSTGRES_PASSWORD: researchforge
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U researchforge -d researchforge"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - researchforge-postgres:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      RESEARCHFORGE_DATABASE_URL: postgresql+psycopg://researchforge:researchforge@postgres:5432/researchforge
+      RESEARCHFORGE_ARTIFACT_ROOT: /app/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - researchforge-artifacts:/app/artifacts
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "4173:80"
+
+volumes:
+  researchforge-postgres:
+  researchforge-artifacts:

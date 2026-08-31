@@ -1,7 +1,7 @@
 # G0 Owner Signoff — Representative 20-Fact Sample
 
-Prepared: `2026-08-31`  
-Status: `SIGNED`  
+Prepared: `2026-08-31`
+Status: `SIGNED`
 Package: `g0_catl_eve_2023q3_to_2024h1`
 
 ## What This Signoff Means

@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.4.0",
+  "suite_id": "suite_v1_4_primary_battery_earnings_quality",
+  "evidence_status": "GROUPING_ONLY_DATA_NOT_YET_PREPARED",
+  "splits": {
+    "evolution": [
+      {"case_id": "case_evo_catl_2023q3", "group_key": "cn_300750", "period": "2023Q3"},
+      {"case_id": "case_evo_catl_2023fy", "group_key": "cn_300750", "period": "2023FY"},
+      {"case_id": "case_evo_catl_2024q1", "group_key": "cn_300750", "period": "2024Q1"},
+      {"case_id": "case_evo_catl_2024h1", "group_key": "cn_300750", "period": "2024H1"},
+      {"case_id": "case_evo_catl_2024q3", "group_key": "cn_300750", "period": "2024Q3"},
+      {"case_id": "case_evo_catl_2024fy", "group_key": "cn_300750", "period": "2024FY"},
+      {"case_id": "case_evo_eve_2023q3", "group_key": "cn_300014", "period": "2023Q3"},
+      {"case_id": "case_evo_eve_2023fy", "group_key": "cn_300014", "period": "2023FY"},
+      {"case_id": "case_evo_eve_2024q1", "group_key": "cn_300014", "period": "2024Q1"},
+      {"case_id": "case_evo_eve_2024h1", "group_key": "cn_300014", "period": "2024H1"},
+      {"case_id": "case_evo_eve_2024q3", "group_key": "cn_300014", "period": "2024Q3"},
+      {"case_id": "case_evo_eve_2024fy", "group_key": "cn_300014", "period": "2024FY"}
+    ],
+    "validation": [
+      {"case_id": "case_val_gotion_2023q3", "group_key": "cn_002074", "period": "2023Q3"},
+      {"case_id": "case_val_gotion_2023fy", "group_key": "cn_002074", "period": "2023FY"},
+      {"case_id": "case_val_gotion_2024q1", "group_key": "cn_002074", "period": "2024Q1"},
+      {"case_id": "case_val_gotion_2024h1", "group_key": "cn_002074", "period": "2024H1"},
+      {"case_id": "case_val_gotion_2024q3", "group_key": "cn_002074", "period": "2024Q3"},
+      {"case_id": "case_val_gotion_2024fy", "group_key": "cn_002074", "period": "2024FY"}
+    ],
+    "final_test": [
+      {"case_id": "case_final_sunwoda_2023q3", "group_key": "cn_300207", "period": "2023Q3"},
+      {"case_id": "case_final_sunwoda_2023fy", "group_key": "cn_300207", "period": "2023FY"},
+      {"case_id": "case_final_sunwoda_2024q1", "group_key": "cn_300207", "period": "2024Q1"},
+      {"case_id": "case_final_sunwoda_2024h1", "group_key": "cn_300207", "period": "2024H1"},
+      {"case_id": "case_final_sunwoda_2024q3", "group_key": "cn_300207", "period": "2024Q3"},
+      {"case_id": "case_final_sunwoda_2024fy", "group_key": "cn_300207", "period": "2024FY"}
+    ]
+  }
+}

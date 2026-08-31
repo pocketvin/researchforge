@@ -1,7 +1,7 @@
 # G0 Earnings-Quality Golden Cases
 
-Evidence date: `2026-08-31`  
-Status: `OWNER_SIGNED`  
+Evidence date: `2026-08-31`
+Status: `OWNER_SIGNED`
 Machine fixture: [`data/fixtures/g0/golden-cases.json`](../../data/fixtures/g0/golden-cases.json)
 
 These three cases test deterministic financial semantics only. No language model produced or checked the arithmetic, and no result is investment advice.

@@ -1,7 +1,7 @@
 # G0 Controlled Filing Read Plan
 
-Prepared: `2026-08-30`  
-Status: `COMPLETED_WITH_OWNER_AUTHORIZATION`  
+Prepared: `2026-08-30`
+Status: `COMPLETED_WITH_OWNER_AUTHORIZATION`
 Filesystem scope: `data/raw/g0/` only (Git-ignored)
 
 ## Purpose and Limits

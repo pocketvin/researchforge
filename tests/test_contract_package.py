@@ -54,9 +54,10 @@ def test_historical_scope_hashes_are_immutable() -> None:
         assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_digest
 
 
-def test_cli_reports_runtime_gate(capsys: pytest.CaptureFixture[str]) -> None:
-    main()
+def test_cli_reports_runtime_gate(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    main(["--artifact-root", str(tmp_path), "catalog"])
     output = capsys.readouterr().out
 
-    assert "V1.4 runtime is not available" in output
-    assert "C0 and G0 gates pass" in output
+    assert '"implementation_level": "G1_BREADTH"' in output
+    assert '"filing_analysis"' in output
+    assert '"peer_comparison"' in output

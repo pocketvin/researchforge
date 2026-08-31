@@ -1,7 +1,7 @@
 # G0 Data-Source Spike Evidence
 
-Evidence date: `2026-08-30`  
-Decision scope: V1.4 A-share battery-company fixture construction and optional local reconciliation  
+Evidence date: `2026-08-30`
+Decision scope: V1.4 A-share battery-company fixture construction and optional local reconciliation
 Status: `ACCEPTED_FIXTURE_ONLY` after the 20-fact owner signoff
 
 This record documents product engineering boundaries, not legal advice. When a right is unclear, ResearchForge applies the stricter public-package rule.

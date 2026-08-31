@@ -157,6 +157,7 @@
               "accounts_receivable",
               "inventory",
               "cash_conversion",
+              "one_off_contribution",
               "capex",
               "debt_and_cash",
               "profit_cash_divergence",

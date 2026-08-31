@@ -4,85 +4,107 @@
   "product_scope_version": "1.4",
   "contract_package_version": "1.4.0",
   "completed_gates": ["C0", "G0"],
-  "current_gate": "G1_THIN",
+  "current_gate": "G3",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "g1-thin-earnings-quality",
-    "title": "Deliver one complete earnings-quality thin slice",
-    "outcome": "Run one frozen-fixture case through deterministic services, bounded LangGraph orchestration, immutable artifacts, CLI and asynchronous API.",
+    "id": "g3-formal-data-preparation",
+    "title": "Prepare the primary controlled experiment",
+    "outcome": "Complete redistribution-safe ground truth, the second owner signoff, frozen provider configuration, and all preflight checks without consuming Final Test.",
     "status": "in_progress"
   },
   "last_verified": {
-    "at": "2026-08-31T17:10:09+08:00",
+    "at": "2026-09-01T04:55:23+08:00",
     "commands": [
       {
-        "command": "uv lock --check && uv run python scripts/build_g0_fixtures.py && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests && uv run pytest -q",
+        "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py && git diff --check && docker compose config --quiet",
         "exit_code": 0,
-        "summary": "68 packages resolved; the 8-source/48-fact package reproduced; 46 files passed formatting and lint; strict typing passed; all 69 tests passed after the non-adjacent YoY regression fix."
+        "summary": "The full local gate passed: 68 locked packages, 98 formatted files, clean lint and strict typing across 60 source files, 132 tests, all current/historical contract checks, Markdown links, diff whitespace and Compose configuration."
       },
       {
-        "command": "uv run python scripts/validate_contracts.py && git diff --check",
+        "command": "uv run ruff format src tests && uv run ruff check src tests && uv run mypy --strict src tests && uv run pytest -q tests/adapters/test_evolution_storage.py tests/application/test_evolution.py tests/api/test_api.py tests/test_cli_runtime.py",
         "exit_code": 0,
-        "summary": "19/11/10 schemas, 12/4/1 examples, immutable Seed Skill hash, G0 8-source/48-fact/3-case package, 49 Markdown links, 61 required files and diff checks passed."
+        "summary": "Formatting, lint, strict typing and 16 focused Evolution storage, policy, CLI and API tests passed. Synthetic policy outcomes remain explicitly non-formal."
       },
       {
-        "command": "$verify-completion independent G0 acceptance",
+        "command": "uv run pytest -q tests/application/test_modes.py tests/application/test_reliability.py && uv run python scripts/run_reliability_batch.py",
         "exit_code": 0,
-        "summary": "Independent reviewer returned VERDICT: PASS after directly verifying 69 tests, contract validation, source/package hashes, reconciliation, Seed Skill hash and the adjacent-year YoY correction."
+        "summary": "Five success cases, five cutoff-driven missing-data cases and the fixed batch passed; 20/20 runs succeeded with four runs per mode and zero provider calls."
+      },
+      {
+        "command": "npm run typecheck && npm run lint && npm test && npm run build && PLAYWRIGHT_EXECUTABLE_PATH=<local-chrome> npm run test:e2e",
+        "exit_code": 0,
+        "summary": "Frontend typecheck, lint, three unit tests, production build and Playwright E2E passed; axe found no critical-impact violations on Research or Skill Lab."
+      },
+      {
+        "command": "docker compose config",
+        "exit_code": 0,
+        "summary": "Compose configuration is valid. Docker image build is not marked passing because registry base-image metadata requests timed out."
       }
     ]
   },
   "next_action": {
-    "title": "Implement the L1 earnings-quality vertical slice",
-    "why": "A single end-to-end path validates the architecture early and becomes the reusable core for all five research modes.",
-    "first_step": "Implement content-addressed artifacts and a framework-independent earnings-quality service, then wrap it in the ten-stage LangGraph workflow.",
+    "title": "Prepare and sign the primary Benchmark data",
+    "why": "Formal Validation and the one-time Final Test cannot run honestly from grouping-only manifests or synthetic policy fixtures.",
+    "first_step": "Build official-link, hash, locator, normalized-fact and ground-truth manifests for the primary Validation and Final Test companies without exposing sealed labels to the research path.",
     "acceptance_evidence": [
-      "Framework-independent services pass deterministic unit tests.",
-      "One frozen earnings-quality case produces schema-valid persisted result and trace artifacts.",
-      "CLI and asynchronous API exercise the same workflow and lifecycle.",
-      "OpenAI requests remain offline in tests and the budget guard stops overspend before request dispatch."
+      "All 24 cases have stable IDs, official source links, publication cutoffs, hashes, required facts and expected deterministic calculations.",
+      "Evolution, Validation and Final Test company/group keys have zero overlap and the suite hash is stable across three repetitions.",
+      "Redistribution status is explicit and unsafe original text is replaced by synthetic evidence in the public package.",
+      "The owner signs the prepared grouping/fact package before any formal provider run."
     ]
   },
-  "blockers": [],
+  "blockers": [
+    {
+      "id": "rotated_openai_key",
+      "description": "A rotated OpenAI key is required for live calibration; the previously exposed key is prohibited.",
+      "blocks": ["G3", "G4"],
+      "owner_action": "Provide the rotated key only through the ignored local environment when the offline preflight is ready."
+    },
+    {
+      "id": "docker_registry_timeout",
+      "description": "Docker registry metadata timed out during both image-build attempts.",
+      "blocks": ["G4"],
+      "owner_action": "No immediate action; retry the bounded smoke test after registry connectivity recovers."
+    },
+    {
+      "id": "primary_ground_truth_incomplete",
+      "description": "Primary Gotion and Sunwoda ground truth is not yet prepared or owner-signed.",
+      "blocks": ["G3"],
+      "owner_action": "Review and sign the compact prepared sample at the second required signoff point."
+    }
+  ],
   "pending_decisions": [],
   "resumption": {
     "working_directory": ".",
     "read_first": [
       "PROJECT_STATUS.md",
       "docs/product/researchforge-v1.4-scope.md",
-      "docs/product/v1.3-to-v1.4-change-note.md",
       "DECISIONS.md",
-      "docs/contracts/README.md"
+      "docs/evidence/g1-full-reliability.md",
+      "docs/evidence/g2-verifier.md"
     ],
     "commands": [
-      "python3 scripts/validate_contracts.py",
+      "uv run python scripts/validate_contracts.py",
       "git status --short"
     ]
   },
   "last_session": {
-    "ended_at": "2026-08-31T17:10:09+08:00",
-    "summary": "G0 source rights evidence, immutable Seed Skill, Decimal finance formulas, 8 source documents, 48 reconciled facts, 3 golden cases and the owner signoff passed independent acceptance; G1 thin-slice implementation is now active.",
+    "ended_at": "2026-09-01T04:55:23+08:00",
+    "summary": "Implemented durable recovery, deterministic verification, all five modes, 20-run reliability, PostgreSQL indexing/migrations, two-page UI, Docker/CI definitions and controlled Evolution preregistration; formal research data and final product evidence remain.",
     "files_changed": [
-      "CHANGELOG.md",
-      "DECISIONS.md",
+      "src/researchforge/",
+      "tests/",
+      "frontend/",
+      "migrations/",
+      "benchmark/",
+      ".github/workflows/ci.yml",
+      "Dockerfile",
+      "docker-compose.yml",
+      "docs/evidence/",
+      "README.md",
       "PROJECT_STATUS.md",
-      "project-status.json",
-      "docs/contracts/data-source-acceptance.md",
-      "docs/contracts/financial-methodology.md",
-      "docs/evidence/g0-source-spike.md",
-      "docs/evidence/g0-filing-read-plan.md",
-      "docs/evidence/g0-reconciliation.md",
-      "docs/evidence/g0-golden-cases.md",
-      "docs/evidence/g0-owner-signoff.md",
-      "data/fixtures/g0/",
-      "schemas/v1.4/financial-fact.schema.json",
-      "schemas/v1.4/calculation-record.schema.json",
-      "scripts/validate_contracts.py",
-      "skills/fundamental-research/versions/1.0.0/SKILL.md",
-      "skills/fundamental-research/versions/1.0.0/skill-version.json",
-      "src/researchforge/domain/",
-      "tests/domain/"
+      "project-status.json"
     ]
   },
-  "updated_at": "2026-08-31T17:10:09+08:00"
+  "updated_at": "2026-09-01T04:55:23+08:00"
 }

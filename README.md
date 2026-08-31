@@ -2,17 +2,53 @@
 
 > A Financial Research Agent with Verifiable Procedures and a Controlled Learning Experiment.
 
-ResearchForge V1.4 is a contract-first project for evidence-grounded company fundamental research and a controlled skill-evolution experiment. The repository is currently implementing the V1.4 contract gate; application runtime work remains gated on data-source acceptance.
+ResearchForge V1.4 is an evidence-grounded company fundamental-research product and a controlled skill-evolution experiment. The current local product turns frozen A-share financial facts into schema-valid reports, deterministic evaluations, and sanitized ten-stage LangGraph traces without asking a model to perform arithmetic.
 
 ## Status
 
 - Product/research scope: **V1.4 active baseline**
 - Contract package: **1.4.0**
-- Completed/current gate: **V1.4 C0 complete → G0 in progress**
-- Runtime implementation: **not started**
+- Independently accepted gates: **V1.4 C0 + G0**
+- Local implementation: **G1 five-mode breadth + G2 Verifier evidence implemented; one final independent acceptance is deferred until project completion**
+- Active milestone: **G3 formal Benchmark data preparation**
 - Supported deployment for V1.4: **local or controlled single-user demo**
 
-Current critical path: complete the time-boxed data-source acceptance spike before application infrastructure.
+Current critical path: finish the signed primary Benchmark package, run the controlled Evolution/Validation/Final Test experiment, then complete Docker smoke, three labeled simulations, demo/public packaging, and one final independent review. Synthetic policy tests are not a formal `SUPPORTED` result.
+
+## Run the Zero-Cost Product Core
+
+The default runtime is deterministic and does not read `OPENAI_API_KEY` or make provider calls.
+
+```bash
+uv run researchforge catalog
+
+uv run researchforge run \
+  --task-type filing_analysis \
+  --company cn_300750 \
+  --period 2024H1 \
+  --question '2024年上半年利润是否转化为经营现金流?' \
+  --research-time '2024-08-01T00:00:00+08:00' \
+  --idempotency-key 'demo-catl-2024h1'
+```
+
+The output bundle contains the persisted Run Manifest, Research Result, and Workflow Trace. Immutable JSON is stored below `artifacts/objects/sha256/`; small run/idempotency pointers live alongside it and the whole directory is Git-ignored. The same workflow supports all five allowlisted research modes.
+
+Start the API with the app factory:
+
+```bash
+uv run uvicorn researchforge.api.app:create_app --factory --reload
+```
+
+The API implements create/status/result/trace/facts/cancel resources, `GET /v1/catalog`, and read-only Evolution experiment/artifact endpoints. It returns `202` on creation, `425` while an artifact is not ready, and `409` for an idempotency conflict or a terminal run without a result.
+
+Start the frontend separately:
+
+```bash
+npm ci --prefix frontend
+npm run dev --prefix frontend
+```
+
+Or use `docker compose up --build` after registry connectivity is available. The Compose definition is validated, but the full image/runtime smoke test is not yet passing evidence because base-image metadata requests timed out locally.
 
 ## Start Here
 
@@ -50,10 +86,10 @@ Engineering delivery can remain useful after a negative experiment, but the owne
 | Level | Outcome | Current status |
 |---|---|---|
 | L0 Contract Ready | Scope, schemas, methods, validation | complete |
-| L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | not started |
-| L2 Demo Ready | Verifier, trace, and replayable failure evidence | not started |
+| L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | local evidence implemented; final acceptance deferred |
+| L2 Demo Ready | Verifier, trace, and replayable failure evidence | local evidence implemented; final acceptance deferred |
 | L3 Research Supported | Adopted Candidate and supported sealed Final Test | not started |
-| L4 Full Engineering Product | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | not started |
+| L4 Full Engineering Product | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | in progress — core/UI/storage/CI implemented |
 
 Stopping earlier preserves honest portfolio value. “Self-improving” is not a completed claim until L3 adoption and sealed-test evidence exist.
 
@@ -109,9 +145,20 @@ ResearchForge/
 │   ├── v1.3/                                  # historical contracts
 │   └── v1.4/                                  # 19 current schemas
 ├── scripts/
-    └── validate_contracts.py
-└── src/
-    └── researchforge/                       # gated runtime package skeleton
+│   ├── build_g0_fixtures.py
+│   ├── run_reliability_batch.py
+│   └── validate_contracts.py
+├── frontend/                                 # React Research + Skill Lab
+├── migrations/                               # Alembic schema history
+├── benchmark/suites/                         # pre-registered split membership
+├── src/
+│   └── researchforge/
+│       ├── adapters/                         # fixtures, storage, OpenAI boundary
+│       ├── api/                              # FastAPI resources
+│       ├── application/                      # lifecycle, budget, analysis services
+│       ├── domain/                           # Decimal formulas and period semantics
+│       └── workflow/                         # bounded ten-stage LangGraph
+└── tests/                                    # domain, adapters, workflow, API and CLI
 ```
 
 ## Contract Rules
@@ -125,16 +172,18 @@ ResearchForge/
 - Final-test data and labels are sealed from the Researcher and Optimizer until the candidate skill is frozen.
 - Raw hidden chain-of-thought is not persisted. Store only explicit plans, tool records, evidence links, and concise decision summaries.
 
-## Planned Implementation Order
+## Implementation Order
 
 ```text
-Contracts and data-source acceptance
-→ golden earnings-quality cases
-→ one LangGraph-orchestrated end-to-end research slice
-→ deterministic and coverage verifier
-→ one controlled evolution cycle
-→ remaining product modes
-→ two-page UI and packaging
+Contracts and data-source acceptance ✓
+→ golden earnings-quality cases ✓
+→ one LangGraph-orchestrated end-to-end research slice ✓
+→ checkpoint recovery + deterministic and coverage verifier ✓
+→ remaining product modes + 20-run reliability ✓
+→ two-page UI + PostgreSQL + CI definitions ✓
+→ signed formal Benchmark data + controlled evolution cycle ← current
+→ Docker smoke + simulations + demo/public packaging
+→ one final independent acceptance
 ```
 
 ## Validate the Contract Package

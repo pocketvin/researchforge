@@ -1,7 +1,7 @@
 # G0 Filing Reconciliation Evidence
 
-Evidence date: `2026-08-31`  
-Package: `g0_catl_eve_2023q3_to_2024h1`  
+Evidence date: `2026-08-31`
+Package: `g0_catl_eve_2023q3_to_2024h1`
 Status: `INDEPENDENTLY_ACCEPTED`
 
 ## Outcome

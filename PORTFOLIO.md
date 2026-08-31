@@ -37,15 +37,16 @@ You may say:
 
 - “Designed a versioned contract architecture for an auditable financial research agent.”
 - “Defined deterministic finance, point-in-time evidence, experiment-isolation, and patch-adoption rules.”
-- “Specified bounded single-agent LangGraph orchestration with a versioned, machine-readable Workflow Trace.”
-- “Built a dependency-free validator for versioned cross-schema contracts and project checkpoints.”
+- “Implemented bounded single-agent LangGraph orchestration with durable checkpoints and a versioned, machine-readable Workflow Trace.”
+- “Built five frozen-fixture research modes, a deterministic Verifier, and a 20/20 local reliability batch with exact denominators.”
+- “Built a two-page React interface and hybrid immutable-file/PostgreSQL persistence; Docker runtime smoke and final acceptance remain pending.”
 
 You must not yet say:
 
 - “Built a production financial research agent.”
 - “Improved research accuracy by X%.”
 - “Created a self-evolving agent.”
-- “Supports five research modes in a working application.”
+- “The research hypothesis is supported.”
 
 Those claims require the matching level in `PROJECT_STATUS.md`.
 
