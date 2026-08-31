@@ -1,0 +1,44 @@
+{
+  "available_from": "2024-04-20T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_002074",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "国轩高科股份有限公司",
+    "ticker": "002074"
+  },
+  "content_hash": "865d69b0da6dfa059de2c924e16eb8a4e5b11fabc1b19c985769baf44c94739d",
+  "created_at": "2026-09-01T05:30:00+08:00",
+  "document_id": "doc_v14_gotion_2023fy",
+  "document_type": "annual_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded. Public package contains normalized factual cells, hashes, physical-page locators, synthetic evidence, and the official link only.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.1.0",
+  "published_at": "2024-04-20T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_text_matched",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-12-31",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T04:40:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-04-20/1219700973.PDF",
+  "title": "国轩高科股份有限公司2023年年度报告"
+}

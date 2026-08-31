@@ -1,0 +1,44 @@
+{
+  "available_from": "2024-04-16T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_300750",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750"
+  },
+  "content_hash": "7be8765c33298b96a1010e61a7bcac3212db7f58dc3d360888548cfd11424265",
+  "created_at": "2026-08-30T22:30:00+08:00",
+  "document_id": "doc_g0_catl_2024q1",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded. Public package contains normalized factual cells, hashes, page/table locators, and the official link only.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.0.0",
+  "published_at": "2024-04-16T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_cells_visually_reviewed",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-03-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-08-30T22:16:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-04-16/1219619642.PDF",
+  "title": "宁德时代新能源科技股份有限公司2024年第一季度报告"
+}

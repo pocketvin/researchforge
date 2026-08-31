@@ -1,0 +1,51 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_300750",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750"
+  },
+  "created_at": "2026-08-30T22:30:00+08:00",
+  "currency": "CNY",
+  "fact_id": "fact_g0_catl_2023fy_operating_cost",
+  "fact_kind": "reported",
+  "measurement_unit": "CURRENCY",
+  "metric_code": "operating_cost",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-12-31",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "6081f0377617dddb82f900569d6458c278a7ab26697b34c87684188eac083471",
+    "document_id": "doc_g0_catl_2023fy",
+    "license_id": null,
+    "published_at": "2024-03-16T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-08-30T22:16:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2024-03-16/1219313047.PDF"
+  },
+  "source_locator": {
+    "column_label": "本期/年初至报告期末",
+    "page": 120,
+    "row_label": "营业成本",
+    "section": "财务报表",
+    "table": "合并利润表"
+  },
+  "value": "309070434000.00"
+}

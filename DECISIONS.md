@@ -251,3 +251,28 @@ The owner prioritized development throughput and explicitly requested removal of
 Consequence:
 
 Local test and evidence gates still run continuously, failures remain visible, and no interim milestone is described as independently accepted. The final release still requires the global completion workflow and independent read-only review.
+
+## RF-014 — One Target Report per Formal Benchmark Case
+
+Status: **ACCEPTED**
+
+Decision:
+
+Each of the 24 pre-registered primary cases binds exactly one target report and its six
+same-period earnings-quality facts. The schema lower bound for `target_periods` is one;
+product-mode trend analysis remains a separate acceptance concern.
+
+Reason:
+
+The frozen protocol defines six cases per company, one for each target report. Requiring
+two target periods inside every case contradicted that case count and would either leak
+another report into a case or silently redefine the experiment. Same-period revenue,
+cost, net income, operating cash flow, receivables, and inventory are sufficient for the
+omission experiment's deterministic checks.
+
+Consequence:
+
+The primary package contains 24 cases, not 12 multi-report cases. Every case is checked
+for one source, one synthetic public evidence chunk, six facts, publication cutoff, and a
+verifier-only ground-truth hash. Cross-period behavior continues to be tested by the
+normal product workflow and is not inferred from this experiment.

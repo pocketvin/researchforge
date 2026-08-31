@@ -67,7 +67,7 @@
       "items": {
         "$ref": "common.schema.json#/$defs/reportingPeriod"
       },
-      "minItems": 2,
+      "minItems": 1,
       "maxItems": 8
     },
     "package_id": {

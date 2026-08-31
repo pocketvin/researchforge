@@ -1,0 +1,51 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_300207",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "欣旺达电子股份有限公司",
+    "ticker": "300207"
+  },
+  "created_at": "2026-09-01T05:30:00+08:00",
+  "currency": "CNY",
+  "fact_id": "fact_v14_sunwoda_2023fy_accounts_receivable",
+  "fact_kind": "reported",
+  "measurement_unit": "CURRENCY",
+  "metric_code": "accounts_receivable",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2023,
+    "period_basis": "instant",
+    "period_end": "2023-12-31",
+    "period_start": "2023-12-31",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "2b607a8320966d5648b7d819dbe53cd0b9a0e9fabf0e873f07ebfe0f83a6d821",
+    "document_id": "doc_v14_sunwoda_2023fy",
+    "license_id": null,
+    "published_at": "2024-04-11T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-09-01T04:40:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2024-04-11/1219567241.PDF"
+  },
+  "source_locator": {
+    "column_label": "报告期末",
+    "page": 128,
+    "row_label": "应收账款",
+    "section": "财务报表",
+    "table": "合并资产负债表"
+  },
+  "value": "11945783994.65"
+}

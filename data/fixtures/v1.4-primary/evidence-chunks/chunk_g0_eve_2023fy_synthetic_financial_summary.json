@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_g0_eve_2023fy_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_300014",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "惠州亿纬锂能股份有限公司",
+    "ticker": "300014"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_g0_eve_2023fy",
+  "document_type": "annual_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 103,
+    "page_start": 93,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2024-04-19T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-12-31",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-08-30T22:16:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-04-19/1219668064.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 12427533747.50 CNY\ninventory: 6316007223.39 CNY\nnet_income: 4050174699.52 CNY\noperating_cash_flow: 8676259761.12 CNY\noperating_cost: 40473296810.60 CNY\nrevenue: 48783587175.86 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "0ed01a43c2deba2a0010cbb0e19ae0993c4dfa45f23d92ada2e4a56688ee31f8"
+}

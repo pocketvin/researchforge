@@ -1,0 +1,52 @@
+{
+  "allowed_document_ids": [
+    "doc_g0_eve_2024h1_corrected"
+  ],
+  "allowed_evidence_chunk_ids": [
+    "chunk_g0_eve_2024h1_corrected_synthetic_financial_summary"
+  ],
+  "allowed_financial_fact_ids": [
+    "fact_g0_eve_2024h1_corrected_accounts_receivable",
+    "fact_g0_eve_2024h1_corrected_inventory",
+    "fact_g0_eve_2024h1_corrected_net_income",
+    "fact_g0_eve_2024h1_corrected_operating_cash_flow",
+    "fact_g0_eve_2024h1_corrected_operating_cost",
+    "fact_g0_eve_2024h1_corrected_revenue"
+  ],
+  "benchmark_focus": "earnings_quality",
+  "case_id": "case_evo_eve_2024h1",
+  "company": {
+    "company_id": "cn_300014",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "惠州亿纬锂能股份有限公司",
+    "ticker": "300014"
+  },
+  "created_at": "2026-09-01T05:30:00+08:00",
+  "frozen": true,
+  "group_key": "cn_300014",
+  "package_hash": "181439808bc597c20b159cc1546c19cc36a4187cd35fb1f7ade1611ff875e054",
+  "package_id": "package_v1_4_primary_battery_earnings_quality",
+  "research_question": "该报告期的利润是否转化为高质量经营现金流?请核对应收账款、存货、现金转化、利润现金背离、一次性贡献和反证。",
+  "research_time": "2024-09-04T00:00:00+08:00",
+  "schema_version": "1.4.0",
+  "sealed": false,
+  "split": "evolution",
+  "target_periods": [
+    {
+      "accounting_standard": "CAS",
+      "fiscal_period": "H1",
+      "fiscal_year": 2024,
+      "period_basis": "ytd",
+      "period_end": "2024-06-30",
+      "period_start": "2024-01-01",
+      "restatement_status": "restated",
+      "statement_scope": "consolidated"
+    }
+  ],
+  "verifier_ground_truth_ref": {
+    "access_class": "verifier_only",
+    "artifact_hash": "aad90591f6767f9839fc07f0c1946f21c8e5b3ea700c02f1596d39a5b078f815",
+    "artifact_id": "ground_truth_case_evo_eve_2024h1"
+  }
+}

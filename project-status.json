@@ -9,12 +9,17 @@
   "current_milestone": {
     "id": "g3-formal-data-preparation",
     "title": "Prepare the primary controlled experiment",
-    "outcome": "Complete redistribution-safe ground truth, the second owner signoff, frozen provider configuration, and all preflight checks without consuming Final Test.",
+    "outcome": "The redistribution-safe primary package is prepared; complete the second owner signoff, controlled experiment runner, frozen provider configuration, and all preflight checks without consuming Final Test.",
     "status": "in_progress"
   },
   "last_verified": {
-    "at": "2026-09-01T04:55:23+08:00",
+    "at": "2026-09-01T05:38:21+08:00",
     "commands": [
+      {
+        "command": "uv run pytest -q tests/domain/test_primary_benchmark.py && uv run python scripts/validate_contracts.py",
+        "exit_code": 0,
+        "summary": "Five primary-package regressions passed. The contract validator accepted 24 sources, 144 facts, 24 explicitly synthetic chunks, 24 frozen cases, split isolation, cutoffs, references, artifact hashes and package hash stability."
+      },
       {
         "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py && git diff --check && docker compose config --quiet",
         "exit_code": 0,
@@ -43,14 +48,14 @@
     ]
   },
   "next_action": {
-    "title": "Prepare and sign the primary Benchmark data",
-    "why": "Formal Validation and the one-time Final Test cannot run honestly from grouping-only manifests or synthetic policy fixtures.",
-    "first_step": "Build official-link, hash, locator, normalized-fact and ground-truth manifests for the primary Validation and Final Test companies without exposing sealed labels to the research path.",
+    "title": "Build the controlled formal experiment runner and sign the prepared package",
+    "why": "The primary artifacts are frozen, but formal execution needs an auditable Base/Seed/Candidate runner, pre-dispatch budget stop, three-repeat accounting, and explicit owner authorization.",
+    "first_step": "Implement offline preflight and controlled CLI execution against the frozen case manifests without opening Final Test or dispatching provider requests.",
     "acceptance_evidence": [
-      "All 24 cases have stable IDs, official source links, publication cutoffs, hashes, required facts and expected deterministic calculations.",
+      "All 24 prepared cases retain stable IDs, official source links, publication cutoffs, hashes, required facts and expected deterministic calculations.",
       "Evolution, Validation and Final Test company/group keys have zero overlap and the suite hash is stable across three repetitions.",
       "Redistribution status is explicit and unsafe original text is replaced by synthetic evidence in the public package.",
-      "The owner signs the prepared grouping/fact package before any formal provider run."
+      "The owner signs package 181439808bc597c20b159cc1546c19cc36a4187cd35fb1f7ade1611ff875e054 before any formal provider run."
     ]
   },
   "blockers": [
@@ -68,7 +73,7 @@
     },
     {
       "id": "primary_ground_truth_incomplete",
-      "description": "Primary Gotion and Sunwoda ground truth is not yet prepared or owner-signed.",
+      "description": "The primary 24-case package is prepared and machine-validated but is not yet owner-signed.",
       "blocks": ["G3"],
       "owner_action": "Review and sign the compact prepared sample at the second required signoff point."
     }
@@ -106,5 +111,5 @@
       "project-status.json"
     ]
   },
-  "updated_at": "2026-09-01T04:55:23+08:00"
+  "updated_at": "2026-09-01T05:38:21+08:00"
 }

@@ -10,7 +10,7 @@ The V1 formal benchmark is restricted to earnings-quality analysis. Its purpose 
 - Primary companies and whole-company splits: CATL and EVE Energy in Evolution, Gotion High-Tech in Validation, and Sunwoda in Final Test.
 - Each company contributes exactly six target reports: `2023Q3`, `2023FY`, `2024Q1`, `2024H1`, `2024Q3`, and `2024FY`.
 - A separately pre-frozen V1.5 contingency package uses exactly 24 cases from Great Power, Farasis Energy, BYD, and Zhuhai CosMX; no company, case, evidence package, or answer key may cross suites.
-- Each case contains frozen financial facts, allowed filing evidence, reporting period, research time, verifier-only ground truth, and package hashes.
+- Each case contains frozen financial facts, allowed filing evidence, exactly one target-report period, research time, verifier-only ground truth, and package hashes. The one-report case remains valid because earnings quality is evaluated from same-period profit, cash flow, receivables and inventory; cross-period trend checks belong to product-mode acceptance rather than this omission experiment.
 - Numeric and period ground truth MUST be deterministic and source-reconciled. Any advisory narrative label records its author/model and disagreement; it cannot override deterministic checks.
 - Every case MUST pass point-in-time, period, source-locator, and package-integrity checks before freezing.
 

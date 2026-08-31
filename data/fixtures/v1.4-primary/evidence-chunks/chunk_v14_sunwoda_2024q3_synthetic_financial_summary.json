@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_v14_sunwoda_2024q3_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_300207",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "欣旺达电子股份有限公司",
+    "ticker": "300207"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_v14_sunwoda_2024q3",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 13,
+    "page_start": 8,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2024-10-30T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q3",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-09-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T04:40:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-10-30/1221559606.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 14302478707.44 CNY\ninventory: 8405775565.49 CNY\nrevenue: 38278680524.37 CNY\noperating_cost: 32147830516.05 CNY\nnet_income: 1212214585.20 CNY\noperating_cash_flow: 2616999699.23 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "c85aa2f86a5fc5e5572698942fbd35058346bc01546046683b6d34fc0fcd4dd5"
+}

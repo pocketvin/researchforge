@@ -1,0 +1,44 @@
+{
+  "available_from": "2024-04-11T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_300207",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "欣旺达电子股份有限公司",
+    "ticker": "300207"
+  },
+  "content_hash": "2b607a8320966d5648b7d819dbe53cd0b9a0e9fabf0e873f07ebfe0f83a6d821",
+  "created_at": "2026-09-01T05:30:00+08:00",
+  "document_id": "doc_v14_sunwoda_2023fy",
+  "document_type": "annual_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded. Public package contains normalized factual cells, hashes, physical-page locators, synthetic evidence, and the official link only.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.1.0",
+  "published_at": "2024-04-11T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_text_matched",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-12-31",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T04:40:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-04-11/1219567241.PDF",
+  "title": "欣旺达电子股份有限公司2023年年度报告"
+}

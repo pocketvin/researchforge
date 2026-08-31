@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_v14_gotion_2023q3_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_002074",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "国轩高科股份有限公司",
+    "ticker": "002074"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_v14_gotion_2023q3",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 9,
+    "page_start": 5,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2023-10-28T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q3",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-09-30",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T04:40:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2023-10-28/1218187245.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 12844054075.71 CNY\ninventory: 7766479113.35 CNY\nrevenue: 21778492192.22 CNY\noperating_cost: 18078147839.51 CNY\nnet_income: 292220176.36 CNY\noperating_cash_flow: 208523678.23 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "7659900b02f66ee8d34718891518920e50fe9c0796a7335341e13c51dd2f40b7"
+}

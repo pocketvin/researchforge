@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_g0_catl_2024q1_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_300750",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_g0_catl_2024q1",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 11,
+    "page_start": 5,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2024-04-16T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-03-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-08-30T22:16:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-04-16/1219619642.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 51186897200.00 CNY\ninventory: 43979311300.00 CNY\nnet_income: 10509923200.00 CNY\noperating_cash_flow: 28357910600.00 CNY\noperating_cost: 58698906300.00 CNY\nrevenue: 79770778600.00 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "cd31d41406bad39bd881f754527cc816f6e5dacc6e94de0370a2cc20dc173a90"
+}

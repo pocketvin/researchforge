@@ -28,6 +28,13 @@ G0_SOURCE_DIR = G0_FIXTURE_DIR / "source-documents"
 G0_FACT_DIR = G0_FIXTURE_DIR / "financial-facts"
 G0_GOLDEN_CASES_PATH = G0_FIXTURE_DIR / "golden-cases.json"
 G0_MANIFEST_PATH = G0_FIXTURE_DIR / "manifest.json"
+PRIMARY_FIXTURE_DIR = ROOT / "data" / "fixtures" / "v1.4-primary"
+PRIMARY_SOURCE_DIR = PRIMARY_FIXTURE_DIR / "source-documents"
+PRIMARY_FACT_DIR = PRIMARY_FIXTURE_DIR / "financial-facts"
+PRIMARY_CHUNK_DIR = PRIMARY_FIXTURE_DIR / "evidence-chunks"
+PRIMARY_CASE_DIR = PRIMARY_FIXTURE_DIR / "cases"
+PRIMARY_MANIFEST_PATH = PRIMARY_FIXTURE_DIR / "manifest.json"
+PRIMARY_SUITE_PATH = ROOT / "benchmark" / "suites" / "v1.4-primary-preregistered.json"
 HISTORICAL_EXAMPLE_DIRS = {
     "v1.3": ROOT / "examples" / "contracts" / "v1.3",
     "v1.2": ROOT / "examples" / "contracts",
@@ -134,8 +141,12 @@ REQUIRED_CONTRACTS = {
     ROOT / "pyproject.toml",
     ROOT / "uv.lock",
     ROOT / "scripts" / "build_g0_fixtures.py",
+    ROOT / "scripts" / "build_primary_benchmark.py",
+    ROOT / "scripts" / "extract_primary_pdf_text.py",
     G0_MANIFEST_PATH,
     G0_GOLDEN_CASES_PATH,
+    PRIMARY_MANIFEST_PATH,
+    PRIMARY_SUITE_PATH,
     ROOT / "skills" / "fundamental-research" / "README.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json",
@@ -160,6 +171,7 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "evidence" / "g0-reconciliation.md",
     ROOT / "docs" / "evidence" / "g0-golden-cases.md",
     ROOT / "docs" / "evidence" / "g0-owner-signoff.md",
+    ROOT / "docs" / "evidence" / "g3-primary-data-signoff.md",
     ROOT / "docs" / "operations" / "resume-playbook.md",
     ROOT / "docs" / "strategy" / "project-scorecard.md",
     ROOT / "docs" / "strategy" / "risk-register.md",
@@ -758,14 +770,18 @@ def _decimal(value: Any, label: str) -> Decimal:
         raise ContractError(f"{label}: invalid Decimal value {value!r}") from exc
 
 
-def _fixture_package_hash(artifact_hashes: dict[str, str]) -> str:
+def _canonical_hash(value: Any) -> str:
     payload = json.dumps(
-        artifact_hashes,
+        value,
         ensure_ascii=False,
         separators=(",", ":"),
         sort_keys=True,
     ).encode()
     return hashlib.sha256(payload).hexdigest()
+
+
+def _fixture_package_hash(artifact_hashes: dict[str, str]) -> str:
+    return _canonical_hash(artifact_hashes)
 
 
 def _validate_golden_case_calculations(
@@ -989,6 +1005,237 @@ def validate_g0_fixtures(schemas: dict[Path, dict[str, Any]]) -> tuple[int, int,
     return len(source_paths), len(fact_paths), len(cases)
 
 
+def validate_primary_benchmark(
+    schemas: dict[Path, dict[str, Any]],
+) -> tuple[int, int, int, int]:
+    """Validate the frozen public package without opening verifier-only truth."""
+    source_paths = sorted(PRIMARY_SOURCE_DIR.glob("*.json"))
+    fact_paths = sorted(PRIMARY_FACT_DIR.glob("*.json"))
+    chunk_paths = sorted(PRIMARY_CHUNK_DIR.glob("*.json"))
+    case_paths = sorted(PRIMARY_CASE_DIR.glob("*.json"))
+    expected_counts = (24, 144, 24, 24)
+    actual_counts = (len(source_paths), len(fact_paths), len(chunk_paths), len(case_paths))
+    if actual_counts != expected_counts:
+        raise ContractError(
+            "primary benchmark must contain 24 sources, 144 facts, 24 chunks, and "
+            f"24 cases; found {actual_counts}"
+        )
+    if any(PRIMARY_FIXTURE_DIR.rglob("*.pdf")):
+        raise ContractError("primary public package must not contain raw PDFs")
+
+    schema_names = {
+        "source": "source-document.schema.json",
+        "fact": "financial-fact.schema.json",
+        "chunk": "evidence-chunk.schema.json",
+        "case": "benchmark-case.schema.json",
+    }
+    schema_paths = {key: (SCHEMA_DIR / name).resolve() for key, name in schema_names.items()}
+
+    sources: dict[str, dict[str, Any]] = {}
+    for path in source_paths:
+        source = load_json(path)
+        if not isinstance(source, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: source must be an object")
+        validate_instance(source, schemas[schema_paths["source"]], schema_paths["source"], schemas)
+        document_id = source["document_id"]
+        if document_id in sources:
+            raise ContractError(f"primary source ID is duplicated: {document_id}")
+        if urlparse(source["source_uri"]).netloc not in {
+            "static.cninfo.com.cn",
+            "disc.static.szse.cn",
+        }:
+            raise ContractError(
+                f"{document_id}: source must be an official CNInfo or SZSE artifact"
+            )
+        if source["license"]["raw_payload_committed"] is not False:
+            raise ContractError(f"{document_id}: raw filing must remain excluded")
+        sources[document_id] = source
+
+    facts: dict[str, dict[str, Any]] = {}
+    metrics_by_document: dict[str, set[str]] = {document_id: set() for document_id in sources}
+    for path in fact_paths:
+        fact = load_json(path)
+        if not isinstance(fact, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: fact must be an object")
+        validate_instance(fact, schemas[schema_paths["fact"]], schema_paths["fact"], schemas)
+        fact_id = fact["fact_id"]
+        if fact_id in facts:
+            raise ContractError(f"primary fact ID is duplicated: {fact_id}")
+        document_id = fact["source"]["document_id"]
+        source = sources.get(document_id)
+        if source is None:
+            raise ContractError(f"{fact_id}: source document does not exist")
+        if fact["company"] != source["company"]:
+            raise ContractError(f"{fact_id}: company differs from source")
+        if fact["source"]["content_hash"] != source["content_hash"]:
+            raise ContractError(f"{fact_id}: source hash differs from document")
+        if fact["source"]["published_at"] != source["published_at"]:
+            raise ContractError(f"{fact_id}: publication time differs from document")
+        if fact["value"] is None:
+            raise ContractError(f"{fact_id}: frozen benchmark fact cannot be missing")
+        _decimal(fact["value"], fact_id)
+        locator = fact["source_locator"]
+        if not all(
+            locator.get(key) for key in ("page", "section", "table", "row_label", "column_label")
+        ):
+            raise ContractError(f"{fact_id}: incomplete physical-page locator")
+        metrics_by_document[document_id].add(fact["metric_code"])
+        facts[fact_id] = fact
+    for document_id, metrics in metrics_by_document.items():
+        if metrics != G0_REQUIRED_METRICS:
+            raise ContractError(f"{document_id}: required metric set changed")
+
+    chunks: dict[str, dict[str, Any]] = {}
+    for path in chunk_paths:
+        chunk = load_json(path)
+        if not isinstance(chunk, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: chunk must be an object")
+        validate_instance(chunk, schemas[schema_paths["chunk"]], schema_paths["chunk"], schemas)
+        chunk_id = chunk["chunk_id"]
+        if chunk_id in chunks:
+            raise ContractError(f"primary evidence chunk ID is duplicated: {chunk_id}")
+        if chunk["document_id"] not in sources:
+            raise ContractError(f"{chunk_id}: source document does not exist")
+        if not chunk["text"].startswith("SYNTHETIC PUBLIC EVIDENCE"):
+            raise ContractError(f"{chunk_id}: public evidence must remain explicitly synthetic")
+        if hashlib.sha256(chunk["text"].encode()).hexdigest() != chunk["text_hash"]:
+            raise ContractError(f"{chunk_id}: text hash mismatch")
+        chunks[chunk_id] = chunk
+
+    cases: dict[str, dict[str, Any]] = {}
+    groups_by_split: dict[str, set[str]] = {
+        "evolution": set(),
+        "validation": set(),
+        "final_test": set(),
+    }
+    for path in case_paths:
+        case = load_json(path)
+        if not isinstance(case, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: case must be an object")
+        validate_instance(case, schemas[schema_paths["case"]], schema_paths["case"], schemas)
+        case_id = case["case_id"]
+        if case_id in cases:
+            raise ContractError(f"primary case ID is duplicated: {case_id}")
+        if (
+            len(case["target_periods"]) != 1
+            or len(case["allowed_document_ids"]) != 1
+            or len(case["allowed_evidence_chunk_ids"]) != 1
+            or len(case["allowed_financial_fact_ids"]) != 6
+        ):
+            raise ContractError(f"{case_id}: case must bind one six-metric target report")
+        document_id = case["allowed_document_ids"][0]
+        source = sources.get(document_id)
+        if source is None:
+            raise ContractError(f"{case_id}: allowed document does not exist")
+        chunk_id = case["allowed_evidence_chunk_ids"][0]
+        if chunks.get(chunk_id, {}).get("document_id") != document_id:
+            raise ContractError(f"{case_id}: evidence chunk differs from target document")
+        case_facts: list[dict[str, Any]] = []
+        for fact_id in case["allowed_financial_fact_ids"]:
+            fact = facts.get(fact_id)
+            if fact is None:
+                raise ContractError(f"{case_id}: allowed fact does not exist")
+            case_facts.append(fact)
+        if any(fact["source"]["document_id"] != document_id for fact in case_facts):
+            raise ContractError(f"{case_id}: fact leaks from another target document")
+        if case["company"] != source["company"] or case["target_periods"] != [
+            source["reporting_period"]
+        ]:
+            raise ContractError(f"{case_id}: company or period differs from source")
+        if datetime.fromisoformat(source["published_at"]) > datetime.fromisoformat(
+            case["research_time"]
+        ):
+            raise ContractError(f"{case_id}: source was unavailable at research time")
+        if case["sealed"] is not (case["split"] == "final_test"):
+            raise ContractError(f"{case_id}: final-test sealing policy changed")
+        groups_by_split[case["split"]].add(case["group_key"])
+        cases[case_id] = case
+
+    if groups_by_split != {
+        "evolution": {"cn_300750", "cn_300014"},
+        "validation": {"cn_002074"},
+        "final_test": {"cn_300207"},
+    }:
+        raise ContractError("primary company split assignment changed")
+    if any(
+        groups_by_split[left] & groups_by_split[right]
+        for left, right in (
+            ("evolution", "validation"),
+            ("evolution", "final_test"),
+            ("validation", "final_test"),
+        )
+    ):
+        raise ContractError("primary company groups cross benchmark splits")
+
+    manifest = load_json(PRIMARY_MANIFEST_PATH)
+    if not isinstance(manifest, dict):
+        raise ContractError("primary manifest must be an object")
+    expected_manifest_values = {
+        "schema_version": CURRENT_ARTIFACT_VERSION,
+        "evidence_status": "PREPARED_AWAITING_OWNER_SIGNOFF",
+        "formal_run_authorized": False,
+        "source_document_count": 24,
+        "financial_fact_count": 144,
+        "evidence_chunk_count": 24,
+        "case_count": 24,
+        "split_counts": {"evolution": 12, "validation": 6, "final_test": 6},
+        "raw_pdf_committed": False,
+        "ground_truth_committed": False,
+    }
+    for key, expected in expected_manifest_values.items():
+        if manifest.get(key) != expected:
+            raise ContractError(f"primary manifest {key} must equal {expected!r}")
+    if manifest["owner_signoff"] != {
+        "status": "pending",
+        "signed_at": None,
+        "evidence_file": "docs/evidence/g3-primary-data-signoff.md",
+    }:
+        raise ContractError("primary package must await the second owner signoff")
+    if len(manifest["ground_truth_hashes"]) != 24 or set(manifest["ground_truth_hashes"]) != set(
+        cases
+    ):
+        raise ContractError("primary ground-truth hash catalog differs from cases")
+    for case_id, case in cases.items():
+        if (
+            case["verifier_ground_truth_ref"]["artifact_hash"]
+            != manifest["ground_truth_hashes"][case_id]
+        ):
+            raise ContractError(f"{case_id}: verifier-only ground-truth hash differs")
+
+    artifact_paths = sorted((*source_paths, *fact_paths, *chunk_paths, *case_paths))
+    artifact_hashes = {
+        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in artifact_paths
+    }
+    if manifest["public_artifact_hashes"] != artifact_hashes:
+        raise ContractError("primary public artifact hashes do not match package files")
+    data_hashes = {
+        **{f"source:{key}": _canonical_hash(value) for key, value in sources.items()},
+        **{f"fact:{key}": _canonical_hash(value) for key, value in facts.items()},
+        **{f"chunk:{key}": _canonical_hash(value) for key, value in chunks.items()},
+        **{f"ground_truth:{key}": value for key, value in manifest["ground_truth_hashes"].items()},
+        "preregistered_suite": hashlib.sha256(PRIMARY_SUITE_PATH.read_bytes()).hexdigest(),
+    }
+    if manifest["package_hash"] != _canonical_hash(data_hashes):
+        raise ContractError("primary package hash does not match frozen inputs")
+    if {case["package_hash"] for case in cases.values()} != {manifest["package_hash"]}:
+        raise ContractError("primary cases do not share the frozen package hash")
+
+    suite = load_json(PRIMARY_SUITE_PATH)
+    expected_case_ids = {
+        split: {entry["case_id"] for entry in suite["splits"][split]}
+        for split in ("evolution", "validation", "final_test")
+    }
+    actual_case_ids = {
+        split: {case_id for case_id, case in cases.items() if case["split"] == split}
+        for split in ("evolution", "validation", "final_test")
+    }
+    if actual_case_ids != expected_case_ids:
+        raise ContractError("primary cases differ from pre-registered split manifest")
+
+    return actual_counts
+
+
 def main() -> int:
     try:
         missing_files = [
@@ -1107,6 +1354,9 @@ def main() -> int:
         validate_v14_semantics(schemas, current_examples)
         validate_seed_skill(schemas)
         g0_source_count, g0_fact_count, g0_golden_count = validate_g0_fixtures(schemas)
+        primary_source_count, primary_fact_count, primary_chunk_count, primary_case_count = (
+            validate_primary_benchmark(schemas)
+        )
         validate_historical_scope_hashes()
 
         markdown_link_count = validate_markdown_links()
@@ -1129,6 +1379,11 @@ def main() -> int:
             "PASS: G0 fixture package validated "
             f"({g0_source_count} sources, {g0_fact_count} facts, "
             f"{g0_golden_count} golden cases)"
+        )
+        print(
+            "PASS: V1.4 primary benchmark package validated "
+            f"({primary_source_count} sources, {primary_fact_count} facts, "
+            f"{primary_chunk_count} synthetic chunks, {primary_case_count} frozen cases)"
         )
         print("PASS: historical V1.3 and V1.2 scope hashes validated")
         print(
