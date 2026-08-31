@@ -1,0 +1,520 @@
+{
+  "artifact_hashes": {
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023fy_accounts_receivable.json": "5d48e790b900cae37036b180cd2557ae679b1baeb9a2321965cbfdc0910a5203",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023fy_inventory.json": "6096fef66f859759d06e236101444da3beb9a30f5bda90b54f79a682d710247f",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023fy_net_income.json": "a9eb022719f01c5e6a805b433c831137436b2e5e21a0a1f9894b48ff77cc1528",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023fy_operating_cash_flow.json": "d6e10c91e814ea41e803df2062ef2b329908b6c5e009deb1cd3553c64411abc9",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023fy_operating_cost.json": "38e4cbd1f8f13cce3ccf47a10af8ff80e51d4adac2747fcb8b9bfccafa9656de",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023fy_revenue.json": "3d2a7570616ab4740d9ee5d0dcb2b04a293be87472fd48b624377e497605b367",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023q3_accounts_receivable.json": "1b036946735b48d93b236ced4046ad387fd395dff833a819a421dfc0401b621d",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023q3_inventory.json": "f826d13aad39f64ecc448b24b646d941b02b55ea03220a33643a9d3e858efccd",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023q3_net_income.json": "7ad98cb4263205b51d6d65326f2418273f0cc5baa6f3b683d33681422a154b13",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023q3_operating_cash_flow.json": "1630f1d8b5e603996dab35b71ec09b94af808710815f58da7bbe4b9ec7cd278a",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023q3_operating_cost.json": "99d21bb3299ab8ddea6401898b1934012acc2effd57c3a65b19a630a2adb4da8",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2023q3_revenue.json": "b7254b3e837db822174a17b24b024756be5c2d2213602574379b09b65858771f",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024h1_accounts_receivable.json": "34c6c68c27834e59b8c9af12ae3b3113c65d3599f936bc1bfb311b10831ef57a",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024h1_inventory.json": "d9fb1795e155307bce8965142ee6cf86906fb04665620b6344002ff21b029518",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024h1_net_income.json": "2e8fe830216316d6d6df3b4f4a4c739b5f911565d86d89d31bfe325342a0427a",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024h1_operating_cash_flow.json": "54699b1c399f9aa78c839c745a96511d73d9900ab88c152823c7898a48018d4e",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024h1_operating_cost.json": "7732b071c8d1f431b7322b846fde804b8037097154e8e4f36ba5f4a7ade2a192",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024h1_revenue.json": "95ede7b4933e07e912a2260b20fa5e05e50cbb2673e7800d298067e8d206dfdc",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024q1_accounts_receivable.json": "ff2d2cf650da70897e006c8be1517515b5bccdedd45cafb13dc928d3791cfe62",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024q1_inventory.json": "67429afbf17018c263f126793801d9e275a17c12ab5ea611be51104886c921b3",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024q1_net_income.json": "717ada65b1bfcaed4f5c34e6ea08bb016138d7faba1e674dc8fe4dc345b33d29",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024q1_operating_cash_flow.json": "dbffda774638ae2c3c0c4559f3700d9b3c92a7db2a33fcb68cbd2dde9e936047",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024q1_operating_cost.json": "83ac93892b6adaa8b546df7abd443c4b4bd1f92ba994bec5c81c82b0e057c3f9",
+    "data/fixtures/g0/financial-facts/fact_g0_catl_2024q1_revenue.json": "af78ee17df766d6e5c01af884c45bd33afd3135d94544d6dbe357dfcfad1959d",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023fy_accounts_receivable.json": "624330e3967ad2c525ea8ee8ec6c5f1e2c69b6953631e60804be0d9bbc72651a",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023fy_inventory.json": "54cb744ab3ffd001b9d587524282070bb053a882ee1f09ff43b2699becd7e78c",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023fy_net_income.json": "573289883966a1f844063c902c2b5b50df7eff0ea1311dce96a29272f08ac2e0",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023fy_operating_cash_flow.json": "60b81c5fbaef4d0d056b171dbb15dd1e50827d3b401d404245b90da3bdb464fc",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023fy_operating_cost.json": "aecdee91ce97775c704d1f51d077746e751439849802ffeab7d3137f95019e1a",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023fy_revenue.json": "d5610193c7687c1d781a4ec3295eed98402e3e7663a70445c4b2d1d2a2a57070",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023q3_accounts_receivable.json": "d26a3f777e25ef719fe7efe09a7044a4225e0230062994a19f89173ac7800a18",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023q3_inventory.json": "4cd381667f8bf6615326f34297bec49bd61c3a4502449db32999c72b2a7667ff",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023q3_net_income.json": "024b9f0e511bfcb953e3d62364309a2a5e08e13d58120d8e81bdb06a4258dd1c",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023q3_operating_cash_flow.json": "f7306f4012a5046bbdf85242d36047331fa137f3fc38d31957337fa4a98f395e",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023q3_operating_cost.json": "1841544bf8bb58ea84e21ebd0ca722a0d84f539a5e553c6e3fd398733d94a6eb",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2023q3_revenue.json": "6e3d6a4c4e46233ef3d9cc15fa32f9bea810006eca28280fff6a9091f5f97a63",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024h1_corrected_accounts_receivable.json": "172ac83345208e38801ea6b039f921940b6fb7d179d549e01b3fcaf8d142a1af",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024h1_corrected_inventory.json": "3111ee8e6163451ceaaceab0e6daaa89436a0175865e261f9484fbaf1d7bb543",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024h1_corrected_net_income.json": "cabf57f7bedbd84172527caf71adfa04a37d02d9a1bc5df361e68a1ae2cf6708",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024h1_corrected_operating_cash_flow.json": "661a97a988d636f3d92b9d3d398e5dd838c98b1d5ede6b32b5785c4713a7556a",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024h1_corrected_operating_cost.json": "70713c56132f545a8433c10090ca29f3abc35622499d6063b31b0cd3538ec54f",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024h1_corrected_revenue.json": "55ea5688aa7ec9739eafa1145394e648f114f08ebcef05f47383952c48321a4b",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024q1_accounts_receivable.json": "1e7f9842b49116d1f070b132e222de662aee9fa2e06436722f1a6f095c4777d0",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024q1_inventory.json": "bd715995aa8c841d850363c21585acbe962f133e37f3b5a7bb4a4277d5887a98",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024q1_net_income.json": "89d6ae4b41a4818edaa72a388e0d055669fa7c6421c8f107e46226a176d4c734",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024q1_operating_cash_flow.json": "e20f1744cef60721d0a2796eed3cb58ae2066e037d29753827a14d9f019e5321",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024q1_operating_cost.json": "8923f3d062f59125be93445d6aacf3d4996becd77853a25fbbc082b9b6197928",
+    "data/fixtures/g0/financial-facts/fact_g0_eve_2024q1_revenue.json": "48d99d7d957c2a7dfe85996861ed701180162180a9fc944b46d208ad7c2d3a8e",
+    "data/fixtures/g0/golden-cases.json": "4651308714fd46e6b06a70b9cd9976cdbc65a5790de8ba2708234919cb1022dd",
+    "data/fixtures/g0/source-documents/catl-2023fy.json": "d508a1f3d0690cb35b2de57dd156c44e771f07d8212653d4794f5168b4216e83",
+    "data/fixtures/g0/source-documents/catl-2023q3.json": "8f5a507c586274537f25dad31f76e4f03696595c6e2298ccfd08812624852364",
+    "data/fixtures/g0/source-documents/catl-2024h1.json": "97d700f399a8e461b96c03be6a5edaf7cc17e68faa1d2f2450d33684f1bdaa7e",
+    "data/fixtures/g0/source-documents/catl-2024q1.json": "47706d71a09c46716bf6dd700d4ccba08f8c42995dc5cc536126ffa87c8ebfad",
+    "data/fixtures/g0/source-documents/eve-2023fy.json": "3193865babc785b02c2b672dfe4673ad49e8304e4de79603ec4e45b42452d568",
+    "data/fixtures/g0/source-documents/eve-2023q3.json": "45135f2625951d2f3bb2f407131aa437f36ffda9c377d706b9c6e81610200133",
+    "data/fixtures/g0/source-documents/eve-2024h1-corrected.json": "25bc147bc57d078f0d461a6ddbefaed5f94873e66bd7d39f8d9248f2fba0f389",
+    "data/fixtures/g0/source-documents/eve-2024q1.json": "93cb9d8cd40ca367afa19642ce5eacab90800a3fd091162bd5a4a1c6bcf49da2"
+  },
+  "created_at": "2026-08-30T22:30:00+08:00",
+  "financial_fact_count": 48,
+  "financial_fact_ids": [
+    "fact_g0_catl_2023q3_accounts_receivable",
+    "fact_g0_catl_2023q3_inventory",
+    "fact_g0_catl_2023q3_revenue",
+    "fact_g0_catl_2023q3_operating_cost",
+    "fact_g0_catl_2023q3_net_income",
+    "fact_g0_catl_2023q3_operating_cash_flow",
+    "fact_g0_catl_2023fy_accounts_receivable",
+    "fact_g0_catl_2023fy_inventory",
+    "fact_g0_catl_2023fy_revenue",
+    "fact_g0_catl_2023fy_operating_cost",
+    "fact_g0_catl_2023fy_net_income",
+    "fact_g0_catl_2023fy_operating_cash_flow",
+    "fact_g0_catl_2024q1_accounts_receivable",
+    "fact_g0_catl_2024q1_inventory",
+    "fact_g0_catl_2024q1_revenue",
+    "fact_g0_catl_2024q1_operating_cost",
+    "fact_g0_catl_2024q1_net_income",
+    "fact_g0_catl_2024q1_operating_cash_flow",
+    "fact_g0_catl_2024h1_accounts_receivable",
+    "fact_g0_catl_2024h1_inventory",
+    "fact_g0_catl_2024h1_revenue",
+    "fact_g0_catl_2024h1_operating_cost",
+    "fact_g0_catl_2024h1_net_income",
+    "fact_g0_catl_2024h1_operating_cash_flow",
+    "fact_g0_eve_2023q3_accounts_receivable",
+    "fact_g0_eve_2023q3_inventory",
+    "fact_g0_eve_2023q3_revenue",
+    "fact_g0_eve_2023q3_operating_cost",
+    "fact_g0_eve_2023q3_net_income",
+    "fact_g0_eve_2023q3_operating_cash_flow",
+    "fact_g0_eve_2023fy_accounts_receivable",
+    "fact_g0_eve_2023fy_inventory",
+    "fact_g0_eve_2023fy_revenue",
+    "fact_g0_eve_2023fy_operating_cost",
+    "fact_g0_eve_2023fy_net_income",
+    "fact_g0_eve_2023fy_operating_cash_flow",
+    "fact_g0_eve_2024q1_accounts_receivable",
+    "fact_g0_eve_2024q1_inventory",
+    "fact_g0_eve_2024q1_revenue",
+    "fact_g0_eve_2024q1_operating_cost",
+    "fact_g0_eve_2024q1_net_income",
+    "fact_g0_eve_2024q1_operating_cash_flow",
+    "fact_g0_eve_2024h1_corrected_accounts_receivable",
+    "fact_g0_eve_2024h1_corrected_inventory",
+    "fact_g0_eve_2024h1_corrected_revenue",
+    "fact_g0_eve_2024h1_corrected_operating_cost",
+    "fact_g0_eve_2024h1_corrected_net_income",
+    "fact_g0_eve_2024h1_corrected_operating_cash_flow"
+  ],
+  "limitations": [
+    "Two-company, four-period source spike only; not full-market coverage.",
+    "Public package excludes raw PDFs and does not establish redistribution rights.",
+    "Publication timestamps use a conservative end-of-disclosure-day boundary."
+  ],
+  "mapping_version": "1.0.0",
+  "owner_signoff": {
+    "evidence_file": "docs/evidence/g0-owner-signoff.md",
+    "fact_ids": [
+      "fact_g0_catl_2023q3_revenue",
+      "fact_g0_catl_2023q3_operating_cash_flow",
+      "fact_g0_catl_2023fy_operating_cost",
+      "fact_g0_catl_2023fy_net_income",
+      "fact_g0_catl_2024q1_accounts_receivable",
+      "fact_g0_catl_2024q1_inventory",
+      "fact_g0_catl_2024q1_revenue",
+      "fact_g0_catl_2024h1_operating_cost",
+      "fact_g0_catl_2024h1_net_income",
+      "fact_g0_catl_2024h1_operating_cash_flow",
+      "fact_g0_eve_2023q3_accounts_receivable",
+      "fact_g0_eve_2023q3_inventory",
+      "fact_g0_eve_2023fy_revenue",
+      "fact_g0_eve_2023fy_operating_cost",
+      "fact_g0_eve_2023fy_net_income",
+      "fact_g0_eve_2024q1_net_income",
+      "fact_g0_eve_2024q1_operating_cash_flow",
+      "fact_g0_eve_2024h1_corrected_accounts_receivable",
+      "fact_g0_eve_2024h1_corrected_inventory",
+      "fact_g0_eve_2024h1_corrected_operating_cash_flow"
+    ],
+    "sample_size": 20,
+    "signed_at": "2026-08-31T15:51:55+08:00",
+    "status": "signed"
+  },
+  "package_hash": "56fd99ae6be655dc878d93a8c99f4bd3d6ba60feffaf2f21ffc81da2d180d58d",
+  "package_id": "g0_catl_eve_2023q3_to_2024h1",
+  "parser_version": "1.0.0",
+  "raw_byte_counts": {
+    "catl-2023fy": 5986207,
+    "catl-2023q3": 839227,
+    "catl-2024h1": 1684794,
+    "catl-2024q1": 325466,
+    "eve-2023fy": 6280048,
+    "eve-2023q3": 576992,
+    "eve-2024h1-corrected": 5248825,
+    "eve-2024q1": 658022
+  },
+  "raw_pdf_committed": false,
+  "reconciliation": {
+    "cells": [
+      {
+        "canonical_value": "68726798500.00",
+        "fact_id": "fact_g0_catl_2023q3_accounts_receivable",
+        "reported_scale": 10000,
+        "reported_value": "6872679.85",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "48884011700.00",
+        "fact_id": "fact_g0_catl_2023q3_inventory",
+        "reported_scale": 10000,
+        "reported_value": "4888401.17",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "294677250600.00",
+        "fact_id": "fact_g0_catl_2023q3_revenue",
+        "reported_scale": 10000,
+        "reported_value": "29467725.06",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "230096038100.00",
+        "fact_id": "fact_g0_catl_2023q3_operating_cost",
+        "reported_scale": 10000,
+        "reported_value": "23009603.81",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "31145473600.00",
+        "fact_id": "fact_g0_catl_2023q3_net_income",
+        "reported_scale": 10000,
+        "reported_value": "3114547.36",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "52653692300.00",
+        "fact_id": "fact_g0_catl_2023q3_operating_cash_flow",
+        "reported_scale": 10000,
+        "reported_value": "5265369.23",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "64020533400.00",
+        "fact_id": "fact_g0_catl_2023fy_accounts_receivable",
+        "reported_scale": 10000,
+        "reported_value": "6402053.34",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "45433890100.00",
+        "fact_id": "fact_g0_catl_2023fy_inventory",
+        "reported_scale": 10000,
+        "reported_value": "4543389.01",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "400917044900.00",
+        "fact_id": "fact_g0_catl_2023fy_revenue",
+        "reported_scale": 10000,
+        "reported_value": "40091704.49",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "309070434000.00",
+        "fact_id": "fact_g0_catl_2023fy_operating_cost",
+        "reported_scale": 10000,
+        "reported_value": "30907043.40",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "44121248300.00",
+        "fact_id": "fact_g0_catl_2023fy_net_income",
+        "reported_scale": 10000,
+        "reported_value": "4412124.83",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "92826124400.00",
+        "fact_id": "fact_g0_catl_2023fy_operating_cash_flow",
+        "reported_scale": 10000,
+        "reported_value": "9282612.44",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "51186897200.00",
+        "fact_id": "fact_g0_catl_2024q1_accounts_receivable",
+        "reported_scale": 10000,
+        "reported_value": "5118689.72",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "43979311300.00",
+        "fact_id": "fact_g0_catl_2024q1_inventory",
+        "reported_scale": 10000,
+        "reported_value": "4397931.13",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "79770778600.00",
+        "fact_id": "fact_g0_catl_2024q1_revenue",
+        "reported_scale": 10000,
+        "reported_value": "7977077.86",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "58698906300.00",
+        "fact_id": "fact_g0_catl_2024q1_operating_cost",
+        "reported_scale": 10000,
+        "reported_value": "5869890.63",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "10509923200.00",
+        "fact_id": "fact_g0_catl_2024q1_net_income",
+        "reported_scale": 10000,
+        "reported_value": "1050992.32",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "28357910600.00",
+        "fact_id": "fact_g0_catl_2024q1_operating_cash_flow",
+        "reported_scale": 10000,
+        "reported_value": "2835791.06",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "58099476000.00",
+        "fact_id": "fact_g0_catl_2024h1_accounts_receivable",
+        "reported_scale": 10000,
+        "reported_value": "5809947.60",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "48050676200.00",
+        "fact_id": "fact_g0_catl_2024h1_inventory",
+        "reported_scale": 10000,
+        "reported_value": "4805067.62",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "166766833600.00",
+        "fact_id": "fact_g0_catl_2024h1_revenue",
+        "reported_scale": 10000,
+        "reported_value": "16676683.36",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "122517848800.00",
+        "fact_id": "fact_g0_catl_2024h1_operating_cost",
+        "reported_scale": 10000,
+        "reported_value": "12251784.88",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "22864987400.00",
+        "fact_id": "fact_g0_catl_2024h1_net_income",
+        "reported_scale": 10000,
+        "reported_value": "2286498.74",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "44708954600.00",
+        "fact_id": "fact_g0_catl_2024h1_operating_cash_flow",
+        "reported_scale": 10000,
+        "reported_value": "4470895.46",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "11008577641.35",
+        "fact_id": "fact_g0_eve_2023q3_accounts_receivable",
+        "reported_scale": 1,
+        "reported_value": "11008577641.35",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "8790701505.80",
+        "fact_id": "fact_g0_eve_2023q3_inventory",
+        "reported_scale": 1,
+        "reported_value": "8790701505.80",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "35528837484.66",
+        "fact_id": "fact_g0_eve_2023q3_revenue",
+        "reported_scale": 1,
+        "reported_value": "35528837484.66",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "29567112888.91",
+        "fact_id": "fact_g0_eve_2023q3_operating_cost",
+        "reported_scale": 1,
+        "reported_value": "29567112888.91",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "3424389233.10",
+        "fact_id": "fact_g0_eve_2023q3_net_income",
+        "reported_scale": 1,
+        "reported_value": "3424389233.10",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "5358649318.89",
+        "fact_id": "fact_g0_eve_2023q3_operating_cash_flow",
+        "reported_scale": 1,
+        "reported_value": "5358649318.89",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "12427533747.50",
+        "fact_id": "fact_g0_eve_2023fy_accounts_receivable",
+        "reported_scale": 1,
+        "reported_value": "12427533747.50",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "6316007223.39",
+        "fact_id": "fact_g0_eve_2023fy_inventory",
+        "reported_scale": 1,
+        "reported_value": "6316007223.39",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "48783587175.86",
+        "fact_id": "fact_g0_eve_2023fy_revenue",
+        "reported_scale": 1,
+        "reported_value": "48783587175.86",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "40473296810.60",
+        "fact_id": "fact_g0_eve_2023fy_operating_cost",
+        "reported_scale": 1,
+        "reported_value": "40473296810.60",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "4050174699.52",
+        "fact_id": "fact_g0_eve_2023fy_net_income",
+        "reported_scale": 1,
+        "reported_value": "4050174699.52",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "8676259761.12",
+        "fact_id": "fact_g0_eve_2023fy_operating_cash_flow",
+        "reported_scale": 1,
+        "reported_value": "8676259761.12",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "12086041697.14",
+        "fact_id": "fact_g0_eve_2024q1_accounts_receivable",
+        "reported_scale": 1,
+        "reported_value": "12086041697.14",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "6703161813.17",
+        "fact_id": "fact_g0_eve_2024q1_inventory",
+        "reported_scale": 1,
+        "reported_value": "6703161813.17",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "9317321354.65",
+        "fact_id": "fact_g0_eve_2024q1_revenue",
+        "reported_scale": 1,
+        "reported_value": "9317321354.65",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "7673910397.50",
+        "fact_id": "fact_g0_eve_2024q1_operating_cost",
+        "reported_scale": 1,
+        "reported_value": "7673910397.50",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "1065713845.72",
+        "fact_id": "fact_g0_eve_2024q1_net_income",
+        "reported_scale": 1,
+        "reported_value": "1065713845.72",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "-1751380202.07",
+        "fact_id": "fact_g0_eve_2024q1_operating_cash_flow",
+        "reported_scale": 1,
+        "reported_value": "-1751380202.07",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "12502761822.36",
+        "fact_id": "fact_g0_eve_2024h1_corrected_accounts_receivable",
+        "reported_scale": 1,
+        "reported_value": "12502761822.36",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "6357901044.76",
+        "fact_id": "fact_g0_eve_2024h1_corrected_inventory",
+        "reported_scale": 1,
+        "reported_value": "6357901044.76",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "21659398588.08",
+        "fact_id": "fact_g0_eve_2024h1_corrected_revenue",
+        "reported_scale": 1,
+        "reported_value": "21659398588.08",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "18095684686.37",
+        "fact_id": "fact_g0_eve_2024h1_corrected_operating_cost",
+        "reported_scale": 1,
+        "reported_value": "18095684686.37",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "2137249689.22",
+        "fact_id": "fact_g0_eve_2024h1_corrected_net_income",
+        "reported_scale": 1,
+        "reported_value": "2137249689.22",
+        "visual_match": true
+      },
+      {
+        "canonical_value": "311882588.92",
+        "fact_id": "fact_g0_eve_2024h1_corrected_operating_cash_flow",
+        "reported_scale": 1,
+        "reported_value": "311882588.92",
+        "visual_match": true
+      }
+    ],
+    "numeric_agreement_rate": "1.0",
+    "sample_size": 48,
+    "semantic_complete_count": 48,
+    "semantic_completeness_rate": "1.0",
+    "unresolved_mismatch_count": 0,
+    "visual_match_count": 48
+  },
+  "schema_version": "1.4.0",
+  "source_document_count": 8,
+  "source_document_ids": [
+    "doc_g0_catl_2023q3",
+    "doc_g0_catl_2023fy",
+    "doc_g0_catl_2024q1",
+    "doc_g0_catl_2024h1",
+    "doc_g0_eve_2023q3",
+    "doc_g0_eve_2023fy",
+    "doc_g0_eve_2024q1",
+    "doc_g0_eve_2024h1_corrected"
+  ],
+  "status": "owner_signed"
+}

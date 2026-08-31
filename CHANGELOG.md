@@ -8,9 +8,13 @@
 - Eight schemas/examples for Source Document, Calculation Record, Tool Record, Skill Version, Experience, Evolution Experiment, Retrieval Evaluation, and Simulated Usability Evaluation.
 - Exact primary and contingency A-share experiment suites.
 - Explicit OpenAI Responses API and aggregate budget contract.
+- Immutable Seed Skill `1.0.0`, deterministic Decimal finance domain, and versioned source-line mapping.
+- Public-safe G0 package with 8 Source Documents, 48 reconciled Financial Facts, artifact/package hashes, a representative 20-fact signoff sample, and 3 deterministic golden cases.
+- Contract validation and regression tests for source lineage, unit normalization, point-in-time cutoffs, golden calculations and corrected-filing behavior.
 
 ### Changed
 
+- Added `operating_cost` as the traceable source input and `gross_profit` as a deterministic formula, closing the initial gross-margin provenance gap without invalidating existing V1.4 artifacts.
 - New artifacts use `schema_version: 1.4.0`; V1.2/V1.3 remain immutable history.
 - G4 uses three explicitly labeled simulations instead of a human pilot.
 - Overall completion requires Full Engineering Product Ready plus a `SUPPORTED` sealed result.

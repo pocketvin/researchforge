@@ -16,7 +16,7 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-001 | Contract-first implementation | ACCEPTED | 2026-08-29 | — |
 | RF-002 | Staged personal-success ladder | ACCEPTED | 2026-08-29 | — |
 | RF-003 | Portfolio MVP before full V1.3 breadth | ACCEPTED | 2026-08-29 | — |
-| RF-004 | Structured and filing data sources | PROPOSED | 2026-08-29 | G0 |
+| RF-004 | Structured and filing data sources | ACCEPTED | 2026-08-31 | — |
 | RF-005 | Evidence persistence and pgvector timing | ACCEPTED | 2026-08-30 | — |
 | RF-006 | Initial company universe | SUPERSEDED | 2026-08-29 | — |
 | RF-007 | Bounded LangGraph orchestration | ACCEPTED | 2026-08-30 | — |
@@ -76,24 +76,29 @@ No task mode is deleted from V1.3; it is only sequenced later.
 
 ## RF-004 — Data Sources
 
-Status: **PROPOSED**
+Status: **ACCEPTED**
 
 Preferred direction:
 
-- structured facts from one provider that passes `data-source-acceptance.md`;
-- filings from an official exchange/company source;
-- frozen local packages for Benchmark and repeatable public demos.
+- authoritative facts from official SZSE/CNInfo filings;
+- frozen local packages for Benchmark and repeatable public demos;
+- no live structured provider dependency unless a later, separately versioned source passes the contract.
 
-Open evidence:
+Evidence resolved in the preliminary G0 spike:
 
-- licensing and redistribution rights;
-- historical publication timestamps;
-- A-share YTD/discrete semantics;
-- metric coverage, cost, and reliability.
+- full official PDFs are excluded from Git/public packages; only normalized facts, permitted short evidence, hashes, locators and links may be included;
+- Tushare statement fields and publication/report metadata are technically suitable for comparison, but its personal/non-commercial/personal-viewing license fails the runtime, committed-demo and redistribution boundary;
+- source-line mapping `1.0.0` freezes official labels, optional reconciliation fields, period bases and formula inputs.
 
-Decision rule:
+Acceptance evidence:
 
-Do not accept a provider from feature lists alone. Run the two-company/four-period spike first.
+- the owner signed the representative 20-fact sample on 2026-08-31;
+- the implemented package has 8/8 hash-verified sources, 48/48 complete facts, 48/48 numeric and visual matches, stable page locators, point-in-time publication semantics, and 0 unresolved mismatches;
+- the signed package hash is `56fd99ae6be655dc878d93a8c99f4bd3d6ba60feffaf2f21ffc81da2d180d58d`.
+
+Final outcome:
+
+Official SZSE/CNInfo-derived data is `FIXTURE-ONLY` for the stated CATL/EVE, four-period, six-metric package. It makes no live-ingestion, full-market, or full-PDF redistribution claim. Tushare is `REJECT` for runtime, committed-demo, redistribution and public-package use. See `docs/evidence/g0-source-spike.md`.
 
 ## RF-005 — Evidence Persistence and pgvector Timing
 

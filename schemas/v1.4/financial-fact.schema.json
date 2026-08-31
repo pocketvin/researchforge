@@ -43,6 +43,7 @@
       "type": "string",
       "enum": [
         "revenue",
+        "operating_cost",
         "net_income",
         "gross_profit",
         "gross_margin",

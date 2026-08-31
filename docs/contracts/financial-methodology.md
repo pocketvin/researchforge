@@ -25,6 +25,7 @@ Persisted currency values use base units (`canonical_scale = 1`). Millions/billi
 | `metric_code` | Meaning | Normal basis | Sign rule |
 |---|---|---|---|
 | `revenue` | Consolidated operating revenue | discrete/YTD | natural statement value |
+| `operating_cost` | Consolidated operating cost under the same scope as revenue | discrete/YTD | natural statement value |
 | `net_income` | Net income attributable to the comparison scope selected for the case | discrete/YTD | natural statement value |
 | `gross_profit` | Revenue minus cost of revenue under the same scope | discrete/YTD | natural statement value |
 | `gross_margin` | `gross_profit / revenue` | discrete/YTD | positive ratio |
@@ -100,11 +101,12 @@ When `comparison <= 0`, standard percentage growth is `not_meaningful`; report a
 When `revenue > 0`:
 
 ```text
+gross_profit = revenue - operating_cost
 gross_margin = gross_profit / revenue
 margin_change_pp = (current_margin - comparison_margin) × 100
 ```
 
-Otherwise the result is `not_meaningful`.
+Gross profit is `unavailable` when either source input is missing. Gross margin is `not_meaningful` when revenue is zero or negative.
 
 ### 4.4 Cash Conversion
 

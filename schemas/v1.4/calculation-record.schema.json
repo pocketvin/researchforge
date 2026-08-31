@@ -24,7 +24,7 @@
     "run_id": { "$ref": "common.schema.json#/$defs/identifier" },
     "formula_code": {
       "type": "string",
-      "enum": ["absolute_change", "growth_rate", "gross_margin", "margin_change_pp", "cash_conversion", "working_capital_change", "profit_cash_divergence", "ytd_to_discrete"]
+      "enum": ["absolute_change", "growth_rate", "gross_profit", "gross_margin", "margin_change_pp", "cash_conversion", "working_capital_change", "profit_cash_divergence", "ytd_to_discrete"]
     },
     "formula_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
     "input_fact_ids": {

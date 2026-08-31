@@ -3,57 +3,48 @@
   "project_id": "researchforge",
   "product_scope_version": "1.4",
   "contract_package_version": "1.4.0",
-  "completed_gates": ["C0"],
-  "current_gate": "G0",
+  "completed_gates": ["C0", "G0"],
+  "current_gate": "G1_THIN",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "g0-data-source-spike",
-    "title": "Resolve the frozen A-share evidence package",
-    "outcome": "Choose ACCEPT, FIXTURE-ONLY, or REJECT from source, license, period-semantic, and 20-fact reconciliation evidence.",
+    "id": "g1-thin-earnings-quality",
+    "title": "Deliver one complete earnings-quality thin slice",
+    "outcome": "Run one frozen-fixture case through deterministic services, bounded LangGraph orchestration, immutable artifacts, CLI and asynchronous API.",
     "status": "in_progress"
   },
   "last_verified": {
-    "at": "2026-08-30T21:50:29+08:00",
+    "at": "2026-08-31T17:10:09+08:00",
     "commands": [
       {
-        "command": "verify-completion independent completion_reviewer",
+        "command": "uv lock --check && uv run python scripts/build_g0_fixtures.py && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests && uv run pytest -q",
         "exit_code": 0,
-        "summary": "VERDICT: PASS. All ten C0 requirement groups were satisfied; no required corrections or material C0 risks remain."
+        "summary": "68 packages resolved; the 8-source/48-fact package reproduced; 46 files passed formatting and lint; strict typing passed; all 69 tests passed after the non-adjacent YoY regression fix."
       },
       {
-        "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy src scripts && uv run pytest && uv run python scripts/validate_contracts.py && git diff --check",
+        "command": "uv run python scripts/validate_contracts.py && git diff --check",
         "exit_code": 0,
-        "summary": "Lock, format, lint, strict typing, four tests, 19/11/10 schemas, 12/4/1 examples, active semantics, historical hashes, links, and diff checks passed."
+        "summary": "19/11/10 schemas, 12/4/1 examples, immutable Seed Skill hash, G0 8-source/48-fact/3-case package, 49 Markdown links, 61 required files and diff checks passed."
+      },
+      {
+        "command": "$verify-completion independent G0 acceptance",
+        "exit_code": 0,
+        "summary": "Independent reviewer returned VERDICT: PASS after directly verifying 69 tests, contract validation, source/package hashes, reconciliation, Seed Skill hash and the adjacent-year YoY correction."
       }
     ]
   },
   "next_action": {
-    "title": "Run the time-boxed A-share source feasibility spike",
-    "why": "Data correctness, period semantics, provenance, and redistribution boundaries determine whether the research workflow can be credible.",
-    "first_step": "Document the official filing source and structured reconciliation candidate, then build the first 20-fact reconciliation sample.",
+    "title": "Implement the L1 earnings-quality vertical slice",
+    "why": "A single end-to-end path validates the architecture early and becomes the reusable core for all five research modes.",
+    "first_step": "Implement content-addressed artifacts and a framework-independent earnings-quality service, then wrap it in the ten-stage LangGraph workflow.",
     "acceptance_evidence": [
-      "Official source identity, access, publication timestamps, and locators are documented.",
-      "Structured reconciliation candidate terms, coverage, corrections, and costs are documented.",
-      "At least 20 non-missing facts carry full semantic metadata and exact reconciliation results.",
-      "No missing or ambiguous value is coerced to zero.",
-      "RF-004 records ACCEPT, FIXTURE-ONLY, or REJECT with scope and owner sample sign-off."
+      "Framework-independent services pass deterministic unit tests.",
+      "One frozen earnings-quality case produces schema-valid persisted result and trace artifacts.",
+      "CLI and asynchronous API exercise the same workflow and lifecycle.",
+      "OpenAI requests remain offline in tests and the budget guard stops overspend before request dispatch."
     ]
   },
-  "blockers": [
-    {
-      "id": "B-002",
-      "description": "Selected companies and official-source packages are not reconciled.",
-      "blocks": ["G0", "G1_THIN"],
-      "owner_action": "After C0, run the G0 source spike and record FIXTURE-ONLY or REJECT evidence."
-    }
-  ],
-  "pending_decisions": [
-    {
-      "decision_id": "RF-004",
-      "question": "Which structured reconciliation source passes the acceptance contract?",
-      "blocks_gate": "G0"
-    }
-  ],
+  "blockers": [],
+  "pending_decisions": [],
   "resumption": {
     "working_directory": ".",
     "read_first": [
@@ -69,33 +60,29 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-08-30T21:50:29+08:00",
-    "summary": "C0 V1.4 passed all local quality checks and independent read-only review with no required corrections; the project advanced to the G0 source feasibility spike.",
+    "ended_at": "2026-08-31T17:10:09+08:00",
+    "summary": "G0 source rights evidence, immutable Seed Skill, Decimal finance formulas, 8 source documents, 48 reconciled facts, 3 golden cases and the owner signoff passed independent acceptance; G1 thin-slice implementation is now active.",
     "files_changed": [
-      "README.md",
-      "AGENTS.md",
       "CHANGELOG.md",
       "DECISIONS.md",
       "PROJECT_STATUS.md",
       "project-status.json",
-      "docs/product/researchforge-v1.4-scope.md",
-      "docs/product/v1.3-to-v1.4-change-note.md",
-      "docs/contracts/README.md",
-      "docs/contracts/product-success-metrics.md",
-      "docs/contracts/development-gates.md",
       "docs/contracts/data-source-acceptance.md",
-      "docs/contracts/research-workflow.md",
-      "docs/contracts/run-lifecycle.md",
-      "docs/contracts/benchmark-protocol.md",
-      "docs/contracts/evolution-adoption-policy.md",
-      "docs/architecture/implementation-blueprint.md",
-      "docs/strategy/solo-success-plan.md",
-      "schemas/v1.4/common.schema.json",
-      "examples/contracts/v1.4/evolution-experiment.example.json",
-      "tests/test_contract_package.py",
-      "pyproject.toml",
-      "uv.lock"
+      "docs/contracts/financial-methodology.md",
+      "docs/evidence/g0-source-spike.md",
+      "docs/evidence/g0-filing-read-plan.md",
+      "docs/evidence/g0-reconciliation.md",
+      "docs/evidence/g0-golden-cases.md",
+      "docs/evidence/g0-owner-signoff.md",
+      "data/fixtures/g0/",
+      "schemas/v1.4/financial-fact.schema.json",
+      "schemas/v1.4/calculation-record.schema.json",
+      "scripts/validate_contracts.py",
+      "skills/fundamental-research/versions/1.0.0/SKILL.md",
+      "skills/fundamental-research/versions/1.0.0/skill-version.json",
+      "src/researchforge/domain/",
+      "tests/domain/"
     ]
   },
-  "updated_at": "2026-08-30T21:50:29+08:00"
+  "updated_at": "2026-08-31T17:10:09+08:00"
 }

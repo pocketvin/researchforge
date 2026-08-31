@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.4.0",
+  "skill_version_id": "skill_fundamental_1_0_0",
+  "skill_name": "fundamental-research",
+  "version": "1.0.0",
+  "content_hash": "71991b5a424638e4437699e63d3649a3ca0b36b308b456e2172d6a3922785890",
+  "parent_version_id": null,
+  "source_patch_id": null,
+  "status": "seed",
+  "content_path": "skills/fundamental-research/versions/1.0.0/SKILL.md",
+  "created_at": "2026-08-30T21:58:00+08:00",
+  "activated_at": null
+}

@@ -1,0 +1,103 @@
+{
+  "cases": [
+    {
+      "calculations": {
+        "cash_conversion": "2.698203408375048830042830380",
+        "gross_margin": "0.2641552792866935863153277534",
+        "gross_profit": "21071872300.00",
+        "profit_cash_divergence": "0"
+      },
+      "case_id": "golden_g0_catl_2024q1_earnings_quality",
+      "companies": [
+        "cn_300750"
+      ],
+      "expected_signal": "positive_profit_positive_ocf_strong_conversion",
+      "fact_ids": [
+        "fact_g0_catl_2024q1_revenue",
+        "fact_g0_catl_2024q1_operating_cost",
+        "fact_g0_catl_2024q1_net_income",
+        "fact_g0_catl_2024q1_operating_cash_flow"
+      ],
+      "limitations": [
+        "One-period deterministic evidence; no causal explanation is inferred."
+      ],
+      "periods": [
+        "2024Q1"
+      ],
+      "research_time": "2024-04-17T00:00:00+08:00",
+      "task_type": "company_research"
+    },
+    {
+      "calculations": {
+        "cash_conversion": "-1.643386927085254684383514439",
+        "gross_margin": "0.1763823415116858786855795914",
+        "gross_profit": "1643410957.15",
+        "profit_cash_divergence": "1"
+      },
+      "case_id": "golden_g0_eve_2024q1_earnings_quality",
+      "companies": [
+        "cn_300014"
+      ],
+      "expected_signal": "positive_profit_negative_ocf_divergence",
+      "fact_ids": [
+        "fact_g0_eve_2024q1_revenue",
+        "fact_g0_eve_2024q1_operating_cost",
+        "fact_g0_eve_2024q1_net_income",
+        "fact_g0_eve_2024q1_operating_cash_flow"
+      ],
+      "limitations": [
+        "The divergence is an investigation signal, not causal proof."
+      ],
+      "periods": [
+        "2024Q1"
+      ],
+      "research_time": "2024-04-26T00:00:00+08:00",
+      "task_type": "company_research"
+    },
+    {
+      "calculations": {
+        "catl": {
+          "cash_conversion": "1.955345691552841179348299138",
+          "gross_margin": "0.2653344423755971583069020985",
+          "gross_profit": "44248984800.00",
+          "profit_cash_divergence": "0"
+        },
+        "eve": {
+          "cash_conversion": "0.1459270718311921318039025486",
+          "gross_margin": "0.1645342961494438174336645849",
+          "gross_profit": "3563713901.71",
+          "profit_cash_divergence": "0"
+        }
+      },
+      "case_id": "golden_g0_catl_eve_2024h1_peer",
+      "companies": [
+        "cn_300750",
+        "cn_300014"
+      ],
+      "expected_signal": "aligned_h1_framework_with_eve_corrected_lineage",
+      "fact_ids": [
+        "fact_g0_catl_2024h1_revenue",
+        "fact_g0_catl_2024h1_operating_cost",
+        "fact_g0_catl_2024h1_net_income",
+        "fact_g0_catl_2024h1_operating_cash_flow",
+        "fact_g0_eve_2024h1_corrected_revenue",
+        "fact_g0_eve_2024h1_corrected_operating_cost",
+        "fact_g0_eve_2024h1_corrected_net_income",
+        "fact_g0_eve_2024h1_corrected_operating_cash_flow"
+      ],
+      "limitations": [
+        "Cross-company ratios are descriptive and do not establish investment merit.",
+        "EVE uses its corrected filing available at the recorded research time."
+      ],
+      "periods": [
+        "2024H1",
+        "2024H1-restated"
+      ],
+      "research_time": "2024-09-04T00:00:00+08:00",
+      "task_type": "peer_comparison"
+    }
+  ],
+  "fixture_version": "1.0.0",
+  "review_status": "owner_signed",
+  "schema_version": "1.4.0"
+}

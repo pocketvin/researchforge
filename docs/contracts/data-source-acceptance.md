@@ -60,16 +60,18 @@ The decision record MUST state its scope. Acceptance for two A-share companies d
 
 | Check | Official-derived frozen package | Structured reconciliation candidate |
 |---|---|---|
-| Identity and access | CNInfo/SSE official filing links; extraction workflow pending | Provider identity/account pending G0 spike |
-| License/redistribution | Derived facts, documented short evidence, hashes, and links only | Terms and caching/derived-artifact rights pending |
-| Metric and company coverage | Eight named A-share companies; source validation pending | Same-company reconciliation coverage pending |
-| Period/scope metadata | CAS consolidated, six target reports; mapping pending | Publication/period/report-type fields pending |
-| Publication-time history | Official disclosure timestamps required | Historical announcement timestamps required |
-| Filing locators | Page/section/table locators required | Source-line and official filing back-reference required |
-| Numeric reconciliation | At least 20 non-missing facts pending | Compared against the same official facts |
-| Missing/correction behavior | Never coerce to zero; preserve old hashes | Provider correction/restatement behavior pending |
-| Latency/cost/rate limits | Offline after package freeze | Recorded but not a runtime dependency for V1.4 |
-| Final outcome and scope | Expected `FIXTURE-ONLY`, not yet accepted | ACCEPT/REJECT for reconciliation use only |
+| Identity and access | SZSE/CNInfo official announcement links; public web/direct PDF access | Tushare registered account/token and at least 2,000-point statement permissions |
+| License/redistribution | Full PDFs excluded; normalized facts, documented short evidence, hashes, locators and official links only | Personal, non-transferable, non-commercial, revocable and personal-viewing-only terms fail public/runtime use |
+| Metric and company coverage | G0 evidence covers CATL and EVE, four periods each and six metrics per filing; later Benchmark expansion remains separately gated | Required income, balance-sheet and cash-flow fields documented; API call intentionally unnecessary after rights rejection |
+| Period/scope metadata | CAS consolidated, frozen source-label mapping version `1.0.0`; 48/48 facts carry complete period and restatement semantics | Announcement date, actual publication date, period, report type and company type documented |
+| Publication-time history | Official disclosure timestamps required and retained | Historical announcement fields documented, but not relied upon by the product |
+| Filing locators | Official URL, file hash, page/section/table/row/column required | Provider field plus official filing back-reference would be required for optional local comparison |
+| Numeric reconciliation | 48/48 official cells match after unit conversion; 0 unresolved mismatches; representative 20-fact sample signed | No provider payload needed; numeric authority remains the manually checked filing sample |
+| Missing/correction behavior | Never coerce to zero; preserve old hashes and correction lineage | Update flag exists, but provider guarantees are insufficient and values cannot replace official lineage |
+| Latency/cost/rate limits | Offline after package freeze | Permission/account cost and service dependency avoided |
+| Final outcome and scope | `FIXTURE-ONLY` accepted for the stated two-company/four-period scope; no live or full-market claim | `REJECT` for runtime, committed demo, redistribution and public package |
+
+Evidence and links for this scorecard are recorded in `docs/evidence/g0-source-spike.md`.
 
 ## Fallback
 

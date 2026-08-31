@@ -1,6 +1,6 @@
 # ResearchForge Project Status
 
-Last updated: 2026-08-30
+Last updated: 2026-08-31
 
 Machine-readable mirror: [`project-status.json`](project-status.json)
 
@@ -10,10 +10,12 @@ Machine-readable mirror: [`project-status.json`](project-status.json)
 - Contract package: 1.4.0
 - Historical completed gate: V1.3 C0 Contract Readiness
 - Completed gate: C0 V1.4 Contract Readiness
-- Current gate: G0 Research Skill and Financial Foundations
-- Runtime status: not started
-- Work in progress: time-boxed data-source feasibility spike
+- Completed gate: G0 Research Skill and Financial Foundations
+- Current gate: G1_THIN / L1 Resume Ready
+- Runtime status: deterministic financial domain and public-safe G0 fixture package accepted; application thin slice is starting
+- Work in progress: content-addressed storage, bounded LangGraph workflow, CLI and asynchronous research API
 - V1.4 C0 independent review: PASS
+- V1.4 G0 independent review: PASS
 - LangGraph decision: retained as bounded single-agent orchestration (RF-007)
 
 ## Resume in Five Minutes
@@ -22,27 +24,25 @@ Machine-readable mirror: [`project-status.json`](project-status.json)
 2. Read [`docs/product/researchforge-v1.4-scope.md`](docs/product/researchforge-v1.4-scope.md).
 3. Read [`docs/product/v1.3-to-v1.4-change-note.md`](docs/product/v1.3-to-v1.4-change-note.md) and [`DECISIONS.md`](DECISIONS.md).
 4. Run `python3 scripts/validate_contracts.py`.
-5. Open [`docs/contracts/data-source-acceptance.md`](docs/contracts/data-source-acceptance.md) and start only the single next action below.
+5. Open [`docs/contracts/research-workflow.md`](docs/contracts/research-workflow.md) and start only the single next action below.
 
 ## Single Next Action
 
-Complete the identity, access, license, and official-source rows for the fixed A-share source package, then reconcile the first 20-fact sample.
+Implement one earnings-quality case through the complete L1 path: deterministic fixture retrieval, calculations, one bounded LangGraph workflow, immutable file artifacts, CLI and asynchronous API.
 
 Expected evidence:
 
-- one official filing source and one structured reconciliation candidate are documented;
-- at least 20 facts carry complete period, scope, unit, publication-time, and locator semantics;
-- numeric reconciliation meets the documented threshold with exact denominators;
-- public packaging and redistribution limits are explicit;
-- RF-004 records `ACCEPT`, `FIXTURE-ONLY`, or `REJECT` and the owner signs the sample.
+- the same application services work without LangGraph in unit tests;
+- one earnings-quality run reaches a schema-valid result from the frozen G0 fixture package;
+- all immutable run artifacts are addressable by SHA-256 and the trace is replayable;
+- CLI and API use the same workflow and return only persisted artifacts;
+- the OpenAI adapter has an offline fake for tests and refuses calls that would exceed the budget.
 
-Do not start application infrastructure until the source decision is recorded. The default intended result remains `FIXTURE-ONLY`; a provider is not accepted from feature claims alone.
+Do not broaden to five modes, PostgreSQL or the UI until this vertical slice passes independently.
 
 ## Open Blockers
 
-| ID | Blocker | Blocks | Required owner action |
-|---|---|---|---|
-| B-002 | Selected companies and official-source packages are not yet reconciled | G0 | Run the source spike and record FIXTURE-ONLY/REJECT evidence |
+None. A rotated OpenAI key will be needed for later live-model calibration, but offline engineering is not blocked by it.
 
 RF-005 is resolved in V1.4: L1/L2 use immutable file artifacts; the full product has five core records plus `source_documents`, `evidence_chunks`, and `run_artifacts`, with pgvector conditional on retrieval evidence.
 
@@ -51,7 +51,7 @@ RF-005 is resolved in V1.4: L1/L2 use immutable file artifacts; the full product
 | Level | Outcome | Status |
 |---|---|---|
 | L0 Contract Ready | V1.4 scope, 19 schemas, methods, experiment rules, validation | complete |
-| L1 Resume Ready | Deterministic tools + one LangGraph CLI/API research report + tests | not started |
+| L1 Resume Ready | Deterministic tools + one LangGraph CLI/API research report + tests | in progress |
 | L2 Demo Ready | Verifier + trace + replayable Skill Lab story | not started |
 | L3 Research Supported | Adopted Candidate plus supported sealed result | not started |
 | L4 Full Engineering Product | Five modes, two-page UI, Docker, CI, three labeled simulations | not started |
@@ -61,16 +61,20 @@ Stopping at L1 or L2 still produces a legitimate portfolio artifact. It must not
 ## Last Verification
 
 ```text
-git show --stat --oneline HEAD
-PASS: V1.3 accepted baseline preserved in commit 9532f2f
+uv lock --check && uv run python scripts/build_g0_fixtures.py
+PASS: 68 packages resolved; 8 Source Documents and 48 Financial Facts reproduced from hash-verified local filings
 
-uv lock --check && uv run --no-sync python scripts/validate_contracts.py
-PASS: 68 packages resolved; 19/11/10 schemas and 12/4/1 examples validated
+uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests && uv run pytest -q
+PASS: 46 files formatted; lint and strict typing clean; 69 tests passed
 
-uv run ruff format --check . && uv run ruff check . && uv run mypy src scripts && uv run pytest
-PASS: format and lint clean; strict mypy clean; 4 tests passed
+uv run python scripts/validate_contracts.py && git diff --check
+PASS: 19/11/10 schemas, 12/4/1 examples, Seed Skill hash, G0 8/48/3 package, 49 local links, 61 required files, and diff whitespace
+
+secret-pattern scan and git-ignore check
+PASS: no sk-proj pattern in project files; raw filing PDFs remain ignored
 
 Independent completion reviewer
+V1.4 G0 review: PASS — non-adjacent YoY correction independently verified; no remaining findings
 V1.4 C0 review: PASS — no required corrections
 V1.3 upgrade review: PASS
 ```

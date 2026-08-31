@@ -9,6 +9,7 @@ import re
 import sys
 from collections.abc import Iterator
 from datetime import date, datetime
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -22,11 +23,24 @@ HISTORICAL_SCHEMA_DIRS = {
     version: ROOT / "schemas" / version for version in HISTORICAL_SCHEMA_VERSIONS
 }
 EXAMPLE_DIR = ROOT / "examples" / "contracts" / CURRENT_SCHEMA_VERSION
+G0_FIXTURE_DIR = ROOT / "data" / "fixtures" / "g0"
+G0_SOURCE_DIR = G0_FIXTURE_DIR / "source-documents"
+G0_FACT_DIR = G0_FIXTURE_DIR / "financial-facts"
+G0_GOLDEN_CASES_PATH = G0_FIXTURE_DIR / "golden-cases.json"
+G0_MANIFEST_PATH = G0_FIXTURE_DIR / "manifest.json"
 HISTORICAL_EXAMPLE_DIRS = {
     "v1.3": ROOT / "examples" / "contracts" / "v1.3",
     "v1.2": ROOT / "examples" / "contracts",
 }
 CONTRACT_PACKAGE_VERSION = "1.4.0"
+G0_REQUIRED_METRICS = {
+    "accounts_receivable",
+    "inventory",
+    "revenue",
+    "operating_cost",
+    "net_income",
+    "operating_cash_flow",
+}
 HISTORICAL_SCOPE_SHA256 = {
     "v1.3": "b7c1a17e705550122a97296ef255660879f060911a2c01d27d1793bb9ece68a7",
     "v1.2": "513f4a9ae8eabab7a77cb34dedabf6b064a0f9a5710386856f93a7219250816e",
@@ -119,6 +133,12 @@ REQUIRED_CONTRACTS = {
     ROOT / "project-status.json",
     ROOT / "pyproject.toml",
     ROOT / "uv.lock",
+    ROOT / "scripts" / "build_g0_fixtures.py",
+    G0_MANIFEST_PATH,
+    G0_GOLDEN_CASES_PATH,
+    ROOT / "skills" / "fundamental-research" / "README.md",
+    ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md",
+    ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json",
     ROOT / "docs" / "architecture" / "implementation-blueprint.md",
     ROOT / "docs" / "product" / "researchforge-v1.4-scope.md",
     ROOT / "docs" / "product" / "v1.3-to-v1.4-change-note.md",
@@ -135,6 +155,11 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "contracts" / "evolution-adoption-policy.md",
     ROOT / "docs" / "contracts" / "run-lifecycle.md",
     ROOT / "docs" / "contracts" / "development-gates.md",
+    ROOT / "docs" / "evidence" / "g0-source-spike.md",
+    ROOT / "docs" / "evidence" / "g0-filing-read-plan.md",
+    ROOT / "docs" / "evidence" / "g0-reconciliation.md",
+    ROOT / "docs" / "evidence" / "g0-golden-cases.md",
+    ROOT / "docs" / "evidence" / "g0-owner-signoff.md",
     ROOT / "docs" / "operations" / "resume-playbook.md",
     ROOT / "docs" / "strategy" / "project-scorecard.md",
     ROOT / "docs" / "strategy" / "risk-register.md",
@@ -701,6 +726,267 @@ def validate_v14_semantics(
         require_text(path, fragments)
 
 
+def validate_seed_skill(schemas: dict[Path, dict[str, Any]]) -> None:
+    version_directory = ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0"
+    manifest_path = version_directory / "skill-version.json"
+    manifest = load_json(manifest_path)
+    if not isinstance(manifest, dict):
+        raise ContractError("seed skill version manifest must be an object")
+    schema_path = (SCHEMA_DIR / "skill-version.schema.json").resolve()
+    validate_instance(manifest, schemas[schema_path], schema_path, schemas)
+
+    content_path = (ROOT / manifest["content_path"]).resolve()
+    if ROOT not in content_path.parents:
+        raise ContractError("seed skill content path escapes the project")
+    if content_path.parent != version_directory:
+        raise ContractError("seed skill manifest must reference its immutable version directory")
+    digest = hashlib.sha256(content_path.read_bytes()).hexdigest()
+    if digest != manifest["content_hash"]:
+        raise ContractError("seed skill content hash does not match its manifest")
+    if manifest["status"] != "seed" or manifest["parent_version_id"] is not None:
+        raise ContractError("initial fundamental-research skill must be a parentless seed")
+
+
+def _decimal(value: Any, label: str) -> Decimal:
+    if not isinstance(value, str):
+        raise ContractError(f"{label}: Decimal value must be a string")
+    try:
+        return Decimal(value)
+    except InvalidOperation as exc:
+        raise ContractError(f"{label}: invalid Decimal value {value!r}") from exc
+
+
+def _fixture_package_hash(artifact_hashes: dict[str, str]) -> str:
+    payload = json.dumps(
+        artifact_hashes,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode()
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _validate_golden_case_calculations(
+    case: dict[str, Any], facts: dict[str, dict[str, Any]]
+) -> None:
+    grouped: dict[str, dict[str, Decimal]] = {}
+    for fact_id in case["fact_ids"]:
+        fact = facts[fact_id]
+        grouped.setdefault(fact["company"]["company_id"], {})[fact["metric_code"]] = _decimal(
+            fact["value"], f"{case['case_id']}:{fact_id}"
+        )
+
+    expected_metrics = {"revenue", "operating_cost", "net_income", "operating_cash_flow"}
+    expected: dict[str, dict[str, Decimal]] = {}
+    for company_id, metrics in grouped.items():
+        if set(metrics) != expected_metrics:
+            raise ContractError(
+                f"{case['case_id']}: company {company_id} has wrong calculation inputs"
+            )
+        gross_profit = metrics["revenue"] - metrics["operating_cost"]
+        if metrics["revenue"] <= 0 or metrics["net_income"] <= 0:
+            raise ContractError(f"{case['case_id']}: frozen ratio denominator is not positive")
+        expected[company_id] = {
+            "gross_profit": gross_profit,
+            "gross_margin": gross_profit / metrics["revenue"],
+            "cash_conversion": metrics["operating_cash_flow"] / metrics["net_income"],
+            "profit_cash_divergence": Decimal(
+                int(metrics["net_income"] > 0 and metrics["operating_cash_flow"] < 0)
+            ),
+        }
+
+    calculations = case["calculations"]
+    if case["task_type"] == "company_research":
+        company_id = case["companies"][0]
+        actual_by_company = {company_id: calculations}
+    else:
+        company_labels = {"cn_300750": "catl", "cn_300014": "eve"}
+        actual_by_company = {
+            company_id: calculations[company_labels[company_id]] for company_id in case["companies"]
+        }
+    for company_id, expected_values in expected.items():
+        actual_values = actual_by_company[company_id]
+        if set(actual_values) != set(expected_values):
+            raise ContractError(f"{case['case_id']}: calculation catalog changed")
+        for formula_code, expected_value in expected_values.items():
+            actual_value = _decimal(
+                actual_values[formula_code],
+                f"{case['case_id']}:{company_id}:{formula_code}",
+            )
+            if actual_value != expected_value:
+                raise ContractError(
+                    f"{case['case_id']}:{company_id}:{formula_code}: calculation mismatch"
+                )
+
+
+def validate_g0_fixtures(schemas: dict[Path, dict[str, Any]]) -> tuple[int, int, int]:
+    """Validate the frozen G0 source package and deterministic golden cases."""
+    source_paths = sorted(G0_SOURCE_DIR.glob("*.json"))
+    fact_paths = sorted(G0_FACT_DIR.glob("*.json"))
+    if len(source_paths) != 8 or len(fact_paths) != 48:
+        raise ContractError(
+            f"G0 fixture catalog must contain 8 source documents and 48 facts; "
+            f"found {len(source_paths)} and {len(fact_paths)}"
+        )
+    if any(G0_FIXTURE_DIR.rglob("*.pdf")):
+        raise ContractError("G0 public fixture package must not contain raw PDFs")
+
+    source_schema_path = (SCHEMA_DIR / "source-document.schema.json").resolve()
+    fact_schema_path = (SCHEMA_DIR / "financial-fact.schema.json").resolve()
+    sources: dict[str, dict[str, Any]] = {}
+    for path in source_paths:
+        source = load_json(path)
+        if not isinstance(source, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: source document must be an object")
+        validate_instance(source, schemas[source_schema_path], source_schema_path, schemas)
+        document_id = source["document_id"]
+        if document_id in sources:
+            raise ContractError(f"G0 source document ID is duplicated: {document_id}")
+        if source["license"]["raw_payload_committed"] is not False:
+            raise ContractError(f"{document_id}: raw filing commitment must remain false")
+        if datetime.fromisoformat(source["published_at"]) > datetime.fromisoformat(
+            source["retrieved_at"]
+        ):
+            raise ContractError(f"{document_id}: retrieval precedes publication")
+        sources[document_id] = source
+
+    facts: dict[str, dict[str, Any]] = {}
+    metrics_by_document: dict[str, set[str]] = {document_id: set() for document_id in sources}
+    for path in fact_paths:
+        fact = load_json(path)
+        if not isinstance(fact, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: financial fact must be an object")
+        validate_instance(fact, schemas[fact_schema_path], fact_schema_path, schemas)
+        fact_id = fact["fact_id"]
+        if fact_id in facts:
+            raise ContractError(f"G0 fact ID is duplicated: {fact_id}")
+        document_id = fact["source"]["document_id"]
+        source = sources.get(document_id)
+        if source is None:
+            raise ContractError(f"{fact_id}: source document does not exist")
+        if fact["company"] != source["company"]:
+            raise ContractError(f"{fact_id}: company differs from source document")
+        if fact["source"]["content_hash"] != source["content_hash"]:
+            raise ContractError(f"{fact_id}: source content hash differs from document")
+        if fact["source"]["published_at"] != source["published_at"]:
+            raise ContractError(f"{fact_id}: publication time differs from document")
+        locator = fact["source_locator"]
+        if not all(
+            locator.get(key) for key in ("page", "section", "table", "row_label", "column_label")
+        ):
+            raise ContractError(f"{fact_id}: incomplete source locator")
+        if fact["value"] is None:
+            raise ContractError(f"{fact_id}: G0 reviewed sample cannot contain a missing value")
+        _decimal(fact["value"], fact_id)
+        metrics_by_document[document_id].add(fact["metric_code"])
+        facts[fact_id] = fact
+
+    for document_id, metrics in metrics_by_document.items():
+        if metrics != G0_REQUIRED_METRICS:
+            raise ContractError(f"{document_id}: required metric set changed")
+    corrected = sources.get("doc_g0_eve_2024h1_corrected")
+    if corrected is None or corrected["reporting_period"]["restatement_status"] != "restated":
+        raise ContractError("corrected EVE H1 source must retain restated lineage")
+
+    manifest = load_json(G0_MANIFEST_PATH)
+    if not isinstance(manifest, dict):
+        raise ContractError("G0 manifest must be an object")
+    if manifest["schema_version"] != CURRENT_ARTIFACT_VERSION:
+        raise ContractError("G0 manifest schema version changed")
+    if manifest["status"] != "owner_signed":
+        raise ContractError("G0 manifest must retain the completed owner signoff")
+    if manifest["source_document_count"] != 8 or manifest["financial_fact_count"] != 48:
+        raise ContractError("G0 manifest counts changed")
+    if set(manifest["source_document_ids"]) != set(sources):
+        raise ContractError("G0 manifest source IDs do not match the package")
+    if set(manifest["financial_fact_ids"]) != set(facts):
+        raise ContractError("G0 manifest fact IDs do not match the package")
+
+    reconciliation = manifest["reconciliation"]
+    expected_reconciliation = {
+        "sample_size": 48,
+        "semantic_complete_count": 48,
+        "visual_match_count": 48,
+        "unresolved_mismatch_count": 0,
+        "semantic_completeness_rate": "1.0",
+        "numeric_agreement_rate": "1.0",
+    }
+    for key, expected_value in expected_reconciliation.items():
+        if reconciliation.get(key) != expected_value:
+            raise ContractError(f"G0 reconciliation {key} must equal {expected_value!r}")
+    cells = reconciliation["cells"]
+    if len(cells) != 48 or {cell["fact_id"] for cell in cells} != set(facts):
+        raise ContractError("G0 reconciliation cells do not cover the 48 facts exactly")
+    for cell in cells:
+        fact_id = cell["fact_id"]
+        reported_value = _decimal(cell["reported_value"], f"{fact_id}:reported")
+        scale = cell["reported_scale"]
+        if not isinstance(scale, int) or isinstance(scale, bool) or scale <= 0:
+            raise ContractError(f"{fact_id}: reported scale must be a positive integer")
+        canonical = _decimal(cell["canonical_value"], f"{fact_id}:canonical")
+        if canonical != reported_value * Decimal(scale):
+            raise ContractError(f"{fact_id}: unit normalization mismatch")
+        if canonical != _decimal(facts[fact_id]["value"], fact_id):
+            raise ContractError(f"{fact_id}: manifest and fact values differ")
+        if cell["visual_match"] is not True:
+            raise ContractError(f"{fact_id}: visual reconciliation must pass")
+
+    golden = load_json(G0_GOLDEN_CASES_PATH)
+    if not isinstance(golden, dict) or golden.get("fixture_version") != "1.0.0":
+        raise ContractError("G0 golden-case fixture version changed")
+    if golden.get("review_status") != "owner_signed":
+        raise ContractError("G0 golden cases must retain the completed owner signoff")
+    cases = golden.get("cases")
+    if not isinstance(cases, list) or len(cases) != 3:
+        raise ContractError("G0 requires exactly three golden cases")
+    case_ids: set[str] = set()
+    for case in cases:
+        if not isinstance(case, dict):
+            raise ContractError("G0 golden case must be an object")
+        case_id = case.get("case_id")
+        if not isinstance(case_id, str) or case_id in case_ids:
+            raise ContractError("G0 golden case IDs must be unique strings")
+        case_ids.add(case_id)
+        fact_ids = case.get("fact_ids")
+        if not isinstance(fact_ids, list) or not fact_ids or not set(fact_ids) <= set(facts):
+            raise ContractError(f"{case_id}: golden-case fact IDs are invalid")
+        research_time = datetime.fromisoformat(case["research_time"])
+        if any(
+            datetime.fromisoformat(facts[fact_id]["source"]["published_at"]) > research_time
+            for fact_id in fact_ids
+        ):
+            raise ContractError(f"{case_id}: contains evidence published after research time")
+        _validate_golden_case_calculations(case, facts)
+
+    artifact_paths = sorted((*source_paths, *fact_paths, G0_GOLDEN_CASES_PATH))
+    expected_hashes = {
+        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in artifact_paths
+    }
+    if manifest["artifact_hashes"] != expected_hashes:
+        raise ContractError("G0 artifact hashes do not match public fixture files")
+    if manifest["package_hash"] != _fixture_package_hash(expected_hashes):
+        raise ContractError("G0 package hash does not match artifact hashes")
+
+    signoff = manifest["owner_signoff"]
+    signoff_ids = signoff["fact_ids"]
+    if signoff["sample_size"] != 20 or len(signoff_ids) != 20:
+        raise ContractError("G0 owner signoff sample must contain exactly 20 facts")
+    if len(set(signoff_ids)) != 20 or not set(signoff_ids) <= set(facts):
+        raise ContractError("G0 owner signoff fact sample is duplicated or unknown")
+    if signoff["status"] != "signed" or signoff["signed_at"] is None:
+        raise ContractError("G0 owner signoff must remain signed")
+    signoff_path = (ROOT / signoff["evidence_file"]).resolve()
+    if ROOT not in signoff_path.parents or not signoff_path.is_file():
+        raise ContractError("G0 owner signoff evidence path is invalid")
+    signoff_text = signoff_path.read_text(encoding="utf-8")
+    for expected_text in (signoff["signed_at"], manifest["package_hash"], "Status: `SIGNED`"):
+        if expected_text not in signoff_text:
+            raise ContractError("G0 owner signoff evidence does not match the manifest")
+
+    return len(source_paths), len(fact_paths), len(cases)
+
+
 def main() -> int:
     try:
         missing_files = [
@@ -817,6 +1103,8 @@ def main() -> int:
             raise ContractError("V1.4 insufficient_data run must reject a Research Result artifact")
 
         validate_v14_semantics(schemas, current_examples)
+        validate_seed_skill(schemas)
+        g0_source_count, g0_fact_count, g0_golden_count = validate_g0_fixtures(schemas)
         validate_historical_scope_hashes()
 
         markdown_link_count = validate_markdown_links()
@@ -834,6 +1122,12 @@ def main() -> int:
         )
         print("PASS: insufficient_data cannot persist a Research Result artifact")
         print("PASS: model, simulation, budget, retrieval, and split semantics validated")
+        print("PASS: immutable fundamental-research Seed Skill manifest and hash validated")
+        print(
+            "PASS: G0 fixture package validated "
+            f"({g0_source_count} sources, {g0_fact_count} facts, "
+            f"{g0_golden_count} golden cases)"
+        )
         print("PASS: historical V1.3 and V1.2 scope hashes validated")
         print(
             "PASS: project-status.json validated "
