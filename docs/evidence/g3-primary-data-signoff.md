@@ -1,6 +1,6 @@
 # G3 Primary Benchmark Data Signoff
 
-Status: `PREPARED_AWAITING_OWNER_SIGNOFF`
+Status: `SIGNED`
 
 This is the second of three intentionally small owner signoffs required by the V1.4
 protocol. It authorizes the already frozen data package for the primary experiment; it
@@ -21,7 +21,8 @@ Test.
   accounts receivable, and inventory.
 - Raw announcement PDFs and verifier-only ground truth are not committed. Their hashes,
   official links, publication times, and physical-page locators are retained.
-- `formal_run_authorized` remains `false` until the owner explicitly signs this package.
+- `formal_run_authorized` is `true` following the owner's unified signoff on
+  `2026-09-01T19:14:33+08:00`.
 
 The machine-readable package is
 [`data/fixtures/v1.4-primary/manifest.json`](../../data/fixtures/v1.4-primary/manifest.json).
@@ -74,10 +75,15 @@ same source document and can be inspected through the case manifest.
 
 ## Owner decision
 
-Pending. The owner should confirm that this 24-report sample, company grouping, and
-public-data treatment may be used for the primary experiment. On confirmation, the
-manifest and this evidence record will be changed to `SIGNED`, while Final Test remains
-sealed until the protocol reaches that stage.
+Signed on `2026-09-01T19:14:33+08:00`. The owner issued a unified signoff for package
+`3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f` and authorized
+execution under the frozen company grouping and public-data treatment. This authorizes
+Evolution and Validation; Final Test remains sealed until Validation adopts the frozen
+Candidate, exactly as required by the preregistered protocol.
+
+The unified signoff does not predetermine the experiment result and does not sign an
+as-yet-unproduced final public package. The final packaging record will cite the actual
+result and hashes after execution.
 
 ## Limitations
 

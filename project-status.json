@@ -9,7 +9,7 @@
   "current_milestone": {
     "id": "g3-formal-execution",
     "title": "Authorize and execute the controlled primary experiment",
-    "outcome": "Both experiment packages and the executor are frozen; complete the second owner signoff, rotated-key confirmation, one synthetic provider calibration, and formal execution without premature Final Test access.",
+    "outcome": "The primary package is owner-signed, both experiment packages and the executor are frozen; complete rotated-key confirmation, one synthetic provider calibration, and formal execution without premature Final Test access.",
     "status": "in_progress"
   },
   "last_verified": {
@@ -63,14 +63,14 @@
     ]
   },
   "next_action": {
-    "title": "Sign the prepared primary package and confirm a rotated local key",
-    "why": "Both frozen packages, the controlled executor, Docker runtime, demo, simulation harness, and synthetic calibration gate are ready; owner authorization and a safe local provider credential are the remaining external pre-call controls.",
-    "first_step": "Review and sign primary package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f, place a rotated key only in the ignored local environment, then run the one-request synthetic calibration.",
+    "title": "Confirm a rotated local key and run calibration",
+    "why": "Both frozen packages, owner authorization, the controlled executor, Docker runtime, demo, simulation harness, and synthetic calibration gate are ready; a safe local provider credential is the remaining external pre-call control.",
+    "first_step": "Place a newly rotated key only in the created ignored .env, set RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1, then run the one-request synthetic calibration.",
     "acceptance_evidence": [
       "All 24 prepared cases retain stable IDs, official source links, publication cutoffs, hashes, required facts and expected deterministic calculations.",
       "Evolution, Validation and Final Test company/group keys have zero overlap and the suite hash is stable across three repetitions.",
       "Redistribution status is explicit and unsafe original text is replaced by synthetic evidence in the public package.",
-      "The owner signs package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f before any formal provider run.",
+      "The owner signed package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f at 2026-09-01T19:14:33+08:00 before any formal provider run.",
       "A rotated key is available only in ignored local configuration with RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1.",
       "Calibration preflight remains provider_contacted=false until the rotated-key control passes.",
       "Formal preflight additionally requires the pinned synthetic calibration artifact to pass."
@@ -82,12 +82,6 @@
       "description": "A rotated OpenAI key is required for live calibration; the previously exposed key is prohibited.",
       "blocks": ["G3", "G4"],
       "owner_action": "Provide the rotated key only through the ignored local environment when the offline preflight is ready."
-    },
-    {
-      "id": "primary_owner_signoff_pending",
-      "description": "The primary 24-case package is prepared and machine-validated but is not yet owner-signed.",
-      "blocks": ["G3"],
-      "owner_action": "Review and sign the compact prepared sample at the second required signoff point."
     }
   ],
   "pending_decisions": [],
@@ -106,8 +100,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-01T18:52:00+08:00",
-    "summary": "Added and verified the mandatory one-request synthetic provider calibration gate; owner signoff, rotated key, live calibration/experiment/simulations and publication remain.",
+    "ended_at": "2026-09-01T19:14:33+08:00",
+    "summary": "Recorded the owner's unified primary-package signoff while preserving the Final Test seal; rotated key, live calibration/experiment/simulations and publication remain.",
     "files_changed": [
       "src/researchforge/",
       "tests/",
@@ -123,5 +117,5 @@
       "project-status.json"
     ]
   },
-  "updated_at": "2026-09-01T18:52:00+08:00"
+  "updated_at": "2026-09-01T19:14:33+08:00"
 }

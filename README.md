@@ -18,10 +18,10 @@ ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品�
 - Contract package: **1.4.0**
 - Independently accepted gates: **V1.4 C0 + G0**
 - Local implementation: **G1 five-mode breadth + G2 Verifier evidence implemented; one final independent acceptance is deferred until project completion**
-- Active milestone: **G3 primary package signoff + rotated key + formal execution**
+- Active milestone: **G3 rotated key + calibration + formal execution**
 - Supported deployment for V1.4: **local or controlled single-user demo**
 
-Current critical path: sign the prepared primary package, confirm a rotated local key, pass one synthetic provider calibration, then run the implemented controlled Evolution/Validation/Final Test executor. The disjoint V1.5 package, Docker runtime, screenshots, demo video, and three-session simulation executor are ready. After G3, run the three labeled simulations, publish the public package, and perform one final independent review. Synthetic tests and calibration are not a formal `SUPPORTED` result.
+Current critical path: the primary package is signed; confirm a rotated local key, pass one synthetic provider calibration, then run the implemented controlled Evolution/Validation/Final Test executor. The disjoint V1.5 package, Docker runtime, screenshots, demo video, and three-session simulation executor are ready. After G3, run the three labeled simulations, publish the public package, and perform one final independent review. Synthetic tests and calibration are not a formal `SUPPORTED` result.
 
 ## Run the Zero-Cost Product Core
 
@@ -74,7 +74,7 @@ policy, and both budget ceilings. It never contacts OpenAI:
 uv run researchforge evolution-preflight
 ```
 
-Until owner signoff and a rotated local key are present, the expected result is
+Until a rotated local key and a passed calibration are present, the expected result is
 `status: BLOCKED` with `provider_contacted: false`. Never paste a key into a command or
 Git-tracked file. After explicit signoff, keep the rotated key only in ignored local
 environment configuration, set `RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1`, load that local
@@ -248,7 +248,7 @@ Contracts and data-source acceptance ✓
 → two-page UI + PostgreSQL + CI definitions ✓
 → primary + contingency package freeze ✓
 → Docker smoke + simulation executor + demo packaging ✓
-→ primary owner signoff + controlled live evolution cycle ← current
+→ rotated key + calibration + controlled live evolution cycle ← current
 → three live labeled simulations + public packaging
 → one final independent acceptance
 ```

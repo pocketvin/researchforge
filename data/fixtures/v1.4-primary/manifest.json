@@ -3,9 +3,9 @@
   "company_count": 4,
   "created_at": "2026-09-01T05:30:00+08:00",
   "evidence_chunk_count": 24,
-  "evidence_status": "PREPARED_AWAITING_OWNER_SIGNOFF",
+  "evidence_status": "SIGNED",
   "financial_fact_count": 144,
-  "formal_run_authorized": false,
+  "formal_run_authorized": true,
   "ground_truth_committed": false,
   "ground_truth_hashes": {
     "case_evo_catl_2023fy": "572775d7ce29a8c77fa010430574299cc7bb4cd6a1857e1d400741824ed1f9f2",
@@ -49,8 +49,8 @@
   ],
   "owner_signoff": {
     "evidence_file": "docs/evidence/g3-primary-data-signoff.md",
-    "signed_at": null,
-    "status": "pending"
+    "signed_at": "2026-09-01T19:14:33+08:00",
+    "status": "signed"
   },
   "package_hash": "3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f",
   "package_id": "package_v1_4_primary_battery_earnings_quality",

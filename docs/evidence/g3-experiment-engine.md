@@ -62,6 +62,6 @@ OpenAI client until a rotated local credential is confirmed. A successful calibr
 artifact is a mandatory input to the formal preflight.
 
 The disjoint V1.5 contingency package is now sealed and verified before the first primary
-call. Current blockers are the pending second owner signoff, missing rotated-key
-confirmation, and the consequently unrun calibration. No provider request or Final Test
-access has occurred.
+call. The primary package is owner-signed. Current blockers are the missing rotated-key
+confirmation and consequently unrun calibration. No provider request or Final Test access
+has occurred.

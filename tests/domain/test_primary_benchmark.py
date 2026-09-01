@@ -166,9 +166,10 @@ def test_manifest_hashes_cover_every_public_artifact_and_package_is_stable() -> 
     }
     assert canonical_hash(data_hashes) == MANIFEST["package_hash"]
     assert {case["package_hash"] for case in CASES.values()} == {MANIFEST["package_hash"]}
-    assert MANIFEST["formal_run_authorized"] is False
+    assert MANIFEST["evidence_status"] == "SIGNED"
+    assert MANIFEST["formal_run_authorized"] is True
     assert MANIFEST["owner_signoff"] == {
-        "status": "pending",
-        "signed_at": None,
+        "status": "signed",
+        "signed_at": "2026-09-01T19:14:33+08:00",
         "evidence_file": "docs/evidence/g3-primary-data-signoff.md",
     }

@@ -211,7 +211,7 @@ def test_formal_plan_freezes_all_repeated_run_denominators() -> None:
     assert plan["maximum_provider_requests_with_one_repair_per_run"] == 288
 
 
-def test_unsigned_real_package_preflight_blocks_without_provider_contact(tmp_path: Path) -> None:
+def test_signed_real_package_still_blocks_without_runtime_prerequisites(tmp_path: Path) -> None:
     report = preflight_primary_experiment(
         package_root=PUBLIC_PACKAGE,
         private_ground_truth_root=tmp_path / "unavailable-private-truth",
@@ -225,9 +225,12 @@ def test_unsigned_real_package_preflight_blocks_without_provider_contact(tmp_pat
 
     assert report["status"] == "BLOCKED"
     assert report["provider_contacted"] is False
-    assert "primary package owner signoff is not SIGNED" in report["blockers"]
+    assert "primary package owner signoff is not SIGNED" not in report["blockers"]
+    assert "primary package formal_run_authorized is not true" not in report["blockers"]
+    assert "primary package owner_signoff status is not signed" not in report["blockers"]
     assert "rotated local OpenAI key is not confirmed ready" in report["blockers"]
     assert "pinned OpenAI calibration has not passed" in report["blockers"]
+    assert any("verifier-only ground truth hash mismatch" in item for item in report["blockers"])
     assert report["budget"]["experiment_worst_case"] == "1.8432"
 
 

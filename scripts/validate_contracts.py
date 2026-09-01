@@ -1198,8 +1198,8 @@ def validate_primary_benchmark(
         raise ContractError("primary manifest must be an object")
     expected_manifest_values = {
         "schema_version": CURRENT_ARTIFACT_VERSION,
-        "evidence_status": "PREPARED_AWAITING_OWNER_SIGNOFF",
-        "formal_run_authorized": False,
+        "evidence_status": "SIGNED",
+        "formal_run_authorized": True,
         "source_document_count": 24,
         "financial_fact_count": 144,
         "evidence_chunk_count": 24,
@@ -1212,11 +1212,11 @@ def validate_primary_benchmark(
         if manifest.get(key) != expected:
             raise ContractError(f"primary manifest {key} must equal {expected!r}")
     if manifest["owner_signoff"] != {
-        "status": "pending",
-        "signed_at": None,
+        "status": "signed",
+        "signed_at": "2026-09-01T19:14:33+08:00",
         "evidence_file": "docs/evidence/g3-primary-data-signoff.md",
     }:
-        raise ContractError("primary package must await the second owner signoff")
+        raise ContractError("primary package must retain the completed second owner signoff")
     if len(manifest["ground_truth_hashes"]) != 24 or set(manifest["ground_truth_hashes"]) != set(
         cases
     ):
