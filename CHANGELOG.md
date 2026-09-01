@@ -25,6 +25,7 @@
 - Controlled formal executor for 144 repeated Base/Seed/Candidate paths, durable progress, budget reservations, paired Validation adoption, and one-time Final Test consumption.
 - One-request synthetic provider-calibration gate that freezes model/configuration, prompt hashes, Structured Output coverage, usage and cost evidence before formal Benchmark access.
 - Owner-signed primary package authorization while preserving the preregistered one-time Final Test seal.
+- Public GitHub package at `pocketvin/researchforge` after tracked-secret, PDF, remote-hash, and temporary-credential cleanup checks.
 - Three-session simulated-usability executor with fresh contexts, screenshot evidence, Structured Outputs, explicit `SIMULATED` labels, idempotent recovery, and aggregate/sub-budget guards.
 - Full Docker runtime smoke, configurable compatible image sources, richer persisted Skill Lab artifacts, bilingual demo instructions, verified screenshots, and an H.264 preview video.
 

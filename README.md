@@ -1,5 +1,7 @@
 # ResearchForge
 
+[![CI](https://github.com/pocketvin/researchforge/actions/workflows/ci.yml/badge.svg)](https://github.com/pocketvin/researchforge/actions/workflows/ci.yml)
+
 > A Financial Research Agent with Verifiable Procedures and a Controlled Learning Experiment.
 
 ResearchForge V1.4 is an evidence-grounded company fundamental-research product and a controlled skill-evolution experiment. The current local product turns frozen A-share financial facts into schema-valid reports, deterministic evaluations, and sanitized ten-stage LangGraph traces without asking a model to perform arithmetic.
@@ -20,6 +22,7 @@ ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品�
 - Local implementation: **G1 five-mode breadth + G2 Verifier evidence implemented; one final independent acceptance is deferred until project completion**
 - Active milestone: **G3 rotated key + calibration + formal execution**
 - Supported deployment for V1.4: **local or controlled single-user demo**
+- Public repository: **[pocketvin/researchforge](https://github.com/pocketvin/researchforge)**
 
 Current critical path: the primary package is signed; confirm a rotated local key, pass one synthetic provider calibration, then run the implemented controlled Evolution/Validation/Final Test executor. The disjoint V1.5 package, Docker runtime, screenshots, demo video, and three-session simulation executor are ready. After G3, run the three labeled simulations, publish the public package, and perform one final independent review. Synthetic tests and calibration are not a formal `SUPPORTED` result.
 

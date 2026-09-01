@@ -13,8 +13,13 @@
     "status": "in_progress"
   },
   "last_verified": {
-    "at": "2026-09-01T18:52:00+08:00",
+    "at": "2026-09-01T19:27:00+08:00",
     "commands": [
+      {
+        "command": "git push to pocketvin/researchforge and verify remote main through the GitHub API",
+        "exit_code": 0,
+        "summary": "The public repository was created and main matched local commit 804ddcb9832113427fd41a703801be2cb0f6c27a. Secret/PDF scans passed; the temporary repository-scoped SSH credential was removed locally and from GitHub. CI run 33502340783 passed backend, frontend/Playwright and container jobs."
+      },
       {
         "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py && git diff --check && docker compose config --quiet",
         "exit_code": 0,
@@ -100,8 +105,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-01T19:14:33+08:00",
-    "summary": "Recorded the owner's unified primary-package signoff while preserving the Final Test seal; rotated key, live calibration/experiment/simulations and publication remain.",
+    "ended_at": "2026-09-01T19:27:00+08:00",
+    "summary": "Recorded the owner's unified primary-package signoff, created the ignored local .env, and published the verified code to public GitHub; rotated key and live calibration/experiment/simulations remain.",
     "files_changed": [
       "src/researchforge/",
       "tests/",
@@ -117,5 +122,5 @@
       "project-status.json"
     ]
   },
-  "updated_at": "2026-09-01T19:14:33+08:00"
+  "updated_at": "2026-09-01T19:27:00+08:00"
 }

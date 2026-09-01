@@ -14,7 +14,7 @@ Machine-readable mirror: [`project-status.json`](project-status.json)
 - Local engineering evidence: G1 thin/full breadth and G2 Verifier exit behavior are implemented; final independent acceptance is intentionally deferred until the whole project is ready.
 - Active milestone: G3 primary package is owner-signed and the sealed contingency package plus controlled executor are ready; rotated local key, one synthetic calibration, and live execution remain.
 - Product runtime: five research modes share one ten-stage LangGraph, durable file checkpoints, deterministic finance/Verifier services, asynchronous API, CLI, hybrid PostgreSQL index, and two-page React UI.
-- Packaging: CI, the full Docker Compose runtime, migration up/down/up, browser verification, public screenshots, and a short H.264 demo pass locally. Compatible Public ECR image overrides were used because Docker Hub authentication timed out; committed defaults remain standard official image names.
+- Packaging: the public repository is live at [pocketvin/researchforge](https://github.com/pocketvin/researchforge); CI, the full Docker Compose runtime, migration up/down/up, browser verification, public screenshots, and a short H.264 demo pass locally. Compatible Public ECR image overrides were used because Docker Hub authentication timed out; committed defaults remain standard official image names.
 - OpenAI spend: USD 0.00. No live provider call has been made.
 
 ## What Is Proven Locally
@@ -37,7 +37,7 @@ Machine-readable mirror: [`project-status.json`](project-status.json)
 - The synthetic Evolution tests prove decision-policy behavior only. They are not the formal benchmark and do not support a `SUPPORTED` claim.
 - The suite's verifier-only ground truth is excluded from Git and represented publicly by 24 hashes; owner signoff does not unseal Final Test or predetermine an outcome.
 - Human user value and market demand remain unvalidated; planned usability evidence is AI simulation labeled `SIMULATED`.
-- Public GitHub publication, one model-backed calibration, three model-backed simulations, formal OpenAI experiment, and sealed Final Test are not complete.
+- One model-backed calibration, three model-backed simulations, formal OpenAI experiment, and sealed Final Test are not complete.
 
 ## Single Next Action
 
@@ -46,7 +46,6 @@ Place a new rotated key only in the created, ignored local `.env` and set `RESEA
 ## Active Blockers and Dependencies
 
 1. A new rotated OpenAI key is required before live calibration. The key previously pasted into chat is treated as compromised and must never be used or stored.
-2. GitHub publication is authorized and will occur after the signed-state checks and secret/data scan pass.
 
 ## Verification Snapshot
 
@@ -62,6 +61,9 @@ PASS: TypeScript, ESLint, 3 unit tests, production build, 1 Playwright E2E, no c
 
 Docker
 PASS: three images built, PostgreSQL/API/frontend healthy, migration up/down/up, frontend-proxied research run succeeded, 10-stage Trace and 6 facts resolved. Public ECR overrides were used; committed defaults remain standard.
+
+GitHub
+PASS: public `pocketvin/researchforge` repository, default `main`, remote commit matched local `804ddcb9832113427fd41a703801be2cb0f6c27a`, no tracked secret/PDF, and no temporary deploy key retained. Initial CI run `33502340783` passed backend, frontend/Playwright, and container smoke jobs.
 
 Independent acceptance
 Deferred by owner until final project completion. C0 and G0 retain their prior PASS verdicts.
