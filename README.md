@@ -21,7 +21,7 @@ ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品�
 - Active milestone: **G3 primary package signoff + rotated key + formal execution**
 - Supported deployment for V1.4: **local or controlled single-user demo**
 
-Current critical path: sign the prepared primary package, confirm a rotated local key, then run the implemented controlled Evolution/Validation/Final Test executor. The disjoint V1.5 package, Docker runtime, screenshots, demo video, and three-session simulation executor are ready. After G3, run the three labeled simulations, publish the public package, and perform one final independent review. Synthetic tests are not a formal `SUPPORTED` result.
+Current critical path: sign the prepared primary package, confirm a rotated local key, pass one synthetic provider calibration, then run the implemented controlled Evolution/Validation/Final Test executor. The disjoint V1.5 package, Docker runtime, screenshots, demo video, and three-session simulation executor are ready. After G3, run the three labeled simulations, publish the public package, and perform one final independent review. Synthetic tests and calibration are not a formal `SUPPORTED` result.
 
 ## Run the Zero-Cost Product Core
 
@@ -51,9 +51,24 @@ The API implements create/status/result/trace/facts/cancel resources, `GET /v1/c
 
 ## Inspect the Formal Experiment Safely
 
-The offline preflight validates public hashes, 24 verifier-only ground-truth hashes, the
-Seed Skill, the 144-run plan, one-time Final Test policy, and both budget ceilings. It
-never contacts OpenAI:
+First validate the one-request calibration boundary without contacting OpenAI:
+
+```bash
+uv run researchforge calibration-preflight
+```
+
+After the rotated key is confirmed, `calibrate` sends exactly one synthetic request and
+freezes its model, prompt, Structured Output, coverage, usage, and cost evidence. This
+request is explicitly marked `SYNTHETIC_CALIBRATION_ONLY_NOT_RESEARCH_EVIDENCE` and cannot
+support the research hypothesis:
+
+```bash
+uv run researchforge calibrate
+```
+
+The formal offline preflight then validates the passed calibration, public hashes, 24
+verifier-only ground-truth hashes, the Seed Skill, the 144-run plan, one-time Final Test
+policy, and both budget ceilings. It never contacts OpenAI:
 
 ```bash
 uv run researchforge evolution-preflight
@@ -63,7 +78,8 @@ Until owner signoff and a rotated local key are present, the expected result is
 `status: BLOCKED` with `provider_contacted: false`. Never paste a key into a command or
 Git-tracked file. After explicit signoff, keep the rotated key only in ignored local
 environment configuration, set `RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1`, load that local
-environment, and use `evolution-run` to execute or idempotently resume the experiment.
+environment, pass the calibration, and use `evolution-run` to execute or idempotently
+resume the experiment.
 
 The maximum plan is 144 formal runs: 72 Base/Seed Evolution runs, 36 paired
 Seed/Candidate Validation runs, and—only after adoption—36 paired runs in the single

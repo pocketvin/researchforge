@@ -28,6 +28,9 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-013 | One final independent acceptance | ACCEPTED | 2026-09-01 | Final release |
 | RF-014 | One target report per formal Benchmark case | ACCEPTED | 2026-09-01 | — |
 | RF-015 | Skill-conditioned coverage, deterministic verification | ACCEPTED | 2026-09-01 | G3 |
+| RF-016 | Seal the V1.5 contingency before the primary experiment | ACCEPTED | 2026-09-01 | — |
+| RF-017 | Portable container image sources | ACCEPTED | 2026-09-01 | — |
+| RF-018 | One synthetic provider calibration before formal runs | ACCEPTED | 2026-09-01 | G3 |
 
 ## RF-001 — Contract-First Implementation
 
@@ -355,3 +358,28 @@ Consequence:
 
 The full three-service runtime smoke passed using Public ECR overrides. CI and normal
 users retain the standard image defaults, and no registry credential enters the project.
+
+## RF-018 — One Synthetic Provider Calibration Before Formal Runs
+
+Status: **ACCEPTED**
+
+Decision:
+
+Send exactly one bounded synthetic request after rotated-key confirmation and before the
+first formal Benchmark request. Freeze the pinned model/configuration, prompt hashes,
+Structured Output coverage, context/output hashes, usage and aggregate spend in an
+idempotent calibration artifact. Formal preflight requires that artifact to pass.
+
+Reason:
+
+An interface, model-availability, schema, or instruction failure should be detected before
+it can contaminate a preregistered sample. One request is sufficient to exercise the live
+boundary while staying far below the USD 1 calibration allocation.
+
+Consequence:
+
+Calibration uses only a declared synthetic payload, must explicitly report all seven
+earnings-quality check codes, and is labeled
+`SYNTHETIC_CALIBRATION_ONLY_NOT_RESEARCH_EVIDENCE`. It never counts toward Base, Seed,
+Candidate, Validation, Final Test, usability, or a `SUPPORTED` conclusion. Failure blocks
+formal execution until corrected without consuming a Benchmark case.

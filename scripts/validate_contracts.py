@@ -157,6 +157,8 @@ REQUIRED_CONTRACTS = {
     ROOT / "scripts" / "docker_smoke.py",
     ROOT / "scripts" / "extract_primary_pdf_text.py",
     ROOT / "scripts" / "inspect_financial_rows.py",
+    ROOT / "src" / "researchforge" / "application" / "calibration.py",
+    ROOT / "tests" / "application" / "test_calibration.py",
     G0_MANIFEST_PATH,
     G0_GOLDEN_CASES_PATH,
     PRIMARY_MANIFEST_PATH,

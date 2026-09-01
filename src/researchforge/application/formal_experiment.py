@@ -221,6 +221,7 @@ def preflight_primary_experiment(
     seed_content_path: Path,
     ledger: BudgetLedger,
     rotated_key_ready: bool,
+    calibration_ready: bool,
     worst_case_request_cost: Decimal,
 ) -> dict[str, Any]:
     """Validate package, truth hashes, skill, key readiness, and worst-case budget."""
@@ -236,6 +237,8 @@ def preflight_primary_experiment(
         blockers.append("primary package owner_signoff status is not signed")
     if not rotated_key_ready:
         blockers.append("rotated local OpenAI key is not confirmed ready")
+    if not calibration_ready:
+        blockers.append("pinned OpenAI calibration has not passed")
 
     public_hashes = manifest.get("public_artifact_hashes", {})
     if not isinstance(public_hashes, dict) or len(public_hashes) != 216:
@@ -358,6 +361,7 @@ class FormalExperimentRunner:
         ledger: BudgetLedger,
         worst_case_request_cost: Decimal,
         rotated_key_ready: bool,
+        calibration_ready: bool,
         clock: Callable[[], datetime] = _now,
     ) -> None:
         self.experiment_id = experiment_id
@@ -371,6 +375,7 @@ class FormalExperimentRunner:
         self.ledger = ledger
         self.worst_case_request_cost = worst_case_request_cost
         self.rotated_key_ready = rotated_key_ready
+        self.calibration_ready = calibration_ready
         self.clock = clock
         self.evolution_repository = EvolutionArtifactRepository(self.artifact_root)
         self.run_repository = FileRunRepository(self.artifact_root)
@@ -391,6 +396,7 @@ class FormalExperimentRunner:
             seed_content_path=self.seed_content_path,
             ledger=self.ledger,
             rotated_key_ready=self.rotated_key_ready,
+            calibration_ready=self.calibration_ready,
             worst_case_request_cost=self.worst_case_request_cost,
         )
         self.evolution_repository.save(self.experiment_id, "preflight", report)

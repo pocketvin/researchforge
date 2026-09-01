@@ -17,6 +17,10 @@ from researchforge.adapters.openai_responses import (
 )
 from researchforge.api.app import PROJECT_ROOT, build_default_service
 from researchforge.application.budget import BudgetLedger
+from researchforge.application.calibration import (
+    OpenAICalibrationRunner,
+    calibration_artifact_passed,
+)
 from researchforge.application.contracts import ResearchRunRequest
 from researchforge.application.evolution import preregister_experiment
 from researchforge.application.formal_experiment import FormalExperimentRunner
@@ -94,6 +98,11 @@ def _parser() -> argparse.ArgumentParser:
             default=PROJECT_ROOT / "benchmark" / "suites" / "v1.4-primary-preregistered.json",
         )
     for name, help_text in (
+        ("calibration-preflight", "validate model calibration without provider contact"),
+        ("calibrate", "run or return the one pinned synthetic provider calibration"),
+    ):
+        subcommands.add_parser(name, help=help_text)
+    for name, help_text in (
         ("usability-preflight", "validate simulated-usability evidence without provider contact"),
         ("usability-run", "run or resume exactly three labeled simulated usability sessions"),
     ):
@@ -155,6 +164,37 @@ def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
         ledger=ledger,
         worst_case_request_cost=luna_worst_case_cost(8000, 4000),
         rotated_key_ready=rotated_key_ready,
+        calibration_ready=calibration_artifact_passed(Path(args.artifact_root)),
+    )
+
+
+def _calibration_runner(args: argparse.Namespace) -> OpenAICalibrationRunner:
+    ledger = BudgetLedger(state_path=args.artifact_root / "budget" / "project-openai.json")
+    rotated_key_ready = bool(os.getenv("OPENAI_API_KEY")) and (
+        os.getenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED") == "1"
+    )
+
+    def generator_factory(ledger: BudgetLedger) -> OpenAIResponsesConclusionGenerator:
+        from openai import OpenAI
+
+        responses = cast(ResponsesResource, OpenAI().responses)
+        seed_content = (
+            PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        return OpenAIResponsesConclusionGenerator(
+            responses,
+            ledger,
+            max_input_tokens=8000,
+            max_output_tokens=4000,
+            skill_content=seed_content,
+        )
+
+    return OpenAICalibrationRunner(
+        artifact_root=Path(args.artifact_root),
+        ledger=ledger,
+        rotated_key_ready=rotated_key_ready,
+        generator_factory=generator_factory if rotated_key_ready else None,
+        worst_case_cost=luna_worst_case_cost(8000, 4000),
     )
 
 
@@ -195,6 +235,14 @@ def _simulated_usability_runner(args: argparse.Namespace) -> SimulatedUsabilityR
 def main(argv: list[str] | None = None) -> None:
     """Execute a run or inspect persisted artifacts without provider calls."""
     args = _parser().parse_args(argv)
+    if args.command in {"calibration-preflight", "calibrate"}:
+        calibration_runner = _calibration_runner(args)
+        _print(
+            calibration_runner.preflight()
+            if args.command == "calibration-preflight"
+            else calibration_runner.run()
+        )
+        return
     if args.command in {"evolution-preflight", "evolution-run"}:
         formal_runner = _formal_runner(args)
         _print(

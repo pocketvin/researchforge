@@ -219,6 +219,7 @@ def test_unsigned_real_package_preflight_blocks_without_provider_contact(tmp_pat
         seed_content_path=SEED_ROOT / "SKILL.md",
         ledger=BudgetLedger(state_path=tmp_path / "budget.json"),
         rotated_key_ready=False,
+        calibration_ready=False,
         worst_case_request_cost=luna_worst_case_cost(8000, 4000),
     )
 
@@ -226,6 +227,7 @@ def test_unsigned_real_package_preflight_blocks_without_provider_contact(tmp_pat
     assert report["provider_contacted"] is False
     assert "primary package owner signoff is not SIGNED" in report["blockers"]
     assert "rotated local OpenAI key is not confirmed ready" in report["blockers"]
+    assert "pinned OpenAI calibration has not passed" in report["blockers"]
     assert report["budget"]["experiment_worst_case"] == "1.8432"
 
 
@@ -240,6 +242,7 @@ def test_primary_preflight_requires_the_sealed_contingency_commitment(tmp_path: 
         seed_content_path=SEED_ROOT / "SKILL.md",
         ledger=BudgetLedger(state_path=tmp_path / "budget.json"),
         rotated_key_ready=True,
+        calibration_ready=True,
         worst_case_request_cost=luna_worst_case_cost(8000, 4000),
     )
 
@@ -264,6 +267,7 @@ def test_synthetic_full_runner_proves_controls_but_not_research_hypothesis(
         ledger=BudgetLedger(state_path=tmp_path / "artifacts" / "budget.json"),
         worst_case_request_cost=luna_worst_case_cost(8000, 4000),
         rotated_key_ready=True,
+        calibration_ready=True,
     )
 
     completed = runner.run()

@@ -189,3 +189,24 @@ def test_cli_simulated_usability_preflight_never_contacts_provider(
     assert report["status"] == "BLOCKED"
     assert report["provider_contacted"] is False
     assert report["evidence_label"] == "SIMULATED"
+
+
+def test_cli_calibration_preflight_never_contacts_provider(
+    tmp_path: Path, capsys: object, monkeypatch: object
+) -> None:
+    from _pytest.capture import CaptureFixture
+    from _pytest.monkeypatch import MonkeyPatch
+
+    capture = capsys
+    patcher = monkeypatch
+    assert isinstance(capture, CaptureFixture)
+    assert isinstance(patcher, MonkeyPatch)
+    patcher.delenv("OPENAI_API_KEY", raising=False)
+    patcher.delenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED", raising=False)
+
+    main(["--artifact-root", str(tmp_path / "artifacts"), "calibration-preflight"])
+    report = json.loads(capture.readouterr().out)
+
+    assert report["status"] == "BLOCKED"
+    assert report["provider_contacted"] is False
+    assert report["evidence_class"] == "SYNTHETIC_CALIBRATION_ONLY_NOT_RESEARCH_EVIDENCE"

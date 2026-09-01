@@ -23,12 +23,15 @@ Status: `ENGINE_READY_LIVE_RUN_BLOCKED`
   run, below the USD 9 primary allocation and USD 20 aggregate cap.
 - A previously exposed key cannot be used accidentally: live execution additionally
   requires local `RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1`.
+- Before any Benchmark request, exactly one synthetic calibration must pass with the
+  frozen model/configuration, Structured Output schema, all seven required check codes,
+  usage evidence, and the same aggregate ledger. It is never research evidence.
 
 ## Local verification
 
 ```text
-uv run pytest -q tests/application/test_formal_experiment.py
-4 passed
+uv run pytest -q tests/application/test_calibration.py tests/application/test_formal_experiment.py
+6 passed
 
 Synthetic full-path denominator:
 144 runs = 72 Evolution + 36 Validation + 36 Final Test
@@ -50,9 +53,15 @@ provider_contacted: false
 package_hash: 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f
 case_count: 24
 private_ground_truth_hash_count: 24
-experiment_worst_case: USD 1.8432
+budget.experiment_worst_case: USD 1.8432
 ```
 
+Calibration preflight separately reports `provider_contacted: false`, the immutable
+synthetic context hash, USD `0.0064` worst case, and blocks without constructing an
+OpenAI client until a rotated local credential is confirmed. A successful calibration
+artifact is a mandatory input to the formal preflight.
+
 The disjoint V1.5 contingency package is now sealed and verified before the first primary
-call. Current blockers are only the pending second owner signoff and missing rotated-key
-confirmation. No provider request or Final Test access has occurred.
+call. Current blockers are the pending second owner signoff, missing rotated-key
+confirmation, and the consequently unrun calibration. No provider request or Final Test
+access has occurred.

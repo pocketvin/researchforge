@@ -9,21 +9,21 @@
   "current_milestone": {
     "id": "g3-formal-execution",
     "title": "Authorize and execute the controlled primary experiment",
-    "outcome": "Both experiment packages and the executor are frozen; complete the second owner signoff, rotated-key confirmation, provider calibration, and formal execution without premature Final Test access.",
+    "outcome": "Both experiment packages and the executor are frozen; complete the second owner signoff, rotated-key confirmation, one synthetic provider calibration, and formal execution without premature Final Test access.",
     "status": "in_progress"
   },
   "last_verified": {
-    "at": "2026-09-01T18:40:00+08:00",
+    "at": "2026-09-01T18:52:00+08:00",
     "commands": [
       {
         "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py && git diff --check && docker compose config --quiet",
         "exit_code": 0,
-        "summary": "The updated full local gate passed: 69 locked packages, 115 formatted files, clean lint and strict typing across 71 source files, 150 tests, all contract/package checks, diff whitespace and Compose configuration."
+        "summary": "The updated full local gate passed: 69 locked packages, 117 formatted files, clean lint and strict typing across 73 source files, 153 tests, 85 required contract files, diff whitespace and Compose configuration."
       },
       {
-        "command": "uv run pytest -q tests/application/test_formal_experiment.py tests/domain/test_contingency_benchmark.py tests/application/test_simulated_usability.py && env -u OPENAI_API_KEY -u RESEARCHFORGE_ROTATED_KEY_CONFIRMED uv run researchforge evolution-preflight",
+        "command": "uv run pytest -q tests/application/test_calibration.py tests/application/test_formal_experiment.py tests/domain/test_contingency_benchmark.py tests/application/test_simulated_usability.py && env -u OPENAI_API_KEY -u RESEARCHFORGE_ROTATED_KEY_CONFIRMED uv run researchforge calibration-preflight && env -u OPENAI_API_KEY -u RESEARCHFORGE_ROTATED_KEY_CONFIRMED uv run researchforge evolution-preflight",
         "exit_code": 0,
-        "summary": "Formal, sealed-contingency, and simulation controls passed, including a 144-run synthetic full path. Real preflight contacted no provider, verified both frozen packages, truth hashes and budget bounds, and blocked only on owner signoff and rotated-key confirmation."
+        "summary": "Calibration, formal, sealed-contingency, and simulation controls passed, including a 144-run synthetic full path. Both real preflights contacted no provider; calibration blocked only on rotated-key confirmation, while formal execution additionally blocked on owner signoff and the missing derived calibration artifact."
       },
       {
         "command": "uv run pytest -q tests/domain/test_primary_benchmark.py && uv run python scripts/validate_contracts.py",
@@ -64,15 +64,16 @@
   },
   "next_action": {
     "title": "Sign the prepared primary package and confirm a rotated local key",
-    "why": "Both frozen packages, the controlled executor, Docker runtime, demo, and simulation harness are ready; owner authorization and a safe local provider credential are the only remaining pre-call controls.",
-    "first_step": "Review and sign primary package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f, then place a rotated key only in the ignored local environment.",
+    "why": "Both frozen packages, the controlled executor, Docker runtime, demo, simulation harness, and synthetic calibration gate are ready; owner authorization and a safe local provider credential are the remaining external pre-call controls.",
+    "first_step": "Review and sign primary package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f, place a rotated key only in the ignored local environment, then run the one-request synthetic calibration.",
     "acceptance_evidence": [
       "All 24 prepared cases retain stable IDs, official source links, publication cutoffs, hashes, required facts and expected deterministic calculations.",
       "Evolution, Validation and Final Test company/group keys have zero overlap and the suite hash is stable across three repetitions.",
       "Redistribution status is explicit and unsafe original text is replaced by synthetic evidence in the public package.",
       "The owner signs package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f before any formal provider run.",
       "A rotated key is available only in ignored local configuration with RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1.",
-      "Preflight remains provider_contacted=false until both controls pass."
+      "Calibration preflight remains provider_contacted=false until the rotated-key control passes.",
+      "Formal preflight additionally requires the pinned synthetic calibration artifact to pass."
     ]
   },
   "blockers": [
@@ -105,8 +106,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-01T18:40:00+08:00",
-    "summary": "Sealed the disjoint contingency package, completed Docker runtime smoke, expanded Skill Lab, implemented the three-session simulation executor, and produced bilingual screenshots/video; owner signoff, rotated key, live experiment/simulations and publication remain.",
+    "ended_at": "2026-09-01T18:52:00+08:00",
+    "summary": "Added and verified the mandatory one-request synthetic provider calibration gate; owner signoff, rotated key, live calibration/experiment/simulations and publication remain.",
     "files_changed": [
       "src/researchforge/",
       "tests/",
@@ -122,5 +123,5 @@
       "project-status.json"
     ]
   },
-  "updated_at": "2026-09-01T18:40:00+08:00"
+  "updated_at": "2026-09-01T18:52:00+08:00"
 }
