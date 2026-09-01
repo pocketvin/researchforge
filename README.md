@@ -4,16 +4,24 @@
 
 ResearchForge V1.4 is an evidence-grounded company fundamental-research product and a controlled skill-evolution experiment. The current local product turns frozen A-share financial facts into schema-valid reports, deterministic evaluations, and sanitized ten-stage LangGraph traces without asking a model to perform arithmetic.
 
+## 中文概览
+
+ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品，也是一个封闭的 Skill 演化实验。Research 页面把五种研究任务转成可追溯的财务事实、`Decimal` 公式、Claim—Fact—Evidence、反证、限制与十阶段 LangGraph Trace；Skill Lab 只读展示失败聚类、Experience、Candidate Skill Diff、Validation 配对指标和一次性 Final Test。React、FastAPI 与 PostgreSQL 可由 Docker Compose 一键启动，大型不可变 JSON 使用内容寻址文件保存。
+
+项目不会提供交易、实时行情或投资建议，也不会开放式自我修改。正式实验固定模型、数据、图、Verifier 和三次重复；主实验不支持假设时最多启用一次完全隔离的 V1.5 备用实验。真实用户价值尚未验证，三次 AI 可用性检查必须标记为 `SIMULATED`。当前离正式研究结论只差主数据包人工签字、轮换后的本地 API Key 及封闭实验执行；OpenAI 累计消费仍为 0 美元。
+
+快速启动：`docker compose up -d --build --wait`，随后执行 `uv run python scripts/docker_smoke.py`。完整中英文演示见 [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md)。
+
 ## Status
 
 - Product/research scope: **V1.4 active baseline**
 - Contract package: **1.4.0**
 - Independently accepted gates: **V1.4 C0 + G0**
 - Local implementation: **G1 five-mode breadth + G2 Verifier evidence implemented; one final independent acceptance is deferred until project completion**
-- Active milestone: **G3 primary package signoff + contingency freeze + formal execution**
+- Active milestone: **G3 primary package signoff + rotated key + formal execution**
 - Supported deployment for V1.4: **local or controlled single-user demo**
 
-Current critical path: sign the prepared primary package, freeze the disjoint contingency package, then run the implemented controlled Evolution/Validation/Final Test executor. After G3, complete Docker smoke, three labeled simulations, demo/public packaging, and one final independent review. Synthetic tests are not a formal `SUPPORTED` result.
+Current critical path: sign the prepared primary package, confirm a rotated local key, then run the implemented controlled Evolution/Validation/Final Test executor. The disjoint V1.5 package, Docker runtime, screenshots, demo video, and three-session simulation executor are ready. After G3, run the three labeled simulations, publish the public package, and perform one final independent review. Synthetic tests are not a formal `SUPPORTED` result.
 
 ## Run the Zero-Cost Product Core
 
@@ -69,7 +77,23 @@ npm ci --prefix frontend
 npm run dev --prefix frontend
 ```
 
-Or use `docker compose up --build` after registry connectivity is available. The Compose definition is validated, but the full image/runtime smoke test is not yet passing evidence because base-image metadata requests timed out locally.
+Or start the complete packaged product:
+
+```bash
+docker compose up -d --build --wait
+uv run python scripts/docker_smoke.py
+```
+
+The verified stack runs PostgreSQL, FastAPI, and Nginx/React with health checks and persistent volumes. Standard Docker Hub image names remain the defaults; optional `PYTHON_IMAGE`, `NODE_IMAGE`, `NGINX_IMAGE`, and `POSTGRES_IMAGE` build overrides are available for compatible mirrors.
+
+The same aggregate budget ledger controls three fresh-context usability sessions. Offline preflight never contacts OpenAI:
+
+```bash
+uv run researchforge usability-preflight \
+  --run-id <persisted-succeeded-run-id>
+```
+
+The expected result remains `BLOCKED` until the rotated local key is confirmed. A real run writes exactly three schema-valid records with `evidence_label: SIMULATED` and `human_user_value_validated: false`.
 
 ## Start Here
 
@@ -79,6 +103,7 @@ Or use `docker compose up --build` after registry connectivity is available. The
 4. [`docs/strategy/solo-success-plan.md`](docs/strategy/solo-success-plan.md) — L0–L4 delivery ladder and fallbacks.
 5. [`docs/contracts/research-workflow.md`](docs/contracts/research-workflow.md) — bounded LangGraph orchestration.
 6. [`PORTFOLIO.md`](PORTFOLIO.md) — claims that are safe at each evidence level.
+7. [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) — bilingual live demo and packaged evidence.
 
 ## Authority Order
 
@@ -109,8 +134,8 @@ Engineering delivery can remain useful after a negative experiment, but the owne
 | L0 Contract Ready | Scope, schemas, methods, validation | complete |
 | L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | local evidence implemented; final acceptance deferred |
 | L2 Demo Ready | Verifier, trace, and replayable failure evidence | local evidence implemented; final acceptance deferred |
-| L3 Research Supported | Adopted Candidate and supported sealed Final Test | executor ready; live evidence blocked by signoff/key/contingency freeze |
-| L4 Full Engineering Product | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | in progress — core/UI/storage/CI implemented |
+| L3 Research Supported | Adopted Candidate and supported sealed Final Test | executor and both frozen packages ready; live evidence blocked by signoff/key |
+| L4 Full Engineering Product | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | engineering/runtime/demo ready; simulations and publication pending G3 |
 
 Stopping earlier preserves honest portfolio value. “Self-improving” is not a completed claim until L3 adoption and sealed-test evidence exist.
 
@@ -152,6 +177,8 @@ ResearchForge/
 │   │   └── task-capability-matrix.md
 │   ├── operations/
 │   │   └── resume-playbook.md
+│   ├── demo/                                  # bilingual walkthrough and script
+│   ├── assets/                                # verified screenshots and short MP4 preview
 │   └── strategy/
 │       ├── project-scorecard.md
 │       ├── risk-register.md
@@ -167,6 +194,7 @@ ResearchForge/
 │   └── v1.4/                                  # 19 current schemas
 ├── scripts/
 │   ├── build_g0_fixtures.py
+│   ├── docker_smoke.py
 │   ├── run_reliability_batch.py
 │   └── validate_contracts.py
 ├── frontend/                                 # React Research + Skill Lab
@@ -202,8 +230,10 @@ Contracts and data-source acceptance ✓
 → checkpoint recovery + deterministic and coverage verifier ✓
 → remaining product modes + 20-run reliability ✓
 → two-page UI + PostgreSQL + CI definitions ✓
-→ primary signoff + contingency freeze + controlled live evolution cycle ← current
-→ Docker smoke + simulations + demo/public packaging
+→ primary + contingency package freeze ✓
+→ Docker smoke + simulation executor + demo packaging ✓
+→ primary owner signoff + controlled live evolution cycle ← current
+→ three live labeled simulations + public packaging
 → one final independent acceptance
 ```
 

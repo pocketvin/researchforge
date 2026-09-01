@@ -1,0 +1,51 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_688772",
+    "country_code": "CN",
+    "exchange": "SSE",
+    "legal_name": "珠海冠宇电池股份有限公司",
+    "ticker": "688772"
+  },
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "currency": "CNY",
+  "fact_id": "fact_v15_cosmx_2023fy_inventory",
+  "fact_kind": "reported",
+  "measurement_unit": "CURRENCY",
+  "metric_code": "inventory",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2023,
+    "period_basis": "instant",
+    "period_end": "2023-12-31",
+    "period_start": "2023-12-31",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "abff7a3b893a1c6c9551b6ee9ecc51d36cbd6ff2f072ec43c557c1e051ab6799",
+    "document_id": "doc_v15_cosmx_2023fy",
+    "license_id": null,
+    "published_at": "2024-04-09T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-09-01T14:00:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2024-04-09/1219538336.PDF"
+  },
+  "source_locator": {
+    "column_label": "报告期末",
+    "page": 114,
+    "row_label": "存货",
+    "section": "财务报表",
+    "table": "合并资产负债表"
+  },
+  "value": "1950776252.67"
+}

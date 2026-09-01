@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_v15_farasis_2024q3_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_688567",
+    "country_code": "CN",
+    "exchange": "SSE",
+    "legal_name": "孚能科技（赣州）股份有限公司",
+    "ticker": "688567"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_v15_farasis_2024q3",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 9,
+    "page_start": 6,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2024-10-31T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q3",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-09-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-10-31/1221573882.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 2869627940.39 CNY\ninventory: 2403504862.79 CNY\nrevenue: 9211731512.00 CNY\noperating_cost: 7953339258.79 CNY\nnet_income: -303794290.10 CNY\noperating_cash_flow: 277325351.98 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "541aea6558db5bf08a07dee8641895e87f7b235bc9a1d8397d9f8c56a23b4e0a"
+}

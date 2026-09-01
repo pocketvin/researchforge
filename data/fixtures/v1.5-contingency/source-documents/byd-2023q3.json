@@ -1,0 +1,44 @@
+{
+  "available_from": "2023-10-31T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "content_hash": "61f893148a6de41d46058ff296a1aa56b733cad49633a001e207d5da2ee55cda",
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "document_id": "doc_v15_byd_2023q3",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded; only normalized facts, hashes, physical-page locators, synthetic evidence, and official links are public.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.1.0",
+  "published_at": "2023-10-31T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_text_matched",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q3",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-09-30",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2023-10-31/1218200103.PDF",
+  "title": "比亚迪2023年三季度报告"
+}

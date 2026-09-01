@@ -309,3 +309,49 @@ a structure failure and receives the one allowed repair. Deterministic product o
 retains native full coverage. Prompt-wrapper, resolved-instruction, skill, dataset, graph,
 formula, and verifier hashes are persisted. Synthetic 144-run tests prove this control
 path only and can never be cited as formal `SUPPORTED` evidence.
+
+## RF-016 — Seal the V1.5 Contingency Before the Primary Experiment
+
+Status: **ACCEPTED**
+
+Decision:
+
+Freeze package `package_v1_5_contingency_battery_earnings_quality` with package hash
+`ba95986b94d416e7c5d3960749d253463d61161ca081b3454c4428b6344c93f4` before any
+primary provider request. Keep both formal-run and activation authorization false.
+Activation is allowed only after primary Validation rejects the Candidate and after the
+complete primary negative result is frozen.
+
+Reason:
+
+Pre-freezing prevents company selection, labels, or deterministic truth from being
+adapted after seeing the primary result. The four contingency companies have zero group
+overlap with the primary package.
+
+Consequence:
+
+The primary preflight fails if the package, suite, public artifact catalog, hashes,
+company isolation, sealed condition, or activation flags change. A passing primary
+experiment leaves the contingency permanently unused.
+
+## RF-017 — Portable Container Image Sources Without Changing Runtime Semantics
+
+Status: **ACCEPTED**
+
+Decision:
+
+Keep standard Docker Hub official-library names as Compose defaults and expose four
+optional build/image variables: `PYTHON_IMAGE`, `NODE_IMAGE`, `NGINX_IMAGE`, and
+`POSTGRES_IMAGE`. A mirror may be used only for byte-compatible official-library images;
+application dependencies remain pinned by `uv.lock` and `package-lock.json`.
+
+Reason:
+
+Docker Hub authentication timed out in the local network while Amazon Public ECR was
+reachable. Making the image source configurable preserves reproducible packaging without
+hard-coding one environment-specific registry.
+
+Consequence:
+
+The full three-service runtime smoke passed using Public ECR overrides. CI and normal
+users retain the standard image defaults, and no registry credential enters the project.

@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_v15_byd_2023q3_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_v15_byd_2023q3",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 9,
+    "page_start": 6,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2023-10-31T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q3",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-09-30",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2023-10-31/1218200103.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 52970472000.00 CNY\ninventory: 92711639000.00 CNY\nrevenue: 422274838000.00 CNY\noperating_cost: 338726669000.00 CNY\nnet_income: 21366896000.00 CNY\noperating_cash_flow: 97860288000.00 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "7320561662683a8f184e6290085b4276942af20e8d8e0632d527d81d75fd7633"
+}

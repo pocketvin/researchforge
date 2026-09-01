@@ -133,3 +133,59 @@ def test_cli_preregisters_primary_grouping_without_consuming_final_test(
         ]
     )
     assert json.loads(capture.readouterr().out) == experiment
+
+
+def test_cli_simulated_usability_preflight_never_contacts_provider(
+    tmp_path: Path, capsys: object, monkeypatch: object
+) -> None:
+    from _pytest.capture import CaptureFixture
+    from _pytest.monkeypatch import MonkeyPatch
+
+    capture = capsys
+    patcher = monkeypatch
+    assert isinstance(capture, CaptureFixture)
+    assert isinstance(patcher, MonkeyPatch)
+    patcher.delenv("OPENAI_API_KEY", raising=False)
+    patcher.delenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED", raising=False)
+    main(
+        [
+            "--artifact-root",
+            str(tmp_path / "artifacts"),
+            "run",
+            "--company",
+            "cn_300750",
+            "--period",
+            "2024H1",
+            "--question",
+            "利润是否转化为现金流?",
+            "--research-time",
+            "2024-08-01T00:00:00+08:00",
+            "--idempotency-key",
+            "cli-simulated-usability-source",
+        ]
+    )
+    run_id = json.loads(capture.readouterr().out)["manifest"]["run_id"]
+    screenshots = []
+    for name in ("research", "skill-lab"):
+        path = tmp_path / f"{name}.png"
+        path.write_bytes(b"\x89PNG\r\n\x1a\ncli-test")
+        screenshots.append(path)
+
+    main(
+        [
+            "--artifact-root",
+            str(tmp_path / "artifacts"),
+            "usability-preflight",
+            "--run-id",
+            run_id,
+            "--research-screenshot",
+            str(screenshots[0]),
+            "--skill-lab-screenshot",
+            str(screenshots[1]),
+        ]
+    )
+    report = json.loads(capture.readouterr().out)
+
+    assert report["status"] == "BLOCKED"
+    assert report["provider_contacted"] is False
+    assert report["evidence_label"] == "SIMULATED"

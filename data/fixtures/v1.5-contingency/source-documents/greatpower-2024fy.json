@@ -1,0 +1,44 @@
+{
+  "available_from": "2025-04-24T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_300438",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "广州鹏辉能源科技股份有限公司",
+    "ticker": "300438"
+  },
+  "content_hash": "8307e390aa10aa3f5d1b3007206cc1a0fd8712cbf3b3a854988c2729639b9e2f",
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "document_id": "doc_v15_greatpower_2024fy",
+  "document_type": "annual_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded; only normalized facts, hashes, physical-page locators, synthetic evidence, and official links are public.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.1.0",
+  "published_at": "2025-04-24T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_text_matched",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-12-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2025-04-24/1223245174.PDF",
+  "title": "鹏辉能源2024年年度报告"
+}

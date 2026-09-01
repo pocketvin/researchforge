@@ -1,4 +1,5 @@
-FROM python:3.12-slim
+ARG PYTHON_IMAGE=python:3.12-slim
+FROM ${PYTHON_IMAGE}
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -10,6 +11,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 COPY alembic.ini ./
 COPY migrations ./migrations
+COPY benchmark ./benchmark
 COPY schemas ./schemas
 COPY skills ./skills
 COPY data/fixtures ./data/fixtures

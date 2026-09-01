@@ -58,6 +58,57 @@ describe('ResearchForge UI', () => {
       vi.fn((input: RequestInfo | URL) => {
         const path = String(input)
         if (path === '/v1/catalog') return Promise.resolve(json(catalog))
+        if (path.endsWith('/artifacts/failure-cluster')) {
+          return Promise.resolve(json({
+            cluster_id: 'cluster_cash_conversion',
+            failure_label: 'PROCEDURE_OMISSION',
+            signature: 'coverage_cash_conversion:missing',
+            eligible_run_count: 36,
+            support_count: 12,
+            distinct_case_ids: ['case_a', 'case_b'],
+          }))
+        }
+        if (path.endsWith('/artifacts/experience')) {
+          return Promise.resolve(json({
+            experience_id: 'experience_cash_conversion',
+            failure_label: 'PROCEDURE_OMISSION',
+            observed_behavior: '报告遗漏现金转化核验。',
+            applicable_condition: '净利润为正且经营现金流可用。',
+            required_procedure: '形成重大结论前记录确定性的现金转化结果。',
+            exceptions: [],
+          }))
+        }
+        if (path.endsWith('/artifacts/patch')) {
+          return Promise.resolve(json({
+            patch_id: 'patch_cash_conversion',
+            candidate_version: '1.0.0-candidate.1',
+            status: 'ADOPTED',
+            operations: [{
+              operation: 'ADD',
+              target_section: 'earnings_quality',
+              new_rule: '形成重大结论前记录确定性的现金转化结果。',
+              reason: '修复已核验失败聚类。',
+            }],
+            decision: {
+              target_failure_reduced: true,
+              deterministic_quality_preserved: true,
+              overall_non_inferior: true,
+              regression_within_threshold: true,
+              decision_reason: 'repair_rate=1.000; regression_rate=0.000',
+            },
+          }))
+        }
+        if (path.endsWith('/artifacts/validation-decision')) {
+          return Promise.resolve(json({
+            status: 'ADOPTED',
+            decision: null,
+            seed_evaluation_ids: ['eval_seed'],
+            candidate_evaluation_ids: ['eval_candidate'],
+          }))
+        }
+        if (path.includes('/artifacts/')) {
+          return Promise.resolve(new Response('{}', { status: 404 }))
+        }
         if (path.includes('/v1/evolution-experiments/')) {
           return Promise.resolve(
             json({
@@ -211,6 +262,9 @@ describe('ResearchForge UI', () => {
 
     expect(await screen.findByText('preregistered · PENDING')).toBeInTheDocument()
     expect(screen.getByText('保持封闭')).toBeInTheDocument()
+    expect(await screen.findAllByText('PROCEDURE_OMISSION')).toHaveLength(2)
+    expect(screen.getAllByText('形成重大结论前记录确定性的现金转化结果。')).toHaveLength(2)
+    expect(screen.getByText(/repair_rate=1.000/)).toBeInTheDocument()
     expect(screen.queryByText(/SUPPORTED/)).not.toBeInTheDocument()
   })
 })

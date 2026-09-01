@@ -1,0 +1,44 @@
+{
+  "available_from": "2025-03-31T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_688772",
+    "country_code": "CN",
+    "exchange": "SSE",
+    "legal_name": "珠海冠宇电池股份有限公司",
+    "ticker": "688772"
+  },
+  "content_hash": "82ea9fca3139a97219ea8c1473c58c98acb4a1f7cb982a843ecf6315dd9b6c0b",
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "document_id": "doc_v15_cosmx_2024fy",
+  "document_type": "annual_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded; only normalized facts, hashes, physical-page locators, synthetic evidence, and official links are public.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.1.0",
+  "published_at": "2025-03-31T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_text_matched",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-12-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2025-03-31/1222962517.PDF",
+  "title": "珠海冠宇2024年年度报告"
+}

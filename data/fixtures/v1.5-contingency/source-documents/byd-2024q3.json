@@ -1,0 +1,44 @@
+{
+  "available_from": "2024-10-31T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "content_hash": "20625a0f315cdcd02f8a87140ffb7053c5519f8f412d88c1d5c9d8d0ab013587",
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "document_id": "doc_v15_byd_2024q3",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded; only normalized facts, hashes, physical-page locators, synthetic evidence, and official links are public.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.1.0",
+  "published_at": "2024-10-31T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_text_matched",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q3",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-09-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-10-31/1221574602.PDF",
+  "title": "比亚迪2024年三季度报告"
+}

@@ -1,0 +1,51 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_688567",
+    "country_code": "CN",
+    "exchange": "SSE",
+    "legal_name": "孚能科技（赣州）股份有限公司",
+    "ticker": "688567"
+  },
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "currency": "CNY",
+  "fact_id": "fact_v15_farasis_2024h1_revenue",
+  "fact_kind": "reported",
+  "measurement_unit": "CURRENCY",
+  "metric_code": "revenue",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "H1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-06-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "1574bc8010b14ee11203f9256909f706063dab8e218e1c19121f5e060500d48e",
+    "document_id": "doc_v15_farasis_2024h1",
+    "license_id": null,
+    "published_at": "2024-08-24T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-09-01T14:00:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2024-08-24/1220962674.PDF"
+  },
+  "source_locator": {
+    "column_label": "本期/年初至报告期末",
+    "page": 71,
+    "row_label": "营业收入",
+    "section": "财务报表",
+    "table": "合并利润表"
+  },
+  "value": "6973894596.88"
+}

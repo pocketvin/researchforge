@@ -1,0 +1,52 @@
+{
+  "allowed_document_ids": [
+    "doc_v15_byd_2024q3"
+  ],
+  "allowed_evidence_chunk_ids": [
+    "chunk_v15_byd_2024q3_synthetic_financial_summary"
+  ],
+  "allowed_financial_fact_ids": [
+    "fact_v15_byd_2024q3_accounts_receivable",
+    "fact_v15_byd_2024q3_inventory",
+    "fact_v15_byd_2024q3_net_income",
+    "fact_v15_byd_2024q3_operating_cash_flow",
+    "fact_v15_byd_2024q3_operating_cost",
+    "fact_v15_byd_2024q3_revenue"
+  ],
+  "benchmark_focus": "earnings_quality",
+  "case_id": "case_val_byd_2024q3",
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "frozen": true,
+  "group_key": "cn_002594",
+  "package_hash": "ba95986b94d416e7c5d3960749d253463d61161ca081b3454c4428b6344c93f4",
+  "package_id": "package_v1_5_contingency_battery_earnings_quality",
+  "research_question": "该报告期的利润是否转化为高质量经营现金流?请核对应收账款、存货、现金转化、利润现金背离、一次性贡献和反证。",
+  "research_time": "2024-11-01T00:00:00+08:00",
+  "schema_version": "1.4.0",
+  "sealed": false,
+  "split": "validation",
+  "target_periods": [
+    {
+      "accounting_standard": "CAS",
+      "fiscal_period": "Q3",
+      "fiscal_year": 2024,
+      "period_basis": "ytd",
+      "period_end": "2024-09-30",
+      "period_start": "2024-01-01",
+      "restatement_status": "as_reported",
+      "statement_scope": "consolidated"
+    }
+  ],
+  "verifier_ground_truth_ref": {
+    "access_class": "verifier_only",
+    "artifact_hash": "4d0a68cfd4f86a04e8101ed928c0f6b8c1f70cc4d286325c6ac1952a8c104f7f",
+    "artifact_id": "ground_truth_case_val_byd_2024q3"
+  }
+}

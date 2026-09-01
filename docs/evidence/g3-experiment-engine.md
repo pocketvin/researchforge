@@ -28,7 +28,7 @@ Status: `ENGINE_READY_LIVE_RUN_BLOCKED`
 
 ```text
 uv run pytest -q tests/application/test_formal_experiment.py
-3 passed in 3.30s
+4 passed
 
 Synthetic full-path denominator:
 144 runs = 72 Evolution + 36 Validation + 36 Final Test
@@ -53,6 +53,6 @@ private_ground_truth_hash_count: 24
 experiment_worst_case: USD 1.8432
 ```
 
-Current blockers are the pending second owner signoff, missing rotated-key confirmation,
-and the required pre-freeze of the disjoint V1.5 contingency package. No provider request
-or Final Test access has occurred.
+The disjoint V1.5 contingency package is now sealed and verified before the first primary
+call. Current blockers are only the pending second owner signoff and missing rotated-key
+confirmation. No provider request or Final Test access has occurred.

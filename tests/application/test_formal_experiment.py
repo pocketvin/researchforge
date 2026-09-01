@@ -21,8 +21,10 @@ from tests.runtime_helpers import assert_v14_schema
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_PACKAGE = ROOT / "data" / "fixtures" / "v1.4-primary"
+CONTINGENCY_PACKAGE = ROOT / "data" / "fixtures" / "v1.5-contingency"
 SEED_ROOT = ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0"
 SUITE_PATH = ROOT / "benchmark" / "suites" / "v1.4-primary-preregistered.json"
+CONTINGENCY_SUITE_PATH = ROOT / "benchmark" / "suites" / "v1.5-contingency-preregistered.json"
 ALL_REPORTED_CHECKS = [
     "operating_cash_flow",
     "accounts_receivable",
@@ -71,8 +73,13 @@ def signed_test_package(tmp_path: Path) -> tuple[Path, Path, Path]:
     private_root = project_root / "data" / "private" / "ground-truth"
     suite_path = project_root / "benchmark" / "suites" / SUITE_PATH.name
     shutil.copytree(PUBLIC_PACKAGE, package_root)
+    shutil.copytree(
+        CONTINGENCY_PACKAGE,
+        project_root / "data" / "fixtures" / "v1.5-contingency",
+    )
     suite_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(SUITE_PATH, suite_path)
+    shutil.copy2(CONTINGENCY_SUITE_PATH, suite_path.parent / CONTINGENCY_SUITE_PATH.name)
     facts = {
         fact["fact_id"]: fact
         for path in (package_root / "financial-facts").glob("*.json")
@@ -220,6 +227,25 @@ def test_unsigned_real_package_preflight_blocks_without_provider_contact(tmp_pat
     assert "primary package owner signoff is not SIGNED" in report["blockers"]
     assert "rotated local OpenAI key is not confirmed ready" in report["blockers"]
     assert report["budget"]["experiment_worst_case"] == "1.8432"
+
+
+def test_primary_preflight_requires_the_sealed_contingency_commitment(tmp_path: Path) -> None:
+    package_root, private_root, _suite_path = signed_test_package(tmp_path)
+    (tmp_path / "project" / "data" / "fixtures" / "v1.5-contingency" / "manifest.json").unlink()
+
+    report = preflight_primary_experiment(
+        package_root=package_root,
+        private_ground_truth_root=private_root,
+        seed_manifest_path=SEED_ROOT / "skill-version.json",
+        seed_content_path=SEED_ROOT / "SKILL.md",
+        ledger=BudgetLedger(state_path=tmp_path / "budget.json"),
+        rotated_key_ready=True,
+        worst_case_request_cost=luna_worst_case_cost(8000, 4000),
+    )
+
+    assert report["status"] == "BLOCKED"
+    assert report["provider_contacted"] is False
+    assert "sealed V1.5 contingency package or suite is missing" in report["blockers"]
 
 
 def test_synthetic_full_runner_proves_controls_but_not_research_hypothesis(

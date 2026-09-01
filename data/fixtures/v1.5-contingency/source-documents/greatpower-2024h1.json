@@ -1,0 +1,44 @@
+{
+  "available_from": "2024-08-28T23:59:59+08:00",
+  "company": {
+    "company_id": "cn_300438",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "广州鹏辉能源科技股份有限公司",
+    "ticker": "300438"
+  },
+  "content_hash": "c89be8020ac2d50930ba95bbdaba81a210d70264388e6eee31cc1829b3ec1655",
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "document_id": "doc_v15_greatpower_2024h1",
+  "document_type": "semiannual_report",
+  "language": "zh-CN",
+  "license": {
+    "license_id": null,
+    "notes": "Raw filing excluded; only normalized facts, hashes, physical-page locators, synthetic evidence, and official links are public.",
+    "publication_mode": "derived_facts_and_short_excerpts",
+    "raw_payload_committed": false
+  },
+  "mime_type": "application/pdf",
+  "parser_version": "1.1.0",
+  "published_at": "2024-08-28T23:59:59+08:00",
+  "quality_flags": [
+    "sha256_verified",
+    "page_text_matched",
+    "raw_payload_excluded"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "H1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-06-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "source_id": "source_cninfo",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-28/1221004760.PDF",
+  "title": "鹏辉能源2024年半年度报告"
+}

@@ -1,0 +1,52 @@
+{
+  "allowed_document_ids": [
+    "doc_v15_greatpower_2024q1"
+  ],
+  "allowed_evidence_chunk_ids": [
+    "chunk_v15_greatpower_2024q1_synthetic_financial_summary"
+  ],
+  "allowed_financial_fact_ids": [
+    "fact_v15_greatpower_2024q1_accounts_receivable",
+    "fact_v15_greatpower_2024q1_inventory",
+    "fact_v15_greatpower_2024q1_net_income",
+    "fact_v15_greatpower_2024q1_operating_cash_flow",
+    "fact_v15_greatpower_2024q1_operating_cost",
+    "fact_v15_greatpower_2024q1_revenue"
+  ],
+  "benchmark_focus": "earnings_quality",
+  "case_id": "case_evo_greatpower_2024q1",
+  "company": {
+    "company_id": "cn_300438",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "广州鹏辉能源科技股份有限公司",
+    "ticker": "300438"
+  },
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "frozen": true,
+  "group_key": "cn_300438",
+  "package_hash": "ba95986b94d416e7c5d3960749d253463d61161ca081b3454c4428b6344c93f4",
+  "package_id": "package_v1_5_contingency_battery_earnings_quality",
+  "research_question": "该报告期的利润是否转化为高质量经营现金流?请核对应收账款、存货、现金转化、利润现金背离、一次性贡献和反证。",
+  "research_time": "2024-04-28T00:00:00+08:00",
+  "schema_version": "1.4.0",
+  "sealed": false,
+  "split": "evolution",
+  "target_periods": [
+    {
+      "accounting_standard": "CAS",
+      "fiscal_period": "Q1",
+      "fiscal_year": 2024,
+      "period_basis": "ytd",
+      "period_end": "2024-03-31",
+      "period_start": "2024-01-01",
+      "restatement_status": "as_reported",
+      "statement_scope": "consolidated"
+    }
+  ],
+  "verifier_ground_truth_ref": {
+    "access_class": "verifier_only",
+    "artifact_hash": "b1d68cba83eb4f8e096263d140891ae50b63833efdf0d3979c29c4a1c5212cec",
+    "artifact_id": "ground_truth_case_evo_greatpower_2024q1"
+  }
+}

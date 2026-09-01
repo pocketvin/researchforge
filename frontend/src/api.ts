@@ -42,4 +42,8 @@ export const api = {
     request<EvolutionExperiment>(
       `/v1/evolution-experiments/${encodeURIComponent(experimentId)}`,
     ),
+  experimentArtifact: <T>(experimentId: string, kind: string) =>
+    request<T>(
+      `/v1/evolution-experiments/${encodeURIComponent(experimentId)}/artifacts/${encodeURIComponent(kind)}`,
+    ),
 }

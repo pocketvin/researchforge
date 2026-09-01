@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.4.0",
+  "suite_id": "suite_v1_5_contingency_battery_earnings_quality",
+  "evidence_status": "FROZEN_CONTINGENCY_SEALED",
+  "purpose": "ONE_TIME_CONTINGENCY_IF_V1_4_PRIMARY_HYPOTHESIS_IS_NOT_SUPPORTED",
+  "sealed_until": "PRIMARY_VALIDATION_REJECTS_CANDIDATE",
+  "splits": {
+    "evolution": [
+      {"case_id": "case_evo_greatpower_2023q3", "group_key": "cn_300438", "period": "2023Q3"},
+      {"case_id": "case_evo_greatpower_2023fy", "group_key": "cn_300438", "period": "2023FY"},
+      {"case_id": "case_evo_greatpower_2024q1", "group_key": "cn_300438", "period": "2024Q1"},
+      {"case_id": "case_evo_greatpower_2024h1", "group_key": "cn_300438", "period": "2024H1"},
+      {"case_id": "case_evo_greatpower_2024q3", "group_key": "cn_300438", "period": "2024Q3"},
+      {"case_id": "case_evo_greatpower_2024fy", "group_key": "cn_300438", "period": "2024FY"},
+      {"case_id": "case_evo_farasis_2023q3", "group_key": "cn_688567", "period": "2023Q3"},
+      {"case_id": "case_evo_farasis_2023fy", "group_key": "cn_688567", "period": "2023FY"},
+      {"case_id": "case_evo_farasis_2024q1", "group_key": "cn_688567", "period": "2024Q1"},
+      {"case_id": "case_evo_farasis_2024h1", "group_key": "cn_688567", "period": "2024H1"},
+      {"case_id": "case_evo_farasis_2024q3", "group_key": "cn_688567", "period": "2024Q3"},
+      {"case_id": "case_evo_farasis_2024fy", "group_key": "cn_688567", "period": "2024FY"}
+    ],
+    "validation": [
+      {"case_id": "case_val_byd_2023q3", "group_key": "cn_002594", "period": "2023Q3"},
+      {"case_id": "case_val_byd_2023fy", "group_key": "cn_002594", "period": "2023FY"},
+      {"case_id": "case_val_byd_2024q1", "group_key": "cn_002594", "period": "2024Q1"},
+      {"case_id": "case_val_byd_2024h1", "group_key": "cn_002594", "period": "2024H1"},
+      {"case_id": "case_val_byd_2024q3", "group_key": "cn_002594", "period": "2024Q3"},
+      {"case_id": "case_val_byd_2024fy", "group_key": "cn_002594", "period": "2024FY"}
+    ],
+    "final_test": [
+      {"case_id": "case_final_cosmx_2023q3", "group_key": "cn_688772", "period": "2023Q3"},
+      {"case_id": "case_final_cosmx_2023fy", "group_key": "cn_688772", "period": "2023FY"},
+      {"case_id": "case_final_cosmx_2024q1", "group_key": "cn_688772", "period": "2024Q1"},
+      {"case_id": "case_final_cosmx_2024h1", "group_key": "cn_688772", "period": "2024H1"},
+      {"case_id": "case_final_cosmx_2024q3", "group_key": "cn_688772", "period": "2024Q3"},
+      {"case_id": "case_final_cosmx_2024fy", "group_key": "cn_688772", "period": "2024FY"}
+    ]
+  }
+}

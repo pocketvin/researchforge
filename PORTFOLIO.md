@@ -39,7 +39,8 @@ You may say:
 - “Defined deterministic finance, point-in-time evidence, experiment-isolation, and patch-adoption rules.”
 - “Implemented bounded single-agent LangGraph orchestration with durable checkpoints and a versioned, machine-readable Workflow Trace.”
 - “Built five frozen-fixture research modes, a deterministic Verifier, and a 20/20 local reliability batch with exact denominators.”
-- “Built a two-page React interface and hybrid immutable-file/PostgreSQL persistence; Docker runtime smoke and final acceptance remain pending.”
+- “Built a two-page React interface and hybrid immutable-file/PostgreSQL persistence; verified a three-service Docker run through Nginx, FastAPI, PostgreSQL, and a ten-stage trace.”
+- “Prepared two redistribution-safe, company-disjoint 24-case benchmark packages with official links, page locators, artifact hashes, sealed labels, and one-time Final Test controls.”
 
 You must not yet say:
 

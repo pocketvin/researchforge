@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_v15_cosmx_2023q3_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_688772",
+    "country_code": "CN",
+    "exchange": "SSE",
+    "legal_name": "珠海冠宇电池股份有限公司",
+    "ticker": "688772"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_v15_cosmx_2023q3",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 12,
+    "page_start": 6,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2023-10-28T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q3",
+    "fiscal_year": 2023,
+    "period_basis": "ytd",
+    "period_end": "2023-09-30",
+    "period_start": "2023-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2023-10-28/1218190495.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 3221983430.96 CNY\ninventory: 2044541691.19 CNY\nrevenue: 8540172178.20 CNY\noperating_cost: 6426314881.33 CNY\nnet_income: 289603597.17 CNY\noperating_cash_flow: 1552028608.91 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "a45c525868f24e574544830b3c058ca2b7aaf471c308a6c27a4003fea8e9991e"
+}

@@ -1,17 +1,17 @@
 # Project Scorecard
 
-Snapshot date: 2026-08-30
+Snapshot date: 2026-09-01
 
 This scorecard is evidence-based. Green means the stated evidence exists; it is not a confidence or enthusiasm score.
 
 | Dimension | Status | Evidence today | Condition for Green |
 |---|---|---|---|
-| Feasibility | Amber | Scope and financial semantics are bounded; provider and filing access remain unresolved | Data-source spike accepts a source or a fixture-only fallback |
-| Career usefulness | Amber | Contract architecture, schema validator, LangGraph boundary, and interview guide exist; no runtime proof exists | L1 demo, tests, trace, and measured claims are public-safe |
+| Feasibility | Green | Official-filing primary and contingency packages, deterministic finance, full local runtime, and zero-network provider gates pass | Preserve hashes, cutoffs, and budget controls during live execution |
+| Career usefulness | Amber | Five-mode runtime, 150 backend tests, LangGraph trace, Docker, UI, screenshots, and demo video are public-safe | Publish the repository and retain an honest formal result |
 | Personal success probability | Green | Work is staged into independently valuable L0–L4 outcomes with kill rules | Keep one active milestone and enforce time boxes |
-| Complexity versus value | Amber | Single agent and thin slice are constrained; full stack remains substantial | L1 passes without premature database/UI infrastructure |
-| Engineering usefulness | Red | No working UI or simulated navigation evidence exists | G4 has three passing `SIMULATED` records; human value remains explicitly unvalidated |
-| Completeness | Amber | Product, artifact, financial, experiment, orchestration, and delivery contracts exist | G4 evidence exists for all five modes and packaging |
+| Complexity versus value | Green | One bounded graph, plain-Python domain services, hybrid storage, and two pages passed runtime smoke without multi-agent/vector infrastructure | Do not add excluded product surfaces |
+| Engineering usefulness | Amber | Research and Skill Lab render persisted evidence; Docker/browser/demo evidence passes | Three model-backed `SIMULATED` records pass; human value remains explicitly unvalidated |
+| Completeness | Amber | All offline engineering, packaging, fallback data, and demo work is present | Formal result, three simulations, publication, and final review pass |
 | Resumability | Green | Human and machine status, decisions, review files, and a resume playbook exist | Resume drill stays within 15 minutes at each milestone |
 
 ## Highest-Leverage Sequence

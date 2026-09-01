@@ -85,6 +85,7 @@ export interface FinancialFact {
 }
 
 export interface Trace {
+  run_id: string
   terminal_state: string
   stages: Array<{
     sequence: number
@@ -113,4 +114,71 @@ export interface EvolutionExperiment {
   final_test_consumed: boolean
   preregistered_at: string
   finished_at: string | null
+}
+
+export interface FailureCluster {
+  cluster_id: string
+  failure_label: string
+  signature: string
+  eligible_run_count: number
+  support_count: number
+  distinct_case_ids: string[]
+}
+
+export interface Experience {
+  experience_id: string
+  failure_label: string
+  observed_behavior: string
+  applicable_condition: string
+  required_procedure: string
+  exceptions: string[]
+}
+
+export interface SkillPatch {
+  patch_id: string
+  candidate_version: string
+  status: string
+  operations: Array<{
+    operation: string
+    target_section: string
+    new_rule: string
+    reason: string
+  }>
+  decision: null | {
+    target_failure_reduced: boolean
+    deterministic_quality_preserved: boolean
+    overall_non_inferior: boolean
+    regression_within_threshold: boolean
+    decision_reason: string
+  }
+}
+
+export interface EvaluationBatch {
+  condition: string
+  split: string
+  repeat_count: number
+  evaluations: Array<{
+    evaluation_id: string
+    case_id: string
+    metrics: { task_score: number }
+    failure_events: Array<{ failure_label: string; signature: string }>
+  }>
+}
+
+export interface ValidationDecision {
+  status: string
+  decision: SkillPatch['decision']
+  seed_evaluation_ids: string[]
+  candidate_evaluation_ids: string[]
+}
+
+export interface EvolutionArtifacts {
+  failureCluster: FailureCluster | null
+  experience: Experience | null
+  patch: SkillPatch | null
+  validationDecision: ValidationDecision | null
+  seedValidation: EvaluationBatch | null
+  candidateValidation: EvaluationBatch | null
+  seedFinal: EvaluationBatch | null
+  candidateFinal: EvaluationBatch | null
 }

@@ -35,6 +35,13 @@ PRIMARY_CHUNK_DIR = PRIMARY_FIXTURE_DIR / "evidence-chunks"
 PRIMARY_CASE_DIR = PRIMARY_FIXTURE_DIR / "cases"
 PRIMARY_MANIFEST_PATH = PRIMARY_FIXTURE_DIR / "manifest.json"
 PRIMARY_SUITE_PATH = ROOT / "benchmark" / "suites" / "v1.4-primary-preregistered.json"
+CONTINGENCY_FIXTURE_DIR = ROOT / "data" / "fixtures" / "v1.5-contingency"
+CONTINGENCY_SOURCE_DIR = CONTINGENCY_FIXTURE_DIR / "source-documents"
+CONTINGENCY_FACT_DIR = CONTINGENCY_FIXTURE_DIR / "financial-facts"
+CONTINGENCY_CHUNK_DIR = CONTINGENCY_FIXTURE_DIR / "evidence-chunks"
+CONTINGENCY_CASE_DIR = CONTINGENCY_FIXTURE_DIR / "cases"
+CONTINGENCY_MANIFEST_PATH = CONTINGENCY_FIXTURE_DIR / "manifest.json"
+CONTINGENCY_SUITE_PATH = ROOT / "benchmark" / "suites" / "v1.5-contingency-preregistered.json"
 HISTORICAL_EXAMPLE_DIRS = {
     "v1.3": ROOT / "examples" / "contracts" / "v1.3",
     "v1.2": ROOT / "examples" / "contracts",
@@ -140,13 +147,22 @@ REQUIRED_CONTRACTS = {
     ROOT / "project-status.json",
     ROOT / "pyproject.toml",
     ROOT / "uv.lock",
+    ROOT / ".github" / "workflows" / "ci.yml",
+    ROOT / "Dockerfile",
+    ROOT / "docker-compose.yml",
     ROOT / "scripts" / "build_g0_fixtures.py",
     ROOT / "scripts" / "build_primary_benchmark.py",
+    ROOT / "scripts" / "build_contingency_benchmark.py",
+    ROOT / "scripts" / "build_demo_video.swift",
+    ROOT / "scripts" / "docker_smoke.py",
     ROOT / "scripts" / "extract_primary_pdf_text.py",
+    ROOT / "scripts" / "inspect_financial_rows.py",
     G0_MANIFEST_PATH,
     G0_GOLDEN_CASES_PATH,
     PRIMARY_MANIFEST_PATH,
     PRIMARY_SUITE_PATH,
+    CONTINGENCY_MANIFEST_PATH,
+    CONTINGENCY_SUITE_PATH,
     ROOT / "skills" / "fundamental-research" / "README.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json",
@@ -173,6 +189,13 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "evidence" / "g0-owner-signoff.md",
     ROOT / "docs" / "evidence" / "g3-primary-data-signoff.md",
     ROOT / "docs" / "evidence" / "g3-experiment-engine.md",
+    ROOT / "docs" / "evidence" / "g3-contingency-freeze.md",
+    ROOT / "docs" / "evidence" / "g4-engineering-progress.md",
+    ROOT / "docs" / "demo" / "demo-script.md",
+    ROOT / "docs" / "demo" / "walkthrough.md",
+    ROOT / "docs" / "assets" / "research-page.png",
+    ROOT / "docs" / "assets" / "skill-lab-page.png",
+    ROOT / "docs" / "assets" / "researchforge-v1.4-demo.mp4",
     ROOT / "docs" / "operations" / "resume-playbook.md",
     ROOT / "docs" / "strategy" / "project-scorecard.md",
     ROOT / "docs" / "strategy" / "risk-register.md",
@@ -1237,6 +1260,219 @@ def validate_primary_benchmark(
     return actual_counts
 
 
+def validate_contingency_benchmark(
+    schemas: dict[Path, dict[str, Any]],
+) -> tuple[int, int, int, int]:
+    """Validate the sealed, primary-disjoint V1.5 contingency package."""
+    source_paths = sorted(CONTINGENCY_SOURCE_DIR.glob("*.json"))
+    fact_paths = sorted(CONTINGENCY_FACT_DIR.glob("*.json"))
+    chunk_paths = sorted(CONTINGENCY_CHUNK_DIR.glob("*.json"))
+    case_paths = sorted(CONTINGENCY_CASE_DIR.glob("*.json"))
+    actual_counts = (len(source_paths), len(fact_paths), len(chunk_paths), len(case_paths))
+    if actual_counts != (24, 144, 24, 24):
+        raise ContractError(
+            "contingency benchmark must contain 24 sources, 144 facts, 24 chunks, "
+            f"and 24 cases; found {actual_counts}"
+        )
+    if any(CONTINGENCY_FIXTURE_DIR.rglob("*.pdf")):
+        raise ContractError("contingency public package must not contain raw PDFs")
+
+    schema_paths = {
+        key: (SCHEMA_DIR / filename).resolve()
+        for key, filename in {
+            "source": "source-document.schema.json",
+            "fact": "financial-fact.schema.json",
+            "chunk": "evidence-chunk.schema.json",
+            "case": "benchmark-case.schema.json",
+        }.items()
+    }
+    sources: dict[str, dict[str, Any]] = {}
+    for path in source_paths:
+        source = load_json(path)
+        if not isinstance(source, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: source must be an object")
+        validate_instance(source, schemas[schema_paths["source"]], schema_paths["source"], schemas)
+        document_id = source["document_id"]
+        if document_id in sources:
+            raise ContractError(f"contingency source ID is duplicated: {document_id}")
+        if urlparse(source["source_uri"]).netloc != "static.cninfo.com.cn":
+            raise ContractError(f"{document_id}: source must be an official CNInfo artifact")
+        if source["license"]["raw_payload_committed"] is not False:
+            raise ContractError(f"{document_id}: raw filing must remain excluded")
+        sources[document_id] = source
+
+    facts: dict[str, dict[str, Any]] = {}
+    metrics_by_document: dict[str, set[str]] = {document_id: set() for document_id in sources}
+    for path in fact_paths:
+        fact = load_json(path)
+        if not isinstance(fact, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: fact must be an object")
+        validate_instance(fact, schemas[schema_paths["fact"]], schema_paths["fact"], schemas)
+        fact_id = fact["fact_id"]
+        document_id = fact["source"]["document_id"]
+        source = sources.get(document_id)
+        if fact_id in facts or source is None:
+            raise ContractError(f"{fact_id}: duplicate ID or missing source document")
+        if fact["company"] != source["company"]:
+            raise ContractError(f"{fact_id}: company differs from source")
+        if fact["source"]["content_hash"] != source["content_hash"]:
+            raise ContractError(f"{fact_id}: source hash differs from document")
+        if fact["value"] is None:
+            raise ContractError(f"{fact_id}: frozen contingency fact cannot be missing")
+        _decimal(fact["value"], fact_id)
+        if not all(
+            fact["source_locator"].get(key)
+            for key in ("page", "section", "table", "row_label", "column_label")
+        ):
+            raise ContractError(f"{fact_id}: incomplete physical-page locator")
+        metrics_by_document[document_id].add(fact["metric_code"])
+        facts[fact_id] = fact
+    if any(metrics != G0_REQUIRED_METRICS for metrics in metrics_by_document.values()):
+        raise ContractError("contingency target document metric set changed")
+
+    chunks: dict[str, dict[str, Any]] = {}
+    for path in chunk_paths:
+        chunk = load_json(path)
+        if not isinstance(chunk, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: chunk must be an object")
+        validate_instance(chunk, schemas[schema_paths["chunk"]], schema_paths["chunk"], schemas)
+        chunk_id = chunk["chunk_id"]
+        if chunk_id in chunks or chunk["document_id"] not in sources:
+            raise ContractError(f"{chunk_id}: duplicate ID or missing source document")
+        if not chunk["text"].startswith("SYNTHETIC PUBLIC EVIDENCE"):
+            raise ContractError(f"{chunk_id}: public evidence must remain explicitly synthetic")
+        if hashlib.sha256(chunk["text"].encode()).hexdigest() != chunk["text_hash"]:
+            raise ContractError(f"{chunk_id}: text hash mismatch")
+        chunks[chunk_id] = chunk
+
+    cases: dict[str, dict[str, Any]] = {}
+    groups_by_split: dict[str, set[str]] = {
+        "evolution": set(),
+        "validation": set(),
+        "final_test": set(),
+    }
+    for path in case_paths:
+        case = load_json(path)
+        if not isinstance(case, dict):
+            raise ContractError(f"{path.relative_to(ROOT)}: case must be an object")
+        validate_instance(case, schemas[schema_paths["case"]], schema_paths["case"], schemas)
+        case_id = case["case_id"]
+        if case_id in cases:
+            raise ContractError(f"contingency case ID is duplicated: {case_id}")
+        if tuple(
+            len(case[field])
+            for field in (
+                "target_periods",
+                "allowed_document_ids",
+                "allowed_evidence_chunk_ids",
+                "allowed_financial_fact_ids",
+            )
+        ) != (1, 1, 1, 6):
+            raise ContractError(f"{case_id}: case must bind one six-metric target report")
+        document_id = case["allowed_document_ids"][0]
+        source = sources.get(document_id)
+        chunk = chunks.get(case["allowed_evidence_chunk_ids"][0])
+        case_facts = [facts.get(fact_id) for fact_id in case["allowed_financial_fact_ids"]]
+        if source is None or chunk is None or any(fact is None for fact in case_facts):
+            raise ContractError(f"{case_id}: references an unknown artifact")
+        if chunk["document_id"] != document_id or any(
+            fact["source"]["document_id"] != document_id for fact in case_facts if fact is not None
+        ):
+            raise ContractError(f"{case_id}: artifact leaks from another target document")
+        if case["company"] != source["company"] or case["target_periods"] != [
+            source["reporting_period"]
+        ]:
+            raise ContractError(f"{case_id}: company or period differs from source")
+        if datetime.fromisoformat(source["published_at"]) > datetime.fromisoformat(
+            case["research_time"]
+        ):
+            raise ContractError(f"{case_id}: source was unavailable at research time")
+        if case["sealed"] is not (case["split"] == "final_test"):
+            raise ContractError(f"{case_id}: final-test sealing policy changed")
+        groups_by_split[case["split"]].add(case["group_key"])
+        cases[case_id] = case
+
+    expected_groups = {
+        "evolution": {"cn_300438", "cn_688567"},
+        "validation": {"cn_002594"},
+        "final_test": {"cn_688772"},
+    }
+    if groups_by_split != expected_groups:
+        raise ContractError("contingency company split assignment changed")
+    all_groups = set().union(*groups_by_split.values())
+    primary_groups = {load_json(path)["group_key"] for path in PRIMARY_CASE_DIR.glob("*.json")}
+    if all_groups & primary_groups:
+        raise ContractError("contingency company group overlaps the primary suite")
+
+    manifest = load_json(CONTINGENCY_MANIFEST_PATH)
+    if not isinstance(manifest, dict):
+        raise ContractError("contingency manifest must be an object")
+    expected_manifest_values = {
+        "schema_version": CURRENT_ARTIFACT_VERSION,
+        "evidence_status": "FROZEN_CONTINGENCY_SEALED",
+        "formal_run_authorized": False,
+        "contingency_activation_authorized": False,
+        "sealed_until": "PRIMARY_VALIDATION_REJECTS_CANDIDATE",
+        "source_document_count": 24,
+        "financial_fact_count": 144,
+        "evidence_chunk_count": 24,
+        "case_count": 24,
+        "split_counts": {"evolution": 12, "validation": 6, "final_test": 6},
+        "raw_pdf_committed": False,
+        "ground_truth_committed": False,
+    }
+    for key, expected in expected_manifest_values.items():
+        if manifest.get(key) != expected:
+            raise ContractError(f"contingency manifest {key} must equal {expected!r}")
+    if manifest["representative_visual_review"]["status"] != "completed":
+        raise ContractError("contingency representative visual review must be completed")
+    if len(manifest["ground_truth_hashes"]) != 24 or set(manifest["ground_truth_hashes"]) != set(
+        cases
+    ):
+        raise ContractError("contingency ground-truth hash catalog differs from cases")
+    for case_id, case in cases.items():
+        if (
+            case["verifier_ground_truth_ref"]["artifact_hash"]
+            != manifest["ground_truth_hashes"][case_id]
+        ):
+            raise ContractError(f"{case_id}: verifier-only ground-truth hash differs")
+
+    artifact_paths = sorted((*source_paths, *fact_paths, *chunk_paths, *case_paths))
+    expected_public_hashes = {
+        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in artifact_paths
+    }
+    if manifest["public_artifact_hashes"] != expected_public_hashes:
+        raise ContractError("contingency public artifact hashes do not match package files")
+    data_hashes = {
+        **{f"source:{key}": _canonical_hash(value) for key, value in sources.items()},
+        **{f"fact:{key}": _canonical_hash(value) for key, value in facts.items()},
+        **{f"chunk:{key}": _canonical_hash(value) for key, value in chunks.items()},
+        **{f"ground_truth:{key}": value for key, value in manifest["ground_truth_hashes"].items()},
+        "preregistered_suite": hashlib.sha256(CONTINGENCY_SUITE_PATH.read_bytes()).hexdigest(),
+    }
+    if manifest["package_hash"] != _canonical_hash(data_hashes):
+        raise ContractError("contingency package hash does not match frozen inputs")
+    if {case["package_hash"] for case in cases.values()} != {manifest["package_hash"]}:
+        raise ContractError("contingency cases do not share the frozen package hash")
+
+    suite = load_json(CONTINGENCY_SUITE_PATH)
+    if suite.get("purpose") != "ONE_TIME_CONTINGENCY_IF_V1_4_PRIMARY_HYPOTHESIS_IS_NOT_SUPPORTED":
+        raise ContractError("contingency activation purpose changed")
+    expected_case_ids = {
+        split: {entry["case_id"] for entry in suite["splits"][split]}
+        for split in ("evolution", "validation", "final_test")
+    }
+    actual_case_ids = {
+        split: {case_id for case_id, case in cases.items() if case["split"] == split}
+        for split in ("evolution", "validation", "final_test")
+    }
+    if actual_case_ids != expected_case_ids:
+        raise ContractError("contingency cases differ from pre-registered split manifest")
+
+    return actual_counts
+
+
 def main() -> int:
     try:
         missing_files = [
@@ -1244,6 +1480,15 @@ def main() -> int:
         ]
         if missing_files:
             raise ContractError(f"missing required contract files: {sorted(missing_files)}")
+
+        for screenshot_name in ("research-page.png", "skill-lab-page.png"):
+            screenshot = ROOT / "docs" / "assets" / screenshot_name
+            if not screenshot.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
+                raise ContractError(f"demo screenshot is not PNG: {screenshot_name}")
+        demo_video = ROOT / "docs" / "assets" / "researchforge-v1.4-demo.mp4"
+        video_header = demo_video.read_bytes()[:32]
+        if b"ftyp" not in video_header or demo_video.stat().st_size < 1_000_000:
+            raise ContractError("demo video is missing a valid MP4 file header or payload")
 
         validate_schema_catalog(SCHEMA_DIR, REQUIRED_SCHEMAS, "current V1.4")
         for version, directory in HISTORICAL_SCHEMA_DIRS.items():
@@ -1358,6 +1603,12 @@ def main() -> int:
         primary_source_count, primary_fact_count, primary_chunk_count, primary_case_count = (
             validate_primary_benchmark(schemas)
         )
+        (
+            contingency_source_count,
+            contingency_fact_count,
+            contingency_chunk_count,
+            contingency_case_count,
+        ) = validate_contingency_benchmark(schemas)
         validate_historical_scope_hashes()
 
         markdown_link_count = validate_markdown_links()
@@ -1386,12 +1637,19 @@ def main() -> int:
             f"({primary_source_count} sources, {primary_fact_count} facts, "
             f"{primary_chunk_count} synthetic chunks, {primary_case_count} frozen cases)"
         )
+        print(
+            "PASS: sealed V1.5 contingency benchmark package validated "
+            f"({contingency_source_count} sources, {contingency_fact_count} facts, "
+            f"{contingency_chunk_count} synthetic chunks, "
+            f"{contingency_case_count} frozen cases)"
+        )
         print("PASS: historical V1.3 and V1.2 scope hashes validated")
         print(
             "PASS: project-status.json validated "
             f"({checkpoint_path_count} referenced paths present)"
         )
         print(f"PASS: {markdown_link_count} local Markdown links resolved")
+        print("PASS: two PNG screenshots and the MP4 demo asset validated")
         print(f"PASS: {len(REQUIRED_CONTRACTS)} required contract files present")
         return 0
     except ContractError as exc:

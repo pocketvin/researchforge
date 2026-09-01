@@ -19,12 +19,18 @@ import { api } from './api'
 import type {
   Catalog,
   Claim,
+  EvaluationBatch,
+  EvolutionArtifacts,
   EvolutionExperiment,
   FinancialFact,
   ResearchResult,
   RunManifest,
   TaskType,
   Trace,
+  Experience,
+  FailureCluster,
+  SkillPatch,
+  ValidationDecision,
 } from './types'
 
 const taskLabels: Record<TaskType, string> = {
@@ -71,6 +77,12 @@ function statusTone(status: string): string {
   if (['failed', 'FAIL', 'timed_out'].includes(status)) return 'bad'
   if (['running', 'queued', 'uncertain'].includes(status)) return 'active'
   return 'muted'
+}
+
+function averageScore(batch: EvaluationBatch | null): string {
+  if (!batch || batch.evaluations.length === 0) return '—'
+  const total = batch.evaluations.reduce((sum, item) => sum + item.metrics.task_score, 0)
+  return (total / batch.evaluations.length).toFixed(3)
 }
 
 function EvidenceLink({ claim, facts }: { claim: Claim; facts: FinancialFact[] }) {
@@ -474,6 +486,7 @@ function ResearchPage() {
 function SkillLabPage() {
   const [experimentId, setExperimentId] = useState('')
   const [experiment, setExperiment] = useState<EvolutionExperiment | null>(null)
+  const [artifacts, setArtifacts] = useState<EvolutionArtifacts | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -481,8 +494,46 @@ function SkillLabPage() {
     event.preventDefault()
     setLoading(true)
     setError(null)
+    setArtifacts(null)
     try {
-      setExperiment(await api.experiment(experimentId))
+      const loadedExperiment = await api.experiment(experimentId)
+      setExperiment(loadedExperiment)
+      async function optional<T>(kind: string): Promise<T | null> {
+        try {
+          return await api.experimentArtifact<T>(experimentId, kind)
+        } catch {
+          return null
+        }
+      }
+      const [
+        failureCluster,
+        experience,
+        patch,
+        validationDecision,
+        seedValidation,
+        candidateValidation,
+        seedFinal,
+        candidateFinal,
+      ] = await Promise.all([
+        optional<FailureCluster>('failure-cluster'),
+        optional<Experience>('experience'),
+        optional<SkillPatch>('patch'),
+        optional<ValidationDecision>('validation-decision'),
+        optional<EvaluationBatch>('seed-validation-evaluations'),
+        optional<EvaluationBatch>('candidate-validation-evaluations'),
+        optional<EvaluationBatch>('seed-final_test-evaluations'),
+        optional<EvaluationBatch>('candidate-final_test-evaluations'),
+      ])
+      setArtifacts({
+        failureCluster,
+        experience,
+        patch,
+        validationDecision,
+        seedValidation,
+        candidateValidation,
+        seedFinal,
+        candidateFinal,
+      })
     } catch (caught: unknown) {
       setExperiment(null)
       setError(caught instanceof Error ? caught.message : String(caught))
@@ -548,6 +599,75 @@ function SkillLabPage() {
                     <small>{split === 'final_test' && !experiment.final_test_consumed ? 'SEALED' : 'FROZEN'}</small>
                   </article>
                 ))}
+              </div>
+              <div className="lab-artifact-grid">
+                <article className="lab-artifact-card">
+                  <div className="section-heading">
+                    <span><CircleAlert size={15} /> 失败聚类</span>
+                    <span className="micro-label">
+                      {artifacts?.failureCluster ? `${artifacts.failureCluster.support_count} hits` : 'PENDING'}
+                    </span>
+                  </div>
+                  {artifacts?.failureCluster ? (
+                    <>
+                      <strong>{artifacts.failureCluster.failure_label}</strong>
+                      <code>{artifacts.failureCluster.signature}</code>
+                      <p>{artifacts.failureCluster.distinct_case_ids.length} 个独立案例，共 {artifacts.failureCluster.eligible_run_count} 个可评估运行。</p>
+                    </>
+                  ) : <p>尚无达到冻结支持阈值的核验失败聚类。</p>}
+                </article>
+                <article className="lab-artifact-card">
+                  <div className="section-heading">
+                    <span><BookOpenCheck size={15} /> Experience</span>
+                    <span className="micro-label">VERIFIER-GROUNDED</span>
+                  </div>
+                  {artifacts?.experience ? (
+                    <>
+                      <strong>{artifacts.experience.failure_label}</strong>
+                      <p>{artifacts.experience.observed_behavior}</p>
+                      <blockquote>{artifacts.experience.required_procedure}</blockquote>
+                    </>
+                  ) : <p>只有失败聚类通过门槛后才会蒸馏 Experience。</p>}
+                </article>
+              </div>
+              <article className="skill-diff-card">
+                <div className="section-heading">
+                  <span><GitBranch size={15} /> Candidate Skill Diff</span>
+                  <span className={`status-pill ${statusTone(artifacts?.patch?.status ?? 'pending')}`}>
+                    {artifacts?.patch?.status ?? 'PENDING'}
+                  </span>
+                </div>
+                {artifacts?.patch ? artifacts.patch.operations.map((operation) => (
+                  <div className="diff-operation" key={`${operation.operation}-${operation.target_section}`}>
+                    <span>+ {operation.operation} · {operation.target_section}</span>
+                    <p>{operation.new_rule}</p>
+                    <small>{operation.reason}</small>
+                  </div>
+                )) : <p>Candidate 仅由受控 CLI 在合格失败聚类上生成；UI 保持只读。</p>}
+              </article>
+              <div className="paired-results">
+                <article>
+                  <div className="section-heading"><span>Validation 配对</span><span className="micro-label">3 REPEATS</span></div>
+                  <div className="score-pair">
+                    <span><small>Seed</small><strong>{averageScore(artifacts?.seedValidation ?? null)}</strong></span>
+                    <ChevronRight size={16} />
+                    <span><small>Candidate</small><strong>{averageScore(artifacts?.candidateValidation ?? null)}</strong></span>
+                  </div>
+                  <p>{artifacts?.patch?.decision?.decision_reason ?? 'Validation 尚未产生采用或回滚证据。'}</p>
+                  <span className={`status-pill ${statusTone(artifacts?.validationDecision?.status ?? 'pending')}`}>
+                    {artifacts?.validationDecision?.status ?? 'SEALED'}
+                  </span>
+                </article>
+                <article>
+                  <div className="section-heading"><span>Final Test</span><span className="micro-label">ONE-TIME</span></div>
+                  <div className="score-pair">
+                    <span><small>Seed</small><strong>{averageScore(artifacts?.seedFinal ?? null)}</strong></span>
+                    <ChevronRight size={16} />
+                    <span><small>Candidate</small><strong>{averageScore(artifacts?.candidateFinal ?? null)}</strong></span>
+                  </div>
+                  <p>{experiment.final_test_consumed ? `封闭测试已消费，结果：${experiment.outcome}` : 'Validation 采用 Candidate 前保持封闭，不展示结果。'}</p>
+                  <span className={`status-pill ${statusTone(experiment.outcome)}`}>{experiment.final_test_consumed ? experiment.outcome : 'SEALED'}</span>
+                </article>
               </div>
               <details className="experiment-details">
                 <summary>查看不可变实验记录</summary>

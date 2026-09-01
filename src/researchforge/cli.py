@@ -21,6 +21,7 @@ from researchforge.application.contracts import ResearchRunRequest
 from researchforge.application.evolution import preregister_experiment
 from researchforge.application.formal_experiment import FormalExperimentRunner
 from researchforge.application.research import ConclusionGenerator
+from researchforge.application.simulated_usability import SimulatedUsabilityRunner
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -92,6 +93,23 @@ def _parser() -> argparse.ArgumentParser:
             type=Path,
             default=PROJECT_ROOT / "benchmark" / "suites" / "v1.4-primary-preregistered.json",
         )
+    for name, help_text in (
+        ("usability-preflight", "validate simulated-usability evidence without provider contact"),
+        ("usability-run", "run or resume exactly three labeled simulated usability sessions"),
+    ):
+        command = subcommands.add_parser(name, help=help_text)
+        command.add_argument("--batch-id", default="simulated_usability_v1_4_001")
+        command.add_argument("--run-id", required=True)
+        command.add_argument(
+            "--research-screenshot",
+            type=Path,
+            default=PROJECT_ROOT / "docs" / "assets" / "research-page.png",
+        )
+        command.add_argument(
+            "--skill-lab-screenshot",
+            type=Path,
+            default=PROJECT_ROOT / "docs" / "assets" / "skill-lab-page.png",
+        )
     subcommands.add_parser("catalog", help="show the allowlisted fixture catalog")
     return parser
 
@@ -140,12 +158,58 @@ def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
     )
 
 
+def _simulated_usability_runner(args: argparse.Namespace) -> SimulatedUsabilityRunner:
+    service = build_default_service(args.artifact_root)
+    manifest = service.get_manifest(str(args.run_id))
+    if manifest["lifecycle_state"] != "succeeded":
+        raise ValueError("simulated usability requires a succeeded persisted run")
+    run_bundle = {
+        "manifest": manifest,
+        "result": service.get_result(str(args.run_id)),
+        "trace": service.get_trace(str(args.run_id)),
+        "facts": service.get_facts(str(args.run_id)),
+    }
+    rotated_key_ready = bool(os.getenv("OPENAI_API_KEY")) and (
+        os.getenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED") == "1"
+    )
+
+    def responses_factory() -> ResponsesResource:
+        from openai import OpenAI
+
+        return cast(ResponsesResource, OpenAI().responses)
+
+    return SimulatedUsabilityRunner(
+        batch_id=str(args.batch_id),
+        run_bundle=run_bundle,
+        screenshots={
+            "research": Path(args.research_screenshot),
+            "skill_lab": Path(args.skill_lab_screenshot),
+        },
+        artifact_root=Path(args.artifact_root),
+        ledger=BudgetLedger(state_path=args.artifact_root / "budget" / "project-openai.json"),
+        rotated_key_ready=rotated_key_ready,
+        responses_factory=responses_factory if rotated_key_ready else None,
+    )
+
+
 def main(argv: list[str] | None = None) -> None:
     """Execute a run or inspect persisted artifacts without provider calls."""
     args = _parser().parse_args(argv)
     if args.command in {"evolution-preflight", "evolution-run"}:
-        runner = _formal_runner(args)
-        _print(runner.preflight() if args.command == "evolution-preflight" else runner.run())
+        formal_runner = _formal_runner(args)
+        _print(
+            formal_runner.preflight()
+            if args.command == "evolution-preflight"
+            else formal_runner.run()
+        )
+        return
+    if args.command in {"usability-preflight", "usability-run"}:
+        simulation_runner = _simulated_usability_runner(args)
+        _print(
+            simulation_runner.preflight()
+            if args.command == "usability-preflight"
+            else simulation_runner.run()
+        )
         return
     service = build_default_service(args.artifact_root)
     if args.command == "catalog":

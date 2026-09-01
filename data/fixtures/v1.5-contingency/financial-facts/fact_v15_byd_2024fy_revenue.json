@@ -1,0 +1,51 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "currency": "CNY",
+  "fact_id": "fact_v15_byd_2024fy_revenue",
+  "fact_kind": "reported",
+  "measurement_unit": "CURRENCY",
+  "metric_code": "revenue",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-12-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "e9c2d7fdd088e151ccb6c8ad3d95587b2b014b10f2c9731508d23ce07fde4de3",
+    "document_id": "doc_v15_byd_2024fy",
+    "license_id": null,
+    "published_at": "2025-03-25T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-09-01T14:00:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2025-03-25/1222881496.PDF"
+  },
+  "source_locator": {
+    "column_label": "本期/年初至报告期末",
+    "page": 145,
+    "row_label": "营业收入",
+    "section": "财务报表",
+    "table": "合并利润表"
+  },
+  "value": "777102455000"
+}

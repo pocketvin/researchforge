@@ -1,0 +1,51 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_300438",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "广州鹏辉能源科技股份有限公司",
+    "ticker": "300438"
+  },
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "currency": "CNY",
+  "fact_id": "fact_v15_greatpower_2024q1_inventory",
+  "fact_kind": "reported",
+  "measurement_unit": "CURRENCY",
+  "metric_code": "inventory",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q1",
+    "fiscal_year": 2024,
+    "period_basis": "instant",
+    "period_end": "2024-03-31",
+    "period_start": "2024-03-31",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "68922b7b0e87a3dcf67090e9e00b875b7f34cc821bc02285b1c0a21adc22933b",
+    "document_id": "doc_v15_greatpower_2024q1",
+    "license_id": null,
+    "published_at": "2024-04-27T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-09-01T14:00:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2024-04-27/1219864786.PDF"
+  },
+  "source_locator": {
+    "column_label": "报告期末",
+    "page": 8,
+    "row_label": "存货",
+    "section": "财务报表",
+    "table": "合并资产负债表"
+  },
+  "value": "3187784373.90"
+}

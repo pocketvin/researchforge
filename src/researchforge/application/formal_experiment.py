@@ -124,6 +124,95 @@ def formal_run_plan() -> dict[str, Any]:
     }
 
 
+def _contingency_freeze_blockers(
+    project_root: Path,
+    primary_cases: dict[str, dict[str, Any]],
+) -> list[str]:
+    """Verify the inactive V1.5 package exists and is immutable before V1.4 starts."""
+    blockers: list[str] = []
+    package_root = project_root / "data" / "fixtures" / "v1.5-contingency"
+    manifest_path = package_root / "manifest.json"
+    suite_path = project_root / "benchmark" / "suites" / "v1.5-contingency-preregistered.json"
+    if not manifest_path.is_file() or not suite_path.is_file():
+        return ["sealed V1.5 contingency package or suite is missing"]
+
+    manifest = _load_json(manifest_path)
+    if manifest.get("evidence_status") != "FROZEN_CONTINGENCY_SEALED":
+        blockers.append("V1.5 contingency evidence status is not frozen and sealed")
+    if manifest.get("formal_run_authorized") is not False:
+        blockers.append("V1.5 contingency formal run must remain unauthorized")
+    if manifest.get("contingency_activation_authorized") is not False:
+        blockers.append("V1.5 contingency activation must remain unauthorized")
+    if manifest.get("sealed_until") != "PRIMARY_VALIDATION_REJECTS_CANDIDATE":
+        blockers.append("V1.5 contingency activation condition changed")
+
+    suite_hash = _sha256(suite_path)
+    if manifest.get("preregistered_suite_hash") != suite_hash:
+        blockers.append("V1.5 contingency suite hash differs from its manifest")
+    suite = _load_json(suite_path)
+    if suite.get("evidence_status") != "FROZEN_CONTINGENCY_SEALED":
+        blockers.append("V1.5 contingency suite is not frozen and sealed")
+
+    cases = {
+        case["case_id"]: case
+        for path in sorted((package_root / "cases").glob("*.json"))
+        for case in (_load_json(path),)
+    }
+    if len(cases) != 24:
+        blockers.append("V1.5 contingency package must contain exactly 24 cases")
+    contingency_groups = {str(case.get("group_key")) for case in cases.values()}
+    primary_groups = {str(case.get("group_key")) for case in primary_cases.values()}
+    if contingency_groups & primary_groups:
+        blockers.append("V1.5 contingency company group overlaps primary experiment")
+    if any(case.get("package_hash") != manifest.get("package_hash") for case in cases.values()):
+        blockers.append("V1.5 contingency case package hashes differ from its manifest")
+
+    public_hashes = manifest.get("public_artifact_hashes", {})
+    if not isinstance(public_hashes, dict) or len(public_hashes) != 216:
+        blockers.append("V1.5 contingency public artifact hash catalog must contain 216 artifacts")
+    else:
+        for relative, expected_hash in public_hashes.items():
+            path = (project_root / str(relative)).resolve()
+            if project_root not in path.parents or not path.is_file():
+                blockers.append(f"V1.5 contingency public artifact is missing: {relative}")
+                continue
+            if _sha256(path) != expected_hash:
+                blockers.append(f"V1.5 contingency public artifact hash mismatch: {relative}")
+
+    sources = {
+        source["document_id"]: source
+        for path in sorted((package_root / "source-documents").glob("*.json"))
+        for source in (_load_json(path),)
+    }
+    facts = {
+        fact["fact_id"]: fact
+        for path in sorted((package_root / "financial-facts").glob("*.json"))
+        for fact in (_load_json(path),)
+    }
+    chunks = {
+        chunk["chunk_id"]: chunk
+        for path in sorted((package_root / "evidence-chunks").glob("*.json"))
+        for chunk in (_load_json(path),)
+    }
+    truth_hashes = manifest.get("ground_truth_hashes", {})
+    if not isinstance(truth_hashes, dict) or set(truth_hashes) != set(cases):
+        blockers.append("V1.5 contingency ground-truth hash catalog differs from cases")
+    else:
+        data_hashes = {
+            **{f"source:{key}": _canonical_hash(value) for key, value in sources.items()},
+            **{f"fact:{key}": _canonical_hash(value) for key, value in facts.items()},
+            **{f"chunk:{key}": _canonical_hash(value) for key, value in chunks.items()},
+            **{
+                f"ground_truth:{key}": value
+                for key, value in cast(dict[str, str], truth_hashes).items()
+            },
+            "preregistered_suite": suite_hash,
+        }
+        if _canonical_hash(data_hashes) != manifest.get("package_hash"):
+            blockers.append("V1.5 contingency package hash does not match frozen inputs")
+    return blockers
+
+
 def preflight_primary_experiment(
     *,
     package_root: Path,
@@ -169,6 +258,7 @@ def preflight_primary_experiment(
         blockers.append("primary package must contain exactly 24 cases")
     if any(case.get("package_hash") != manifest.get("package_hash") for case in cases.values()):
         blockers.append("case package hashes differ from the primary manifest")
+    blockers.extend(_contingency_freeze_blockers(project_root, cases))
 
     truth_hashes = manifest.get("ground_truth_hashes", {})
     if not isinstance(truth_hashes, dict) or set(truth_hashes) != set(cases):

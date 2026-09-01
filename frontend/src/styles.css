@@ -138,6 +138,22 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .split-card span { color: #8397a2; font-size: 9px; }
 .split-card strong { margin: 8px 0; color: #eef4f6; font: 18px ui-monospace, monospace; font-weight: 500; }
 .split-card small { color: var(--mint); font: 8px ui-monospace, monospace; letter-spacing: .12em; }
+.lab-artifact-grid, .paired-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.lab-artifact-card, .skill-diff-card, .paired-results > article { padding: 15px; border: 1px solid var(--line); border-radius: 9px; background: rgba(0,0,0,.1); }
+.lab-artifact-card > strong { color: #d8e2e7; font-size: 11px; }
+.lab-artifact-card code { display: block; overflow-wrap: anywhere; margin-top: 8px; color: #d7b979; font-size: 9px; }
+.lab-artifact-card p, .skill-diff-card > p, .paired-results p { margin: 8px 0 0; color: #718590; font-size: 9px; line-height: 1.7; }
+.lab-artifact-card blockquote { margin: 10px 0 0; padding: 9px 11px; border-left: 2px solid var(--mint); color: #a7b8c1; background: rgba(67,214,163,.04); font-size: 9px; line-height: 1.7; }
+.diff-operation { padding: 12px; border: 1px solid rgba(67,214,163,.16); border-radius: 7px; background: rgba(67,214,163,.04); }
+.diff-operation span { color: var(--mint); font: 9px ui-monospace, monospace; }
+.diff-operation p { margin: 8px 0 5px; color: #bac8cf; font-size: 10px; line-height: 1.7; }
+.diff-operation small { color: #667b86; font-size: 8px; }
+.score-pair { display: flex; align-items: center; gap: 12px; }
+.score-pair > span { flex: 1; padding: 10px; border: 1px solid var(--line); border-radius: 7px; }
+.score-pair small, .score-pair strong { display: block; }
+.score-pair small { color: #697e89; font: 8px ui-monospace, monospace; }
+.score-pair strong { margin-top: 5px; color: #e1e9ec; font: 17px ui-monospace, monospace; font-weight: 500; }
+.paired-results .status-pill { margin-top: 12px; }
 .experiment-details { border-top: 1px solid var(--line); padding-top: 14px; color: #718590; font-size: 10px; }
 .experiment-details summary { cursor: pointer; }
 .experiment-json { overflow: auto; max-height: 500px; margin-top: 16px; padding: 16px; border-radius: 8px; color: #9db0ba; background: rgba(0,0,0,.22); font-size: 10px; }
@@ -158,7 +174,7 @@ footer { padding: 20px; border-top: 1px solid var(--line); color: #455b67; text-
   .app-header nav button { padding: 7px 9px; }
   .page-shell { padding: 16px 12px 44px; }
   .metric-grid, .check-list { grid-template-columns: 1fr; }
-  .experiment-metrics, .split-grid { grid-template-columns: 1fr; }
+  .experiment-metrics, .split-grid, .lab-artifact-grid, .paired-results { grid-template-columns: 1fr; }
   .empty-features, .lab-hero { flex-direction: column; align-items: flex-start; }
   .empty-state { min-height: 450px; padding: 25px; }
 }

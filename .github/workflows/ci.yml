@@ -46,3 +46,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker compose build
+      - run: docker compose up -d --wait
+      - run: python scripts/docker_smoke.py
+      - if: always()
+        run: docker compose logs --no-color
+      - if: always()
+        run: docker compose down --volumes

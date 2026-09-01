@@ -1,0 +1,51 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "created_at": "2026-09-01T14:30:00+08:00",
+  "currency": "CNY",
+  "fact_id": "fact_v15_byd_2024h1_accounts_receivable",
+  "fact_kind": "reported",
+  "measurement_unit": "CURRENCY",
+  "metric_code": "accounts_receivable",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "H1",
+    "fiscal_year": 2024,
+    "period_basis": "instant",
+    "period_end": "2024-06-30",
+    "period_start": "2024-06-30",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+    "document_id": "doc_v15_byd_2024h1",
+    "license_id": null,
+    "published_at": "2024-08-29T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-09-01T14:00:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+  },
+  "source_locator": {
+    "column_label": "报告期末",
+    "page": 81,
+    "row_label": "应收账款",
+    "section": "财务报表",
+    "table": "合并资产负债表"
+  },
+  "value": "71814516000"
+}

@@ -21,6 +21,10 @@
 - React/TypeScript Research and Skill Lab pages with API-only financial values, read-only experiment state, cancellation, unit/E2E/accessibility checks, and responsive styling.
 - Docker Compose, backend/frontend images, and GitHub Actions CI definitions.
 - Controlled Evolution policy engine and content-addressed experiment repository, plus a grouping-only 24-case preregistration that keeps Final Test sealed.
+- Prepared and sealed the disjoint V1.5 contingency package: 24 official sources, 144 page-checked facts, 24 synthetic public evidence chunks, 24 cases, private truth hashes, and a frozen activation boundary.
+- Controlled formal executor for 144 repeated Base/Seed/Candidate paths, durable progress, budget reservations, paired Validation adoption, and one-time Final Test consumption.
+- Three-session simulated-usability executor with fresh contexts, screenshot evidence, Structured Outputs, explicit `SIMULATED` labels, idempotent recovery, and aggregate/sub-budget guards.
+- Full Docker runtime smoke, configurable compatible image sources, richer persisted Skill Lab artifacts, bilingual demo instructions, verified screenshots, and an H.264 preview video.
 
 ### Changed
 

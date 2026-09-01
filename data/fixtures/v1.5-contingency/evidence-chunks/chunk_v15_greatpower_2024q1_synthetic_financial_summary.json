@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_v15_greatpower_2024q1_synthetic_financial_summary",
+  "company": {
+    "company_id": "cn_300438",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "广州鹏辉能源科技股份有限公司",
+    "ticker": "300438"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_v15_greatpower_2024q1",
+  "document_type": "quarterly_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 12,
+    "page_start": 7,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "1.1.0",
+  "published_at": "2024-04-27T23:59:59+08:00",
+  "quality_flags": [
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "Q1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-03-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-01T14:00:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Synthetic normalized financial summary",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-04-27/1219864786.PDF",
+  "text": "SYNTHETIC PUBLIC EVIDENCE — normalized factual summary; not verbatim filing text.\naccounts_receivable: 1906157208.33 CNY\ninventory: 3187784373.90 CNY\nrevenue: 1597013711.20 CNY\noperating_cost: 1407948394.61 CNY\nnet_income: 16356922.23 CNY\noperating_cash_flow: -90502319.07 CNY\nUse the official source URI and physical-page locators for source verification.",
+  "text_hash": "ea120afa328a9d9756c5b205a05174635d166f5f529bc3dd5f9d09a5d6e9af19"
+}
