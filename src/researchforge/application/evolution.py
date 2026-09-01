@@ -24,6 +24,18 @@ MODEL_CONFIG: dict[str, Any] = {
     "temperature": None,
     "seed": None,
     "reasoning_effort": "medium",
+    "max_output_tokens": 4000,
+    "tool_choice_policy": "controlled",
+    "store": False,
+    "built_in_tools": [],
+}
+DETERMINISTIC_PATCH_CONFIG: dict[str, Any] = {
+    "provider": "researchforge",
+    "model_id": "deterministic-rule-distiller-v1",
+    "model_snapshot": "1.0.0",
+    "temperature": None,
+    "seed": None,
+    "reasoning_effort": "none",
     "max_output_tokens": 2000,
     "tool_choice_policy": "controlled",
     "store": False,
@@ -106,7 +118,7 @@ def preregister_experiment(
         "thresholds": THRESHOLDS,
         "run_ids": [],
         "evaluation_ids": [],
-        "budget": {"currency": "USD", "cap": 20.0, "spent": 0.0},
+        "budget": {"currency": "USD", "cap": 9.0, "spent": 0.0},
         "final_test_consumed": False,
         "preregistered_at": timestamp.isoformat(),
         "finished_at": None,
@@ -217,7 +229,7 @@ def propose_patch(
             "conflict_check_passed": True,
             "total_changed_characters": len(rule),
         },
-        "generated_by": MODEL_CONFIG,
+        "generated_by": DETERMINISTIC_PATCH_CONFIG,
         "status": "PROPOSED",
         "validation_evaluation_ids": [],
         "decision": None,
@@ -234,18 +246,37 @@ def decide_validation(
     timestamp: datetime,
 ) -> dict[str, Any]:
     """Apply paired frozen thresholds; qualitative scores never affect adoption."""
-    seed_by_case = {str(item["case_id"]): item for item in seed_evaluations}
-    candidate_by_case = {str(item["case_id"]): item for item in candidate_evaluations}
-    if set(seed_by_case) != set(candidate_by_case) or not seed_by_case:
+    if not seed_evaluations or len(seed_evaluations) != len(candidate_evaluations):
+        raise ValueError("Seed and Candidate Validation runs must pair exactly")
+    if len({item["run_id"] for item in seed_evaluations}) != len(seed_evaluations):
+        raise ValueError("Seed Validation run IDs must be unique")
+    if len({item["run_id"] for item in candidate_evaluations}) != len(candidate_evaluations):
+        raise ValueError("Candidate Validation run IDs must be unique")
+    seed_by_case: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    candidate_by_case: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for evaluation in seed_evaluations:
+        seed_by_case[str(evaluation["case_id"])].append(evaluation)
+    for evaluation in candidate_evaluations:
+        candidate_by_case[str(evaluation["case_id"])].append(evaluation)
+    if set(seed_by_case) != set(candidate_by_case) or any(
+        len(seed_by_case[case_id]) != len(candidate_by_case[case_id]) for case_id in seed_by_case
+    ):
         raise ValueError("Seed and Candidate Validation cases must pair exactly")
+    pairs = [
+        (case_id, seed, candidate)
+        for case_id in sorted(seed_by_case)
+        for seed, candidate in zip(seed_by_case[case_id], candidate_by_case[case_id], strict=True)
+    ]
     signature = patch["target_failure_cluster"]["signature"]
 
     def has_target(evaluation: dict[str, Any]) -> bool:
         return any(event["signature"] == signature for event in evaluation["failure_events"])
 
-    seed_target_cases = {case for case, item in seed_by_case.items() if has_target(item)}
-    repaired = sum(1 for case in seed_target_cases if not has_target(candidate_by_case[case]))
-    repair_rate = repaired / len(seed_target_cases) if seed_target_cases else 0.0
+    seed_target_pairs = [
+        (case_id, seed, candidate) for case_id, seed, candidate in pairs if has_target(seed)
+    ]
+    repaired = sum(1 for _, _, candidate in seed_target_pairs if not has_target(candidate))
+    repair_rate = repaired / len(seed_target_pairs) if seed_target_pairs else 0.0
     target_reduced = sum(map(has_target, candidate_evaluations)) < sum(
         map(has_target, seed_evaluations)
     )
@@ -259,8 +290,7 @@ def decide_validation(
     }
     regression_denominator = 0
     regressions = 0
-    for case_id, seed in seed_by_case.items():
-        candidate = candidate_by_case[case_id]
+    for _case_id, seed, candidate in pairs:
         seed_checks = {
             item["check_code"]: item
             for item in seed["deterministic_checks"] + seed["coverage_checks"]
@@ -324,6 +354,25 @@ def decide_validation(
         },
         "decided_at": timestamp.isoformat(),
     }
+
+
+def decide_final_test_batch(
+    adopted_patch: dict[str, Any],
+    seed_evaluations: list[dict[str, Any]],
+    candidate_evaluations: list[dict[str, Any]],
+    *,
+    timestamp: datetime,
+) -> str:
+    """Apply the frozen paired thresholds once across the sealed Final Test split."""
+    if adopted_patch["status"] != "ADOPTED":
+        raise ValueError("Final Test is sealed until Validation adopts the Candidate")
+    final_decision = decide_validation(
+        adopted_patch,
+        seed_evaluations,
+        candidate_evaluations,
+        timestamp=timestamp,
+    )
+    return "SUPPORTED" if final_decision["status"] == "ADOPTED" else "REJECTED_FINAL"
 
 
 def decide_final_test(

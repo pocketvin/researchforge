@@ -26,6 +26,8 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-011 | OpenAI model and USD 20 budget boundary | ACCEPTED | 2026-08-30 | — |
 | RF-012 | Primary and contingency experiment suites | ACCEPTED | 2026-08-30 | G0 evidence |
 | RF-013 | One final independent acceptance | ACCEPTED | 2026-09-01 | Final release |
+| RF-014 | One target report per formal Benchmark case | ACCEPTED | 2026-09-01 | — |
+| RF-015 | Skill-conditioned coverage, deterministic verification | ACCEPTED | 2026-09-01 | G3 |
 
 ## RF-001 — Contract-First Implementation
 
@@ -276,3 +278,34 @@ The primary package contains 24 cases, not 12 multi-report cases. Every case is 
 for one source, one synthetic public evidence chunk, six facts, publication cutoff, and a
 verifier-only ground-truth hash. Cross-period behavior continues to be tested by the
 normal product workflow and is not inferred from this experiment.
+
+## RF-015 — Skill-Conditioned Coverage, Deterministic Verification
+
+Status: **ACCEPTED**
+
+Decision:
+
+Formal model output includes `reported_check_codes`, a bounded structured list of the
+earnings-quality checks the answer explicitly records. The ten-stage LangGraph continues
+to call deterministic finance services; the independent Verifier treats any required but
+unreported code as a coverage omission. Base, Seed, and Candidate use the same wrapper,
+model, graph, data, tools, schema, and verifier; only trusted skill content/hash differs.
+
+Candidate rules are distilled by a deterministic, allowlisted mapping from one eligible
+coverage signature. The artifact records `researchforge/deterministic-rule-distiller-v1`
+as its generator rather than falsely claiming an extra model call.
+
+Reason:
+
+The hypothesis concerns whether a versioned procedure improves what the agent records,
+not whether a model can replace formulas. Automatically inserting every check status
+after generation would make Seed/Candidate omissions unobservable; allowing the model to
+calculate values would violate the financial-correctness boundary.
+
+Consequence:
+
+A provider conclusion must attest only checks it explicitly covers; a null attestation is
+a structure failure and receives the one allowed repair. Deterministic product output
+retains native full coverage. Prompt-wrapper, resolved-instruction, skill, dataset, graph,
+formula, and verifier hashes are persisted. Synthetic 144-run tests prove this control
+path only and can never be cited as formal `SUPPORTED` evidence.

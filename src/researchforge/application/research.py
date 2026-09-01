@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, ClassVar, Protocol
+from typing import Any, ClassVar, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -47,6 +47,20 @@ class ConclusionDraft(BaseModel):
     earnings_quality_text: str = Field(min_length=1, max_length=2000)
     gross_margin_text: str = Field(min_length=1, max_length=2000)
     limitations: list[str] = Field(max_length=10)
+    reported_check_codes: (
+        list[
+            Literal[
+                "operating_cash_flow",
+                "accounts_receivable",
+                "inventory",
+                "cash_conversion",
+                "profit_cash_divergence",
+                "one_off_contribution",
+                "counter_evidence",
+            ]
+        ]
+        | None
+    ) = Field(max_length=7)
 
 
 class ConclusionGenerator(Protocol):
@@ -82,6 +96,7 @@ class DeterministicConclusionGenerator:
                 "未检索公告全文, 因此反证搜索结果只能标记为在当前证据包中未发现。",
                 "当前事实包没有一次性损益贡献字段, 该项检查不可用且未作推断。",
             ],
+            reported_check_codes=None,
         )
 
 
@@ -290,6 +305,11 @@ class EarningsQualityAnalyzer:
                 f"{(gross_margin_result.value * Decimal(100)).quantize(Decimal('0.01'))}%"
             ),
             "divergence_triggered": divergence_result.value == Decimal(1),
+            "operating_cash_flow": _decimal_text(value("operating_cash_flow")),
+            "net_income": _decimal_text(value("net_income")),
+            "accounts_receivable": _decimal_text(value("accounts_receivable")),
+            "inventory": _decimal_text(value("inventory")),
+            "one_off_contribution_available": False,
             "revenue_growth": self._trend_text(trend_results.get("revenue")),
             "profit_growth": self._trend_text(trend_results.get("net_income")),
         }

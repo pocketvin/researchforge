@@ -10,7 +10,7 @@ Test.
 ## Frozen package
 
 - Package ID: `package_v1_4_primary_battery_earnings_quality`
-- Package SHA-256: `181439808bc597c20b159cc1546c19cc36a4187cd35fb1f7ade1611ff875e054`
+- Package SHA-256: `3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f`
 - Pre-registered suite SHA-256:
   `2c112ff26cbbf0488a40db029c6a849b11ee35ffbc3353ffbf1e6f61282311c0`
 - Public contents: 24 Source Documents, 144 normalized Financial Facts, 24 synthetic

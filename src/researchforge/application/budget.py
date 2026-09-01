@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import json
+import os
+import tempfile
 import threading
 import uuid
 from dataclasses import dataclass
 from decimal import Decimal
+from pathlib import Path
 
 
 class BudgetExceededError(RuntimeError):
@@ -24,13 +28,64 @@ class BudgetSnapshot:
 class BudgetLedger:
     """Reserve worst-case cost atomically within one application process."""
 
-    def __init__(self, cap: Decimal = Decimal("20.00")) -> None:
+    def __init__(
+        self,
+        cap: Decimal = Decimal("20.00"),
+        *,
+        spent: Decimal = Decimal(0),
+        state_path: Path | None = None,
+    ) -> None:
         if cap <= 0:
             raise ValueError("budget cap must be positive")
+        if spent < 0 or spent > cap:
+            raise ValueError("initial spend must be within the budget cap")
         self._cap = cap
-        self._spent = Decimal(0)
+        self._spent = spent
         self._reservations: dict[str, Decimal] = {}
+        self._state_path = state_path.resolve() if state_path is not None else None
         self._lock = threading.Lock()
+        if self._state_path is not None and self._state_path.exists():
+            state = json.loads(self._state_path.read_text(encoding="utf-8"))
+            persisted_cap = Decimal(str(state["cap"]))
+            if persisted_cap != cap:
+                raise ValueError("persisted budget cap differs from configured cap")
+            self._spent = Decimal(str(state["spent"]))
+            self._reservations = {
+                str(key): Decimal(str(value)) for key, value in state["reservations"].items()
+            }
+            if self._spent < 0 or self._spent > self._cap:
+                raise ValueError("persisted spend is outside the budget cap")
+            if self._spent + sum(self._reservations.values(), start=Decimal(0)) > self._cap:
+                raise ValueError("persisted reservations exceed the budget cap")
+        elif self._state_path is not None:
+            with self._lock:
+                self._persist_locked()
+
+    def _persist_locked(self) -> None:
+        if self._state_path is None:
+            return
+        self._state_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "currency": "USD",
+            "cap": format(self._cap, "f"),
+            "spent": format(self._spent, "f"),
+            "reservations": {
+                key: format(value, "f") for key, value in sorted(self._reservations.items())
+            },
+        }
+        descriptor, temporary_name = tempfile.mkstemp(
+            dir=self._state_path.parent,
+            prefix=f".{self._state_path.name}.",
+        )
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle, ensure_ascii=False, sort_keys=True)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, self._state_path)
+        finally:
+            temporary.unlink(missing_ok=True)
 
     def snapshot(self) -> BudgetSnapshot:
         with self._lock:
@@ -49,17 +104,23 @@ class BudgetLedger:
                 raise BudgetExceededError("OpenAI aggregate project budget would be exceeded")
             reservation_id = f"reservation_{uuid.uuid4().hex}"
             self._reservations[reservation_id] = worst_case_cost
+            self._persist_locked()
             return reservation_id
 
     def complete(self, reservation_id: str, actual_cost: Decimal) -> None:
         if actual_cost < 0:
             raise ValueError("actual cost cannot be negative")
         with self._lock:
-            reserved = self._reservations.pop(reservation_id)
+            reserved = self._reservations[reservation_id]
             if actual_cost > reserved:
                 raise ValueError("actual cost exceeds its worst-case reservation")
+            if self._spent + actual_cost > self._cap:
+                raise BudgetExceededError("OpenAI aggregate project budget would be exceeded")
+            self._reservations.pop(reservation_id)
             self._spent += actual_cost
+            self._persist_locked()
 
     def release(self, reservation_id: str) -> None:
         with self._lock:
             self._reservations.pop(reservation_id, None)
+            self._persist_locked()

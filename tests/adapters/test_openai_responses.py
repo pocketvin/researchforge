@@ -24,6 +24,11 @@ class FakeResponses:
             "earnings_quality_text": "现金转化比来自已计算结果。",
             "gross_margin_text": "毛利率来自已计算结果。",
             "limitations": ["冻结事实范围有限。"],
+            "reported_check_codes": [
+                "operating_cash_flow",
+                "cash_conversion",
+                "profit_cash_divergence",
+            ],
         }
         return SimpleNamespace(
             output_text=json.dumps(output, ensure_ascii=False),

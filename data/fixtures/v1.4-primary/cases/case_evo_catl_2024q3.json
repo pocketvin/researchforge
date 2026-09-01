@@ -25,7 +25,7 @@
   "created_at": "2026-09-01T05:30:00+08:00",
   "frozen": true,
   "group_key": "cn_300750",
-  "package_hash": "181439808bc597c20b159cc1546c19cc36a4187cd35fb1f7ade1611ff875e054",
+  "package_hash": "3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f",
   "package_id": "package_v1_4_primary_battery_earnings_quality",
   "research_question": "该报告期的利润是否转化为高质量经营现金流?请核对应收账款、存货、现金转化、利润现金背离、一次性贡献和反证。",
   "research_time": "2024-10-20T00:00:00+08:00",
@@ -46,7 +46,7 @@
   ],
   "verifier_ground_truth_ref": {
     "access_class": "verifier_only",
-    "artifact_hash": "ab8fe4e6330a009a8dac1e1ef98636e876cf826590b44a736aa2f95493f366ba",
+    "artifact_hash": "d63c6485026d6f82112c879a1c4a160e862c7e035098abd99a6bafdd6ee8b46c",
     "artifact_id": "ground_truth_case_evo_catl_2024q3"
   }
 }

@@ -51,6 +51,8 @@ class ResearchRunService:
         skill_hash: str,
         verifier: FinancialVerifier | None = None,
         database_index: DatabaseIndex | None = None,
+        model_config: dict[str, Any] | None = None,
+        prompt_hashes: dict[str, str] | None = None,
         clock: Callable[[], datetime] = _default_clock,
     ) -> None:
         self.repository = repository
@@ -60,6 +62,21 @@ class ResearchRunService:
         self.skill_hash = skill_hash
         self.verifier = verifier or FinancialVerifier(clock=clock)
         self.database_index = database_index
+        self.model_config = model_config or {
+            "provider": "openai",
+            "model_id": "gpt-5.6-luna",
+            "model_snapshot": None,
+            "temperature": None,
+            "seed": None,
+            "reasoning_effort": "medium",
+            "max_output_tokens": 1000,
+            "tool_choice_policy": "controlled",
+            "store": False,
+            "built_in_tools": [],
+        }
+        self.prompt_hashes = prompt_hashes or {
+            "research_system": hashlib.sha256(PROMPT_TEXT.encode()).hexdigest()
+        }
         self.clock = clock
 
     @classmethod
@@ -109,16 +126,24 @@ class ResearchRunService:
                 self.repository.artifact_references(str(manifest["run_id"])),
             )
 
-    def _manifest(self, request: ResearchRunRequest, run_id: str) -> dict[str, Any]:
+    def _manifest(
+        self,
+        request: ResearchRunRequest,
+        run_id: str,
+        *,
+        run_kind: str,
+        case_id: str | None,
+        split: str | None,
+    ) -> dict[str, Any]:
         timestamp = self.clock().isoformat()
         package = self.fixture_catalog.manifest
         request_payload = request.model_dump(mode="json")
         return {
             "schema_version": "1.4.0",
             "run_id": run_id,
-            "run_kind": "product",
-            "case_id": None,
-            "split": None,
+            "run_kind": run_kind,
+            "case_id": case_id,
+            "split": split,
             "lifecycle_state": "queued",
             "input": {
                 "input_kind": "research",
@@ -129,18 +154,7 @@ class ResearchRunService:
                 "research_time": request_payload["research_time"],
             },
             "configuration": {
-                "model": {
-                    "provider": "openai",
-                    "model_id": "gpt-5.6-luna",
-                    "model_snapshot": None,
-                    "temperature": None,
-                    "seed": None,
-                    "reasoning_effort": "medium",
-                    "max_output_tokens": 1000,
-                    "tool_choice_policy": "controlled",
-                    "store": False,
-                    "built_in_tools": [],
-                },
+                "model": self.model_config,
                 "workflow": {
                     "engine": "langgraph",
                     "graph_version": GRAPH_VERSION,
@@ -149,9 +163,7 @@ class ResearchRunService:
                 "skill_version": self.skill_version,
                 "skill_hash": self.skill_hash,
                 "formula_version": "1.0.0",
-                "prompt_hashes": {
-                    "research_system": hashlib.sha256(PROMPT_TEXT.encode()).hexdigest()
-                },
+                "prompt_hashes": self.prompt_hashes,
                 "tool_versions": {
                     "financial_tools": "1.0.0",
                     "retrieval": "1.0.0",
@@ -183,7 +195,24 @@ class ResearchRunService:
             "failure": None,
         }
 
-    def submit(self, request: ResearchRunRequest) -> RunSubmission:
+    def submit(
+        self,
+        request: ResearchRunRequest,
+        *,
+        run_kind: str = "product",
+        case_id: str | None = None,
+        split: str | None = None,
+    ) -> RunSubmission:
+        expected_kinds = {
+            None: "product",
+            "evolution": "benchmark_evolution",
+            "validation": "benchmark_validation",
+            "final_test": "benchmark_final_test",
+        }
+        if split not in expected_kinds or run_kind != expected_kinds[split]:
+            raise ValueError("run kind, case, and split must form one supported lifecycle")
+        if (run_kind == "product") is not (case_id is None):
+            raise ValueError("product runs cannot bind a case; benchmark runs must bind one")
         if (
             request.task_type in {"company_research", "risk_detection"}
             and len(request.requested_period_labels) < 2
@@ -199,10 +228,23 @@ class ResearchRunService:
                     "thesis_investigation refuses price predictions and investment advice"
                 )
         run_id = f"run_{uuid.uuid4().hex}"
+        request_payload = request.model_dump(mode="json")
+        repository_request = {
+            **request_payload,
+            "_run_kind": run_kind,
+            "_case_id": case_id,
+            "_split": split,
+        }
         manifest, created = self.repository.create_or_get(
-            request.model_dump(mode="json"),
+            repository_request,
             run_id,
-            self._manifest(request, run_id),
+            self._manifest(
+                request,
+                run_id,
+                run_kind=run_kind,
+                case_id=case_id,
+                split=split,
+            ),
         )
         existing_id = str(manifest["run_id"])
         self._mirror(manifest)
@@ -311,6 +353,7 @@ class ResearchRunService:
         *,
         case_id: str,
         expected_calculations: dict[str, str],
+        ground_truth_hash: str | None = None,
     ) -> dict[str, Any]:
         """Evaluate one completed run against controlled deterministic ground truth."""
         manifest = self.repository.get_manifest(run_id)
@@ -330,6 +373,7 @@ class ResearchRunService:
             calculations=self.repository.get_calculations(run_id),
             loaded=loaded,
             expected_calculations=expected_calculations,
+            ground_truth_hash=ground_truth_hash,
         )
         self.repository.save_evaluation(run_id, evaluation)
         manifest = {

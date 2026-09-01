@@ -172,6 +172,7 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "evidence" / "g0-golden-cases.md",
     ROOT / "docs" / "evidence" / "g0-owner-signoff.md",
     ROOT / "docs" / "evidence" / "g3-primary-data-signoff.md",
+    ROOT / "docs" / "evidence" / "g3-experiment-engine.md",
     ROOT / "docs" / "operations" / "resume-playbook.md",
     ROOT / "docs" / "strategy" / "project-scorecard.md",
     ROOT / "docs" / "strategy" / "risk-register.md",

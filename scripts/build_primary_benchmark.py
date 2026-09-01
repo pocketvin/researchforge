@@ -670,7 +670,7 @@ def _ground_truth(case_id: str, facts: list[dict[str, Any]]) -> dict[str, Any]:
             "cash_conversion",
             "profit_cash_divergence",
             "one_off_contribution",
-            "counter_evidence_search",
+            "counter_evidence",
         ],
         "expected_signal": signal,
         "created_at": CREATED_AT,

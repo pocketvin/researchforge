@@ -107,6 +107,7 @@ class FinancialVerifier:
         calculations: list[dict[str, Any]],
         loaded: LoadedResearchData,
         expected_calculations: dict[str, str],
+        ground_truth_hash: str | None = None,
         tool_records: Iterable[dict[str, Any]] = (),
     ) -> dict[str, Any]:
         facts = {fact["fact_id"]: fact for fact in loaded.facts}
@@ -285,9 +286,9 @@ class FinancialVerifier:
         all_checks = deterministic + coverage
         failures = [item for item in all_checks if item["status"] == "FAIL"]
         failure_events = [
-            self._failure_event(case_id, item, index) for index, item in enumerate(failures, 1)
+            self._failure_event(manifest["run_id"], case_id, item, index)
+            for index, item in enumerate(failures, 1)
         ]
-        applicable = [item for item in all_checks if item["status"] != "NOT_APPLICABLE"]
         calculation_accuracy = self._rate(calculation_checks)
         evidence_coverage = self._rate(coverage)
         citation_check = next(
@@ -295,6 +296,14 @@ class FinancialVerifier:
         )
         critical_omissions = sum(
             1 for event in failure_events if event["failure_label"] == "CRITICAL_OMISSION"
+        )
+        critical_omission_rate = critical_omissions / len(coverage)
+        citation_accuracy = 1.0 if citation_check["status"] == "PASS" else 0.0
+        task_score = (
+            0.30 * calculation_accuracy
+            + 0.25 * citation_accuracy
+            + 0.25 * evidence_coverage
+            + 0.20 * (1 - critical_omission_rate)
         )
         ground_truth = {
             "case_id": case_id,
@@ -309,17 +318,17 @@ class FinancialVerifier:
             "skill_version": manifest["configuration"]["skill_version"],
             "skill_hash": manifest["configuration"]["skill_hash"],
             "verifier_version": VERIFIER_VERSION,
-            "ground_truth_hash": _hash_payload(ground_truth),
+            "ground_truth_hash": ground_truth_hash or _hash_payload(ground_truth),
             "deterministic_checks": deterministic,
             "coverage_checks": coverage,
             "qualitative_checks": [],
             "failure_events": failure_events,
             "metrics": {
-                "task_score": self._rate(applicable),
+                "task_score": task_score,
                 "calculation_accuracy": calculation_accuracy,
                 "evidence_coverage": evidence_coverage,
-                "critical_omission_rate": critical_omissions / len(coverage),
-                "citation_accuracy": 1.0 if citation_check["status"] == "PASS" else 0.0,
+                "critical_omission_rate": critical_omission_rate,
+                "citation_accuracy": citation_accuracy,
             },
             "created_at": self.clock().isoformat(),
         }
@@ -333,6 +342,7 @@ class FinancialVerifier:
 
     @staticmethod
     def _failure_event(
+        run_id: str,
         case_id: str,
         check: dict[str, Any],
         index: int,
@@ -357,7 +367,7 @@ class FinancialVerifier:
             label = "OVERCLAIM"
             severity = "major"
         return {
-            "failure_id": f"failure_{case_id}_{index:03d}",
+            "failure_id": f"failure_{run_id}_{case_id}_{index:03d}",
             "failure_label": label,
             "signature": f"{code}:{_hash_payload(check)[:16]}",
             "severity": severity,

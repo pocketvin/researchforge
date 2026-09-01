@@ -8,13 +8,23 @@
   "gate_status": "in_progress",
   "current_milestone": {
     "id": "g3-formal-data-preparation",
-    "title": "Prepare the primary controlled experiment",
-    "outcome": "The redistribution-safe primary package is prepared; complete the second owner signoff, controlled experiment runner, frozen provider configuration, and all preflight checks without consuming Final Test.",
+    "title": "Freeze and execute the controlled experiment",
+    "outcome": "The primary package and executor are prepared; complete the second owner signoff, disjoint contingency freeze, provider calibration, and formal execution without premature Final Test access.",
     "status": "in_progress"
   },
   "last_verified": {
-    "at": "2026-09-01T05:38:21+08:00",
+    "at": "2026-09-01T13:36:13+08:00",
     "commands": [
+      {
+        "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py && git diff --check && docker compose config --quiet",
+        "exit_code": 0,
+        "summary": "The updated full local gate passed: 69 locked packages, 105 formatted files, clean lint and strict typing across 65 source files, 141 tests, all contract/package checks, diff whitespace and Compose configuration."
+      },
+      {
+        "command": "uv run pytest -q tests/application/test_formal_experiment.py && env -u OPENAI_API_KEY -u RESEARCHFORGE_ROTATED_KEY_CONFIRMED uv run researchforge evolution-preflight",
+        "exit_code": 0,
+        "summary": "Three offline formal-engine tests passed, including a 144-run synthetic full path. Real preflight contacted no provider, verified all package/truth hashes and budget bounds, and blocked on owner signoff and rotated-key confirmation."
+      },
       {
         "command": "uv run pytest -q tests/domain/test_primary_benchmark.py && uv run python scripts/validate_contracts.py",
         "exit_code": 0,
@@ -48,14 +58,15 @@
     ]
   },
   "next_action": {
-    "title": "Build the controlled formal experiment runner and sign the prepared package",
-    "why": "The primary artifacts are frozen, but formal execution needs an auditable Base/Seed/Candidate runner, pre-dispatch budget stop, three-repeat accounting, and explicit owner authorization.",
-    "first_step": "Implement offline preflight and controlled CLI execution against the frozen case manifests without opening Final Test or dispatching provider requests.",
+    "title": "Freeze the contingency package and sign the prepared primary package",
+    "why": "The controlled executor is ready, but the protocol requires a wholly disjoint V1.5 fallback to be frozen and the primary package to be owner-authorized before the first formal call.",
+    "first_step": "Create and validate the 24-case Great Power/Farasis/BYD/Zhuhai CosMX contingency grouping and redistribution-safe data package while keeping all labels sealed.",
     "acceptance_evidence": [
       "All 24 prepared cases retain stable IDs, official source links, publication cutoffs, hashes, required facts and expected deterministic calculations.",
       "Evolution, Validation and Final Test company/group keys have zero overlap and the suite hash is stable across three repetitions.",
       "Redistribution status is explicit and unsafe original text is replaced by synthetic evidence in the public package.",
-      "The owner signs package 181439808bc597c20b159cc1546c19cc36a4187cd35fb1f7ade1611ff875e054 before any formal provider run."
+      "The owner signs package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f before any formal provider run.",
+      "The disjoint contingency package is frozen and hash-validated before primary execution begins."
     ]
   },
   "blockers": [
@@ -72,10 +83,18 @@
       "owner_action": "No immediate action; retry the bounded smoke test after registry connectivity recovers."
     },
     {
-      "id": "primary_ground_truth_incomplete",
+      "id": "primary_owner_signoff_pending",
       "description": "The primary 24-case package is prepared and machine-validated but is not yet owner-signed.",
       "blocks": ["G3"],
       "owner_action": "Review and sign the compact prepared sample at the second required signoff point."
+    },
+    {
+      "id": "contingency_package_not_frozen",
+      "description": "The disjoint V1.5 contingency company grouping is specified but its complete package is not yet frozen.",
+      "blocks": [
+        "G3"
+      ],
+      "owner_action": "No immediate action; Codex is preparing this package before any formal provider run."
     }
   ],
   "pending_decisions": [],
@@ -95,7 +114,7 @@
   },
   "last_session": {
     "ended_at": "2026-09-01T04:55:23+08:00",
-    "summary": "Implemented durable recovery, deterministic verification, all five modes, 20-run reliability, PostgreSQL indexing/migrations, two-page UI, Docker/CI definitions and controlled Evolution preregistration; formal research data and final product evidence remain.",
+    "summary": "Implemented the five-mode product, UI/storage/CI core, prepared primary package, and controlled formal executor with 144-run synthetic plumbing evidence; contingency data, owner signoff, live research evidence and final product evidence remain.",
     "files_changed": [
       "src/researchforge/",
       "tests/",
@@ -111,5 +130,5 @@
       "project-status.json"
     ]
   },
-  "updated_at": "2026-09-01T05:38:21+08:00"
+  "updated_at": "2026-09-01T13:36:13+08:00"
 }

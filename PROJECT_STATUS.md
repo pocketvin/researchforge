@@ -12,18 +12,20 @@ Machine-readable mirror: [`project-status.json`](project-status.json)
 - Scope and contracts: V1.4 / `schema_version: 1.4.0`; V1.2 and V1.3 remain read-only history.
 - Independently accepted gates: C0 and G0.
 - Local engineering evidence: G1 thin/full breadth and G2 Verifier exit behavior are implemented; final independent acceptance is intentionally deferred until the whole project is ready.
-- Active milestone: G3 primary data package is prepared and machine-validated; controlled experiment tooling and the second owner signoff are next.
+- Active milestone: G3 primary package is prepared and the controlled experiment executor is implemented; second owner signoff, contingency freeze, and live execution remain.
 - Product runtime: five research modes share one ten-stage LangGraph, durable file checkpoints, deterministic finance/Verifier services, asynchronous API, CLI, hybrid PostgreSQL index, and two-page React UI.
 - Packaging: CI and Docker Compose definitions exist. Local frontend build/E2E and migration up/down/up pass; Docker image build is currently unverified because both registry attempts timed out while fetching base-image metadata.
 - OpenAI spend: USD 0.00. No live provider call has been made.
 
 ## What Is Proven Locally
 
-- The previous 132-test full gate remains passing, and five new primary-package regression tests now cover artifact relationships, split isolation, point-in-time cutoffs, synthetic evidence labeling, and package-hash stability.
+- The current full gate passes 141 backend tests; primary-package and formal-engine regressions cover artifact relationships, split isolation, cutoffs, synthetic labeling, package hashes, budget persistence, repeated pairing, and Final Test controls.
 - Fixed reliability batch: 20/20 succeeded; four runs per mode; no provider calls.
 - The independent Verifier recomputes finance and catches calculation, omission, citation, cutoff, period, schema, and identity faults with stable signatures.
 - Research and Skill Lab render persisted API artifacts. The frontend passes typecheck, lint, three unit tests, production build, Playwright navigation, and critical-impact axe checks.
 - Primary 24-case package is prepared: 24 official Source Documents, 144 normalized Financial Facts, 24 explicitly synthetic public Evidence Chunks, and 24 cases split 12/6/6. All 96 newly acquired fact cells were page-matched; Final Test remains sealed and formal execution is disabled pending owner signoff.
+- Offline formal-experiment plumbing ran all 144 pre-registered Base/Seed/Candidate paths with a synthetic test double. It validated three repeats, stable failure clustering, Experience and Candidate artifacts, paired adoption thresholds, durable budget state, and one-time Final Test unsealing. This is engineering evidence only.
+- Zero-network preflight reports a USD 1.8432 maximum reservation for all 288 possible requests including one repair per run, below both the USD 9 primary allocation and USD 20 aggregate cap.
 
 ## Honest Non-Claims
 
@@ -35,20 +37,21 @@ Machine-readable mirror: [`project-status.json`](project-status.json)
 
 ## Single Next Action
 
-Implement the controlled formal experiment runner and offline preflight while the prepared package awaits the second minimal owner signoff; no live model request or Final Test access occurs before signoff and a safe rotated local key.
+Freeze the disjoint V1.5 contingency package while the primary package awaits the second minimal owner signoff and a safe rotated local key; then run calibration and the formal primary experiment without changing model, graph, data, verifier, or thresholds.
 
 ## Active Blockers and Dependencies
 
 1. A new rotated OpenAI key is required before live calibration. The key previously pasted into chat is treated as compromised and must never be used or stored.
 2. The prepared package needs the second owner signoff before any formal Evolution, Validation, or Final Test run.
-3. Docker registry connectivity must recover before the Compose smoke test can be evidenced.
-4. `git push` remains a final publication action after secret/data scans; it has not been performed.
+3. The disjoint V1.5 contingency suite must be frozen before the first formal primary run.
+4. Docker registry connectivity must recover before the Compose smoke test can be evidenced.
+5. `git push` remains a final publication action after secret/data scans; it has not been performed.
 
 ## Verification Snapshot
 
 ```text
 Backend targeted checks
-PASS: 68 locked packages, 98 formatted files, lint, strict mypy over 60 source files, and 132/132 tests.
+PASS: 69 locked packages, 105 formatted files, lint, strict mypy over 65 source files, 141/141 tests, contracts, diff whitespace, and Compose configuration.
 
 Reliability batch
 PASS: 20/20 succeeded; company_research=4, filing_analysis=4, peer_comparison=4, thesis_investigation=4, risk_detection=4; provider cost USD 0.
@@ -63,7 +66,10 @@ Independent acceptance
 Deferred by owner until final project completion. C0 and G0 retain their prior PASS verdicts.
 
 Primary Benchmark package
-PASS locally: 24 sources, 144 facts, 24 synthetic chunks, 24 frozen cases; package hash 181439808bc597c20b159cc1546c19cc36a4187cd35fb1f7ade1611ff875e054; owner signoff pending.
+PASS locally: 24 sources, 144 facts, 24 synthetic chunks, 24 frozen cases; package hash 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f; owner signoff pending.
+
+Formal experiment executor
+PASS locally with a synthetic test double: 144/144 temporary runs and artifacts validated. Real preflight is BLOCKED before provider contact by pending owner signoff and rotated-key confirmation. OpenAI spend remains USD 0.
 ```
 
 ## Resume in Five Minutes

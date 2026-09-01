@@ -410,14 +410,18 @@ class ResearchWorkflow:
         repairs = 0
         conclusions: list[ConclusionDraft] = []
         for analysis in state.get("analyses", (state["analysis"],)):
+            conclusion_context = {
+                **analysis.context,
+                "counter_evidence": state["counter_evidence"],
+            }
             try:
-                conclusion = self.conclusion_generator.generate(analysis.context)
+                conclusion = self.conclusion_generator.generate(conclusion_context)
             except StructuredOutputError:
                 if repairs >= 1:
                     return self._invalid_conclusion(state, repairs)
                 repairs += 1
                 try:
-                    conclusion = self.conclusion_generator.generate(analysis.context)
+                    conclusion = self.conclusion_generator.generate(conclusion_context)
                 except StructuredOutputError:
                     return self._invalid_conclusion(state, repairs)
             conclusions.append(conclusion)
@@ -497,16 +501,39 @@ class ResearchWorkflow:
         analyses = state.get("analyses", (state["analysis"],))
         conclusions = state.get("conclusions", (state["conclusion"],))
         counter = state["counter_evidence"]
-        mandatory_checks = [check for analysis in analyses for check in analysis.mandatory_checks]
-        mandatory_checks.append(
-            {
-                "check_code": "counter_evidence",
-                "status": "performed",
-                "fact_ids": [],
-                "evidence_ids": [],
-                "finding": counter["summary"],
-            }
+        skill_report_codes = {
+            "operating_cash_flow",
+            "accounts_receivable",
+            "inventory",
+            "cash_conversion",
+            "profit_cash_divergence",
+            "one_off_contribution",
+        }
+        native_coverage = all(conclusion.reported_check_codes is None for conclusion in conclusions)
+        mandatory_checks: list[dict[str, Any]] = []
+        for analysis, conclusion in zip(analyses, conclusions, strict=True):
+            reported = set(conclusion.reported_check_codes or [])
+            mandatory_checks.extend(
+                check
+                for check in analysis.mandatory_checks
+                if check["check_code"] not in skill_report_codes
+                or native_coverage
+                or check["check_code"] in reported
+            )
+        counter_reported = native_coverage or any(
+            "counter_evidence" in (conclusion.reported_check_codes or [])
+            for conclusion in conclusions
         )
+        if counter_reported:
+            mandatory_checks.append(
+                {
+                    "check_code": "counter_evidence",
+                    "status": "performed",
+                    "fact_ids": [],
+                    "evidence_ids": [],
+                    "finding": counter["summary"],
+                }
+            )
         claims: list[dict[str, Any]] = []
         risk_claim_ids: list[str] = []
         limitations: list[str] = []
@@ -685,6 +712,17 @@ class ResearchWorkflow:
         finished_at = self.clock().isoformat()
         terminal_state = final_state.get("terminal_state", "failed")
         started_at = final_state.get("started_at", fallback_started_at)
+        usage = getattr(self.conclusion_generator, "usage", None)
+        if not isinstance(usage, dict):
+            usage = {
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
+                "latency_ms": 0,
+                "tool_calls": 0,
+                "estimated_cost": 0,
+                "cost_currency": "USD",
+            }
         trace_without_hash = {
             "schema_version": "1.4.0",
             "trace_id": trace_id,
@@ -697,15 +735,7 @@ class ResearchWorkflow:
             "terminal_state": terminal_state,
             "stages": final_state["stages"],
             "repair_attempts": final_state.get("repair_attempts", 0),
-            "usage": {
-                "input_tokens": 0,
-                "output_tokens": 0,
-                "total_tokens": 0,
-                "latency_ms": 0,
-                "tool_calls": 0,
-                "estimated_cost": 0,
-                "cost_currency": "USD",
-            },
+            "usage": usage,
         }
         trace_hash = hashlib.sha256(
             json.dumps(trace_without_hash, ensure_ascii=False, sort_keys=True).encode("utf-8")
@@ -740,6 +770,9 @@ class ResearchWorkflow:
         monotonic: Callable[[], float] = time.monotonic,
     ) -> WorkflowOutcome:
         """Invoke or resume one checkpointed graph under bounded run controls."""
+        begin_run = getattr(self.conclusion_generator, "begin_run", None)
+        if callable(begin_run):
+            begin_run()
         started_at = self.clock().isoformat()
         config = self._config(run_id)
         can_resume = resume and self.has_checkpoint(run_id)

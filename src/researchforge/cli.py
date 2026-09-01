@@ -10,9 +10,17 @@ from pathlib import Path
 from typing import Any, cast
 
 from researchforge.adapters.evolution_storage import EvolutionArtifactRepository
+from researchforge.adapters.openai_responses import (
+    OpenAIResponsesConclusionGenerator,
+    ResponsesResource,
+    luna_worst_case_cost,
+)
 from researchforge.api.app import PROJECT_ROOT, build_default_service
+from researchforge.application.budget import BudgetLedger
 from researchforge.application.contracts import ResearchRunRequest
 from researchforge.application.evolution import preregister_experiment
+from researchforge.application.formal_experiment import FormalExperimentRunner
+from researchforge.application.research import ConclusionGenerator
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -58,6 +66,32 @@ def _parser() -> argparse.ArgumentParser:
     )
     evolution_show.add_argument("experiment_id")
     evolution_show.add_argument("--kind", default="experiment")
+    for name, help_text in (
+        ("evolution-preflight", "validate the primary experiment without provider contact"),
+        ("evolution-run", "run or resume the signed primary formal experiment"),
+    ):
+        command = subcommands.add_parser(name, help=help_text)
+        command.add_argument(
+            "--experiment-id",
+            default="experiment_primary_v1_4_001",
+        )
+        command.add_argument(
+            "--package-root",
+            type=Path,
+            default=PROJECT_ROOT / "data" / "fixtures" / "v1.4-primary",
+        )
+        command.add_argument(
+            "--private-ground-truth-root",
+            type=Path,
+            default=(
+                PROJECT_ROOT / "data" / "private" / "benchmark" / "v1.4-primary" / "ground-truth"
+            ),
+        )
+        command.add_argument(
+            "--suite",
+            type=Path,
+            default=PROJECT_ROOT / "benchmark" / "suites" / "v1.4-primary-preregistered.json",
+        )
     subcommands.add_parser("catalog", help="show the allowlisted fixture catalog")
     return parser
 
@@ -66,9 +100,53 @@ def _print(payload: Any) -> None:
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
 
 
+def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
+    ledger = BudgetLedger(state_path=args.artifact_root / "budget" / "project-openai.json")
+    rotated_key_ready = bool(os.getenv("OPENAI_API_KEY")) and (
+        os.getenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED") == "1"
+    )
+    responses_resource: ResponsesResource | None = None
+
+    def generator_factory(
+        skill_content: str | None,
+        ledger: BudgetLedger,
+    ) -> ConclusionGenerator:
+        nonlocal responses_resource
+        from openai import OpenAI
+
+        if responses_resource is None:
+            responses_resource = cast(ResponsesResource, OpenAI().responses)
+        return OpenAIResponsesConclusionGenerator(
+            responses_resource,
+            ledger,
+            max_input_tokens=8000,
+            max_output_tokens=4000,
+            skill_content=skill_content,
+        )
+
+    seed_root = PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0"
+    return FormalExperimentRunner(
+        experiment_id=str(args.experiment_id),
+        package_root=Path(args.package_root),
+        private_ground_truth_root=Path(args.private_ground_truth_root),
+        suite_path=Path(args.suite),
+        seed_manifest_path=seed_root / "skill-version.json",
+        seed_content_path=seed_root / "SKILL.md",
+        artifact_root=Path(args.artifact_root),
+        generator_factory=generator_factory,
+        ledger=ledger,
+        worst_case_request_cost=luna_worst_case_cost(8000, 4000),
+        rotated_key_ready=rotated_key_ready,
+    )
+
+
 def main(argv: list[str] | None = None) -> None:
     """Execute a run or inspect persisted artifacts without provider calls."""
     args = _parser().parse_args(argv)
+    if args.command in {"evolution-preflight", "evolution-run"}:
+        runner = _formal_runner(args)
+        _print(runner.preflight() if args.command == "evolution-preflight" else runner.run())
+        return
     service = build_default_service(args.artifact_root)
     if args.command == "catalog":
         _print(service.fixture_catalog.catalog().model_dump(mode="json"))

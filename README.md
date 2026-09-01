@@ -10,10 +10,10 @@ ResearchForge V1.4 is an evidence-grounded company fundamental-research product 
 - Contract package: **1.4.0**
 - Independently accepted gates: **V1.4 C0 + G0**
 - Local implementation: **G1 five-mode breadth + G2 Verifier evidence implemented; one final independent acceptance is deferred until project completion**
-- Active milestone: **G3 formal Benchmark data preparation**
+- Active milestone: **G3 primary package signoff + contingency freeze + formal execution**
 - Supported deployment for V1.4: **local or controlled single-user demo**
 
-Current critical path: finish the signed primary Benchmark package, run the controlled Evolution/Validation/Final Test experiment, then complete Docker smoke, three labeled simulations, demo/public packaging, and one final independent review. Synthetic policy tests are not a formal `SUPPORTED` result.
+Current critical path: sign the prepared primary package, freeze the disjoint contingency package, then run the implemented controlled Evolution/Validation/Final Test executor. After G3, complete Docker smoke, three labeled simulations, demo/public packaging, and one final independent review. Synthetic tests are not a formal `SUPPORTED` result.
 
 ## Run the Zero-Cost Product Core
 
@@ -40,6 +40,27 @@ uv run uvicorn researchforge.api.app:create_app --factory --reload
 ```
 
 The API implements create/status/result/trace/facts/cancel resources, `GET /v1/catalog`, and read-only Evolution experiment/artifact endpoints. It returns `202` on creation, `425` while an artifact is not ready, and `409` for an idempotency conflict or a terminal run without a result.
+
+## Inspect the Formal Experiment Safely
+
+The offline preflight validates public hashes, 24 verifier-only ground-truth hashes, the
+Seed Skill, the 144-run plan, one-time Final Test policy, and both budget ceilings. It
+never contacts OpenAI:
+
+```bash
+uv run researchforge evolution-preflight
+```
+
+Until owner signoff and a rotated local key are present, the expected result is
+`status: BLOCKED` with `provider_contacted: false`. Never paste a key into a command or
+Git-tracked file. After explicit signoff, keep the rotated key only in ignored local
+environment configuration, set `RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1`, load that local
+environment, and use `evolution-run` to execute or idempotently resume the experiment.
+
+The maximum plan is 144 formal runs: 72 Base/Seed Evolution runs, 36 paired
+Seed/Candidate Validation runs, and—only after adoption—36 paired runs in the single
+sealed Final Test stage. Every run uses the same ten-stage LangGraph; ordinary Python
+owns clustering, patch policy, budget enforcement, and adoption decisions.
 
 Start the frontend separately:
 
@@ -88,7 +109,7 @@ Engineering delivery can remain useful after a negative experiment, but the owne
 | L0 Contract Ready | Scope, schemas, methods, validation | complete |
 | L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | local evidence implemented; final acceptance deferred |
 | L2 Demo Ready | Verifier, trace, and replayable failure evidence | local evidence implemented; final acceptance deferred |
-| L3 Research Supported | Adopted Candidate and supported sealed Final Test | not started |
+| L3 Research Supported | Adopted Candidate and supported sealed Final Test | executor ready; live evidence blocked by signoff/key/contingency freeze |
 | L4 Full Engineering Product | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | in progress — core/UI/storage/CI implemented |
 
 Stopping earlier preserves honest portfolio value. “Self-improving” is not a completed claim until L3 adoption and sealed-test evidence exist.
@@ -181,7 +202,7 @@ Contracts and data-source acceptance ✓
 → checkpoint recovery + deterministic and coverage verifier ✓
 → remaining product modes + 20-run reliability ✓
 → two-page UI + PostgreSQL + CI definitions ✓
-→ signed formal Benchmark data + controlled evolution cycle ← current
+→ primary signoff + contingency freeze + controlled live evolution cycle ← current
 → Docker smoke + simulations + demo/public packaging
 → one final independent acceptance
 ```
