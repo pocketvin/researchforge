@@ -24,7 +24,7 @@ ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品�
 - Supported deployment for V1.4: **local or controlled single-user demo**
 - Public repository: **[pocketvin/researchforge](https://github.com/pocketvin/researchforge)**
 
-Current critical path: run the final full verification, update the public repository and CI evidence, then perform the one deferred independent acceptance. Formal research is closed: the primary and once-only contingency experiments both stopped without an eligible cluster, so no `SUPPORTED` or self-evolution claim is permitted. See [`docs/evidence/g3-primary-formal-result.md`](docs/evidence/g3-primary-formal-result.md), [`docs/evidence/g3-contingency-formal-result.md`](docs/evidence/g3-contingency-formal-result.md), and [`docs/evidence/g4-simulated-usability.md`](docs/evidence/g4-simulated-usability.md).
+Current critical path: perform the one deferred independent acceptance. The complete local gate and GitHub Actions run [`33613092646`](https://github.com/pocketvin/researchforge/actions/runs/33613092646) are green on commit `06e870a`. Formal research is closed: the primary and once-only contingency experiments both stopped without an eligible cluster, so no `SUPPORTED` or self-evolution claim is permitted. See [`docs/evidence/g3-primary-formal-result.md`](docs/evidence/g3-primary-formal-result.md), [`docs/evidence/g3-contingency-formal-result.md`](docs/evidence/g3-contingency-formal-result.md), and [`docs/evidence/g4-simulated-usability.md`](docs/evidence/g4-simulated-usability.md).
 
 ## Run the Zero-Cost Product Core
 
@@ -253,7 +253,7 @@ Contracts and data-source acceptance ✓
 → rotated key + calibration + controlled primary experiment ✓
 → once-only disjoint contingency experiment + stopping rule ✓
 → three labeled simulations + evidence-driven UI correction ✓
-→ public packaging + CI refresh
+→ public packaging + GitHub CI ✓
 → one final independent acceptance ← current
 ```
 

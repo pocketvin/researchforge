@@ -11,7 +11,7 @@ Machine-readable mirror: [`project-status.json`](project-status.json)
 - Current gate: G4.
 - Engineering: `V1.4 Full Engineering Product Ready` release candidate.
 - Research: `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS`.
-- Release gate: full local evidence passes; GitHub CI refresh and the one deferred independent acceptance remain.
+- Release gate: full local evidence and GitHub Actions run `33613092646` pass; only the one deferred independent acceptance remains.
 - Public repository: [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
 - OpenAI spend: USD `0.1523062` of USD `20.00`; no reservation remains.
 - Human usefulness and market demand: unvalidated.
@@ -92,17 +92,14 @@ combined terminal outcome hash is
 
 ## Remaining Required Work
 
-1. Complete the final all-command gate after the documentation/status refresh.
-2. Run tracked-secret, private-truth, raw-PDF, local-path, and Git status scans.
-3. Commit and push the verified release candidate to the authorized GitHub repository.
-4. Wait for GitHub Actions backend, frontend/E2E, and container jobs to pass.
-5. Invoke the one final `$verify-completion` workflow and obtain `VERDICT: PASS` from the
-   independent read-only reviewer.
+1. Invoke the one final `$verify-completion` workflow and obtain `VERDICT: PASS` from the
+   independent read-only reviewer. Implementation, public-safety scans, publication, and CI are
+   already complete.
 
 ## Single Next Action
 
-Finish the release evidence refresh, run the full local gate, and publish the verified commit for
-CI. Do not run another formal experiment or change the research outcome.
+Run the independent read-only acceptance against the verified public commit. Do not run another
+formal experiment or change the research outcome.
 
 ## Fast Resume
 

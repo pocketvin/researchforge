@@ -11,7 +11,7 @@ This scorecard is evidence-based. Green means the stated evidence exists; it is 
 | Personal success probability | Green | Work is staged into independently valuable L0–L4 outcomes with kill rules | Keep one active milestone and enforce time boxes |
 | Complexity versus value | Green | One bounded graph, plain-Python domain services, hybrid storage, and two pages passed runtime smoke without multi-agent/vector infrastructure | Do not add excluded product surfaces |
 | Engineering usefulness | Green | Research and Skill Lab render persisted evidence, calculations, monitoring actions, and experiment audit; three isolated `SIMULATED` sessions pass | Human value remains explicitly unvalidated until a later real pilot |
-| Completeness | Amber | Engineering release candidate, two formal outcomes, simulations, packaging, and public repository exist | Refreshed CI and final independent reviewer PASS |
+| Completeness | Amber | Engineering release candidate, two formal outcomes, simulations, packaging, public repository, and refreshed CI exist | Final independent reviewer PASS |
 | Resumability | Green | Human and machine status, decisions, review files, and a resume playbook exist | Resume drill stays within 15 minutes at each milestone |
 
 ## Highest-Leverage Sequence

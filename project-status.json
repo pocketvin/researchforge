@@ -9,7 +9,7 @@
   "current_milestone": {
     "id": "final_release_acceptance",
     "title": "Publish and independently accept the full engineering release",
-    "outcome": "Engineering release candidate is complete; research is honestly frozen as unsupported after two formal experiments. Refresh CI and obtain the one final independent PASS.",
+    "outcome": "Engineering release candidate, public-safety scans, GitHub publication, and CI are complete; research is honestly frozen as unsupported after two formal experiments. Obtain the one final independent PASS.",
     "status": "in_progress"
   },
   "last_verified": {
@@ -41,6 +41,11 @@
         "summary": ".env is ignored and untracked; no tracked secret/private-key pattern, local absolute path, PDF, or verifier-truth/private filename was found."
       },
       {
+        "command": "GitHub Actions CI run 33613092646 on commit 06e870a",
+        "exit_code": 0,
+        "summary": "Backend, frontend with Playwright, and Docker Compose container jobs all passed."
+      },
+      {
         "command": "swift scripts/build_demo_video.swift",
         "exit_code": 0,
         "summary": "Generated a verified 12-second 1280x720 final H.264 preview from the Research evidence/monitoring screen and the honest negative-outcome Skill Lab screen."
@@ -48,9 +53,9 @@
     ]
   },
   "next_action": {
-    "title": "Run the final release gate and publish for CI",
-    "why": "Formal research and simulated usability are closed; only release verification, GitHub CI, and the deferred independent acceptance remain.",
-    "first_step": "Validate all contracts and tests after the status refresh, then inspect the complete Git diff and secret/data scans.",
+    "title": "Obtain the deferred independent acceptance",
+    "why": "Formal research, simulated usability, release verification, publication, and GitHub CI are closed; only the independent read-only verdict remains.",
+    "first_step": "Run the verify-completion workflow against the clean, published commit and its CI evidence.",
     "acceptance_evidence": [
       "All local format, lint, strict type, backend, frontend, E2E, contract, migration, and Docker smoke commands pass.",
       "Tracked-secret, raw-PDF, verifier-truth, and local-path scans return no publish-blocking finding.",

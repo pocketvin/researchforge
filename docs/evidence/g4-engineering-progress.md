@@ -4,8 +4,8 @@ Evidence date: `2026-09-02`
 
 Status: `FULL_ENGINEERING_PRODUCT_READY_RELEASE_CANDIDATE`
 
-Final independent acceptance and refreshed GitHub CI are still required before the release is
-declared complete.
+GitHub Actions run `33613092646` passed backend, frontend/Playwright, and container jobs. Final
+independent acceptance is the only remaining condition before the release is declared complete.
 
 ## Product Evidence
 
