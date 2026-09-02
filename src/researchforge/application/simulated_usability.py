@@ -132,7 +132,8 @@ class SimulatedUsabilityRunner:
                     "description": {
                         "research": (
                             "Research page with task controls, persisted result, financial facts, "
-                            "claim-to-evidence links, counter-evidence, limitations, and trace."
+                            "claim-to-evidence links, calculations, monitoring triggers, "
+                            "counter-evidence, limitations, and trace."
                         ),
                         "skill_lab": (
                             "Skill Lab page with experiment status, failure cluster, Experience, "
@@ -146,9 +147,19 @@ class SimulatedUsabilityRunner:
     def preflight(self) -> dict[str, Any]:
         """Validate evidence, isolation, and maximum spend without provider contact."""
         blockers: list[str] = []
-        required_bundle = {"manifest", "result", "trace", "facts"}
+        required_bundle = {
+            "manifest",
+            "result",
+            "trace",
+            "facts",
+            "evidence",
+            "calculations",
+        }
         if set(self.run_bundle) != required_bundle:
-            blockers.append("run bundle must contain manifest, result, trace, and facts only")
+            blockers.append(
+                "run bundle must contain manifest, result, trace, facts, evidence, and "
+                "calculations only"
+            )
         manifest = self.run_bundle.get("manifest", {})
         result = self.run_bundle.get("result", {})
         trace = self.run_bundle.get("trace", {})
@@ -161,6 +172,10 @@ class SimulatedUsabilityRunner:
             blockers.append("trace does not resolve to the persisted run")
         if not isinstance(self.run_bundle.get("facts"), list):
             blockers.append("facts must be a persisted JSON array")
+        if not isinstance(self.run_bundle.get("evidence"), list):
+            blockers.append("evidence must be a persisted JSON array")
+        if not isinstance(self.run_bundle.get("calculations"), list):
+            blockers.append("calculations must be a persisted JSON array")
         if set(self.screenshots) != {"research", "skill_lab"}:
             blockers.append("research and skill_lab screenshots are both required")
         else:
@@ -299,7 +314,9 @@ class SimulatedUsabilityRunner:
                 raise RuntimeError("actual simulation cost exceeded its worst-case reservation")
             self.ledger.complete(reservation_id, actual_cost)
         except Exception:
-            self.ledger.release(reservation_id)
+            # Treat an indeterminate transport outcome as fully spent rather than
+            # undercounting a request that may already have reached the provider.
+            self.ledger.complete(reservation_id, SIMULATION_WORST_CASE)
             raise
         try:
             assessment = SimulatedAssessment.model_validate_json(cast(str, response.output_text))

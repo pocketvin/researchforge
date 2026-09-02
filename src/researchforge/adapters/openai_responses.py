@@ -141,7 +141,9 @@ class OpenAIResponsesConclusionGenerator:
                 + Decimal(output_tokens) * LUNA_OUTPUT_USD_PER_MILLION
             ) / Decimal(1_000_000)
         except Exception:
-            self.ledger.release(reservation_id)
+            # A transport exception can arrive after the provider accepted the request.
+            # Charge the full reservation so the USD 20 guard remains conservative.
+            self.ledger.complete(reservation_id, self._worst_case_cost())
             raise
         self.ledger.complete(reservation_id, actual_cost)
         elapsed_ms = max(0, int((time.perf_counter() - started) * 1000))

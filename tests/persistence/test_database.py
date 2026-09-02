@@ -11,7 +11,11 @@ from sqlalchemy.orm import Session
 
 from researchforge.api.app import DEFAULT_FIXTURE_ROOT, DEFAULT_SKILL_MANIFEST, PROJECT_ROOT
 from researchforge.application.service import ResearchRunService
-from researchforge.persistence.models import RunArtifactRecord
+from researchforge.persistence.models import (
+    EvidenceChunkRecord,
+    RunArtifactRecord,
+    SourceDocumentRecord,
+)
 from tests.runtime_helpers import catl_request
 
 EXPECTED_TABLES = {
@@ -74,4 +78,7 @@ def test_service_mirrors_run_and_hash_artifact_references(tmp_path: Path) -> Non
             .select_from(RunArtifactRecord)
             .where(RunArtifactRecord.run_id == submission.run_id)
         )
+        source_count = session.scalar(select(func.count()).select_from(SourceDocumentRecord))
+        evidence_count = session.scalar(select(func.count()).select_from(EvidenceChunkRecord))
     assert artifact_count is not None and artifact_count >= 8
+    assert source_count == evidence_count == 8

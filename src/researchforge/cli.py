@@ -21,9 +21,18 @@ from researchforge.application.calibration import (
     OpenAICalibrationRunner,
     calibration_artifact_passed,
 )
+from researchforge.application.contingency_experiment import (
+    CONTINGENCY_EXPERIMENT_ID,
+    PRIMARY_EXPERIMENT_ID,
+    ContingencyExperimentRunner,
+    freeze_and_activate_contingency,
+)
 from researchforge.application.contracts import ResearchRunRequest
 from researchforge.application.evolution import preregister_experiment
-from researchforge.application.formal_experiment import FormalExperimentRunner
+from researchforge.application.formal_experiment import (
+    FormalExperimentRunner,
+    GeneratorFactory,
+)
 from researchforge.application.research import ConclusionGenerator
 from researchforge.application.simulated_usability import SimulatedUsabilityRunner
 
@@ -97,6 +106,46 @@ def _parser() -> argparse.ArgumentParser:
             type=Path,
             default=PROJECT_ROOT / "benchmark" / "suites" / "v1.4-primary-preregistered.json",
         )
+    activation = subcommands.add_parser(
+        "contingency-activate",
+        help="freeze an unsupported primary result and activate V1.5 exactly once",
+    )
+    activation.add_argument("--primary-experiment-id", default=PRIMARY_EXPERIMENT_ID)
+    activation.add_argument("--experiment-id", default=CONTINGENCY_EXPERIMENT_ID)
+    activation.add_argument(
+        "--package-root",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "fixtures" / "v1.5-contingency",
+    )
+    for name, help_text in (
+        ("contingency-preflight", "validate the activated V1.5 experiment offline"),
+        ("contingency-run", "run or resume the single activated V1.5 experiment"),
+    ):
+        command = subcommands.add_parser(name, help=help_text)
+        command.add_argument("--primary-experiment-id", default=PRIMARY_EXPERIMENT_ID)
+        command.add_argument("--experiment-id", default=CONTINGENCY_EXPERIMENT_ID)
+        command.add_argument(
+            "--package-root",
+            type=Path,
+            default=PROJECT_ROOT / "data" / "fixtures" / "v1.5-contingency",
+        )
+        command.add_argument(
+            "--private-ground-truth-root",
+            type=Path,
+            default=(
+                PROJECT_ROOT
+                / "data"
+                / "private"
+                / "benchmark"
+                / "v1.5-contingency"
+                / "ground-truth"
+            ),
+        )
+        command.add_argument(
+            "--suite",
+            type=Path,
+            default=PROJECT_ROOT / "benchmark" / "suites" / "v1.5-contingency-preregistered.json",
+        )
     for name, help_text in (
         ("calibration-preflight", "validate model calibration without provider contact"),
         ("calibrate", "run or return the one pinned synthetic provider calibration"),
@@ -127,11 +176,7 @@ def _print(payload: Any) -> None:
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
 
 
-def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
-    ledger = BudgetLedger(state_path=args.artifact_root / "budget" / "project-openai.json")
-    rotated_key_ready = bool(os.getenv("OPENAI_API_KEY")) and (
-        os.getenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED") == "1"
-    )
+def _openai_generator_factory() -> GeneratorFactory:
     responses_resource: ResponsesResource | None = None
 
     def generator_factory(
@@ -142,7 +187,10 @@ def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
         from openai import OpenAI
 
         if responses_resource is None:
-            responses_resource = cast(ResponsesResource, OpenAI().responses)
+            responses_resource = cast(
+                ResponsesResource,
+                OpenAI(timeout=240.0, max_retries=0).responses,
+            )
         return OpenAIResponsesConclusionGenerator(
             responses_resource,
             ledger,
@@ -151,6 +199,14 @@ def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
             skill_content=skill_content,
         )
 
+    return generator_factory
+
+
+def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
+    ledger = BudgetLedger(state_path=args.artifact_root / "budget" / "project-openai.json")
+    rotated_key_ready = bool(os.getenv("OPENAI_API_KEY")) and (
+        os.getenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED") == "1"
+    )
     seed_root = PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0"
     return FormalExperimentRunner(
         experiment_id=str(args.experiment_id),
@@ -160,7 +216,30 @@ def _formal_runner(args: argparse.Namespace) -> FormalExperimentRunner:
         seed_manifest_path=seed_root / "skill-version.json",
         seed_content_path=seed_root / "SKILL.md",
         artifact_root=Path(args.artifact_root),
-        generator_factory=generator_factory,
+        generator_factory=_openai_generator_factory(),
+        ledger=ledger,
+        worst_case_request_cost=luna_worst_case_cost(8000, 4000),
+        rotated_key_ready=rotated_key_ready,
+        calibration_ready=calibration_artifact_passed(Path(args.artifact_root)),
+    )
+
+
+def _contingency_runner(args: argparse.Namespace) -> ContingencyExperimentRunner:
+    ledger = BudgetLedger(state_path=args.artifact_root / "budget" / "project-openai.json")
+    rotated_key_ready = bool(os.getenv("OPENAI_API_KEY")) and (
+        os.getenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED") == "1"
+    )
+    seed_root = PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0"
+    return ContingencyExperimentRunner(
+        primary_experiment_id=str(args.primary_experiment_id),
+        experiment_id=str(args.experiment_id),
+        package_root=Path(args.package_root),
+        private_ground_truth_root=Path(args.private_ground_truth_root),
+        suite_path=Path(args.suite),
+        seed_manifest_path=seed_root / "skill-version.json",
+        seed_content_path=seed_root / "SKILL.md",
+        artifact_root=Path(args.artifact_root),
+        generator_factory=_openai_generator_factory(),
         ledger=ledger,
         worst_case_request_cost=luna_worst_case_cost(8000, 4000),
         rotated_key_ready=rotated_key_ready,
@@ -177,7 +256,10 @@ def _calibration_runner(args: argparse.Namespace) -> OpenAICalibrationRunner:
     def generator_factory(ledger: BudgetLedger) -> OpenAIResponsesConclusionGenerator:
         from openai import OpenAI
 
-        responses = cast(ResponsesResource, OpenAI().responses)
+        responses = cast(
+            ResponsesResource,
+            OpenAI(timeout=240.0, max_retries=0).responses,
+        )
         seed_content = (
             PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -208,6 +290,8 @@ def _simulated_usability_runner(args: argparse.Namespace) -> SimulatedUsabilityR
         "result": service.get_result(str(args.run_id)),
         "trace": service.get_trace(str(args.run_id)),
         "facts": service.get_facts(str(args.run_id)),
+        "evidence": service.get_evidence(str(args.run_id)),
+        "calculations": service.get_calculations(str(args.run_id)),
     }
     rotated_key_ready = bool(os.getenv("OPENAI_API_KEY")) and (
         os.getenv("RESEARCHFORGE_ROTATED_KEY_CONFIRMED") == "1"
@@ -216,7 +300,10 @@ def _simulated_usability_runner(args: argparse.Namespace) -> SimulatedUsabilityR
     def responses_factory() -> ResponsesResource:
         from openai import OpenAI
 
-        return cast(ResponsesResource, OpenAI().responses)
+        return cast(
+            ResponsesResource,
+            OpenAI(timeout=240.0, max_retries=0).responses,
+        )
 
     return SimulatedUsabilityRunner(
         batch_id=str(args.batch_id),
@@ -249,6 +336,24 @@ def main(argv: list[str] | None = None) -> None:
             formal_runner.preflight()
             if args.command == "evolution-preflight"
             else formal_runner.run()
+        )
+        return
+    if args.command == "contingency-activate":
+        _print(
+            freeze_and_activate_contingency(
+                artifact_root=Path(args.artifact_root),
+                package_root=Path(args.package_root),
+                primary_experiment_id=str(args.primary_experiment_id),
+                contingency_experiment_id=str(args.experiment_id),
+            )
+        )
+        return
+    if args.command in {"contingency-preflight", "contingency-run"}:
+        contingency_runner = _contingency_runner(args)
+        _print(
+            contingency_runner.preflight()
+            if args.command == "contingency-preflight"
+            else contingency_runner.run()
         )
         return
     if args.command in {"usability-preflight", "usability-run"}:
@@ -294,9 +399,10 @@ def main(argv: list[str] | None = None) -> None:
     if args.command == "verify":
         expected = json.loads(args.expected_calculations.read_text(encoding="utf-8"))
         if not isinstance(expected, dict) or not all(
-            isinstance(key, str) and isinstance(value, str) for key, value in expected.items()
+            isinstance(key, str) and (isinstance(value, str) or value is None)
+            for key, value in expected.items()
         ):
-            raise ValueError("expected calculations must be a JSON object of strings")
+            raise ValueError("expected calculations must be a JSON object of strings or nulls")
         _print(
             service.verify(
                 args.run_id,

@@ -82,12 +82,20 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
     result = request_json(f"{base_url}/v1/research-runs/{run_id}/result")
     trace = request_json(f"{base_url}/v1/research-runs/{run_id}/trace")
     facts = request_json(f"{base_url}/v1/research-runs/{run_id}/facts")
+    evidence = request_json(f"{base_url}/v1/research-runs/{run_id}/evidence")
+    calculations = request_json(f"{base_url}/v1/research-runs/{run_id}/calculations")
     if not isinstance(result, dict) or result.get("run_id") != run_id:
         raise RuntimeError("result did not resolve to the submitted run")
     if not isinstance(trace, dict) or len(trace.get("stages", [])) != 10:
         raise RuntimeError("workflow trace did not contain ten stages")
     if not isinstance(facts, list) or len(facts) < 2:
         raise RuntimeError("persisted run did not expose its financial facts")
+    if not isinstance(evidence, list) or not evidence:
+        raise RuntimeError("persisted run did not expose bounded evidence chunks")
+    if not isinstance(calculations, list) or not calculations:
+        raise RuntimeError("persisted run did not expose deterministic calculation records")
+    if not result.get("monitoring_items"):
+        raise RuntimeError("result did not expose an actionable monitoring item")
 
     frontend = request_text(f"{base_url}/")
     if 'id="root"' not in frontend:
@@ -100,6 +108,9 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
         "research_modes": len(catalog["supported_task_types"]),
         "workflow_stages": len(trace["stages"]),
         "fact_count": len(facts),
+        "evidence_count": len(evidence),
+        "calculation_count": len(calculations),
+        "monitoring_item_count": len(result["monitoring_items"]),
         "frontend_served": True,
     }
 

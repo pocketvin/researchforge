@@ -20,8 +20,14 @@ def test_service_persists_schema_valid_bundle(tmp_path: Path) -> None:
 
     assert manifest["lifecycle_state"] == "succeeded"
     assert_v14_schema(manifest, "run-manifest.schema.json")
-    assert_v14_schema(service.get_result(submission.run_id), "research-result.schema.json")
+    result = service.get_result(submission.run_id)
+    assert_v14_schema(result, "research-result.schema.json")
     assert_v14_schema(service.get_trace(submission.run_id), "workflow-trace.schema.json")
+    assert service.get_evidence(submission.run_id)
+    assert service.get_calculations(submission.run_id)
+    assert result["monitoring_items"]
+    assert all(claim["support_evidence_ids"] for claim in result["claims"])
+    assert all(check["evidence_ids"] for check in result["mandatory_checks"] if check["fact_ids"])
     assert len(list((tmp_path / "objects").rglob("*.json"))) >= 8
 
 

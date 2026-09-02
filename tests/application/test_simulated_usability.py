@@ -53,6 +53,8 @@ def bundle() -> dict[str, Any]:
         "result": {"run_id": "run_simulation_source", "claims": []},
         "trace": {"run_id": "run_simulation_source", "stages": [{}] * 10},
         "facts": [{"fact_id": "fact_1"}],
+        "evidence": [{"chunk_id": "chunk_1"}],
+        "calculations": [{"calculation_id": "calc_1"}],
     }
 
 

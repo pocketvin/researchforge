@@ -18,9 +18,17 @@ class G0FixtureCatalog:
         self.root = fixture_root.resolve()
         self.fact_dir = self.root / "financial-facts"
         self.source_dir = self.root / "source-documents"
+        self.evidence_dir = self.root / "evidence-chunks"
+        if not self.evidence_dir.is_dir() and self.root.name == "g0":
+            self.evidence_dir = self.root.parent / "v1.4-primary" / "evidence-chunks"
         self.manifest = self._load(self.root / "manifest.json")
         self._facts = tuple(self._load(path) for path in sorted(self.fact_dir.glob("*.json")))
         self._sources = tuple(self._load(path) for path in sorted(self.source_dir.glob("*.json")))
+        evidence = tuple(self._load(path) for path in sorted(self.evidence_dir.glob("*.json")))
+        source_document_ids = {source["document_id"] for source in self._sources}
+        self._evidence = tuple(
+            chunk for chunk in evidence if chunk["document_id"] in source_document_ids
+        )
 
     @staticmethod
     def _load(path: Path) -> dict[str, Any]:
@@ -61,6 +69,10 @@ class G0FixtureCatalog:
     def source_documents(self) -> tuple[dict[str, Any], ...]:
         return self._sources
 
+    @property
+    def evidence_chunks(self) -> tuple[dict[str, Any], ...]:
+        return self._evidence
+
     def load(
         self,
         company_ids: list[str],
@@ -99,6 +111,7 @@ class G0FixtureCatalog:
 
         document_ids = {fact["source"]["document_id"] for fact in selected}
         sources = tuple(source for source in self._sources if source["document_id"] in document_ids)
+        evidence = tuple(chunk for chunk in self._evidence if chunk["document_id"] in document_ids)
         companies_by_id = {fact["company"]["company_id"]: fact["company"] for fact in selected}
         periods_by_label = {self._period_label(fact["period"]): fact["period"] for fact in selected}
         return LoadedResearchData(
@@ -110,4 +123,5 @@ class G0FixtureCatalog:
                 if label in periods_by_label
             ),
             companies=tuple(companies_by_id[company_id] for company_id in company_ids),
+            evidence_chunks=evidence,
         )

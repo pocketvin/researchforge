@@ -85,10 +85,13 @@ The first runtime needs only:
 - `GET /v1/research-runs/{run_id}` — lifecycle, progress, limits, and failure;
 - `GET /v1/research-runs/{run_id}/result` — schema-valid result after success;
 - `GET /v1/research-runs/{run_id}/trace` — sanitized Workflow Trace after the run starts;
+- `GET /v1/research-runs/{run_id}/facts` — normalized facts used by the run;
+- `GET /v1/research-runs/{run_id}/evidence` — persisted evidence chunks referenced by claims;
+- `GET /v1/research-runs/{run_id}/calculations` — deterministic calculation records;
 - `POST /v1/research-runs/{run_id}/cancel` — best-effort cancellation;
 - `GET /v1/catalog` — allowlisted companies, periods, and task capabilities.
 
-`POST /v1/research-runs` accepts task type, question, one or two company IDs, requested period labels, research time, and an idempotency key. It returns `202` plus status/result/trace links. A pending result returns `425`; a terminal state without a Research Result returns `409` and the structured failure. Reusing a key with different input returns `409`.
+`POST /v1/research-runs` accepts task type, question, one or two company IDs, requested period labels, research time, and an idempotency key. It returns `202` plus status/result/trace links. Audit resources are immutable after a successful run and are consumed by the Research page without reconstructing values in the browser. A pending result returns `425`; a terminal state without a Research Result returns `409` and the structured failure. Reusing a key with different input returns `409`.
 
 Evolution is started only through a controlled CLI. Skill Lab reads:
 

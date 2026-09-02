@@ -10,9 +10,10 @@ The goal is to restart useful work within 15 minutes after any interruption with
 4. Inspect the listed blockers and last changed files.
 5. Start the single `next_action.first_step`; do not create a competing workstream.
 
-For G3, the live order is strict: owner signoff and rotated-key confirmation, one
-synthetic `calibrate` PASS, offline `evolution-preflight` PASS, then `evolution-run`.
-Never bypass calibration or inspect Final Test truth early.
+G3 is closed with two `NO_ELIGIBLE_CLUSTER` outcomes. Do not run another formal experiment,
+reopen Validation, inspect sealed Final Test truth, or reinterpret the terminal outcome as
+`SUPPORTED`. The active order is now: full release gate, publish the verified commit, wait for
+CI, then run the one final independent acceptance.
 
 If the human and machine checkpoints disagree, treat the older one as stale, reconstruct status from verified artifacts, and update both before implementation.
 

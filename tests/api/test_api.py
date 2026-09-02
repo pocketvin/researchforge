@@ -38,6 +38,15 @@ def test_api_runs_one_complete_background_case(tmp_path: Path) -> None:
         "revenue",
         "operating_cash_flow",
     }
+    evidence = client.get(f"/v1/research-runs/{run_id}/evidence")
+    assert evidence.status_code == 200
+    assert evidence.json()[0]["chunk_id"].startswith("chunk_")
+    calculations = client.get(f"/v1/research-runs/{run_id}/calculations")
+    assert calculations.status_code == 200
+    assert {item["formula_code"] for item in calculations.json()} >= {
+        "gross_margin",
+        "cash_conversion",
+    }
     trace = client.get(f"/v1/research-runs/{run_id}/trace")
     assert trace.status_code == 200
     assert len(trace.json()["stages"]) == 10

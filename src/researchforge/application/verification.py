@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
@@ -17,13 +17,14 @@ from researchforge.domain.finance import (
     growth_rate,
     profit_cash_divergence,
 )
+from researchforge.domain.models import CalculationResult
 
 VERIFIER_VERSION = "1.0.0"
 COVERAGE_REQUIREMENTS = {
     "operating_cash_flow": "performed",
     "accounts_receivable": "performed",
     "inventory": "performed",
-    "cash_conversion": "performed",
+    "cash_conversion": "recorded",
     "profit_cash_divergence": "performed",
     "one_off_contribution": "recorded",
     "counter_evidence": "performed",
@@ -64,10 +65,10 @@ def _check(
     }
 
 
-def _calculated_value(
+def _recalculated_result(
     calculation: dict[str, Any],
     facts: dict[str, dict[str, Any]],
-) -> Decimal | None:
+) -> CalculationResult | None:
     inputs = [facts[fact_id] for fact_id in calculation["input_fact_ids"]]
     by_metric = {fact["metric_code"]: Decimal(fact["value"]) for fact in inputs}
     formula = calculation["formula_code"]
@@ -88,7 +89,7 @@ def _calculated_value(
         result = growth_rate(current, previous)
     else:
         return None
-    return result.value
+    return result
 
 
 class FinancialVerifier:
@@ -106,12 +107,13 @@ class FinancialVerifier:
         trace: dict[str, Any],
         calculations: list[dict[str, Any]],
         loaded: LoadedResearchData,
-        expected_calculations: dict[str, str],
+        expected_calculations: Mapping[str, str | None],
         ground_truth_hash: str | None = None,
         tool_records: Iterable[dict[str, Any]] = (),
     ) -> dict[str, Any]:
         facts = {fact["fact_id"]: fact for fact in loaded.facts}
         sources = {source["document_id"]: source for source in loaded.source_documents}
+        evidence = {chunk["chunk_id"]: chunk for chunk in loaded.evidence_chunks}
         tool_record_ids = {record["tool_record_id"] for record in tool_records}
         deterministic: list[dict[str, Any]] = []
 
@@ -157,31 +159,43 @@ class FinancialVerifier:
             formula = calculation["formula_code"]
             referenced = calculation["input_fact_ids"]
             references_exist = all(fact_id in facts for fact_id in referenced)
-            recomputed = _calculated_value(calculation, facts) if references_exist else None
+            recalculated = _recalculated_result(calculation, facts) if references_exist else None
+            recomputed = recalculated.value if recalculated is not None else None
             observed = Decimal(calculation["value"]) if calculation["value"] is not None else None
-            expected = (
-                Decimal(expected_calculations[formula])
-                if formula in expected_calculations
-                else recomputed
+            raw_expected = expected_calculations.get(formula, recomputed)
+            expected = Decimal(raw_expected) if raw_expected is not None else None
+            status_matches = (
+                recalculated is not None and calculation["status"] == recalculated.status.value
             )
-            passed = references_exist and recomputed == observed == expected
+            passed = references_exist and status_matches and recomputed == observed == expected
             calculation_checks.append(
                 _check(
                     f"calculation_{formula}",
                     passed,
-                    f"recomputed and golden value equal {expected}",
-                    f"persisted={observed}; recomputed={recomputed}",
+                    f"recomputed status/value and golden value equal {expected}",
+                    (
+                        f"status={calculation['status']}; persisted={observed}; "
+                        f"recomputed={recomputed}"
+                    ),
                     fact_ids=referenced,
                 )
             )
         deterministic.extend(calculation_checks)
 
         cutoff = datetime.fromisoformat(result["evidence_cutoff"])
-        point_in_time_ok = all(
-            datetime.fromisoformat(source["published_at"]) <= cutoff for source in sources.values()
-        ) and all(
-            datetime.fromisoformat(fact["source"]["published_at"]) <= cutoff
-            for fact in facts.values()
+        point_in_time_ok = (
+            all(
+                datetime.fromisoformat(source["published_at"]) <= cutoff
+                for source in sources.values()
+            )
+            and all(
+                datetime.fromisoformat(fact["source"]["published_at"]) <= cutoff
+                for fact in facts.values()
+            )
+            and all(
+                datetime.fromisoformat(chunk["published_at"]) <= cutoff
+                for chunk in evidence.values()
+            )
         )
         deterministic.append(
             _check(
@@ -206,7 +220,7 @@ class FinancialVerifier:
         )
         citations_ok = (
             claim_fact_ids <= facts.keys()
-            and not claim_evidence_ids
+            and claim_evidence_ids <= evidence.keys()
             and set(result["source_document_ids"]) <= sources.keys()
             and material_claims_grounded
         )

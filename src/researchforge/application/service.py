@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -110,6 +110,7 @@ class ResearchRunService:
         if database_index is not None:
             database_index.mirror_skill(skill_manifest)
             database_index.mirror_sources(catalog.source_documents)
+            database_index.mirror_evidence(catalog.evidence_chunks)
         return cls(
             FileRunRepository(artifact_root),
             catalog,
@@ -347,12 +348,27 @@ class ResearchRunService:
         )
         return list(loaded.facts)
 
+    def get_evidence(self, run_id: str) -> list[dict[str, Any]]:
+        """Resolve the bounded evidence chunks used by a persisted research run."""
+        manifest = self.repository.get_manifest(run_id)
+        loaded = self.fixture_catalog.load(
+            manifest["input"]["company_ids"],
+            manifest["input"]["requested_period_labels"],
+            datetime.fromisoformat(manifest["input"]["research_time"]),
+        )
+        return list(loaded.evidence_chunks)
+
+    def get_calculations(self, run_id: str) -> list[dict[str, Any]]:
+        """Return immutable deterministic calculation records for a run."""
+        self.repository.get_manifest(run_id)
+        return self.repository.get_calculations(run_id)
+
     def verify(
         self,
         run_id: str,
         *,
         case_id: str,
-        expected_calculations: dict[str, str],
+        expected_calculations: Mapping[str, str | None],
         ground_truth_hash: str | None = None,
     ) -> dict[str, Any]:
         """Evaluate one completed run against controlled deterministic ground truth."""

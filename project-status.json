@@ -3,101 +3,72 @@
   "project_id": "researchforge",
   "product_scope_version": "1.4",
   "contract_package_version": "1.4.0",
-  "completed_gates": ["C0", "G0"],
-  "current_gate": "G3",
+  "completed_gates": ["C0", "G0", "G1_THIN", "G2", "G3", "G1_FULL"],
+  "current_gate": "G4",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "g3-formal-execution",
-    "title": "Authorize and execute the controlled primary experiment",
-    "outcome": "The primary package is owner-signed, both experiment packages and the executor are frozen; complete rotated-key confirmation, one synthetic provider calibration, and formal execution without premature Final Test access.",
+    "id": "final_release_acceptance",
+    "title": "Publish and independently accept the full engineering release",
+    "outcome": "Engineering release candidate is complete; research is honestly frozen as unsupported after two formal experiments. Refresh CI and obtain the one final independent PASS.",
     "status": "in_progress"
   },
   "last_verified": {
-    "at": "2026-09-01T19:27:00+08:00",
+    "at": "2026-09-02T17:10:55+08:00",
     "commands": [
       {
-        "command": "git push to pocketvin/researchforge and verify remote main through the GitHub API",
+        "command": "uv run researchforge usability-run --batch-id simulated_usability_v1_4_002 --run-id <persisted-run>",
         "exit_code": 0,
-        "summary": "The public repository was created and main matched local commit 804ddcb9832113427fd41a703801be2cb0f6c27a. Secret/PDF scans passed; the temporary repository-scoped SSH credential was removed locally and from GitHub. CI run 33502340783 passed backend, frontend/Playwright and container jobs."
+        "summary": "Three isolated AI simulations all located the key result, supporting evidence, a limitation or counter-evidence item, and a monitoring item; batch PASS, two high-score sessions, human_user_value_validated=false."
       },
       {
-        "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py && git diff --check && docker compose config --quiet",
+        "command": "uv run pytest -q",
         "exit_code": 0,
-        "summary": "The updated full local gate passed: 69 locked packages, 117 formatted files, clean lint and strict typing across 73 source files, 153 tests, 85 required contract files, diff whitespace and Compose configuration."
+        "summary": "160 backend tests passed after the final code, contract, evidence, and documentation refresh; Ruff format/lint, strict mypy, uv lock, contract validation, diff check, and Compose configuration also passed."
       },
       {
-        "command": "uv run pytest -q tests/application/test_calibration.py tests/application/test_formal_experiment.py tests/domain/test_contingency_benchmark.py tests/application/test_simulated_usability.py && env -u OPENAI_API_KEY -u RESEARCHFORGE_ROTATED_KEY_CONFIRMED uv run researchforge calibration-preflight && env -u OPENAI_API_KEY -u RESEARCHFORGE_ROTATED_KEY_CONFIRMED uv run researchforge evolution-preflight",
+        "command": "npm run typecheck && npm run lint && npm test -- --run && npm run build && PLAYWRIGHT_EXECUTABLE_PATH=<local-chrome> npm run test:e2e",
         "exit_code": 0,
-        "summary": "Calibration, formal, sealed-contingency, and simulation controls passed, including a 144-run synthetic full path. Both real preflights contacted no provider; calibration blocked only on rotated-key confirmation, while formal execution additionally blocked on owner signoff and the missing derived calibration artifact."
+        "summary": "Frontend typecheck, lint, four unit tests, production build, Playwright navigation, and critical-impact accessibility checks passed."
       },
       {
-        "command": "uv run pytest -q tests/domain/test_primary_benchmark.py && uv run python scripts/validate_contracts.py",
+        "command": "docker compose build && docker compose up -d --wait && uv run python scripts/docker_smoke.py && docker compose exec -T api alembic downgrade base && docker compose exec -T api alembic upgrade head && uv run python scripts/docker_smoke.py",
         "exit_code": 0,
-        "summary": "Five primary-package regressions passed. The contract validator accepted 24 sources, 144 facts, 24 explicitly synthetic chunks, 24 frozen cases, split isolation, cutoffs, references, artifact hashes and package hash stability."
+        "summary": "PostgreSQL, API, and frontend became healthy; smoke resolved five modes, ten stages, six facts, one evidence chunk, four calculations, and one monitoring item; migration down/up and a second smoke passed."
       },
       {
-        "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py && git diff --check && docker compose config --quiet",
+        "command": "tracked secret, local-path, raw-PDF, private-truth, ignore, Git status, and diff scans",
         "exit_code": 0,
-        "summary": "The full local gate passed: 68 locked packages, 98 formatted files, clean lint and strict typing across 60 source files, 132 tests, all current/historical contract checks, Markdown links, diff whitespace and Compose configuration."
+        "summary": ".env is ignored and untracked; no tracked secret/private-key pattern, local absolute path, PDF, or verifier-truth/private filename was found."
       },
       {
-        "command": "uv run ruff format src tests && uv run ruff check src tests && uv run mypy --strict src tests && uv run pytest -q tests/adapters/test_evolution_storage.py tests/application/test_evolution.py tests/api/test_api.py tests/test_cli_runtime.py",
+        "command": "swift scripts/build_demo_video.swift",
         "exit_code": 0,
-        "summary": "Formatting, lint, strict typing and 16 focused Evolution storage, policy, CLI and API tests passed. Synthetic policy outcomes remain explicitly non-formal."
-      },
-      {
-        "command": "uv run pytest -q tests/application/test_modes.py tests/application/test_reliability.py && uv run python scripts/run_reliability_batch.py",
-        "exit_code": 0,
-        "summary": "Five success cases, five cutoff-driven missing-data cases and the fixed batch passed; 20/20 runs succeeded with four runs per mode and zero provider calls."
-      },
-      {
-        "command": "npm run typecheck && npm run lint && npm test && npm run build && PLAYWRIGHT_EXECUTABLE_PATH=<local-chrome> npm run test:e2e",
-        "exit_code": 0,
-        "summary": "Frontend typecheck, lint, three unit tests, production build and Playwright E2E passed; axe found no critical-impact violations on Research or Skill Lab."
-      },
-      {
-        "command": "docker compose build && docker compose up -d --wait && uv run python scripts/docker_smoke.py && docker compose exec -T api sh -c 'alembic downgrade base && alembic upgrade head'",
-        "exit_code": 0,
-        "summary": "The PostgreSQL/API/frontend stack built and became healthy; a frontend-proxied run persisted six facts and a ten-stage Trace, and migration down/up passed. Compatible Public ECR image overrides were used because Docker Hub authentication timed out."
-      },
-      {
-        "command": "swift scripts/build_demo_video.swift && browser interaction over http://127.0.0.1:4173",
-        "exit_code": 0,
-        "summary": "Research and Skill Lab were visually and interactively verified with no console warnings/errors; two public-fixture PNGs and a 12-second 1280x720 H.264 preview were produced."
+        "summary": "Generated a verified 12-second 1280x720 final H.264 preview from the Research evidence/monitoring screen and the honest negative-outcome Skill Lab screen."
       }
     ]
   },
   "next_action": {
-    "title": "Confirm a rotated local key and run calibration",
-    "why": "Both frozen packages, owner authorization, the controlled executor, Docker runtime, demo, simulation harness, and synthetic calibration gate are ready; a safe local provider credential is the remaining external pre-call control.",
-    "first_step": "Place a newly rotated key only in the created ignored .env, set RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1, then run the one-request synthetic calibration.",
+    "title": "Run the final release gate and publish for CI",
+    "why": "Formal research and simulated usability are closed; only release verification, GitHub CI, and the deferred independent acceptance remain.",
+    "first_step": "Validate all contracts and tests after the status refresh, then inspect the complete Git diff and secret/data scans.",
     "acceptance_evidence": [
-      "All 24 prepared cases retain stable IDs, official source links, publication cutoffs, hashes, required facts and expected deterministic calculations.",
-      "Evolution, Validation and Final Test company/group keys have zero overlap and the suite hash is stable across three repetitions.",
-      "Redistribution status is explicit and unsafe original text is replaced by synthetic evidence in the public package.",
-      "The owner signed package 3638eb1ca7b8192cb6a901f4b0d51c8373ccaff1e776758605f1d4b975cb1c3f at 2026-09-01T19:14:33+08:00 before any formal provider run.",
-      "A rotated key is available only in ignored local configuration with RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1.",
-      "Calibration preflight remains provider_contacted=false until the rotated-key control passes.",
-      "Formal preflight additionally requires the pinned synthetic calibration artifact to pass."
+      "All local format, lint, strict type, backend, frontend, E2E, contract, migration, and Docker smoke commands pass.",
+      "Tracked-secret, raw-PDF, verifier-truth, and local-path scans return no publish-blocking finding.",
+      "GitHub Actions backend, frontend, and container jobs pass on the published commit.",
+      "Independent completion reviewer returns VERDICT: PASS.",
+      "Final materials state that the research hypothesis is unsupported and human value is unvalidated."
     ]
   },
-  "blockers": [
-    {
-      "id": "rotated_openai_key",
-      "description": "A rotated OpenAI key is required for live calibration; the previously exposed key is prohibited.",
-      "blocks": ["G3", "G4"],
-      "owner_action": "Provide the rotated key only through the ignored local environment when the offline preflight is ready."
-    }
-  ],
+  "blockers": [],
   "pending_decisions": [],
   "resumption": {
     "working_directory": ".",
     "read_first": [
       "PROJECT_STATUS.md",
-      "docs/product/researchforge-v1.4-scope.md",
-      "DECISIONS.md",
-      "docs/evidence/g1-full-reliability.md",
-      "docs/evidence/g2-verifier.md"
+      "docs/evidence/g3-primary-formal-result.md",
+      "docs/evidence/g3-contingency-formal-result.md",
+      "docs/evidence/g4-simulated-usability.md",
+      "DECISIONS.md"
     ],
     "commands": [
       "uv run python scripts/validate_contracts.py",
@@ -105,22 +76,25 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-01T19:27:00+08:00",
-    "summary": "Recorded the owner's unified primary-package signoff, created the ignored local .env, and published the verified code to public GitHub; rotated key and live calibration/experiment/simulations remain.",
+    "ended_at": "2026-09-02T17:10:55+08:00",
+    "summary": "Completed primary and contingency formal experiments with an unsupported terminal result, passed the corrected three-session simulated usability batch, added evidence/monitoring/calculation provenance, and passed the full local, frontend, migration, Docker, and public-safety gates.",
     "files_changed": [
-      "src/researchforge/",
-      "tests/",
-      "frontend/",
-      "migrations/",
-      "benchmark/",
-      ".github/workflows/ci.yml",
-      "Dockerfile",
-      "docker-compose.yml",
-      "docs/evidence/",
+      "src/researchforge",
+      "tests",
+      "schemas/v1.4/research-result.schema.json",
+      "frontend",
+      "scripts/docker_smoke.py",
+      "scripts/build_demo_video.swift",
+      "docs/assets",
+      "docs/evidence",
+      "docs/demo",
       "README.md",
       "PROJECT_STATUS.md",
-      "project-status.json"
+      "project-status.json",
+      "PORTFOLIO.md",
+      "CHANGELOG.md",
+      "DECISIONS.md"
     ]
   },
-  "updated_at": "2026-09-01T19:27:00+08:00"
+  "updated_at": "2026-09-02T17:10:55+08:00"
 }

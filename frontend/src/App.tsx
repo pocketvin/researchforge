@@ -18,7 +18,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
 import type {
   Catalog,
+  CalculationRecord,
   Claim,
+  EvidenceChunk,
   EvaluationBatch,
   EvolutionArtifacts,
   EvolutionExperiment,
@@ -30,7 +32,10 @@ import type {
   Experience,
   FailureCluster,
   SkillPatch,
+  TechnicalRetries,
   ValidationDecision,
+  ContingencyActivation,
+  ProjectResearchOutcome,
 } from './types'
 
 const taskLabels: Record<TaskType, string> = {
@@ -85,10 +90,29 @@ function averageScore(batch: EvaluationBatch | null): string {
   return (total / batch.evaluations.length).toFixed(3)
 }
 
-function EvidenceLink({ claim, facts }: { claim: Claim; facts: FinancialFact[] }) {
+function failedEvaluationCount(batch: EvaluationBatch | null): number {
+  return batch?.evaluations.filter((item) => item.failure_events.length > 0).length ?? 0
+}
+
+function failureEventCount(batch: EvaluationBatch | null): number {
+  return batch?.evaluations.reduce((sum, item) => sum + item.failure_events.length, 0) ?? 0
+}
+
+function EvidenceLink({
+  claim,
+  facts,
+  evidence,
+}: {
+  claim: Claim
+  facts: FinancialFact[]
+  evidence: EvidenceChunk[]
+}) {
   const linked = claim.fact_ids
     .map((id) => facts.find((fact) => fact.fact_id === id))
     .filter((fact): fact is FinancialFact => Boolean(fact))
+  const linkedEvidence = claim.support_evidence_ids
+    .map((id) => evidence.find((chunk) => chunk.chunk_id === id))
+    .filter((chunk): chunk is EvidenceChunk => Boolean(chunk))
   return (
     <div className="claim-card">
       <div className="flex flex-wrap items-center gap-2">
@@ -106,6 +130,16 @@ function EvidenceLink({ claim, facts }: { claim: Claim; facts: FinancialFact[] }
           </span>
         ))}
       </div>
+      {linkedEvidence.map((chunk) => (
+        <div className="evidence-snippet" key={chunk.chunk_id}>
+          <div>
+            <BookOpenCheck size={14} />
+            <strong>证据摘录 · 第 {chunk.locator.page_start}–{chunk.locator.page_end} 页</strong>
+            <span title={chunk.text_hash}>HASH {chunk.text_hash.slice(0, 10)}</span>
+          </div>
+          <p>{chunk.text}</p>
+        </div>
+      ))}
       <div className="counter-note">
         <Search size={14} />
         <span>
@@ -127,6 +161,8 @@ function ResearchPage() {
   const [result, setResult] = useState<ResearchResult | null>(null)
   const [trace, setTrace] = useState<Trace | null>(null)
   const [facts, setFacts] = useState<FinancialFact[]>([])
+  const [evidence, setEvidence] = useState<EvidenceChunk[]>([])
+  const [calculations, setCalculations] = useState<CalculationRecord[]>([])
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [cancelling, setCancelling] = useState(false)
@@ -192,14 +228,18 @@ function ResearchPage() {
       setManifest(next)
       if (!['queued', 'running'].includes(next.lifecycle_state)) {
         if (next.lifecycle_state === 'succeeded') {
-          const [nextResult, nextTrace, nextFacts] = await Promise.all([
+          const [nextResult, nextTrace, nextFacts, nextEvidence, nextCalculations] = await Promise.all([
             api.result(runId),
             api.trace(runId),
             api.facts(runId),
+            api.evidence(runId),
+            api.calculations(runId),
           ])
           setResult(nextResult)
           setTrace(nextTrace)
           setFacts(nextFacts)
+          setEvidence(nextEvidence)
+          setCalculations(nextCalculations)
         } else if (next.artifacts.workflow_trace_id) {
           setTrace(await api.trace(runId))
         }
@@ -216,6 +256,8 @@ function ResearchPage() {
     setResult(null)
     setTrace(null)
     setFacts([])
+    setEvidence([])
+    setCalculations([])
     setSubmitting(true)
     try {
       const created = await api.createRun({
@@ -440,7 +482,44 @@ function ResearchPage() {
                   <section>
                     <div className="section-heading"><span><GitBranch size={16} /> Claim—Fact—Evidence</span><span className="micro-label">{result.claims.length} CLAIMS</span></div>
                     <div className="space-y-3">
-                      {result.claims.map((claim) => <EvidenceLink claim={claim} facts={facts} key={claim.claim_id} />)}
+                      {result.claims.map((claim) => (
+                        <EvidenceLink
+                          claim={claim}
+                          evidence={evidence}
+                          facts={facts}
+                          key={claim.claim_id}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="two-column-report">
+                    <div className="report-panel">
+                      <div className="section-heading"><span><Activity size={16} /> 后续监控</span><span className="micro-label">ACTIONABLE</span></div>
+                      <div className="monitor-list">
+                        {result.monitoring_items.map((item) => (
+                          <article key={item.monitor_code}>
+                            <strong>{item.title}</strong>
+                            <p>{item.rationale}</p>
+                            <small>触发条件：{item.trigger}</small>
+                            <small>复核时间：{item.next_review}</small>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="report-panel">
+                      <div className="section-heading"><span><BarChart3 size={16} /> 公式与计算</span><span className="micro-label">V1.0.0</span></div>
+                      <div className="calculation-list">
+                        {calculations.map((calculation) => (
+                          <article key={calculation.calculation_id}>
+                            <span className={`status-dot ${statusTone(calculation.status)}`} />
+                            <p>
+                              <strong>{calculation.formula_code} · {calculation.value ?? '不适用'}</strong>
+                              <small>{calculation.explanation}</small>
+                            </p>
+                          </article>
+                        ))}
+                      </div>
                     </div>
                   </section>
 
@@ -484,7 +563,7 @@ function ResearchPage() {
 }
 
 function SkillLabPage() {
-  const [experimentId, setExperimentId] = useState('')
+  const [experimentId, setExperimentId] = useState('experiment_contingency_v1_5_001')
   const [experiment, setExperiment] = useState<EvolutionExperiment | null>(null)
   const [artifacts, setArtifacts] = useState<EvolutionArtifacts | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -506,6 +585,8 @@ function SkillLabPage() {
         }
       }
       const [
+        baseEvolution,
+        seedEvolution,
         failureCluster,
         experience,
         patch,
@@ -514,7 +595,12 @@ function SkillLabPage() {
         candidateValidation,
         seedFinal,
         candidateFinal,
+        technicalRetries,
+        activation,
+        projectResearchOutcome,
       ] = await Promise.all([
+        optional<EvaluationBatch>('base-evolution-evaluations'),
+        optional<EvaluationBatch>('seed-evolution-evaluations'),
         optional<FailureCluster>('failure-cluster'),
         optional<Experience>('experience'),
         optional<SkillPatch>('patch'),
@@ -523,8 +609,13 @@ function SkillLabPage() {
         optional<EvaluationBatch>('candidate-validation-evaluations'),
         optional<EvaluationBatch>('seed-final_test-evaluations'),
         optional<EvaluationBatch>('candidate-final_test-evaluations'),
+        optional<TechnicalRetries>('technical-retries'),
+        optional<ContingencyActivation>('activation'),
+        optional<ProjectResearchOutcome>('project-research-outcome'),
       ])
       setArtifacts({
+        baseEvolution,
+        seedEvolution,
         failureCluster,
         experience,
         patch,
@@ -533,6 +624,9 @@ function SkillLabPage() {
         candidateValidation,
         seedFinal,
         candidateFinal,
+        technicalRetries,
+        activation,
+        projectResearchOutcome,
       })
     } catch (caught: unknown) {
       setExperiment(null)
@@ -580,6 +674,27 @@ function SkillLabPage() {
                   {experiment.status} · {experiment.outcome}
                 </span>
               </div>
+              {(artifacts?.projectResearchOutcome || experiment.outcome === 'NO_ELIGIBLE_CLUSTER') && (
+                <article className="research-outcome-card">
+                  <div>
+                    <span className="micro-label">RESEARCH OUTCOME</span>
+                    <strong>
+                      {artifacts?.projectResearchOutcome?.research_hypothesis_supported
+                        ? '研究假设获得支持'
+                        : '研究假设未获支持'}
+                    </strong>
+                  </div>
+                  <p>
+                    {artifacts?.projectResearchOutcome?.claim_boundary
+                      ?? 'Seed 未形成达到预注册阈值的失败簇，因此未生成 Candidate。'}
+                  </p>
+                  <small>
+                    {artifacts?.projectResearchOutcome
+                      ? `${artifacts.projectResearchOutcome.formal_experiment_count} 次正式实验 · stopping rule 已执行`
+                      : `${experiment.outcome} · Validation 与 Final Test 保持封闭`}
+                  </small>
+                </article>
+              )}
               <div className="experiment-metrics">
                 <article><small>Seed Skill</small><strong>{experiment.seed_skill_version_id}</strong></article>
                 <article><small>预算使用</small><strong>{experiment.budget.spent.toFixed(2)} / {experiment.budget.cap.toFixed(2)} {experiment.budget.currency}</strong></article>
@@ -600,6 +715,45 @@ function SkillLabPage() {
                   </article>
                 ))}
               </div>
+              <div className="evolution-evidence-grid">
+                {(
+                  [
+                    ['Base', artifacts?.baseEvolution ?? null],
+                    ['Seed', artifacts?.seedEvolution ?? null],
+                  ] as const
+                ).map(([label, batch]) => (
+                  <article key={label}>
+                    <div className="section-heading">
+                      <span>{label} · Evolution</span>
+                      <span className="micro-label">{batch?.evaluations.length ?? 0} EVALS</span>
+                    </div>
+                    <strong>{averageScore(batch)}</strong>
+                    <p>
+                      {failedEvaluationCount(batch)} 个失败评估 · {failureEventCount(batch)} 个失败事件
+                    </p>
+                  </article>
+                ))}
+              </div>
+              {(artifacts?.activation || artifacts?.technicalRetries) && (
+                <article className="experiment-audit-card">
+                  <div className="section-heading">
+                    <span><ShieldCheck size={15} /> 协议与技术审计</span>
+                    <span className="micro-label">IMMUTABLE</span>
+                  </div>
+                  {artifacts.activation && (
+                    <p>
+                      V1.5 {artifacts.activation.status} · 主实验 {artifacts.activation.primary_outcome} ·
+                      激活次数 {artifacts.activation.activation_count}。协议偏差
+                      {' '}{artifacts.activation.protocol_deviation.code}；数据或阈值变更:
+                      {' '}{String(artifacts.activation.protocol_deviation.data_or_threshold_changed)}。
+                    </p>
+                  )}
+                  <p>
+                    零-token 技术重试 {artifacts.technicalRetries?.records.length ?? 0} 次；失败 Run
+                    均保留并排除在正式研究分母之外。
+                  </p>
+                </article>
+              )}
               <div className="lab-artifact-grid">
                 <article className="lab-artifact-card">
                   <div className="section-heading">

@@ -362,6 +362,8 @@ class FormalExperimentRunner:
         worst_case_request_cost: Decimal,
         rotated_key_ready: bool,
         calibration_ready: bool,
+        experiment_cap: Decimal = PRIMARY_EXPERIMENT_CAP,
+        scope_version: str = "1.4",
         clock: Callable[[], datetime] = _now,
     ) -> None:
         self.experiment_id = experiment_id
@@ -376,6 +378,8 @@ class FormalExperimentRunner:
         self.worst_case_request_cost = worst_case_request_cost
         self.rotated_key_ready = rotated_key_ready
         self.calibration_ready = calibration_ready
+        self.experiment_cap = experiment_cap
+        self.scope_version = scope_version
         self.clock = clock
         self.evolution_repository = EvolutionArtifactRepository(self.artifact_root)
         self.run_repository = FileRunRepository(self.artifact_root)
@@ -416,6 +420,8 @@ class FormalExperimentRunner:
             split_cases=cast(dict[str, list[dict[str, str]]], self.suite["splits"]),
             seed_skill_version_id="skill_fundamental_1_0_0",
             timestamp=timestamp,
+            scope_version=self.scope_version,
+            budget_cap=float(self.experiment_cap),
         )
         if existing is None:
             experiment = expected
@@ -435,8 +441,8 @@ class FormalExperimentRunner:
             )
             if any(experiment[key] != expected[key] for key in immutable_keys):
                 raise FormalExperimentBlocked("existing experiment preregistration changed")
-        if Decimal(str(experiment["budget"]["cap"])) != PRIMARY_EXPERIMENT_CAP:
-            raise FormalExperimentBlocked("existing experiment does not retain the USD 9 cap")
+        if Decimal(str(experiment["budget"]["cap"])) != self.experiment_cap:
+            raise FormalExperimentBlocked("existing experiment does not retain its frozen cap")
         return experiment
 
     def _truth(self, case: dict[str, Any], *, allow_final: bool) -> dict[str, Any]:
@@ -489,6 +495,50 @@ class FormalExperimentRunner:
         period = case["target_periods"][0]
         return f"{period['fiscal_year']}{period['fiscal_period']}"
 
+    def _record_technical_retry(
+        self,
+        *,
+        split: str,
+        condition: str,
+        case_id: str,
+        repeat: int,
+        failed_run_id: str,
+        retry_run_id: str,
+        retry_state: str,
+    ) -> None:
+        retry_key = f"{split}:{condition}:{case_id}:repeat-{repeat}"
+        try:
+            artifact = self.evolution_repository.get(self.experiment_id, "technical-retries")
+        except KeyError:
+            artifact = {
+                "schema_version": "1.4.0",
+                "experiment_id": self.experiment_id,
+                "policy": "one_retry_only_for_zero_provider_token_technical_failure",
+                "records": [],
+            }
+        records = list(artifact["records"])
+        expected_core = {
+            "retry_key": retry_key,
+            "failed_run_id": failed_run_id,
+            "failure_code": "TOOL_FAILED",
+            "provider_tokens_before_failure": 0,
+            "retry_run_id": retry_run_id,
+            "retry_state": retry_state,
+            "excluded_failed_run_from_formal_denominator": True,
+        }
+        matching = [item for item in records if item["retry_key"] == retry_key]
+        if matching:
+            existing_core = {key: matching[0][key] for key in expected_core}
+            if existing_core != expected_core:
+                raise FormalExperimentBlocked("technical retry evidence changed")
+        else:
+            records.append({**expected_core, "recorded_at": self.clock().isoformat()})
+        self.evolution_repository.save(
+            self.experiment_id,
+            "technical-retries",
+            {**artifact, "records": records},
+        )
+
     def _run_condition(
         self,
         *,
@@ -508,35 +558,63 @@ class FormalExperimentRunner:
             case = self.cases[case_id]
             truth = self._truth(case, allow_final=allow_final)
             for repeat in range(1, FORMAL_REPEATS + 1):
-                service = self._service(condition, f"{case_id}-repeat-{repeat}")
-                request = ResearchRunRequest(
-                    task_type="filing_analysis",
-                    research_question=case["research_question"],
-                    company_ids=[case["company"]["company_id"]],
-                    requested_period_labels=[self._period_label(case)],
-                    research_time=datetime.fromisoformat(case["research_time"]),
-                    idempotency_key=(
-                        f"formal:{self.experiment_id}:{split}:{condition.name}:"
-                        f"{case_id}:repeat-{repeat}"
-                    ),
-                )
-                submission = service.submit(
-                    request,
-                    run_kind=run_kind,
-                    case_id=case_id,
-                    split=split,
-                )
-                manifest = service.execute(submission.run_id)
-                if manifest["lifecycle_state"] != "succeeded":
-                    raise FormalExperimentBlocked(
-                        f"technical run did not succeed: {submission.run_id} "
-                        f"({manifest['lifecycle_state']})"
+                failed_run_id: str | None = None
+                for technical_attempt in (1, 2):
+                    service = self._service(condition, f"{case_id}-repeat-{repeat}")
+                    retry_suffix = "" if technical_attempt == 1 else ":technical-retry-1"
+                    request = ResearchRunRequest(
+                        task_type="filing_analysis",
+                        research_question=case["research_question"],
+                        company_ids=[case["company"]["company_id"]],
+                        requested_period_labels=[self._period_label(case)],
+                        research_time=datetime.fromisoformat(case["research_time"]),
+                        idempotency_key=(
+                            f"formal:{self.experiment_id}:{split}:{condition.name}:"
+                            f"{case_id}:repeat-{repeat}{retry_suffix}"
+                        ),
                     )
+                    submission = service.submit(
+                        request,
+                        run_kind=run_kind,
+                        case_id=case_id,
+                        split=split,
+                    )
+                    manifest = service.execute(submission.run_id)
+                    if technical_attempt == 2:
+                        assert failed_run_id is not None
+                        self._record_technical_retry(
+                            split=split,
+                            condition=condition.name,
+                            case_id=case_id,
+                            repeat=repeat,
+                            failed_run_id=failed_run_id,
+                            retry_run_id=submission.run_id,
+                            retry_state=str(manifest["lifecycle_state"]),
+                        )
+                    if manifest["lifecycle_state"] == "succeeded":
+                        break
+                    usage = manifest.get("usage") or {}
+                    failure = manifest.get("failure") or {}
+                    can_retry = (
+                        technical_attempt == 1
+                        and failure.get("code") == "TOOL_FAILED"
+                        and int(usage.get("total_tokens", 0)) == 0
+                    )
+                    if not can_retry:
+                        raise FormalExperimentBlocked(
+                            f"technical run did not succeed: {submission.run_id} "
+                            f"({manifest['lifecycle_state']})"
+                        )
+                    failed_run_id = submission.run_id
+                else:
+                    raise AssertionError("bounded technical retry loop did not terminate")
                 if manifest["artifacts"]["evaluation_id"] is None:
                     evaluation = service.verify(
                         submission.run_id,
                         case_id=case_id,
-                        expected_calculations=cast(dict[str, str], truth["expected_calculations"]),
+                        expected_calculations=cast(
+                            dict[str, str | None], truth["expected_calculations"]
+                        ),
                         ground_truth_hash=case["verifier_ground_truth_ref"]["artifact_hash"],
                     )
                 else:
@@ -654,8 +732,8 @@ class FormalExperimentRunner:
 
     def _experiment_spent(self, baseline: Decimal) -> float:
         spent = self.ledger.snapshot().spent - baseline
-        if spent < 0 or spent > PRIMARY_EXPERIMENT_CAP:
-            raise FormalExperimentBlocked("primary experiment spend is outside its USD 9 cap")
+        if spent < 0 or spent > self.experiment_cap:
+            raise FormalExperimentBlocked("experiment spend is outside its frozen cap")
         return float(spent)
 
     def run(self) -> dict[str, Any]:

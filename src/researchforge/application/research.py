@@ -36,6 +36,7 @@ class LoadedResearchData:
     source_documents: tuple[dict[str, Any], ...]
     requested_periods: tuple[dict[str, Any], ...]
     companies: tuple[dict[str, Any], ...]
+    evidence_chunks: tuple[dict[str, Any], ...] = ()
 
 
 class ConclusionDraft(BaseModel):
@@ -78,17 +79,17 @@ class DeterministicConclusionGenerator:
     def generate(self, context: dict[str, Any]) -> ConclusionDraft:
         company = context["company"]["legal_name"]
         period = context["period_label"]
-        conversion = context["cash_conversion"]
+        conversion = context.get("cash_conversion_display", f"{context['cash_conversion']}倍")
         margin = context["gross_margin"]
         divergence = context["divergence_triggered"]
         divergence_text = "触发利润与现金流背离信号" if divergence else "未触发冻结的背离信号"
         return ConclusionDraft(
             executive_summary=(
-                f"{company}{period}经营现金流/净利润为{conversion}倍, 毛利率为{margin}; "
+                f"{company}{period}经营现金流/净利润为{conversion}, 毛利率为{margin}; "
                 f"{divergence_text}。结论仅覆盖冻结财务事实, 不构成投资建议。"
             ),
             earnings_quality_text=(
-                f"经营现金流与净利润的现金转化比为{conversion}倍, {divergence_text}。"
+                f"经营现金流与净利润的现金转化比为{conversion}, {divergence_text}。"
             ),
             gross_margin_text=f"按营业收入减营业成本计算, {period}毛利率为{margin}。",
             limitations=[
@@ -200,8 +201,17 @@ class EarningsQualityAnalyzer:
             value("net_income"),
             value("operating_cash_flow"),
         )
-        results = (gross_profit_result, gross_margin_result, conversion_result, divergence_result)
-        if any(result.status is not CalculationStatus.CALCULATED for result in results):
+        mandatory_calculated = (
+            gross_profit_result,
+            gross_margin_result,
+            divergence_result,
+        )
+        if any(
+            result.status is not CalculationStatus.CALCULATED for result in mandatory_calculated
+        ) or conversion_result.status not in {
+            CalculationStatus.CALCULATED,
+            CalculationStatus.NOT_MEANINGFUL,
+        }:
             raise InsufficientDataError("A mandatory deterministic calculation was unavailable.")
 
         timestamp = created_at.isoformat()
@@ -270,7 +280,7 @@ class EarningsQualityAnalyzer:
                 "gross_margin", by_metric, gross_margin_result, "毛利率由确定性公式计算。"
             ),
             self._calculation_check(
-                "cash_conversion", by_metric, conversion_result, "现金转化比由确定性公式计算。"
+                "cash_conversion", by_metric, conversion_result, conversion_result.explanation
             ),
             self._calculation_check(
                 "profit_cash_divergence",
@@ -294,13 +304,20 @@ class EarningsQualityAnalyzer:
         )
         company = current[0]["company"]
         period = current[0]["period"]
-        assert conversion_result.value is not None
         assert gross_margin_result.value is not None
         assert divergence_result.value is not None
+        if conversion_result.value is None:
+            conversion_value = "not_meaningful"
+            conversion_display = "不适用(净利润为零或负数)"
+        else:
+            conversion_value = f"{conversion_result.value.quantize(Decimal('0.01'))}"
+            conversion_display = f"{conversion_value}倍"
         context = {
             "company": company,
             "period_label": f"{period['fiscal_year']}{period['fiscal_period']}",
-            "cash_conversion": f"{conversion_result.value.quantize(Decimal('0.01'))}",
+            "cash_conversion": conversion_value,
+            "cash_conversion_display": conversion_display,
+            "cash_conversion_status": conversion_result.status.value,
             "gross_margin": (
                 f"{(gross_margin_result.value * Decimal(100)).quantize(Decimal('0.01'))}%"
             ),
@@ -381,9 +398,13 @@ class EarningsQualityAnalyzer:
         }
         return {
             "check_code": code,
-            "status": "performed"
-            if result.status is CalculationStatus.CALCULATED
-            else "unavailable",
+            "status": (
+                "performed"
+                if result.status is CalculationStatus.CALCULATED
+                else "not_applicable"
+                if result.status is CalculationStatus.NOT_MEANINGFUL
+                else "unavailable"
+            ),
             "fact_ids": [by_metric[metric]["fact_id"] for metric in metric_map[code]],
             "evidence_ids": [],
             "finding": finding,

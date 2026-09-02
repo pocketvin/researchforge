@@ -5,6 +5,7 @@ This file records decisions that materially affect scope, architecture, data, ev
 ## Status Legend
 
 - **ACCEPTED**: binding until replaced by a later decision.
+- **ACCEPTED WITH RECORDED PROTOCOL DEVIATION**: binding, with the deviation and unchanged experiment controls preserved as evidence.
 - **PROPOSED**: preferred option, awaiting implementation evidence or owner confirmation.
 - **REJECTED**: considered and intentionally not used.
 - **SUPERSEDED**: replaced by another decision.
@@ -31,6 +32,10 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-016 | Seal the V1.5 contingency before the primary experiment | ACCEPTED | 2026-09-01 | — |
 | RF-017 | Portable container image sources | ACCEPTED | 2026-09-01 | — |
 | RF-018 | One synthetic provider calibration before formal runs | ACCEPTED | 2026-09-01 | G3 |
+| RF-019 | Activate contingency after any unsupported primary outcome | ACCEPTED WITH DEVIATION | 2026-09-02 | — |
+| RF-020 | One zero-token technical retry with denominator audit | ACCEPTED | 2026-09-02 | — |
+| RF-021 | Freeze unsupported terminal research outcome | ACCEPTED | 2026-09-02 | Final release |
+| RF-022 | Make evidence, calculations, and monitoring directly auditable | ACCEPTED | 2026-09-02 | Final release |
 
 ## RF-001 — Contract-First Implementation
 
@@ -383,3 +388,95 @@ earnings-quality check codes, and is labeled
 `SYNTHETIC_CALIBRATION_ONLY_NOT_RESEARCH_EVIDENCE`. It never counts toward Base, Seed,
 Candidate, Validation, Final Test, usability, or a `SUPPORTED` conclusion. Failure blocks
 formal execution until corrected without consuming a Benchmark case.
+
+## RF-019 — Activate the Frozen Contingency After Any Unsupported Primary Outcome
+
+Status: **ACCEPTED WITH RECORDED PROTOCOL DEVIATION**
+
+Decision:
+
+Activate the once-only V1.5 contingency after the primary experiment completed with
+`NO_ELIGIBLE_CLUSTER`. Record `FROZEN_ACTIVATION_PREDICATE_TOO_NARROW` because the earlier
+machine predicate named only a Validation rejection even though the owner-approved scope
+authorized contingency after any unsupported primary result.
+
+Reason:
+
+The primary could not reach Validation because no cluster was eligible to create a Candidate.
+Treating this as neither supported nor eligible for contingency would contradict the stated
+two-experiment stop plan. The deviation changes no company, fact, truth value, model, threshold,
+graph, verifier, or result.
+
+Consequence:
+
+The deviation, activation count, unchanged-data assertion, and primary result hash are immutable
+audit fields. Contingency activation cannot occur a second time.
+
+## RF-020 — One Retry for a Zero-Provider-Token Technical Failure
+
+Status: **ACCEPTED**
+
+Decision:
+
+Allow exactly one retry when a formal attempt fails before consuming any provider tokens. Retain
+the failed run and reason as a technical-retry artifact, bind it to the successful replacement,
+and exclude the zero-token failed attempt from the preregistered scored denominator.
+
+Reason:
+
+A local deterministic bug or transport failure before provider consumption is not a model
+observation. Counting both it and the replacement would change the planned number of scored
+repeats; discarding it would erase useful operational evidence.
+
+Consequence:
+
+The contingency experiment records two such attempts. A second failure for the same retry key, or
+any failure after provider tokens are consumed, is not silently retried. Indeterminate transport
+outcomes are conservatively charged at the full reserved cost.
+
+## RF-021 — Freeze the Unsupported Terminal Outcome and Separate Engineering Completion
+
+Status: **ACCEPTED**
+
+Decision:
+
+After both formal experiments ended at `NO_ELIGIBLE_CLUSTER`, apply the two-experiment stopping
+rule and freeze `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS`. Continue only the bounded
+engineering release work and simulated-usability correction.
+
+Reason:
+
+Changing cluster thresholds, companies, data, or the experiment count after observing two
+negative results would invalidate the research design. The product can still demonstrate useful
+engineering without claiming that the skill-evolution hypothesis succeeded.
+
+Consequence:
+
+No further formal experiment, Candidate, Validation, or Final Test is authorized. Public material
+may claim full engineering readiness only after final acceptance; it must state that the research
+hypothesis is unsupported and that real-user value remains unvalidated.
+
+## RF-022 — Make Evidence, Calculations, and Monitoring Directly Auditable
+
+Status: **ACCEPTED**
+
+Decision:
+
+Before the V1.4 public release, require completed Research Results to contain explicit monitoring
+items and require every material claim to resolve its supporting evidence IDs. Expose immutable
+run-scoped facts, evidence chunks, and deterministic calculation records through read-only API
+resources and render those persisted artifacts directly in the Research page.
+
+Reason:
+
+The first isolated simulated-usability batch found the key result, support, and limitation, but
+all three sessions missed a monitoring action and could not directly inspect the cited excerpt or
+formula record. These were presentation and auditability defects, not grounds to alter the frozen
+research experiment.
+
+Consequence:
+
+The additive API resources are `/facts`, `/evidence`, and `/calculations`; the V1.4 Research Result
+contract requires `monitoring_items`. The correction changes no Benchmark package, model setting,
+skill, threshold, evaluation denominator, or frozen experimental outcome. A second fresh three-
+persona simulation passed with the original negative research result intact.

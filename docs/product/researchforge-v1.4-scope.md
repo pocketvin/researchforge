@@ -310,15 +310,17 @@ L1 API:
 
 - create research run;
 - read lifecycle/progress/failure;
-- read completed result and audit artifacts;
+- read completed result, trace, normalized facts, evidence chunks, and deterministic calculations;
 - cancel a run.
 
 Full V1.4 UI:
 
-1. **Research** — question, progress, structured report, claims, facts, evidence, sources, limitations.
+1. **Research** — question, progress, structured report, claims, direct evidence excerpts, deterministic calculations, monitoring triggers, sources, and limitations.
 2. **Skill Lab** — actual no-cluster, candidate rejection, or supported outcome with the relevant failure, experience, diff, paired metrics, and sealed-test evidence.
 
 Both pages render persisted artifacts. Illustrative metrics must be labeled and cannot appear as measured results.
+
+Every material Research-page claim resolves its `support_evidence_ids` to the run's immutable evidence resource. Every completed result contains at least one explicit monitoring item with a rationale, trigger, next review, and supporting fact/evidence IDs. The browser does not calculate or invent research values.
 
 ## 19. Required Persisted Artifacts
 

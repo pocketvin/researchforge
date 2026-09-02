@@ -1,5 +1,7 @@
 import type {
   Catalog,
+  CalculationRecord,
+  EvidenceChunk,
   EvolutionExperiment,
   FinancialFact,
   ResearchResult,
@@ -36,6 +38,10 @@ export const api = {
   result: (runId: string) => request<ResearchResult>(`/v1/research-runs/${runId}/result`),
   trace: (runId: string) => request<Trace>(`/v1/research-runs/${runId}/trace`),
   facts: (runId: string) => request<FinancialFact[]>(`/v1/research-runs/${runId}/facts`),
+  evidence: (runId: string) =>
+    request<EvidenceChunk[]>(`/v1/research-runs/${runId}/evidence`),
+  calculations: (runId: string) =>
+    request<CalculationRecord[]>(`/v1/research-runs/${runId}/calculations`),
   cancel: (runId: string) =>
     request<RunManifest>(`/v1/research-runs/${runId}/cancel`, { method: 'POST' }),
   experiment: (experimentId: string) =>

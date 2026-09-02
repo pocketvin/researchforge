@@ -41,6 +41,9 @@ You may say:
 - “Built five frozen-fixture research modes, a deterministic Verifier, and a 20/20 local reliability batch with exact denominators.”
 - “Built a two-page React interface and hybrid immutable-file/PostgreSQL persistence; verified a three-service Docker run through Nginx, FastAPI, PostgreSQL, and a ten-stage trace.”
 - “Prepared two redistribution-safe, company-disjoint 24-case benchmark packages with official links, page locators, artifact hashes, sealed labels, and one-time Final Test controls.”
+- “Executed two controlled formal experiments with 144 total scored Evolution evaluations, preserved two negative `NO_ELIGIBLE_CLUSTER` outcomes, and enforced a two-experiment stopping rule instead of manufacturing an improvement claim.”
+- “Closed an AI-simulated usability failure by adding persisted Evidence Chunk links, deterministic Calculation Records, and monitoring triggers; the isolated repeat passed 3/3 locateability checks while remaining explicitly non-human evidence.”
+- “Kept all OpenAI work under a pre-dispatch USD 20 guard; calibration, both formal experiments, and two usability batches consumed USD 0.1523062 in total.”
 
 You must not yet say:
 
@@ -48,17 +51,24 @@ You must not yet say:
 - “Improved research accuracy by X%.”
 - “Created a self-evolving agent.”
 - “The research hypothesis is supported.”
+- “Validated product value with real users.”
 
 Those claims require the matching level in `PROJECT_STATUS.md`.
 
-## Resume Bullet Templates
+## Evidence-Backed Resume Bullets
 
-Use only after replacing every bracket with evidence:
+These statements are supported by the frozen project evidence:
 
-- Built an evidence-grounded financial research agent using Python, FastAPI, Pydantic, and LangGraph, producing schema-valid reports with [N]% deterministic calculation accuracy across [N] golden cases.
-- Implemented point-in-time filing retrieval and claim-level citations, reaching [N]% citation accuracy while keeping median report latency to [N] seconds and cost to [currency][N].
-- Designed a verifier-driven skill-evolution experiment over [N] company-quarter cases; reduced [failure signature] from [A]% to [B]% on sealed tests with [R]% regression.
-- Shipped a two-page React/TypeScript demo with reproducible Docker setup, [N] automated tests, and CI-enforced schema/benchmark validation.
+- Built an evidence-grounded financial research system with Python, FastAPI, Pydantic,
+  LangGraph, React, PostgreSQL, and content-addressed artifacts; shipped five modes and a
+  reproducible three-container demo.
+- Implemented deterministic `Decimal` formulas, point-in-time source controls, Claim—Fact—Evidence
+  provenance, and an independent Verifier across 24-case primary and contingency suites.
+- Designed and executed a preregistered skill-evolution study with company-disjoint splits and
+  three repeats; preserved negative results and stopped after two experiments when no eligible
+  Candidate cluster emerged.
+- Built a 160-test backend suite plus frontend unit/E2E/accessibility and Docker migration smoke
+  gates, enforced in GitHub Actions.
 
 If a metric is not measured, remove the metric instead of estimating it.
 
@@ -67,11 +77,9 @@ If a metric is not measured, remove the metric instead of estimating it.
 1. **Problem, 30 seconds:** bare LLM research can calculate incorrectly, omit cash conversion, or cite unsupported text.
 2. **Research run, 90 seconds:** ask one company earnings-quality question and show plan, facts, tools, evidence, claims, and sources.
 3. **Audit, 45 seconds:** click one material claim and resolve it to fact/evidence IDs and reporting cutoff.
-4. **Failure, 45 seconds:** show repeated `cash_conversion_check_missing` events from Evolution runs.
-5. **Patch, 45 seconds:** show the bounded Skill diff and supporting failure IDs.
-6. **Validation, 45 seconds:** show Seed vs Candidate paired metrics and regression guardrail.
-
-Until L3 exists, replace steps 4–6 with a verifier replay and explicitly label Evolution as planned.
+4. **Formal result, 45 seconds:** show Base/Seed denominators and the retained failure events from the primary and contingency experiments.
+5. **Stop rule, 45 seconds:** show why `NO_ELIGIBLE_CLUSTER` produced no Candidate, kept Validation sealed, and left Final Test unconsumed.
+6. **Usability iteration, 45 seconds:** show the initial simulated failure, evidence/monitoring correction, and final `SIMULATED` PASS while stating that no real user was tested.
 
 ## Interview Deep-Dive Topics
 

@@ -314,13 +314,17 @@ class ResearchWorkflow:
 
     def _retrieve(self, state: ResearchGraphState) -> dict[str, Any]:
         documents = [source["document_id"] for source in state["loaded"].source_documents]
+        evidence_ids = [chunk["chunk_id"] for chunk in state["loaded"].evidence_chunks]
         return {
             "stages": self._event(
                 state,
                 "retrieving_evidence",
-                f"Resolved {len(documents)} official source-document locators from frozen facts.",
+                (
+                    f"Resolved {len(evidence_ids)} bounded evidence chunks across "
+                    f"{len(documents)} official source documents."
+                ),
                 input_ids=[fact["fact_id"] for fact in state["loaded"].facts],
-                output_ids=documents,
+                output_ids=evidence_ids,
             )
         }
 
@@ -342,6 +346,11 @@ class ResearchWorkflow:
                 ),
                 requested_periods=loaded.requested_periods,
                 companies=(company,),
+                evidence_chunks=tuple(
+                    chunk
+                    for chunk in loaded.evidence_chunks
+                    if chunk["document_id"] in document_ids
+                ),
             )
             analyses.append(
                 self.analyzer.analyze(
@@ -501,6 +510,25 @@ class ResearchWorkflow:
         analyses = state.get("analyses", (state["analysis"],))
         conclusions = state.get("conclusions", (state["conclusion"],))
         counter = state["counter_evidence"]
+        fact_by_id = {fact["fact_id"]: fact for fact in loaded.facts}
+        evidence_by_document: dict[str, list[str]] = {}
+        for chunk in loaded.evidence_chunks:
+            evidence_by_document.setdefault(chunk["document_id"], []).append(chunk["chunk_id"])
+
+        def evidence_for_facts(fact_ids: list[str]) -> list[str]:
+            document_ids = {
+                fact_by_id[fact_id]["source"]["document_id"]
+                for fact_id in fact_ids
+                if fact_id in fact_by_id
+            }
+            return sorted(
+                {
+                    evidence_id
+                    for document_id in document_ids
+                    for evidence_id in evidence_by_document.get(document_id, [])
+                }
+            )
+
         skill_report_codes = {
             "operating_cash_flow",
             "accounts_receivable",
@@ -530,13 +558,23 @@ class ResearchWorkflow:
                     "check_code": "counter_evidence",
                     "status": "performed",
                     "fact_ids": [],
-                    "evidence_ids": [],
+                    "evidence_ids": sorted(chunk["chunk_id"] for chunk in loaded.evidence_chunks),
                     "finding": counter["summary"],
                 }
             )
+        mandatory_checks = [
+            {
+                **check,
+                "evidence_ids": (
+                    check["evidence_ids"] or evidence_for_facts(list(check["fact_ids"]))
+                ),
+            }
+            for check in mandatory_checks
+        ]
         claims: list[dict[str, Any]] = []
         risk_claim_ids: list[str] = []
         limitations: list[str] = []
+        monitoring_items: list[dict[str, Any]] = []
         for analysis, conclusion in zip(analyses, conclusions, strict=True):
             by_metric = {fact["metric_code"]: fact for fact in analysis.current_facts}
             context = analysis.context
@@ -547,7 +585,10 @@ class ResearchWorkflow:
                 claim_type = "risk"
             else:
                 direction = (
-                    "positive" if Decimal(context["cash_conversion"]) >= Decimal(1) else "mixed"
+                    "positive"
+                    if context["cash_conversion_status"] == "calculated"
+                    and Decimal(context["cash_conversion"]) >= Decimal(1)
+                    else "mixed"
                 )
                 claim_type = "earnings_quality"
             epistemic_status = (
@@ -556,6 +597,10 @@ class ResearchWorkflow:
                 else "supported_inference"
             )
             earnings_claim_id = f"claim_{state['run_id']}_{company_id}_earnings_quality"
+            earnings_fact_ids = [
+                by_metric["net_income"]["fact_id"],
+                by_metric["operating_cash_flow"]["fact_id"],
+            ]
             claims.append(
                 {
                     "schema_version": "1.4.0",
@@ -569,11 +614,8 @@ class ResearchWorkflow:
                         if request["task_type"] == "thesis_investigation"
                         else conclusion.earnings_quality_text
                     ),
-                    "fact_ids": [
-                        by_metric["net_income"]["fact_id"],
-                        by_metric["operating_cash_flow"]["fact_id"],
-                    ],
-                    "support_evidence_ids": [],
+                    "fact_ids": earnings_fact_ids,
+                    "support_evidence_ids": evidence_for_facts(earnings_fact_ids),
                     "counter_evidence_search": counter,
                     "alternative_explanations": [
                         "经营现金流与利润确认节奏可能受营运资本时点影响。"
@@ -588,6 +630,10 @@ class ResearchWorkflow:
             )
             if request["task_type"] == "risk_detection":
                 risk_claim_ids.append(earnings_claim_id)
+            margin_fact_ids = [
+                by_metric["revenue"]["fact_id"],
+                by_metric["operating_cost"]["fact_id"],
+            ]
             claims.append(
                 {
                     "schema_version": "1.4.0",
@@ -597,11 +643,8 @@ class ResearchWorkflow:
                     "materiality": "supporting",
                     "direction": "neutral",
                     "text": conclusion.gross_margin_text,
-                    "fact_ids": [
-                        by_metric["revenue"]["fact_id"],
-                        by_metric["operating_cost"]["fact_id"],
-                    ],
-                    "support_evidence_ids": [],
+                    "fact_ids": margin_fact_ids,
+                    "support_evidence_ids": evidence_for_facts(margin_fact_ids),
                     "counter_evidence_search": {
                         "performed": False,
                         "queries": [],
@@ -614,6 +657,29 @@ class ResearchWorkflow:
                         "level": "high",
                         "basis": "营业收入、营业成本与公式均已冻结。",
                     },
+                }
+            )
+            monitoring_fact_ids = [
+                by_metric[metric]["fact_id"]
+                for metric in (
+                    "operating_cash_flow",
+                    "net_income",
+                    "accounts_receivable",
+                    "inventory",
+                )
+            ]
+            monitoring_items.append(
+                {
+                    "monitor_code": f"working_capital_cash_conversion_{company_id}",
+                    "title": "下一同口径报告期复核现金转化与营运资本",
+                    "rationale": (
+                        "经营现金流与净利润存在背离时, 应同时跟踪应收账款和存货, "
+                        "避免把营运资本时点影响误判为长期盈利质量变化。"
+                    ),
+                    "trigger": "经营现金流继续为负, 或现金转化比仍低于1.00倍。",
+                    "next_review": "下一同口径财务报告发布后",
+                    "fact_ids": monitoring_fact_ids,
+                    "evidence_ids": evidence_for_facts(monitoring_fact_ids),
                 }
             )
             limitations.extend(conclusion.limitations)
@@ -635,11 +701,12 @@ class ResearchWorkflow:
                     "materiality": "material",
                     "direction": "mixed",
                     "text": (
-                        f"同一框架下现金转化比分别为{first.context['cash_conversion']}倍与"
-                        f"{second.context['cash_conversion']}倍; 该比较仅描述所选期间。"
+                        "同一框架下现金转化比分别为"
+                        f"{first.context['cash_conversion_display']}与"
+                        f"{second.context['cash_conversion_display']}; 该比较仅描述所选期间。"
                     ),
                     "fact_ids": peer_fact_ids,
-                    "support_evidence_ids": [],
+                    "support_evidence_ids": evidence_for_facts(peer_fact_ids),
                     "counter_evidence_search": counter,
                     "alternative_explanations": ["业务结构和营运资本季节性可能影响横向可比性。"],
                     "confidence": {
@@ -677,6 +744,7 @@ class ResearchWorkflow:
             "mandatory_checks": mandatory_checks,
             "claims": claims,
             "risk_claim_ids": risk_claim_ids,
+            "monitoring_items": monitoring_items,
             "source_document_ids": [source["document_id"] for source in loaded.source_documents],
             "limitations": list(dict.fromkeys(limitations)),
             "skill_version": self.skill_version,

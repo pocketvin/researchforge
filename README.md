@@ -10,7 +10,7 @@ ResearchForge V1.4 is an evidence-grounded company fundamental-research product 
 
 ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品，也是一个封闭的 Skill 演化实验。Research 页面把五种研究任务转成可追溯的财务事实、`Decimal` 公式、Claim—Fact—Evidence、反证、限制与十阶段 LangGraph Trace；Skill Lab 只读展示失败聚类、Experience、Candidate Skill Diff、Validation 配对指标和一次性 Final Test。React、FastAPI 与 PostgreSQL 可由 Docker Compose 一键启动，大型不可变 JSON 使用内容寻址文件保存。
 
-项目不会提供交易、实时行情或投资建议，也不会开放式自我修改。正式实验固定模型、数据、图、Verifier 和三次重复；主实验不支持假设时最多启用一次完全隔离的 V1.5 备用实验。真实用户价值尚未验证，三次 AI 可用性检查必须标记为 `SIMULATED`。当前离正式研究结论只差主数据包人工签字、轮换后的本地 API Key 及封闭实验执行；OpenAI 累计消费仍为 0 美元。
+项目不会提供交易、实时行情或投资建议，也不会开放式自我修改。两次正式实验均已按冻结协议完成，结果都是 `NO_ELIGIBLE_CLUSTER`；没有生成 Candidate，也没有开启 Validation 或消费 Final Test。工程产品已进入最终发布验收，研究假设则按停止规则标记为未获支持。三次可用性复验全部标记为 `SIMULATED`，真实用户价值仍未验证；OpenAI 累计消费为 0.1523062 美元。
 
 快速启动：`docker compose up -d --build --wait`，随后执行 `uv run python scripts/docker_smoke.py`。完整中英文演示见 [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md)。
 
@@ -18,13 +18,13 @@ ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品�
 
 - Product/research scope: **V1.4 active baseline**
 - Contract package: **1.4.0**
-- Independently accepted gates: **V1.4 C0 + G0**
-- Local implementation: **G1 five-mode breadth + G2 Verifier evidence implemented; one final independent acceptance is deferred until project completion**
-- Active milestone: **G3 rotated key + calibration + formal execution**
+- Historical independently accepted gates: **V1.4 C0 + G0**
+- Engineering status: **V1.4 Full Engineering Product Ready release candidate; final independent acceptance pending**
+- Research status: **hypothesis unsupported after two formal experiments; stopping rule applied**
 - Supported deployment for V1.4: **local or controlled single-user demo**
 - Public repository: **[pocketvin/researchforge](https://github.com/pocketvin/researchforge)**
 
-Current critical path: the primary package is signed; confirm a rotated local key, pass one synthetic provider calibration, then run the implemented controlled Evolution/Validation/Final Test executor. The disjoint V1.5 package, Docker runtime, screenshots, demo video, and three-session simulation executor are ready. After G3, run the three labeled simulations, publish the public package, and perform one final independent review. Synthetic tests and calibration are not a formal `SUPPORTED` result.
+Current critical path: run the final full verification, update the public repository and CI evidence, then perform the one deferred independent acceptance. Formal research is closed: the primary and once-only contingency experiments both stopped without an eligible cluster, so no `SUPPORTED` or self-evolution claim is permitted. See [`docs/evidence/g3-primary-formal-result.md`](docs/evidence/g3-primary-formal-result.md), [`docs/evidence/g3-contingency-formal-result.md`](docs/evidence/g3-contingency-formal-result.md), and [`docs/evidence/g4-simulated-usability.md`](docs/evidence/g4-simulated-usability.md).
 
 ## Run the Zero-Cost Product Core
 
@@ -52,7 +52,7 @@ uv run uvicorn researchforge.api.app:create_app --factory --reload
 
 The API implements create/status/result/trace/facts/cancel resources, `GET /v1/catalog`, and read-only Evolution experiment/artifact endpoints. It returns `202` on creation, `425` while an artifact is not ready, and `409` for an idempotency conflict or a terminal run without a result.
 
-## Inspect the Formal Experiment Safely
+## Inspect or Reproduce the Formal Controls Safely
 
 First validate the one-request calibration boundary without contacting OpenAI:
 
@@ -77,12 +77,11 @@ policy, and both budget ceilings. It never contacts OpenAI:
 uv run researchforge evolution-preflight
 ```
 
-Until a rotated local key and a passed calibration are present, the expected result is
-`status: BLOCKED` with `provider_contacted: false`. Never paste a key into a command or
-Git-tracked file. After explicit signoff, keep the rotated key only in ignored local
-environment configuration, set `RESEARCHFORGE_ROTATED_KEY_CONFIRMED=1`, load that local
-environment, pass the calibration, and use `evolution-run` to execute or idempotently
-resume the experiment.
+On a fresh checkout without local credentials, the expected result is `status: BLOCKED`
+with `provider_contacted: false`. Never paste a key into a command or Git-tracked file.
+The completed project evidence records a passed synthetic calibration, two immutable
+formal negative outcomes, and the applied two-experiment stopping rule. Re-running a
+formal experiment is no longer authorized by the frozen protocol.
 
 The maximum plan is 144 formal runs: 72 Base/Seed Evolution runs, 36 paired
 Seed/Candidate Validation runs, and—only after adoption—36 paired runs in the single
@@ -112,7 +111,7 @@ uv run researchforge usability-preflight \
   --run-id <persisted-succeeded-run-id>
 ```
 
-The expected result remains `BLOCKED` until the rotated local key is confirmed. A real run writes exactly three schema-valid records with `evidence_label: SIMULATED` and `human_user_value_validated: false`.
+The completed batch writes exactly three schema-valid records with `evidence_label: SIMULATED` and `human_user_value_validated: false`. All three sessions passed the four locateability checks; two met both high-score thresholds. This remains simulation evidence only.
 
 ## Start Here
 
@@ -144,17 +143,17 @@ V1.4 has two separate outcomes:
 1. A useful, evidence-grounded fundamental research workflow.
 2. A controlled `failure → experience → skill patch → held-out validation` research experiment for earnings-quality omissions.
 
-Engineering delivery can remain useful after a negative experiment, but the owner-selected overall completion standard additionally requires a `SUPPORTED` sealed result. V1.4 does not provide investment advice, price predictions, trading, portfolio optimization, real-time market data, or autonomous open-ended model training.
+Engineering delivery remains useful after the negative research result. Under the frozen stop condition, the correct terminal state is “engineering complete, research hypothesis unsupported,” not a fabricated `SUPPORTED` result. V1.4 does not provide investment advice, price predictions, trading, portfolio optimization, real-time market data, or autonomous open-ended model training.
 
 ## Delivery Ladder
 
 | Level | Outcome | Current status |
 |---|---|---|
 | L0 Contract Ready | Scope, schemas, methods, validation | complete |
-| L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | local evidence implemented; final acceptance deferred |
-| L2 Demo Ready | Verifier, trace, and replayable failure evidence | local evidence implemented; final acceptance deferred |
-| L3 Research Supported | Adopted Candidate and supported sealed Final Test | executor and both frozen packages ready; live evidence blocked by signoff/key |
-| L4 Full Engineering Product | Five modes, two pages, supported storage, Docker, CI, three labeled simulations | engineering/runtime/demo ready; simulations and publication pending G3 |
+| L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | complete |
+| L2 Demo Ready | Verifier, trace, and replayable failure evidence | complete |
+| L3 Research Supported | Adopted Candidate and supported sealed Final Test | not achieved; hypothesis unsupported after two experiments |
+| L4 Full Engineering Product | Five modes, two pages, storage, Docker, CI, three labeled simulations | release candidate; final independent acceptance pending |
 
 Stopping earlier preserves honest portfolio value. “Self-improving” is not a completed claim until L3 adoption and sealed-test evidence exist.
 
@@ -251,9 +250,11 @@ Contracts and data-source acceptance ✓
 → two-page UI + PostgreSQL + CI definitions ✓
 → primary + contingency package freeze ✓
 → Docker smoke + simulation executor + demo packaging ✓
-→ rotated key + calibration + controlled live evolution cycle ← current
-→ three live labeled simulations + public packaging
-→ one final independent acceptance
+→ rotated key + calibration + controlled primary experiment ✓
+→ once-only disjoint contingency experiment + stopping rule ✓
+→ three labeled simulations + evidence-driven UI correction ✓
+→ public packaging + CI refresh
+→ one final independent acceptance ← current
 ```
 
 ## Validate the Contract Package

@@ -153,6 +153,24 @@ def create_app(
         except RunNotFoundError as exc:
             raise not_found(run_id) from exc
 
+    @app.get("/v1/research-runs/{run_id}/evidence")
+    def get_research_evidence(
+        run_id: Annotated[str, ApiPath(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")],
+    ) -> list[dict[str, Any]]:
+        try:
+            return runtime.get_evidence(run_id)
+        except RunNotFoundError as exc:
+            raise not_found(run_id) from exc
+
+    @app.get("/v1/research-runs/{run_id}/calculations")
+    def get_research_calculations(
+        run_id: Annotated[str, ApiPath(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")],
+    ) -> list[dict[str, Any]]:
+        try:
+            return runtime.get_calculations(run_id)
+        except RunNotFoundError as exc:
+            raise not_found(run_id) from exc
+
     @app.post("/v1/research-runs/{run_id}/cancel")
     def cancel_research_run(
         run_id: Annotated[str, ApiPath(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")],

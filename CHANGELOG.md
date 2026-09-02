@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.0] — In Progress
+## [1.4.0] — Release Candidate
 
 ### Added
 
@@ -30,6 +30,12 @@
 - `setup-uv` upgraded to the official immutable v9.0.0 commit, removing the remaining Node 20 action runtime.
 - Three-session simulated-usability executor with fresh contexts, screenshot evidence, Structured Outputs, explicit `SIMULATED` labels, idempotent recovery, and aggregate/sub-budget guards.
 - Full Docker runtime smoke, configurable compatible image sources, richer persisted Skill Lab artifacts, bilingual demo instructions, verified screenshots, and an H.264 preview video.
+- Live synthetic calibration using the pinned Responses API configuration and budget ledger.
+- Completed primary V1.4 and once-only company-disjoint V1.5 contingency experiments, both ending at `NO_ELIGIBLE_CLUSTER`; immutable negative results and the two-experiment stopping rule are preserved.
+- Zero-provider-token technical retry audit with failed attempts excluded from the formal denominator under the frozen one-retry policy.
+- Materialized Claim-to-Evidence Chunk citations, evidence excerpts/hashes, deterministic Calculation Record endpoints, and actionable monitoring items with explicit triggers and review timing.
+- Two model-backed three-session usability batches: the initial `SIMULATED` failure drove the evidence/monitoring correction and the isolated repeat passed.
+- Final public-safe evidence summaries for the two formal experiments, simulated usability, engineering runtime, and job-interview positioning.
 
 ### Changed
 
@@ -39,6 +45,7 @@
 - Overall completion requires Full Engineering Product Ready plus a `SUPPORTED` sealed result.
 - pgvector adoption now has explicit Recall@5, citation, and latency thresholds.
 - Intermediate independent acceptance is deferred to one final project review; local gate evidence remains provisional and is not recorded as independently passed.
+- The terminal research label is `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS`; engineering completion is separated from research support and no further formal experiment is authorized.
 
 ### Preserved
 

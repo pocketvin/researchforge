@@ -9,7 +9,7 @@ import ImageIO
 let projectRoot = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 let researchURL = projectRoot.appendingPathComponent("docs/assets/research-page.png")
 let skillLabURL = projectRoot.appendingPathComponent("docs/assets/skill-lab-page.png")
-let outputURL = projectRoot.appendingPathComponent("docs/assets/researchforge-v1.4-demo.mp4")
+let outputURL = projectRoot.appendingPathComponent("docs/assets/researchforge-v1.4-final-demo.mp4")
 
 guard !FileManager.default.fileExists(atPath: outputURL.path) else {
     fatalError("Refusing to overwrite existing demo video: \(outputURL.path)")

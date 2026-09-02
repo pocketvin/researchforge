@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from researchforge.persistence.models import (
     Base,
     EvaluationRecord,
+    EvidenceChunkRecord,
     RunArtifactRecord,
     RunRecord,
     SkillVersionRecord,
@@ -59,6 +60,19 @@ class DatabaseIndex:
                         source_uri=str(source["source_uri"]),
                         published_at=self._time(source["published_at"]),
                         payload=source,
+                    )
+                )
+
+    def mirror_evidence(self, evidence_chunks: tuple[dict[str, Any], ...]) -> None:
+        with self.sessions.begin() as session:
+            for chunk in evidence_chunks:
+                session.merge(
+                    EvidenceChunkRecord(
+                        evidence_id=str(chunk["chunk_id"]),
+                        document_id=str(chunk["document_id"]),
+                        content_hash=str(chunk["text_hash"]),
+                        section=chunk.get("section"),
+                        payload=chunk,
                     )
                 )
 

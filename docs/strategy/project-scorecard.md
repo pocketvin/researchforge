@@ -1,17 +1,17 @@
 # Project Scorecard
 
-Snapshot date: 2026-09-01
+Snapshot date: 2026-09-02
 
 This scorecard is evidence-based. Green means the stated evidence exists; it is not a confidence or enthusiasm score.
 
 | Dimension | Status | Evidence today | Condition for Green |
 |---|---|---|---|
-| Feasibility | Green | Official-filing primary and contingency packages, deterministic finance, full local runtime, and zero-network provider gates pass | Preserve hashes, cutoffs, and budget controls during live execution |
-| Career usefulness | Amber | Five-mode runtime, 150 backend tests, LangGraph trace, Docker, UI, screenshots, and demo video are public-safe | Publish the repository and retain an honest formal result |
+| Feasibility | Green | Both bounded formal experiments completed under budget; deterministic finance, evidence, full local runtime, and stop rules passed | Preserve terminal hashes and do not authorize another experiment |
+| Career usefulness | Green | Public repository, five-mode runtime, 160-test suite, bounded LangGraph trace, Verifier, Docker, UI, evidence screenshots, demo video, and an honest negative research result | Keep CI green and retain the negative-result boundary |
 | Personal success probability | Green | Work is staged into independently valuable L0–L4 outcomes with kill rules | Keep one active milestone and enforce time boxes |
 | Complexity versus value | Green | One bounded graph, plain-Python domain services, hybrid storage, and two pages passed runtime smoke without multi-agent/vector infrastructure | Do not add excluded product surfaces |
-| Engineering usefulness | Amber | Research and Skill Lab render persisted evidence; Docker/browser/demo evidence passes | Three model-backed `SIMULATED` records pass; human value remains explicitly unvalidated |
-| Completeness | Amber | All offline engineering, packaging, fallback data, and demo work is present | Formal result, three simulations, publication, and final review pass |
+| Engineering usefulness | Green | Research and Skill Lab render persisted evidence, calculations, monitoring actions, and experiment audit; three isolated `SIMULATED` sessions pass | Human value remains explicitly unvalidated until a later real pilot |
+| Completeness | Amber | Engineering release candidate, two formal outcomes, simulations, packaging, and public repository exist | Refreshed CI and final independent reviewer PASS |
 | Resumability | Green | Human and machine status, decisions, review files, and a resume playbook exist | Resume drill stays within 15 minutes at each milestone |
 
 ## Highest-Leverage Sequence

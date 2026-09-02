@@ -22,8 +22,10 @@ If Docker Hub is unreachable, the Compose build accepts `PYTHON_IMAGE`, `NODE_IM
 
 - `docs/assets/research-page.png`
 - `docs/assets/skill-lab-page.png`
-- `docs/assets/researchforge-v1.4-demo.mp4`
+- `docs/assets/researchforge-v1.4-final-demo.mp4`
 - `docs/evidence/g4-engineering-progress.md`
+
+The Research screenshot shows persisted evidence provenance, monitoring triggers, and formula records. The Skill Lab screenshot shows the terminal unsupported research hypothesis without presenting it as an engineering failure.
 
 All screenshots use only public frozen fixtures. They do not contain an API key, hidden ground truth, or a real-user validation claim.
 

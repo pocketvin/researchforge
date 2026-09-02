@@ -36,6 +36,12 @@ class FakeResponses:
         )
 
 
+class FailingResponses:
+    def create(self, **kwargs: Any) -> Any:
+        del kwargs
+        raise ConnectionError("indeterminate transport failure")
+
+
 def test_openai_adapter_forces_store_false_schema_and_no_tools() -> None:
     responses = FakeResponses()
     ledger = BudgetLedger()
@@ -65,3 +71,15 @@ def test_budget_guard_stops_before_provider_contact() -> None:
         adapter.generate({"cash_conversion": "1.2"})
 
     assert responses.calls == []
+
+
+def test_indeterminate_provider_failure_consumes_full_reservation() -> None:
+    ledger = BudgetLedger()
+    adapter = OpenAIResponsesConclusionGenerator(FailingResponses(), ledger)
+
+    with pytest.raises(ConnectionError, match="indeterminate transport"):
+        adapter.generate({"cash_conversion": "1.2"})
+
+    snapshot = ledger.snapshot()
+    assert snapshot.reserved == Decimal(0)
+    assert snapshot.spent == adapter.worst_case_cost

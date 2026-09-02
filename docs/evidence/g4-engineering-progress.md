@@ -1,49 +1,63 @@
-# G4 Engineering Progress Evidence
+# G4 Engineering Release Evidence
 
-Evidence date: `2026-09-01`
+Evidence date: `2026-09-02`
 
-Status: `ENGINEERING_RUNTIME_PASS_SIMULATIONS_PENDING`
+Status: `FULL_ENGINEERING_PRODUCT_READY_RELEASE_CANDIDATE`
 
-## Passing Local Evidence
+Final independent acceptance and refreshed GitHub CI are still required before the release is
+declared complete.
 
-- React/TypeScript/Vite/Tailwind Research and Skill Lab pages.
-- Research page renders API-derived facts, claims, evidence, counter-evidence, checks, sources, limitations, progress, cancellation and terminal failures.
-- Skill Lab is read-only and renders persisted experiment status, split counts, budget, failure cluster, Experience, Candidate Skill Diff, paired Validation scores, sealed/consumed Final Test state, and raw immutable details.
-- Frontend typecheck, ESLint, three unit tests, production build, Playwright navigation, and critical-impact axe checks pass.
-- Eight SQLAlchemy logical records and Alembic initial migration exist; migration `up/down/up` and hybrid file/database mirroring pass in tests.
-- Docker Compose builds and starts PostgreSQL, API, and frontend with health checks and persistent volumes. The runtime smoke created one real product run through the Nginx proxy, persisted it in PostgreSQL/content-addressed storage, and resolved six facts plus a ten-stage Trace.
-- Alembic `up/down/up` passed inside the packaged API container.
-- CI runs backend format/lint/type/tests/contracts, frontend type/lint/unit/build/E2E, then container build/start/runtime smoke and cleanup.
-- Browser interaction verified both pages at a desktop viewport with no console warnings or errors. Public-fixture screenshots and a 12-second H.264 preview are stored in `docs/assets/`.
-- The three-session simulation executor enforces fresh independent requests, Structured Outputs, `store: false`, no tools, exact `SIMULATED` labels, idempotent recovery, a USD 2 sub-cap, and the aggregate USD 20 cap. Offline preflight blocks before provider contact when the rotated key is absent.
+## Product Evidence
 
-## Unverified or Missing
-
-- Three real model-backed isolated `SIMULATED` usability evaluations have not run; the executor and screenshots are ready.
-- The public GitHub package has not been published.
-- Formal G3 artifacts are absent; Skill Lab therefore correctly shows preregistered/PENDING or empty states, never an invented success story.
-- Human usefulness remains explicitly unvalidated.
+- Five research modes share one bounded ten-stage LangGraph.
+- Research renders only API-derived facts, persisted Evidence Chunks, Claim—Fact—Evidence
+  linkage, deterministic formulas, counter-evidence boundaries, limitations, monitoring triggers,
+  sources, progress, cancellation, and terminal failures.
+- Skill Lab renders the persisted Base/Seed metrics, failure events, activation audit, zero-token
+  technical retries, and the terminal unsupported research outcome without inventing Candidate,
+  Validation, or Final Test evidence.
+- Content-addressed JSON remains the immutable artifact source of truth; PostgreSQL mirrors eight
+  queryable logical record types.
+- The frontend passes typecheck, lint, four unit tests, production build, Playwright navigation,
+  and critical-impact accessibility checks.
 
 ## Docker Runtime Evidence
 
 ```text
-PASS: API, frontend, and PostgreSQL containers healthy
-PASS: frontend proxy served the application and all five catalog modes
-PASS: one filing-analysis run reached succeeded
-PASS: 10 workflow stages, 6 persisted facts, result and source links resolved
-PASS: migration up/down/up
+PASS: PostgreSQL, FastAPI, and Nginx/React healthy
+PASS: five catalog modes
+PASS: one frontend-proxied research run reached succeeded
+PASS: 10 workflow stages
+PASS: 6 financial facts
+PASS: 1 bounded Evidence Chunk
+PASS: 4 deterministic Calculation Records
+PASS: 1 actionable monitoring item
+PASS: migration up/down/up followed by a second successful smoke run
 ```
 
-Docker Hub token requests timed out in this environment. The verified local build used compatible official-library images from Amazon Public ECR through optional Compose build arguments; the committed defaults remain Docker Hub names.
+Docker Hub metadata requests timed out in the local network. The passing build used compatible
+official-library images from Amazon Public ECR through the documented optional image variables;
+committed defaults remain standard Docker Hub names.
 
-## Simulation Preflight Evidence
+## Model-Backed Evidence
 
-```text
-status: BLOCKED
-provider_contacted: false
-only blocker: rotated local OpenAI key is not confirmed ready
-batch worst case: USD 0.6072
-aggregate spend: USD 0.00
-```
+- Synthetic provider calibration: `PASS`; spend USD `0.0008012`.
+- Primary formal experiment: completed `NO_ELIGIBLE_CLUSTER`; spend USD `0.0680124`.
+- Once-only contingency experiment: completed `NO_ELIGIBLE_CLUSTER`; spend USD `0.0646992`.
+- Final simulated-usability batch: `PASS`; three fresh isolated sessions, all four locateability
+  checks passed in 3/3 sessions, two high-score sessions.
+- Aggregate OpenAI spend: USD `0.1523062` of USD `20.00`.
 
-No simulated result is claimed yet. The screenshots prove presentation state only, not real-user value.
+## Honest Boundary
+
+- Engineering readiness does not turn the research outcome into success.
+- `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS` is final under the frozen stop rule.
+- No Candidate, Validation, or Final Test artifact exists.
+- Simulated usability is `SIMULATED`; human usefulness and market demand remain unvalidated.
+- The product is research assistance and not investment advice.
+
+Detailed evidence:
+
+- [`g3-primary-formal-result.md`](g3-primary-formal-result.md)
+- [`g3-contingency-formal-result.md`](g3-contingency-formal-result.md)
+- [`g4-simulated-usability.md`](g4-simulated-usability.md)

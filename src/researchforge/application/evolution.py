@@ -76,6 +76,8 @@ def preregister_experiment(
     split_cases: dict[str, list[dict[str, str]]],
     seed_skill_version_id: str,
     timestamp: datetime,
+    scope_version: str = "1.4",
+    budget_cap: float = 9.0,
 ) -> dict[str, Any]:
     """Freeze a split manifest only when both case IDs and group keys are isolated."""
     required = {"evolution", "validation", "final_test"}
@@ -102,7 +104,7 @@ def preregister_experiment(
     return {
         "schema_version": "1.4.0",
         "experiment_id": experiment_id,
-        "scope_version": "1.4",
+        "scope_version": scope_version,
         "suite_id": suite_id,
         "suite_hash": _canonical_hash(frozen_suite),
         "status": "preregistered",
@@ -118,7 +120,7 @@ def preregister_experiment(
         "thresholds": THRESHOLDS,
         "run_ids": [],
         "evaluation_ids": [],
-        "budget": {"currency": "USD", "cap": 9.0, "spent": 0.0},
+        "budget": {"currency": "USD", "cap": budget_cap, "spent": 0.0},
         "final_test_consumed": False,
         "preregistered_at": timestamp.isoformat(),
         "finished_at": None,

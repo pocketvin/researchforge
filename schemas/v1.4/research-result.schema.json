@@ -22,6 +22,7 @@
     "mandatory_checks",
     "claims",
     "risk_claim_ids",
+    "monitoring_items",
     "source_document_ids",
     "limitations",
     "skill_version",
@@ -208,6 +209,65 @@
         "$ref": "common.schema.json#/$defs/identifier"
       },
       "uniqueItems": true
+    },
+    "monitoring_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "monitor_code",
+          "title",
+          "rationale",
+          "trigger",
+          "next_review",
+          "fact_ids",
+          "evidence_ids"
+        ],
+        "properties": {
+          "monitor_code": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "trigger": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "next_review": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 2
     },
     "source_document_ids": {
       "type": "array",

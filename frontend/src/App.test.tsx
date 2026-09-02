@@ -106,19 +106,80 @@ describe('ResearchForge UI', () => {
             candidate_evaluation_ids: ['eval_candidate'],
           }))
         }
+        if (path.endsWith('/artifacts/base-evolution-evaluations')) {
+          return Promise.resolve(json({
+            condition: 'base',
+            split: 'evolution',
+            repeat_count: 3,
+            evaluations: [
+              { evaluation_id: 'eval_base_1', case_id: 'case_a', metrics: { task_score: 0.8 }, failure_events: [{ failure_label: 'CRITICAL_OMISSION', signature: 'coverage_a' }] },
+              { evaluation_id: 'eval_base_2', case_id: 'case_b', metrics: { task_score: 1 }, failure_events: [] },
+            ],
+          }))
+        }
+        if (path.endsWith('/artifacts/seed-evolution-evaluations')) {
+          return Promise.resolve(json({
+            condition: 'seed',
+            split: 'evolution',
+            repeat_count: 3,
+            evaluations: [
+              { evaluation_id: 'eval_seed_1', case_id: 'case_a', metrics: { task_score: 1 }, failure_events: [] },
+              { evaluation_id: 'eval_seed_2', case_id: 'case_b', metrics: { task_score: 1 }, failure_events: [] },
+            ],
+          }))
+        }
+        if (path.includes('experiment_negative') && path.endsWith('/artifacts/activation')) {
+          return Promise.resolve(json({
+            status: 'ACTIVATED_ONCE',
+            authorization_basis: 'V1.4_SCOPE_ANY_UNSUPPORTED_PRIMARY',
+            primary_outcome: 'NO_ELIGIBLE_CLUSTER',
+            activation_count: 1,
+            protocol_deviation: {
+              code: 'FROZEN_ACTIVATION_PREDICATE_TOO_NARROW',
+              data_or_threshold_changed: false,
+              explanation: '冻结输入未改变。',
+            },
+          }))
+        }
+        if (path.includes('experiment_negative') && path.endsWith('/artifacts/technical-retries')) {
+          return Promise.resolve(json({
+            policy: 'one_retry_only_for_zero_provider_token_technical_failure',
+            records: [{
+              retry_key: 'evolution:base:case_a:repeat-1',
+              failed_run_id: 'run_failed',
+              retry_run_id: 'run_retry',
+              retry_state: 'succeeded',
+              provider_tokens_before_failure: 0,
+              excluded_failed_run_from_formal_denominator: true,
+            }],
+          }))
+        }
+        if (path.includes('experiment_negative') && path.endsWith('/artifacts/project-research-outcome')) {
+          return Promise.resolve(json({
+            status: 'RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS',
+            formal_experiment_count: 2,
+            research_hypothesis_supported: false,
+            primary: { experiment_id: 'primary', outcome: 'NO_ELIGIBLE_CLUSTER', result_hash: '1'.repeat(64) },
+            contingency: { experiment_id: 'experiment_negative', outcome: 'NO_ELIGIBLE_CLUSTER', result_hash: '2'.repeat(64) },
+            final_test_consumed: false,
+            stopping_rule_applied: true,
+            claim_boundary: '工程交付可以完成，但两轮正式实验均未支持研究假设。',
+          }))
+        }
         if (path.includes('/artifacts/')) {
           return Promise.resolve(new Response('{}', { status: 404 }))
         }
         if (path.includes('/v1/evolution-experiments/')) {
+          const negative = path.includes('experiment_negative')
           return Promise.resolve(
             json({
               schema_version: '1.4.0',
-              experiment_id: 'experiment_frontend_test',
-              scope_version: '1.4',
+              experiment_id: negative ? 'experiment_negative' : 'experiment_frontend_test',
+              scope_version: negative ? '1.5' : '1.4',
               suite_id: 'suite_frontend_test',
               suite_hash: '7'.repeat(64),
-              status: 'preregistered',
-              outcome: 'PENDING',
+              status: negative ? 'completed' : 'preregistered',
+              outcome: negative ? 'NO_ELIGIBLE_CLUSTER' : 'PENDING',
               seed_skill_version_id: 'skill_fundamental_1_0_0',
               candidate_skill_version_id: null,
               split_case_ids: {
@@ -126,7 +187,7 @@ describe('ResearchForge UI', () => {
                 validation: ['case_val'],
                 final_test: ['case_final'],
               },
-              budget: { currency: 'USD', cap: 20, spent: 0 },
+              budget: { currency: 'USD', cap: negative ? 6 : 20, spent: negative ? 0.06 : 0 },
               final_test_consumed: false,
               preregistered_at: '2026-09-01T00:00:00+08:00',
               finished_at: null,
@@ -149,6 +210,7 @@ describe('ResearchForge UI', () => {
                   direction: 'positive',
                   text: '现金转化比为1.95倍。',
                   fact_ids: ['fact_ocf', 'fact_profit'],
+                  support_evidence_ids: ['chunk_catl'],
                   counter_evidence_search: {
                     performed: true,
                     result: 'not_found',
@@ -164,6 +226,18 @@ describe('ResearchForge UI', () => {
                   status: 'performed',
                   finding: '已核对经营现金流。',
                   fact_ids: ['fact_ocf'],
+                  evidence_ids: ['chunk_catl'],
+                },
+              ],
+              monitoring_items: [
+                {
+                  monitor_code: 'working_capital_cash_conversion_cn_300750',
+                  title: '下一同口径报告期复核现金转化与营运资本',
+                  rationale: '持续跟踪经营现金流、应收账款和存货。',
+                  trigger: '现金转化比低于1.00倍。',
+                  next_review: '下一同口径财务报告发布后',
+                  fact_ids: ['fact_ocf', 'fact_profit'],
+                  evidence_ids: ['chunk_catl'],
                 },
               ],
               limitations: ['真实用户价值尚未验证。'],
@@ -222,6 +296,37 @@ describe('ResearchForge UI', () => {
             ]),
           )
         }
+        if (path.endsWith('/evidence')) {
+          return Promise.resolve(
+            json([
+              {
+                chunk_id: 'chunk_catl',
+                document_id: 'doc_catl',
+                section: 'Synthetic normalized financial summary',
+                text: 'SYNTHETIC PUBLIC EVIDENCE — operating_cash_flow and net_income.',
+                text_hash: 'a'.repeat(64),
+                source_uri: 'https://example.test/filing.pdf',
+                locator: { page_start: 69, page_end: 71 },
+              },
+            ]),
+          )
+        }
+        if (path.endsWith('/calculations')) {
+          return Promise.resolve(
+            json([
+              {
+                calculation_id: 'calc_cash_conversion',
+                formula_code: 'cash_conversion',
+                formula_version: '1.0.0',
+                input_fact_ids: ['fact_ocf', 'fact_profit'],
+                status: 'calculated',
+                value: '1.95',
+                measurement_unit: 'RATIO',
+                explanation: '经营现金流除以净利润。',
+              },
+            ]),
+          )
+        }
         if (path.includes('/v1/research-runs/')) return Promise.resolve(json(manifest))
         return Promise.resolve(new Response('{}', { status: 404 }))
       }),
@@ -248,6 +353,9 @@ describe('ResearchForge UI', () => {
     expect(await screen.findByText('经营现金流覆盖净利润，结论来自冻结事实。')).toBeInTheDocument()
     expect(screen.getByText('447.09 亿元')).toBeInTheDocument()
     expect(screen.getByText(/现金转化比为1.95倍/)).toBeInTheDocument()
+    expect(screen.getByText(/SYNTHETIC PUBLIC EVIDENCE/)).toBeInTheDocument()
+    expect(screen.getByText('下一同口径报告期复核现金转化与营运资本')).toBeInTheDocument()
+    expect(screen.getByText(/经营现金流除以净利润/)).toBeInTheDocument()
     expect(screen.getAllByText(/真实用户价值尚未验证/)).toHaveLength(2)
   })
 
@@ -266,5 +374,23 @@ describe('ResearchForge UI', () => {
     expect(screen.getAllByText('形成重大结论前记录确定性的现金转化结果。')).toHaveLength(2)
     expect(screen.getByText(/repair_rate=1.000/)).toBeInTheDocument()
     expect(screen.queryByText(/SUPPORTED/)).not.toBeInTheDocument()
+  })
+
+  it('renders the honest two-experiment negative outcome and audit trail', async () => {
+    render(<App />)
+    await screen.findByText('建立研究任务')
+    fireEvent.click(screen.getByRole('button', { name: /Skill Lab/ }))
+    fireEvent.change(screen.getByLabelText('实验 ID'), {
+      target: { value: 'experiment_negative' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: '读取实验' }))
+
+    expect(await screen.findByText('completed · NO_ELIGIBLE_CLUSTER')).toBeInTheDocument()
+    expect(screen.getByText('研究假设未获支持')).toBeInTheDocument()
+    expect(screen.getByText(/两轮正式实验均未支持研究假设/)).toBeInTheDocument()
+    expect(screen.getByText(/零-token 技术重试 1 次/)).toBeInTheDocument()
+    expect(screen.getByText(/1 个失败评估 · 1 个失败事件/)).toBeInTheDocument()
+    expect(screen.getByText(/0 个失败评估 · 0 个失败事件/)).toBeInTheDocument()
+    expect(screen.queryByText(/研究假设获得支持/)).not.toBeInTheDocument()
   })
 })
