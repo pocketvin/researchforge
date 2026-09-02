@@ -13,8 +13,14 @@ from typing import Any
 from researchforge.adapters.checkpoints import DurableJsonCheckpointSaver
 from researchforge.adapters.fixtures import G0FixtureCatalog
 from researchforge.adapters.storage import FileRunRepository
-from researchforge.application.contracts import ResearchRunRequest, RunLinks, RunSubmission
+from researchforge.application.contracts import (
+    DataNamespace,
+    ResearchRunRequest,
+    RunLinks,
+    RunSubmission,
+)
 from researchforge.application.research import (
+    ConclusionGenerator,
     DeterministicConclusionGenerator,
     EarningsQualityAnalyzer,
 )
@@ -86,18 +92,24 @@ class ResearchRunService:
         fixture_root: Path,
         skill_manifest_path: Path,
         database_url: str | None = None,
+        *,
+        data_namespace: DataNamespace | None = None,
+        conclusion_generator: ConclusionGenerator | None = None,
+        model_config: dict[str, Any] | None = None,
+        prompt_hashes: dict[str, str] | None = None,
     ) -> ResearchRunService:
         skill_manifest = json.loads(skill_manifest_path.read_text(encoding="utf-8"))
         skill_version = str(skill_manifest["version"])
         skill_hash = str(skill_manifest["content_hash"])
-        catalog = G0FixtureCatalog(fixture_root)
+        catalog = G0FixtureCatalog(fixture_root, expected_namespace=data_namespace)
         checkpointer = DurableJsonCheckpointSaver(
             artifact_root / "checkpoints" / "langgraph-checkpoints.json"
         )
+        generator = conclusion_generator or DeterministicConclusionGenerator()
         workflow = ResearchWorkflow(
             catalog.load,
             EarningsQualityAnalyzer(),
-            DeterministicConclusionGenerator(),
+            generator,
             skill_version=skill_version,
             skill_hash=skill_hash,
             checkpointer=checkpointer,
@@ -118,6 +130,24 @@ class ResearchRunService:
             skill_version=skill_version,
             skill_hash=skill_hash,
             database_index=database_index,
+            model_config=model_config
+            or (
+                {
+                    "provider": "local",
+                    "model_id": "deterministic-conclusion-v1",
+                    "model_snapshot": "1.0.0",
+                    "temperature": None,
+                    "seed": None,
+                    "reasoning_effort": "none",
+                    "max_output_tokens": 1000,
+                    "tool_choice_policy": "controlled",
+                    "store": False,
+                    "built_in_tools": [],
+                }
+                if conclusion_generator is None
+                else None
+            ),
+            prompt_hashes=prompt_hashes,
         )
 
     def _mirror(self, manifest: dict[str, Any]) -> None:

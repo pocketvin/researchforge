@@ -480,3 +480,77 @@ The additive API resources are `/facts`, `/evidence`, and `/calculations`; the V
 contract requires `monitoring_items`. The correction changes no Benchmark package, model setting,
 skill, threshold, evaluation denominator, or frozen experimental outcome. A second fresh three-
 persona simulation passed with the original negative research result intact.
+
+## RF-023 — Make Real, Auditable Company Research the V1.5 Product Thesis
+
+Status: **ACCEPTED**
+
+Decision:
+
+ResearchForge V1.5 is an evidence-grounded AI fundamental-research workspace for A-share
+companies. The normal product journey is Company + Period + Research Question → official
+disclosure → evidence → facts → deterministic calculations → reasoning → counter evidence →
+verification → result → monitoring. Controlled Evolution is frozen as a secondary, read-only
+Quality / Research Lab.
+
+Reason:
+
+The V1.4 engineering assets are useful independently of whether a bounded Skill patch emerged.
+Two formal experiments produced no eligible cluster, and changing thresholds or adding
+experiments would weaken research integrity. The larger user and portfolio value is an auditable
+real-disclosure research result, while the current default runtime still depends on fixtures and
+synthetic public evidence.
+
+Consequence:
+
+`docs/product/researchforge-v1.5-product-thesis.md` becomes the highest product-direction
+authority. V1.4 schemas and frozen research evidence remain unchanged. New ingestion/data-
+namespace semantics require V1.5 contracts and strict `product` / `fixture` / `benchmark`
+isolation. Research UX, real-data ingestion, pilot readiness and the real-data demo take priority;
+no new formal Evolution experiment is authorized.
+
+## RF-024 — Isolate a Reviewed Real-Disclosure Product Namespace
+
+Status: **ACCEPTED**
+
+Decision:
+
+Make `data/product/packages/catl-2024h1` the first and default product data root. Acquire only the
+allowlisted official SZSE PDF, verify document magic, byte count and SHA-256 before parsing, retain
+page boundaries and provenance, and materialize only reviewed row/column mappings. Keep fixture
+and Benchmark roots explicit and reject namespace mismatch.
+
+Reason:
+
+Fixture reliability cannot establish a real user workflow, but broad-market discovery would add
+large operational and data-quality risk before one vertical slice is useful. One reviewed filing
+is enough to demonstrate the product contract and abstention behavior.
+
+Consequence:
+
+The initial product catalog exposes only CATL `2024H1` and `filing_analysis`. The raw PDF remains
+ignored. Hash, mapping or source mismatch produces an abstained ingestion manifest instead of a
+fact. V1.4 packages and hashes remain untouched.
+
+## RF-025 — Use the Model Only for Bounded Research Language
+
+Status: **ACCEPTED**
+
+Decision:
+
+In V1.5 product mode, OpenAI Responses Structured Outputs may turn supplied verified facts,
+precomputed calculations and explicit counter evidence into bounded research language. The
+request uses `store: false`, no built-in tools, no web search, a fixed model/configuration and the
+existing aggregate budget ledger. Deterministic mode remains the zero-cost fallback.
+
+Reason:
+
+The product benefits from question-aware explanation, but arithmetic, period policy, provenance
+and verification must remain deterministic and independently testable. Giving the model only the
+bounded context preserves that ownership line.
+
+Consequence:
+
+The model may not invent missing facts, recalculate ratios or retrieve disclosures. Provider
+unavailability degrades to the configured deterministic path only when that mode is explicitly
+selected; a forced OpenAI mode without a confirmed rotated key fails before dispatch.

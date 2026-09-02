@@ -25,7 +25,7 @@ def test_contract_validator_passes() -> None:
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert "PASS: 19 current V1.4" in completed.stdout
+    assert "PASS: 5 active V1.5 productization" in completed.stdout
     assert "12 V1.4" in completed.stdout
 
 
@@ -54,10 +54,13 @@ def test_historical_scope_hashes_are_immutable() -> None:
         assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_digest
 
 
-def test_cli_reports_runtime_gate(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+def test_cli_reports_the_bounded_product_runtime(
+    capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
     main(["--artifact-root", str(tmp_path), "catalog"])
     output = capsys.readouterr().out
 
-    assert '"implementation_level": "G1_BREADTH"' in output
+    assert '"implementation_level": "V1_5_REAL_DATA"' in output
+    assert '"data_namespace": "product"' in output
     assert '"filing_analysis"' in output
-    assert '"peer_comparison"' in output
+    assert '"peer_comparison"' not in output

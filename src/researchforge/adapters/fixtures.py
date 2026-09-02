@@ -1,4 +1,4 @@
-"""Deterministic access to the owner-signed G0 fixture package."""
+"""Deterministic access to an explicit product, fixture, or benchmark package."""
 
 from __future__ import annotations
 
@@ -7,14 +7,24 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
 
-from researchforge.application.contracts import CatalogCompany, CatalogResponse
+from researchforge.application.contracts import CatalogCompany, CatalogResponse, DataNamespace
 from researchforge.application.research import InsufficientDataError, LoadedResearchData
 
 
 class G0FixtureCatalog:
-    """Load only facts published by the requested point-in-time cutoff."""
+    """Load only facts from one explicit namespace and point-in-time cutoff.
 
-    def __init__(self, fixture_root: Path) -> None:
+    The historical class name is retained for compatibility with frozen experiment code.
+    Product construction passes ``expected_namespace='product'`` and cannot fall back to a
+    fixture or benchmark root.
+    """
+
+    def __init__(
+        self,
+        fixture_root: Path,
+        *,
+        expected_namespace: DataNamespace | None = None,
+    ) -> None:
         self.root = fixture_root.resolve()
         self.fact_dir = self.root / "financial-facts"
         self.source_dir = self.root / "source-documents"
@@ -22,6 +32,18 @@ class G0FixtureCatalog:
         if not self.evidence_dir.is_dir() and self.root.name == "g0":
             self.evidence_dir = self.root.parent / "v1.4-primary" / "evidence-chunks"
         self.manifest = self._load(self.root / "manifest.json")
+        declared_namespace = self.manifest.get("data_namespace")
+        if declared_namespace is None:
+            declared_namespace = "benchmark" if self.root.name != "g0" else "fixture"
+        if declared_namespace not in {"product", "fixture", "benchmark"}:
+            raise ValueError("data package has an invalid namespace")
+        self.data_namespace = cast(DataNamespace, declared_namespace)
+        if expected_namespace is not None and self.data_namespace != expected_namespace:
+            raise ValueError(
+                f"expected {expected_namespace} data, got {self.data_namespace}; fallback refused"
+            )
+        if self.data_namespace == "product" and self.manifest.get("status") != "ready":
+            raise ValueError("product data package must have ready status")
         self._facts = tuple(self._load(path) for path in sorted(self.fact_dir.glob("*.json")))
         self._sources = tuple(self._load(path) for path in sorted(self.source_dir.glob("*.json")))
         evidence = tuple(self._load(path) for path in sorted(self.evidence_dir.glob("*.json")))
@@ -50,19 +72,35 @@ class G0FixtureCatalog:
                 **company,
                 period_labels=sorted(period_labels),
             )
+        is_product = self.data_namespace == "product"
         return CatalogResponse(
+            schema_version="1.5.0" if is_product else "1.4.0",
+            data_namespace=self.data_namespace,
             companies=sorted(companies.values(), key=lambda item: item.company_id),
-            supported_task_types=[
-                "company_research",
-                "filing_analysis",
-                "peer_comparison",
-                "thesis_investigation",
-                "risk_detection",
-            ],
-            limitations=[
-                "All modes use frozen facts and official source locators, not filing full text.",
-                "The catalog is limited to the owner-signed CATL/EVE G0 fixture package.",
-            ],
+            supported_task_types=(
+                ["filing_analysis"]
+                if is_product
+                else [
+                    "company_research",
+                    "filing_analysis",
+                    "peer_comparison",
+                    "thesis_investigation",
+                    "risk_detection",
+                ]
+            ),
+            implementation_level="V1_5_REAL_DATA" if is_product else "G1_BREADTH",
+            limitations=(
+                [
+                    "Initial real-data coverage is limited to one reviewed CATL 2024H1 filing.",
+                    "Research results are auditable analysis, not investment advice.",
+                    "Human usefulness remains unvalidated until real pilot sessions are completed.",
+                ]
+                if is_product
+                else [
+                    "Explicit fixture/benchmark runtime; this is not real-product evidence.",
+                    "The frozen catalog exists for reproducible tests and Quality Lab review.",
+                ]
+            ),
         )
 
     @property

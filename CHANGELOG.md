@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.5.0] — Productization In Progress
+
+### Direction
+
+- Repositioned ResearchForge as an evidence-grounded AI fundamental-research workspace for
+  A-share company research.
+- Made real-public-disclosure research, auditability and human usability the product success
+  criteria; Evolution hypothesis support is no longer a product completion condition.
+- Added the V1.5 Product Thesis and V1.4→V1.5 productization change note.
+
+### Product surface
+
+- Reframed README, project status, portfolio and demo around Company + Period + Research
+  Question and the seven auditable user answers.
+- Rebuilt the primary Research surface around Company, Period, Question and Start Research, with
+  conclusion-first output and progressive disclosure for facts, calculations, evidence and trace.
+- Renamed Skill Lab to a secondary, experimental, read-only Quality Lab.
+
+### Real-data product slice
+
+- Added an allowlisted SZSE filing registry and an abstention-first acquisition/parser pipeline
+  with HTTPS-host, redirect, byte-count, PDF-magic and SHA-256 checks.
+- Added a real CATL 2024H1 product package containing one source identity, six reviewed facts and
+  eight page-located evidence chunks, separate from fixture and Benchmark namespaces.
+- Made the default API/CLI product runtime reject fixture or Benchmark fallback and expose only
+  the currently verified `filing_analysis` capability.
+- Added bounded OpenAI Responses Structured Outputs with `store: false`, no built-in web search,
+  fixed reasoning settings and a pre-dispatch USD 20 aggregate budget guard; deterministic mode
+  remains available for zero-cost reproduction.
+- Materialized claim-specific support citations and filing-based counter evidence for
+  non-recurring-profit context and the unaudited interim-report boundary.
+
+### Pilot and demo
+
+- Added a privacy-minimized real-human pilot kit with consent notice, participant task sheet,
+  neutral facilitator guide, observation rubric, stable threshold and schema-valid template.
+- Added a real-data demo evidence record and a three-to-five-minute product-first walkthrough.
+
+### Preserved
+
+- V1.2/V1.3/V1.4 historical contracts, schemas and evidence.
+- Both formal experiment results, thresholds, hashes, negative terminal outcome and stopping rule.
+- The single-agent LangGraph, deterministic-finance, evidence, Verifier and non-goal boundaries.
+
+### Still honest
+
+- The real-data coverage is one company/period, not broad A-share support.
+- The pilot kit is ready, but zero real-human sessions have occurred and usefulness remains
+  unvalidated.
+
 ## [1.4.0] — Release Candidate
 
 ### Added

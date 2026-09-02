@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.5/ingestion-manifest.schema.json",
+  "title": "ResearchForge V1.5 Real Disclosure Ingestion Manifest",
+  "description": "A provenance-complete manifest for one allowlisted official disclosure and its derived product artifacts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ingestion_id", "package_id", "data_namespace", "status", "company", "reporting_period", "discovery", "acquisition", "parser", "outputs", "abstentions", "created_at", "package_hash"],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schemaVersion"},
+    "ingestion_id": {"$ref": "common.schema.json#/$defs/identifier"},
+    "package_id": {"$ref": "common.schema.json#/$defs/identifier"},
+    "data_namespace": {"type": "string", "const": "product"},
+    "status": {"type": "string", "enum": ["discovered", "acquired", "parsed", "ready", "abstained", "failed"]},
+    "company": {"$ref": "common.schema.json#/$defs/company"},
+    "reporting_period": {"$ref": "common.schema.json#/$defs/reportingPeriod"},
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry", "announcement_id", "document_title", "source_uri", "publication_time", "discovered_at"],
+      "properties": {
+        "registry": {"type": "string", "enum": ["SZSE", "SSE", "CNINFO"]},
+        "announcement_id": {"$ref": "common.schema.json#/$defs/identifier"},
+        "document_title": {"type": "string", "minLength": 1, "maxLength": 512},
+        "source_uri": {"type": "string", "format": "uri"},
+        "publication_time": {"type": "string", "format": "date-time"},
+        "discovered_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "acquisition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["retrieved_at", "media_type", "byte_count", "content_hash", "raw_payload_committed"],
+          "properties": {
+            "retrieved_at": {"type": "string", "format": "date-time"},
+            "media_type": {"type": "string", "const": "application/pdf"},
+            "byte_count": {"type": "integer", "minimum": 1, "maximum": 100000000},
+            "content_hash": {"$ref": "common.schema.json#/$defs/sha256"},
+            "raw_payload_committed": {"type": "boolean", "const": false}
+          }
+        },
+        {"type": "null"}
+      ]
+    },
+    "parser": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["parser_name", "parser_version", "page_count", "page_boundaries_preserved", "text_hash"],
+          "properties": {
+            "parser_name": {"type": "string", "minLength": 1, "maxLength": 128},
+            "parser_version": {"type": "string", "minLength": 1, "maxLength": 128},
+            "page_count": {"type": "integer", "minimum": 1, "maximum": 5000},
+            "page_boundaries_preserved": {"type": "boolean", "const": true},
+            "text_hash": {"$ref": "common.schema.json#/$defs/sha256"}
+          }
+        },
+        {"type": "null"}
+      ]
+    },
+    "outputs": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/artifactReference"},
+      "uniqueItems": true,
+      "maxItems": 5000
+    },
+    "abstentions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "stage", "reason"],
+        "properties": {
+          "code": {"$ref": "common.schema.json#/$defs/identifier"},
+          "stage": {"type": "string", "enum": ["discovery", "acquisition", "parsing", "normalization", "verification"]},
+          "reason": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+        }
+      },
+      "maxItems": 100
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "package_hash": {"anyOf": [{"$ref": "common.schema.json#/$defs/sha256"}, {"type": "null"}]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "ready"}}},
+      "then": {
+        "properties": {
+          "outputs": {"minItems": 3},
+          "abstentions": {"maxItems": 0},
+          "acquisition": {"type": "object"},
+          "parser": {"type": "object"},
+          "package_hash": {"$ref": "common.schema.json#/$defs/sha256"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "abstained"}}},
+      "then": {"properties": {"abstentions": {"minItems": 1}}}
+    }
+  ]
+}

@@ -17,6 +17,7 @@ def build_service(artifact_root: Path) -> ResearchRunService:
         artifact_root,
         DEFAULT_FIXTURE_ROOT,
         DEFAULT_SKILL_MANIFEST,
+        data_namespace="fixture",
     )
 
 

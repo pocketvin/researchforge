@@ -14,6 +14,7 @@ TaskType = Literal[
     "thesis_investigation",
     "risk_detection",
 ]
+DataNamespace = Literal["product", "fixture", "benchmark"]
 
 
 class ResearchRunRequest(BaseModel):
@@ -84,8 +85,9 @@ class CatalogResponse(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    schema_version: Literal["1.4.0"] = "1.4.0"
+    schema_version: Literal["1.4.0", "1.5.0"] = "1.4.0"
+    data_namespace: DataNamespace = "fixture"
     companies: list[CatalogCompany]
     supported_task_types: list[TaskType]
-    implementation_level: Literal["G1_THIN", "G1_BREADTH"] = "G1_BREADTH"
+    implementation_level: Literal["G1_THIN", "G1_BREADTH", "V1_5_REAL_DATA"] = "G1_BREADTH"
     limitations: list[str]

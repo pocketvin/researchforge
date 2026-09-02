@@ -2,39 +2,125 @@
 
 from __future__ import annotations
 
-import os
+from decimal import Decimal
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, status
 from fastapi import Path as ApiPath
 from fastapi.responses import JSONResponse
 
 from researchforge.adapters.evolution_storage import EvolutionArtifactRepository
+from researchforge.adapters.openai_responses import (
+    OpenAIResponsesConclusionGenerator,
+    ResponsesResource,
+)
 from researchforge.adapters.storage import (
     IdempotencyConflictError,
     RunNotFoundError,
 )
-from researchforge.application.contracts import CatalogResponse, ResearchRunRequest, RunSubmission
+from researchforge.application.budget import BudgetLedger
+from researchforge.application.contracts import (
+    CatalogResponse,
+    ResearchRunRequest,
+    RunSubmission,
+)
 from researchforge.application.service import ResearchRunService, UnsupportedCapabilityError
+from researchforge.config import load_runtime_settings
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_FIXTURE_ROOT = PROJECT_ROOT / "data" / "fixtures" / "g0"
+DEFAULT_PRODUCT_ROOT = PROJECT_ROOT / "data" / "product" / "packages" / "catl-2024h1"
 DEFAULT_SKILL_MANIFEST = (
     PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json"
 )
+PRODUCT_REASONING_INSTRUCTIONS = """
+
+V1.5 product-only response contract:
+- Directly answer research_question in the first sentence with a bounded conclusion.
+- Treat verified_fact_ids, source_document_ids, period_label, currency and counter_evidence as
+  supplied; never claim that these identifiers, the reporting period or the currency are missing.
+- A limitation must follow only from an explicit unavailable field or counter_evidence summary.
+- Do not perform new arithmetic. Use cash_conversion_display, gross_margin and other precomputed
+  values exactly as provided.
+""".strip()
 
 
 def build_default_service(artifact_root: Path | None = None) -> ResearchRunService:
-    """Build the zero-cost deterministic runtime used by L1."""
-    configured_root = artifact_root or Path(
-        os.getenv("RESEARCHFORGE_ARTIFACT_ROOT", str(PROJECT_ROOT / "artifacts"))
+    """Build the product runtime without any implicit fixture fallback."""
+    settings = load_runtime_settings(PROJECT_ROOT)
+    configured_root = (
+        artifact_root or settings.researchforge_artifact_root or (PROJECT_ROOT / "artifacts")
     )
+    data_namespace = settings.researchforge_data_namespace
+    default_data_root = (
+        DEFAULT_PRODUCT_ROOT if data_namespace == "product" else DEFAULT_FIXTURE_ROOT
+    )
+    data_root = settings.researchforge_data_root or default_data_root
+
+    conclusion_generator: OpenAIResponsesConclusionGenerator | None = None
+    model_config: dict[str, Any] | None = None
+    prompt_hashes: dict[str, str] | None = None
+    key = settings.openai_api_key
+    openai_ready = key is not None and settings.researchforge_rotated_key_confirmed
+    if settings.researchforge_reasoning_mode == "openai" and not openai_ready:
+        raise RuntimeError("OpenAI reasoning mode requires a confirmed rotated API key")
+    if settings.researchforge_reasoning_mode == "openai" or (
+        settings.researchforge_reasoning_mode == "auto" and openai_ready
+    ):
+        from openai import OpenAI
+
+        client = OpenAI(
+            api_key=key.get_secret_value() if key is not None else None,
+            timeout=120.0,
+            max_retries=0,
+        )
+        conclusion_generator = OpenAIResponsesConclusionGenerator(
+            cast(ResponsesResource, client.responses),
+            BudgetLedger(
+                cap=Decimal(settings.researchforge_budget_usd),
+                state_path=configured_root / "budget" / "project-openai.json",
+            ),
+            model=settings.researchforge_model,
+            max_input_tokens=4000,
+            max_output_tokens=1200,
+            skill_content=(
+                (
+                    PROJECT_ROOT
+                    / "skills"
+                    / "fundamental-research"
+                    / "versions"
+                    / "1.0.0"
+                    / "SKILL.md"
+                ).read_text(encoding="utf-8")
+                + PRODUCT_REASONING_INSTRUCTIONS
+            ),
+            reasoning_effort=settings.researchforge_reasoning_effort,
+        )
+        model_config = {
+            "provider": "openai",
+            "model_id": settings.researchforge_model,
+            "model_snapshot": None,
+            "temperature": None,
+            "seed": None,
+            "reasoning_effort": settings.researchforge_reasoning_effort,
+            "max_output_tokens": 1200,
+            "tool_choice_policy": "controlled",
+            "store": False,
+            "built_in_tools": [],
+        }
+        prompt_hashes = conclusion_generator.prompt_hashes
     return ResearchRunService.build(
         configured_root,
-        DEFAULT_FIXTURE_ROOT,
+        data_root,
         DEFAULT_SKILL_MANIFEST,
-        database_url=os.getenv("RESEARCHFORGE_DATABASE_URL"),
+        database_url=(
+            settings.researchforge_database_url if settings.researchforge_database_enabled else None
+        ),
+        data_namespace=data_namespace,
+        conclusion_generator=conclusion_generator,
+        model_config=model_config,
+        prompt_hashes=prompt_hashes,
     )
 
 
@@ -49,13 +135,13 @@ def create_app(
     evolution_repository = EvolutionArtifactRepository(runtime.repository.root)
     app = FastAPI(
         title="ResearchForge API",
-        version="1.4.0",
-        description="Evidence-grounded financial research run resources.",
+        version="1.5.0",
+        description="Evidence-grounded A-share fundamental research workspace resources.",
     )
 
     @app.get("/healthz")
     def healthcheck() -> dict[str, str]:
-        return {"status": "ok", "version": "1.4.0"}
+        return {"status": "ok", "version": "1.5.0"}
 
     def not_found(run_id: str) -> HTTPException:
         return HTTPException(status_code=404, detail={"code": "RUN_NOT_FOUND", "run_id": run_id})

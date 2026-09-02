@@ -397,19 +397,38 @@ class ResearchWorkflow:
         }
 
     def _counter_evidence(self, state: ResearchGraphState) -> dict[str, Any]:
-        counter = {
-            "performed": True,
-            "queries": ["利润质量反证: 经营现金流、应收账款、存货及口径限制"],
-            "result": "not_found",
-            "evidence_ids": [],
-            "summary": "在当前冻结事实与来源定位包中未发现额外反证; 未检索公告全文。",
-        }
+        counter_chunks = [
+            chunk
+            for chunk in state["loaded"].evidence_chunks
+            if str(chunk.get("section", "")).startswith("Counter evidence:")
+        ]
+        if counter_chunks:
+            counter = {
+                "performed": True,
+                "queries": ["利润质量反证: 非经常性损益、审计状态与口径限制"],
+                "result": "found",
+                "evidence_ids": sorted(chunk["chunk_id"] for chunk in counter_chunks),
+                "summary": (
+                    "官方半年度报告披露了扣除非经常性损益后的净利润, 且该中期财务报告"
+                    "未经审计; 两项均限制对单期现金转化的外推。"
+                ),
+            }
+            event_summary = "Counter-evidence search found two filing-based limitations."
+        else:
+            counter = {
+                "performed": True,
+                "queries": ["利润质量反证: 经营现金流、应收账款、存货及口径限制"],
+                "result": "not_found",
+                "evidence_ids": [],
+                "summary": "在当前冻结事实与来源定位包中未发现额外反证; 未检索公告全文。",
+            }
+            event_summary = "Counter-evidence search completed with an honest not_found outcome."
         return {
             "counter_evidence": counter,
             "stages": self._event(
                 state,
                 "searching_counter_evidence",
-                "Counter-evidence search completed with an honest not_found outcome.",
+                event_summary,
                 input_ids=[f"checks_{state['run_id']}"],
                 output_ids=[f"counter_search_{state['run_id']}"],
             ),
@@ -423,6 +442,20 @@ class ResearchWorkflow:
                 **analysis.context,
                 "counter_evidence": state["counter_evidence"],
             }
+            if analysis.context.get("real_disclosure_evidence"):
+                conclusion_context.update(
+                    {
+                        "research_question": state["request"]["research_question"],
+                        "verified_fact_ids": [fact["fact_id"] for fact in analysis.current_facts],
+                        "source_document_ids": [
+                            source["document_id"]
+                            for source in state["loaded"].source_documents
+                            if source["company"]["company_id"]
+                            == analysis.current_facts[0]["company"]["company_id"]
+                        ],
+                        "currency": "CNY",
+                    }
+                )
             try:
                 conclusion = self.conclusion_generator.generate(conclusion_context)
             except StructuredOutputError:
@@ -516,18 +549,25 @@ class ResearchWorkflow:
             evidence_by_document.setdefault(chunk["document_id"], []).append(chunk["chunk_id"])
 
         def evidence_for_facts(fact_ids: list[str]) -> list[str]:
-            document_ids = {
-                fact_by_id[fact_id]["source"]["document_id"]
-                for fact_id in fact_ids
-                if fact_id in fact_by_id
-            }
-            return sorted(
-                {
-                    evidence_id
-                    for document_id in document_ids
-                    for evidence_id in evidence_by_document.get(document_id, [])
+            matched: set[str] = set()
+            fallback_documents: set[str] = set()
+            for fact_id in fact_ids:
+                fact = fact_by_id.get(fact_id)
+                if fact is None:
+                    continue
+                document_id = fact["source"]["document_id"]
+                candidates = evidence_by_document.get(document_id, [])
+                metric_suffix = f"_{fact['metric_code']}"
+                metric_matches = {
+                    evidence_id for evidence_id in candidates if evidence_id.endswith(metric_suffix)
                 }
-            )
+                if metric_matches:
+                    matched.update(metric_matches)
+                else:
+                    fallback_documents.add(document_id)
+            for document_id in fallback_documents:
+                matched.update(evidence_by_document.get(document_id, []))
+            return sorted(matched)
 
         skill_report_codes = {
             "operating_cash_flow",
@@ -558,7 +598,7 @@ class ResearchWorkflow:
                     "check_code": "counter_evidence",
                     "status": "performed",
                     "fact_ids": [],
-                    "evidence_ids": sorted(chunk["chunk_id"] for chunk in loaded.evidence_chunks),
+                    "evidence_ids": list(counter["evidence_ids"]),
                     "finding": counter["summary"],
                 }
             )
@@ -624,7 +664,11 @@ class ResearchWorkflow:
                         "level": (
                             "medium" if request["task_type"] == "thesis_investigation" else "high"
                         ),
-                        "basis": "结论直接依赖两个已核验财务事实和冻结公式。",
+                        "basis": (
+                            "结论直接依赖两个已核验财务事实和确定性公式。"
+                            if analysis.context.get("real_disclosure_evidence")
+                            else "结论直接依赖两个已核验财务事实和冻结公式。"
+                        ),
                     },
                 }
             )

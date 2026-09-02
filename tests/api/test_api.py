@@ -17,7 +17,7 @@ def test_healthcheck_does_not_require_a_run(tmp_path: Path) -> None:
     response = client.get("/healthz")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "version": "1.4.0"}
+    assert response.json() == {"status": "ok", "version": "1.5.0"}
 
 
 def test_api_runs_one_complete_background_case(tmp_path: Path) -> None:

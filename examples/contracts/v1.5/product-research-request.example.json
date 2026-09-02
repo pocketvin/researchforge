@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.5.0",
+  "request_id": "request_catl_2024h1_cash_conversion",
+  "data_namespace": "product",
+  "company": {
+    "company_id": "cn_300750",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750",
+    "exchange": "SZSE",
+    "country_code": "CN"
+  },
+  "reporting_period": {
+    "period_start": "2024-01-01",
+    "period_end": "2024-06-30",
+    "fiscal_year": 2024,
+    "fiscal_period": "H1",
+    "period_basis": "ytd",
+    "accounting_standard": "CAS",
+    "statement_scope": "consolidated",
+    "restatement_status": "as_reported"
+  },
+  "question": "2024 年上半年利润是否真正转化成了经营现金流？",
+  "research_time": "2026-09-02T18:00:00+08:00",
+  "idempotency_key": "demo-catl-2024h1-cash-conversion"
+}

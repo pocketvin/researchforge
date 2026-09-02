@@ -16,6 +16,7 @@ export interface Company {
 
 export interface Catalog {
   schema_version: string
+  data_namespace: 'product' | 'fixture' | 'benchmark'
   companies: Company[]
   supported_task_types: TaskType[]
   implementation_level: string
@@ -51,7 +52,9 @@ export interface Claim {
   support_evidence_ids: string[]
   counter_evidence_search: {
     performed: boolean
+    queries: string[]
     result: string
+    evidence_ids: string[]
     summary: string
   }
   alternative_explanations: string[]

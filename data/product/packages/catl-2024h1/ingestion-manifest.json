@@ -1,0 +1,156 @@
+{
+  "abstentions": [],
+  "acquisition": {
+    "byte_count": 1684794,
+    "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+    "media_type": "application/pdf",
+    "raw_payload_committed": false,
+    "retrieved_at": "2026-08-30T22:16:00+08:00"
+  },
+  "company": {
+    "company_id": "cn_300750",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750"
+  },
+  "created_at": "2026-09-02T15:41:19.816644+00:00",
+  "data_namespace": "product",
+  "discovery": {
+    "announcement_id": "szse-2024-07-26-6d9c1c9e",
+    "discovered_at": "2026-09-02T15:41:17.583501+00:00",
+    "document_title": "宁德时代新能源科技股份有限公司2024年半年度报告",
+    "publication_time": "2024-07-26T23:59:59+08:00",
+    "registry": "SZSE",
+    "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF"
+  },
+  "ingestion_id": "ingestion_catl_2024h1_001",
+  "outputs": [
+    {
+      "artifact_id": "chunk_product_catl_2024h1_accounts_receivable",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "87aaddfcef1533f5309df42e8b5e3dfa15f3a2c058dc4ee3bcccaf8046d104d4",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_accounts_receivable.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_catl_2024h1_inventory",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "61bfdf71421c9e3d28060a66cedccde168f4ae8bbaf79e52ea75db82a84edff2",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_inventory.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_catl_2024h1_net_income",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "2b4ab4604c8851b8da9e4186526e4eefd1d32dbb95175edda4166ba62e4daf68",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_net_income.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_catl_2024h1_non_recurring_profit",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "09fab21a17ab28542054b82b3c99462c85455d93c302979867b6b5c4d0b3b7ef",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_non_recurring_profit.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_catl_2024h1_operating_cash_flow",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "63446bfc652d1c91bf1b1407d456b069b3687047bf01a71d4ff656cc26238fc0",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_operating_cash_flow.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_catl_2024h1_operating_cost",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "46eec9efd609e554a1b152d88440018f06a3d1c55c495d0c8d553c9942d84314",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_operating_cost.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_catl_2024h1_revenue",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "62c51ee31230a0c7eabb3f57842026b00bfb99b14efcdbebe6a9fe4d771539b3",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_revenue.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_catl_2024h1_unaudited_interim_report",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "c221534902bcd16d82148c617a1b0769617d6b3682c34e63a5d0ec8e19042b4c",
+      "path": "evidence-chunks/chunk_product_catl_2024h1_unaudited_interim_report.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_catl_2024h1_accounts_receivable",
+      "artifact_kind": "financial_fact",
+      "content_hash": "11a3636eb2d6f8814ac84284b34f3e809f4e5f310e80b9dbf7efcf8f9674df4d",
+      "path": "financial-facts/fact_product_catl_2024h1_accounts_receivable.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_catl_2024h1_inventory",
+      "artifact_kind": "financial_fact",
+      "content_hash": "6aaa1d791bb938c2a99b2018c08573c41e14d67c9fa65b6ebe698847005f7113",
+      "path": "financial-facts/fact_product_catl_2024h1_inventory.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_catl_2024h1_net_income",
+      "artifact_kind": "financial_fact",
+      "content_hash": "2ac5f59b334186309daa173fa4e2db7c5949daf68ea50e5007c249cee64be71d",
+      "path": "financial-facts/fact_product_catl_2024h1_net_income.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_catl_2024h1_operating_cash_flow",
+      "artifact_kind": "financial_fact",
+      "content_hash": "b1bccaa01436d02d826baa76ce8d1e04b1a13de1703bd7951716ea112bf11988",
+      "path": "financial-facts/fact_product_catl_2024h1_operating_cash_flow.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_catl_2024h1_operating_cost",
+      "artifact_kind": "financial_fact",
+      "content_hash": "5b7280a0444fa3a8b39763b211c6f10efa358af6966675673740b523f0017539",
+      "path": "financial-facts/fact_product_catl_2024h1_operating_cost.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_catl_2024h1_revenue",
+      "artifact_kind": "financial_fact",
+      "content_hash": "22ca179d81d3f30ed05900397c274f42b903b9f12fdf4dc3547d1ddb35207152",
+      "path": "financial-facts/fact_product_catl_2024h1_revenue.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "doc_product_catl_2024h1",
+      "artifact_kind": "source_document",
+      "content_hash": "a2105088e5c32c83a3e22d3497d4e4cc7e117db457e8eea08bc87dfa4230f852",
+      "path": "source-documents/doc_product_catl_2024h1.json",
+      "schema_version": "1.4.0"
+    }
+  ],
+  "package_hash": "fdd6cc077607144b46b741aae3fe713eae09ca7c54c00bfbc43960847be45765",
+  "package_id": "product_catl_2024h1_001",
+  "parser": {
+    "page_boundaries_preserved": true,
+    "page_count": 174,
+    "parser_name": "pypdf",
+    "parser_version": "6.10.0",
+    "text_hash": "a24c5b7307a6379ceac9452a5be588717ff154825091406db9d085d145e4ee2e"
+  },
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "H1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-06-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "schema_version": "1.5.0",
+  "status": "ready"
+}

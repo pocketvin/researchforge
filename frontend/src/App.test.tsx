@@ -3,16 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
 const catalog = {
-  schema_version: '1.4.0',
-  implementation_level: 'G1_BREADTH',
-  supported_task_types: [
-    'company_research',
-    'filing_analysis',
-    'peer_comparison',
-    'thesis_investigation',
-    'risk_detection',
-  ],
-  limitations: ['fixture only'],
+  schema_version: '1.5.0',
+  data_namespace: 'product',
+  implementation_level: 'V1_5_REAL_DATA',
+  supported_task_types: ['filing_analysis'],
+  limitations: ['目前仅支持少量人工核验的真实公开披露。'],
   companies: [
     {
       company_id: 'cn_300750',
@@ -200,7 +195,7 @@ describe('ResearchForge UI', () => {
             json({
               result_id: 'result_frontend_test',
               task_type: 'filing_analysis',
-              executive_summary: '经营现金流覆盖净利润，结论来自冻结事实。',
+              executive_summary: '经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。',
               claims: [
                 {
                   claim_id: 'claim_frontend_test',
@@ -210,11 +205,13 @@ describe('ResearchForge UI', () => {
                   direction: 'positive',
                   text: '现金转化比为1.95倍。',
                   fact_ids: ['fact_ocf', 'fact_profit'],
-                  support_evidence_ids: ['chunk_catl'],
+                  support_evidence_ids: ['chunk_catl_ocf', 'chunk_catl_profit'],
                   counter_evidence_search: {
                     performed: true,
-                    result: 'not_found',
-                    summary: '当前证据包未发现额外反证。',
+                    queries: ['未经审计 非经常性损益'],
+                    result: 'found',
+                    evidence_ids: ['chunk_catl_counter'],
+                    summary: '报告未经审计，且扣除非经常性损益后的净利润低于归母净利润。',
                   },
                   alternative_explanations: [],
                   confidence: { level: 'high', basis: 'deterministic' },
@@ -226,7 +223,7 @@ describe('ResearchForge UI', () => {
                   status: 'performed',
                   finding: '已核对经营现金流。',
                   fact_ids: ['fact_ocf'],
-                  evidence_ids: ['chunk_catl'],
+                  evidence_ids: ['chunk_catl_ocf'],
                 },
               ],
               monitoring_items: [
@@ -237,7 +234,7 @@ describe('ResearchForge UI', () => {
                   trigger: '现金转化比低于1.00倍。',
                   next_review: '下一同口径财务报告发布后',
                   fact_ids: ['fact_ocf', 'fact_profit'],
-                  evidence_ids: ['chunk_catl'],
+                  evidence_ids: ['chunk_catl_ocf', 'chunk_catl_profit'],
                 },
               ],
               limitations: ['真实用户价值尚未验证。'],
@@ -274,7 +271,7 @@ describe('ResearchForge UI', () => {
                 source: {
                   document_id: 'doc_catl',
                   published_at: '2024-07-26T23:59:59+08:00',
-                  uri: 'https://example.test/filing.pdf',
+                  uri: 'https://disc.static.szse.cn/disc/example.PDF',
                 },
                 source_locator: { page: 71, section: '财务报表', table: '现金流量表' },
               },
@@ -289,7 +286,7 @@ describe('ResearchForge UI', () => {
                 source: {
                   document_id: 'doc_catl',
                   published_at: '2024-07-26T23:59:59+08:00',
-                  uri: 'https://example.test/filing.pdf',
+                  uri: 'https://disc.static.szse.cn/disc/example.PDF',
                 },
                 source_locator: { page: 69, section: '财务报表', table: '利润表' },
               },
@@ -300,13 +297,31 @@ describe('ResearchForge UI', () => {
           return Promise.resolve(
             json([
               {
-                chunk_id: 'chunk_catl',
+                chunk_id: 'chunk_catl_ocf',
                 document_id: 'doc_catl',
-                section: 'Synthetic normalized financial summary',
-                text: 'SYNTHETIC PUBLIC EVIDENCE — operating_cash_flow and net_income.',
+                section: 'Financial statement fact: operating_cash_flow',
+                text: '经营活动产生的现金流量净额 44,708,954,600.00 元。',
                 text_hash: 'a'.repeat(64),
-                source_uri: 'https://example.test/filing.pdf',
-                locator: { page_start: 69, page_end: 71 },
+                source_uri: 'https://disc.static.szse.cn/disc/example.PDF',
+                locator: { page_start: 73, page_end: 73 },
+              },
+              {
+                chunk_id: 'chunk_catl_profit',
+                document_id: 'doc_catl',
+                section: 'Financial statement fact: net_income',
+                text: '归属于上市公司股东的净利润 22,864,987,400.00 元。',
+                text_hash: 'b'.repeat(64),
+                source_uri: 'https://disc.static.szse.cn/disc/example.PDF',
+                locator: { page_start: 70, page_end: 70 },
+              },
+              {
+                chunk_id: 'chunk_catl_counter',
+                document_id: 'doc_catl',
+                section: 'Counter evidence: assurance limitation',
+                text: '本半年度报告未经审计。',
+                text_hash: 'c'.repeat(64),
+                source_uri: 'https://disc.static.szse.cn/disc/example.PDF',
+                locator: { page_start: 64, page_end: 64 },
               },
             ]),
           )
@@ -333,36 +348,45 @@ describe('ResearchForge UI', () => {
     )
   })
 
-  it('renders both primary product pages', async () => {
+  it('keeps Quality Lab secondary to the primary research product', async () => {
     render(<App />)
-    expect(await screen.findByText('建立研究任务')).toBeInTheDocument()
+    expect(await screen.findByText('开始公司研究')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: /Skill Lab/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
 
-    expect(screen.getByRole('heading', { name: 'Skill Lab' })).toBeInTheDocument()
-    expect(screen.getByText('等待受控实验产物')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Quality Lab' })).toBeInTheDocument()
+    expect(screen.getByText('读取冻结质量研究')).toBeInTheDocument()
+    expect(screen.getByText(/不是完成普通公司研究所必需/)).toBeInTheDocument()
   })
 
   it('renders a report only after loading API artifacts', async () => {
     render(<App />)
-    const submit = await screen.findByRole('button', { name: '开始可审计研究' })
+    const submit = await screen.findByRole('button', { name: 'Start Research / 开始研究' })
     await waitFor(() => expect(submit).toBeEnabled())
 
     fireEvent.click(submit)
 
-    expect(await screen.findByText('经营现金流覆盖净利润，结论来自冻结事实。')).toBeInTheDocument()
+    expect(await screen.findByText('经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。')).toBeInTheDocument()
     expect(screen.getByText('447.09 亿元')).toBeInTheDocument()
     expect(screen.getByText(/现金转化比为1.95倍/)).toBeInTheDocument()
-    expect(screen.getByText(/SYNTHETIC PUBLIC EVIDENCE/)).toBeInTheDocument()
+    fireEvent.click(screen.getByText(/Supporting Evidence/))
+    expect(screen.getByText(/经营活动产生的现金流量净额/)).toBeInTheDocument()
+    expect(screen.queryByText(/SYNTHETIC/)).not.toBeInTheDocument()
     expect(screen.getByText('下一同口径报告期复核现金转化与营运资本')).toBeInTheDocument()
+    fireEvent.click(screen.getByText(/Calculations/))
     expect(screen.getByText(/经营现金流除以净利润/)).toBeInTheDocument()
+    expect(
+      screen.getByText('报告未经审计，且扣除非经常性损益后的净利润低于归母净利润。'),
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByText(/查看反证来源/))
+    expect(screen.getByText('本半年度报告未经审计。')).toBeInTheDocument()
     expect(screen.getAllByText(/真实用户价值尚未验证/)).toHaveLength(2)
   })
 
   it('renders persisted Evolution state without inventing a supported result', async () => {
     render(<App />)
-    await screen.findByText('建立研究任务')
-    fireEvent.click(screen.getByRole('button', { name: /Skill Lab/ }))
+    await screen.findByText('开始公司研究')
+    fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
     fireEvent.change(screen.getByLabelText('实验 ID'), {
       target: { value: 'experiment_frontend_test' },
     })
@@ -378,8 +402,8 @@ describe('ResearchForge UI', () => {
 
   it('renders the honest two-experiment negative outcome and audit trail', async () => {
     render(<App />)
-    await screen.findByText('建立研究任务')
-    fireEvent.click(screen.getByRole('button', { name: /Skill Lab/ }))
+    await screen.findByText('开始公司研究')
+    fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
     fireEvent.change(screen.getByLabelText('实验 ID'), {
       target: { value: 'experiment_negative' },
     })

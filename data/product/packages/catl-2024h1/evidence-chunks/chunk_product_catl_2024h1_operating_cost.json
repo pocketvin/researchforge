@@ -1,0 +1,45 @@
+{
+  "chunk_id": "chunk_product_catl_2024h1_operating_cost",
+  "company": {
+    "company_id": "cn_300750",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_product_catl_2024h1",
+  "document_type": "interim_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 69,
+    "page_start": 69,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "pypdf-6.10.0",
+  "published_at": "2024-07-26T23:59:59+08:00",
+  "quality_flags": [
+    "text_native",
+    "table_linearized",
+    "manual_reviewed"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "H1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-06-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-08-30T22:16:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Financial statement fact: 营业成本",
+  "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+  "text": "营业成本 12,251,784.88 14,830,593.41",
+  "text_hash": "9596e54466e2ba942de7f4b037c1108a7a79ff7b19fbd473c72e746e5fb76466"
+}

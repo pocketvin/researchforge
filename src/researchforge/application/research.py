@@ -82,21 +82,38 @@ class DeterministicConclusionGenerator:
         conversion = context.get("cash_conversion_display", f"{context['cash_conversion']}倍")
         margin = context["gross_margin"]
         divergence = context["divergence_triggered"]
-        divergence_text = "触发利润与现金流背离信号" if divergence else "未触发冻结的背离信号"
+        real_disclosure = bool(context.get("real_disclosure_evidence"))
+        divergence_text = (
+            "触发利润与现金流背离信号"
+            if divergence
+            else "未触发预设的背离信号"
+            if real_disclosure
+            else "未触发冻结的背离信号"
+        )
+        limitations = (
+            [
+                "当前结论仅覆盖一份已哈希核验的官方半年度报告和六项财务事实。",
+                "半年度财务报告未经审计, 且一次性损益仅作为反向证据呈现, 未纳入确定性公式。",
+                "单一报告期的现金转化不能证明长期收益质量, 需在下一同口径报告期复核。",
+            ]
+            if real_disclosure
+            else [
+                "当前薄切片只使用冻结的规范化财务事实和来源定位。",
+                "未检索公告全文, 因此反证搜索结果只能标记为在当前证据包中未发现。",
+                "当前事实包没有一次性损益贡献字段, 该项检查不可用且未作推断。",
+            ]
+        )
         return ConclusionDraft(
             executive_summary=(
                 f"{company}{period}经营现金流/净利润为{conversion}, 毛利率为{margin}; "
-                f"{divergence_text}。结论仅覆盖冻结财务事实, 不构成投资建议。"
+                f"{divergence_text}。结论仅覆盖"
+                f"{'已核验财务事实' if real_disclosure else '冻结财务事实'}, 不构成投资建议。"
             ),
             earnings_quality_text=(
                 f"经营现金流与净利润的现金转化比为{conversion}, {divergence_text}。"
             ),
             gross_margin_text=f"按营业收入减营业成本计算, {period}毛利率为{margin}。",
-            limitations=[
-                "当前薄切片只使用冻结的规范化财务事实和来源定位。",
-                "未检索公告全文, 因此反证搜索结果只能标记为在当前证据包中未发现。",
-                "当前事实包没有一次性损益贡献字段, 该项检查不可用且未作推断。",
-            ],
+            limitations=limitations,
             reported_check_codes=None,
         )
 
@@ -293,7 +310,7 @@ class EarningsQualityAnalyzer:
                 "status": "unavailable",
                 "fact_ids": [],
                 "evidence_ids": [],
-                "finding": "当前冻结事实包没有一次性损益贡献字段, 未作推断。",
+                "finding": "当前事实集没有一次性损益贡献字段, 未作推断。",
             },
             self._trend_check(
                 "revenue_trend", "revenue", by_metric, previous_by_metric, trend_results
@@ -329,6 +346,11 @@ class EarningsQualityAnalyzer:
             "one_off_contribution_available": False,
             "revenue_growth": self._trend_text(trend_results.get("revenue")),
             "profit_growth": self._trend_text(trend_results.get("net_income")),
+            "real_disclosure_evidence": bool(loaded.evidence_chunks)
+            and all(
+                "SYNTHETIC PUBLIC EVIDENCE" not in str(chunk.get("text", ""))
+                for chunk in loaded.evidence_chunks
+            ),
         }
         return EarningsQualityAnalysis(
             current_facts=current,

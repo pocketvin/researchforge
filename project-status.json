@@ -1,67 +1,58 @@
 {
-  "schema_version": "1.4.0",
+  "schema_version": "1.5.0",
   "project_id": "researchforge",
-  "product_scope_version": "1.4",
-  "contract_package_version": "1.4.0",
-  "completed_gates": ["C0", "G0", "G1_THIN", "G2", "G3", "G1_FULL"],
-  "current_gate": "G4",
+  "product_scope_version": "1.5",
+  "contract_package_version": "1.5.0",
+  "completed_gates": [
+    "V15_DIRECTION",
+    "V15_REAL_DATA",
+    "V15_RESEARCH_UX",
+    "V15_PILOT_READY",
+    "V15_DEMO"
+  ],
+  "current_gate": "V15_PRODUCT",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "final_release_acceptance",
-    "title": "Publish and independently accept the full engineering release",
-    "outcome": "Engineering release candidate, public-safety scans, GitHub publication, and CI are complete; research is honestly frozen as unsupported after two formal experiments. Obtain the one final independent PASS.",
+    "id": "publish_ci_and_independent_acceptance",
+    "title": "Publish V1.5, verify CI and complete independent acceptance",
+    "outcome": "The public commit passes GitHub CI and the independent completion reviewer returns PASS.",
     "status": "in_progress"
   },
+  "frozen_v1_4": {
+    "outcome": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
+    "primary_result_hash": "60d7620ca0f620e926c99f22a091d7305097dd787c28d89270977cb8a6c735ed",
+    "contingency_result_hash": "dadd29917979b53a2b47ed66e7bfa9deae6ba8486802acc12bdba38ab3a3877f",
+    "combined_outcome_hash": "bdc0c1aed55e930312f01ecaebee8969e96e7ff625b27b735b940fcff8a1d2af",
+    "additional_formal_experiments_authorized": false
+  },
   "last_verified": {
-    "at": "2026-09-02T17:10:55+08:00",
+    "at": "2026-09-03T06:09:32+08:00",
     "commands": [
       {
-        "command": "uv run researchforge usability-run --batch-id simulated_usability_v1_4_002 --run-id <persisted-run>",
+        "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py",
         "exit_code": 0,
-        "summary": "Three isolated AI simulations all located the key result, supporting evidence, a limitation or counter-evidence item, and a monitoring item; batch PASS, two high-score sessions, human_user_value_validated=false."
+        "summary": "Backend formatting, lint, strict typing, 165 tests and all current/historical contracts passed."
       },
       {
-        "command": "uv run pytest -q",
+        "command": "npm run lint && npm run typecheck && npm test -- --run && npm run build",
         "exit_code": 0,
-        "summary": "160 backend tests passed after the final code, contract, evidence, and documentation refresh; Ruff format/lint, strict mypy, uv lock, contract validation, diff check, and Compose configuration also passed."
+        "summary": "The product-first Research and secondary Quality Lab frontend passed lint, typing, four unit tests, production build and two E2E accessibility journeys."
       },
       {
-        "command": "npm run typecheck && npm run lint && npm test -- --run && npm run build && PLAYWRIGHT_EXECUTABLE_PATH=<local-chrome> npm run test:e2e",
+        "command": "docker compose: Alembic up/down/up; scripts/docker_smoke.py; live browser journey",
         "exit_code": 0,
-        "summary": "Frontend typecheck, lint, four unit tests, production build, Playwright navigation, and critical-impact accessibility checks passed."
-      },
-      {
-        "command": "docker compose build && docker compose up -d --wait && uv run python scripts/docker_smoke.py && docker compose exec -T api alembic downgrade base && docker compose exec -T api alembic upgrade head && uv run python scripts/docker_smoke.py",
-        "exit_code": 0,
-        "summary": "PostgreSQL, API, and frontend became healthy; smoke resolved five modes, ten stages, six facts, one evidence chunk, four calculations, and one monitoring item; migration down/up and a second smoke passed."
-      },
-      {
-        "command": "tracked secret, local-path, raw-PDF, private-truth, ignore, Git status, and diff scans",
-        "exit_code": 0,
-        "summary": ".env is ignored and untracked; no tracked secret/private-key pattern, local absolute path, PDF, or verifier-truth/private filename was found."
-      },
-      {
-        "command": "GitHub Actions CI run 33613092646 on commit 06e870a",
-        "exit_code": 0,
-        "summary": "Backend, frontend with Playwright, and Docker Compose container jobs all passed."
-      },
-      {
-        "command": "swift scripts/build_demo_video.swift",
-        "exit_code": 0,
-        "summary": "Generated a verified 12-second 1280x720 final H.264 preview from the Research evidence/monitoring screen and the honest negative-outcome Skill Lab screen."
+        "summary": "The database migration round-trip, healthy product stack and real CATL workflow passed with expandable evidence, counter evidence, calculations, limitations, monitoring and ten trace stages."
       }
     ]
   },
   "next_action": {
-    "title": "Obtain the deferred independent acceptance",
-    "why": "Formal research, simulated usability, release verification, publication, and GitHub CI are closed; only the independent read-only verdict remains.",
-    "first_step": "Run the verify-completion workflow against the clean, published commit and its CI evidence.",
+    "title": "Publish and independently accept V1.5",
+    "why": "All local product and engineering gates passed; the remaining release evidence is public CI and an independent PASS.",
+    "first_step": "Commit and push the authorized update, wait for GitHub CI, then invoke verify-completion.",
     "acceptance_evidence": [
-      "All local format, lint, strict type, backend, frontend, E2E, contract, migration, and Docker smoke commands pass.",
-      "Tracked-secret, raw-PDF, verifier-truth, and local-path scans return no publish-blocking finding.",
-      "GitHub Actions backend, frontend, and container jobs pass on the published commit.",
-      "Independent completion reviewer returns VERDICT: PASS.",
-      "Final materials state that the research hypothesis is unsupported and human value is unvalidated."
+      "Published commit passes all GitHub Actions jobs.",
+      "Final independent reviewer returns VERDICT: PASS.",
+      "Share-safe Codex review records commands, evidence, boundaries and remaining honest non-claims."
     ]
   },
   "blockers": [],
@@ -69,37 +60,49 @@
   "resumption": {
     "working_directory": ".",
     "read_first": [
+      "docs/product/researchforge-v1.5-product-thesis.md",
       "PROJECT_STATUS.md",
-      "docs/evidence/g3-primary-formal-result.md",
-      "docs/evidence/g3-contingency-formal-result.md",
-      "docs/evidence/g4-simulated-usability.md",
+      "docs/demo/v1.5-demo-evidence.md",
+      "docs/usability/README.md",
       "DECISIONS.md"
     ],
     "commands": [
       "uv run python scripts/validate_contracts.py",
+      "npm run build --prefix frontend",
+      "docker compose ps",
       "git status --short"
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-02T17:10:55+08:00",
-    "summary": "Completed primary and contingency formal experiments with an unsupported terminal result, passed the corrected three-session simulated usability batch, added evidence/monitoring/calculation provenance, and passed the full local, frontend, migration, Docker, and public-safety gates.",
+    "ended_at": "2026-09-03T06:09:32+08:00",
+    "summary": "Locally verified the strict real-data slice, bounded reasoning, product-first Research UX, source-linked counter evidence, secondary Quality Lab, real-human pilot kit, demo, migrations and Docker stack while preserving V1.4.",
     "files_changed": [
+      ".env.example",
+      "AGENTS.md",
+      "CHANGELOG.md",
+      "DATA_NOTICE.md",
+      "DECISIONS.md",
+      "Dockerfile",
+      "PORTFOLIO.md",
+      "PROJECT_STATUS.md",
+      "README.md",
+      "data/product",
+      "docker-compose.yml",
+      "docs/contracts/v1.5",
+      "docs/demo",
+      "docs/product/researchforge-v1.5-product-thesis.md",
+      "docs/product/v1.4-to-v1.5-productization-change-note.md",
+      "docs/usability",
+      "examples/contracts/v1.5",
+      "frontend",
+      "project-status.json",
+      "pyproject.toml",
+      "schemas/v1.5",
+      "scripts/validate_contracts.py",
       "src/researchforge",
       "tests",
-      "schemas/v1.4/research-result.schema.json",
-      "frontend",
-      "scripts/docker_smoke.py",
-      "scripts/build_demo_video.swift",
-      "docs/assets",
-      "docs/evidence",
-      "docs/demo",
-      "README.md",
-      "PROJECT_STATUS.md",
-      "project-status.json",
-      "PORTFOLIO.md",
-      "CHANGELOG.md",
-      "DECISIONS.md"
+      "uv.lock"
     ]
   },
-  "updated_at": "2026-09-02T17:10:55+08:00"
+  "updated_at": "2026-09-03T06:09:32+08:00"
 }

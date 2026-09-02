@@ -1,6 +1,12 @@
-# ResearchForge V1.4 Contract Catalog
+# ResearchForge Contract Catalog
 
-This directory translates the active V1.4 scope baseline into rules that are implementable, testable, and reviewable. Contract changes that alter scope require an explicit decision and changelog entry.
+V1.5 productization contracts are now active. The V1.4 catalog below remains the immutable
+engineering and research baseline for existing artifacts.
+
+- [V1.5 productization contracts](v1.5/README.md)
+- [V1.5 product thesis](../product/researchforge-v1.5-product-thesis.md)
+
+The remainder of this document records the preserved V1.4 contract package.
 
 ## Normative Language
 
@@ -64,7 +70,8 @@ All current schemas use JSON Schema Draft 2020-12 and live under `schemas/v1.4/`
 
 ## Versioning
 
-- Current contract package version is `1.4.0`.
+- Active productization contract package version is `1.5.0`.
+- The preserved V1.4 artifact contract package remains `1.4.0`.
 - V1.2 and V1.3 schemas remain read-only historical contracts; new artifacts use `schemas/v1.4/`.
 - Backward-compatible clarifications increment the patch component.
 - A new required field, changed financial meaning, changed metric denominator, or changed split policy requires a new minor contract version.

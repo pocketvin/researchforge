@@ -35,6 +35,7 @@ from researchforge.application.formal_experiment import (
 )
 from researchforge.application.research import ConclusionGenerator
 from researchforge.application.simulated_usability import SimulatedUsabilityRunner
+from researchforge.ingestion import FilingRegistry, ProductDisclosureIngestion
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -46,16 +47,10 @@ def _parser() -> argparse.ArgumentParser:
     )
     subcommands = parser.add_subparsers(dest="command", required=True)
 
-    run = subcommands.add_parser("run", help="run one frozen filing-analysis case")
+    run = subcommands.add_parser("run", help="run one product research question")
     run.add_argument(
         "--task-type",
-        choices=[
-            "company_research",
-            "filing_analysis",
-            "peer_comparison",
-            "thesis_investigation",
-            "risk_detection",
-        ],
+        choices=["filing_analysis"],
         default="filing_analysis",
     )
     run.add_argument("--company", action="append", required=True)
@@ -168,7 +163,33 @@ def _parser() -> argparse.ArgumentParser:
             type=Path,
             default=PROJECT_ROOT / "docs" / "assets" / "skill-lab-page.png",
         )
-    subcommands.add_parser("catalog", help="show the allowlisted fixture catalog")
+    subcommands.add_parser("catalog", help="show the configured allowlisted data catalog")
+    ingest = subcommands.add_parser(
+        "ingest-disclosure",
+        help="build one abstention-first product package from an official disclosure",
+    )
+    ingest.add_argument("--company", default="cn_300750")
+    ingest.add_argument("--period", default="2024H1")
+    ingest.add_argument(
+        "--registry",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "product" / "filing-catalog.json",
+    )
+    ingest.add_argument(
+        "--raw-root",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "raw" / "product",
+    )
+    ingest.add_argument(
+        "--package-root",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "product" / "packages" / "catl-2024h1",
+    )
+    ingest.add_argument(
+        "--source-file",
+        type=Path,
+        help="use a previously acquired local PDF after enforcing the official registry hash",
+    )
     return parser
 
 
@@ -363,6 +384,18 @@ def main(argv: list[str] | None = None) -> None:
             if args.command == "usability-preflight"
             else simulation_runner.run()
         )
+        return
+    if args.command == "ingest-disclosure":
+        manifest = ProductDisclosureIngestion(FilingRegistry(Path(args.registry))).run(
+            company_id=str(args.company),
+            period_label=str(args.period),
+            raw_root=Path(args.raw_root),
+            package_root=Path(args.package_root),
+            source_file=Path(args.source_file) if args.source_file is not None else None,
+        )
+        _print(manifest)
+        if manifest["status"] != "ready":
+            raise SystemExit(2)
         return
     service = build_default_service(args.artifact_root)
     if args.command == "catalog":

@@ -21,7 +21,13 @@ services:
         PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.12-slim}
     environment:
       RESEARCHFORGE_DATABASE_URL: postgresql+psycopg://researchforge:researchforge@postgres:5432/researchforge
+      RESEARCHFORGE_DATABASE_ENABLED: "true"
       RESEARCHFORGE_ARTIFACT_ROOT: /app/artifacts
+      RESEARCHFORGE_DATA_NAMESPACE: product
+      RESEARCHFORGE_DATA_ROOT: /app/data/product/packages/catl-2024h1
+      RESEARCHFORGE_REASONING_MODE: ${RESEARCHFORGE_REASONING_MODE:-auto}
+      RESEARCHFORGE_ROTATED_KEY_CONFIRMED: ${RESEARCHFORGE_ROTATED_KEY_CONFIRMED:-0}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy

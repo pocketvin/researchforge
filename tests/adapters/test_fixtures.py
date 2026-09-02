@@ -59,3 +59,17 @@ def test_catalog_exposes_all_five_bounded_modes() -> None:
         "cn_300014",
         "cn_300750",
     }
+
+
+def test_product_catalog_exposes_only_the_verified_initial_capability() -> None:
+    catalog = G0FixtureCatalog(
+        DEFAULT_FIXTURE_ROOT.parent.parent / "product" / "packages" / "catl-2024h1",
+        expected_namespace="product",
+    )
+
+    response = catalog.catalog()
+
+    assert response.schema_version == "1.5.0"
+    assert response.data_namespace == "product"
+    assert response.supported_task_types == ["filing_analysis"]
+    assert [company.company_id for company in response.companies] == ["cn_300750"]

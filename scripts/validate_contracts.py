@@ -17,12 +17,16 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parents[1]
 CURRENT_SCHEMA_VERSION = "v1.4"
 CURRENT_ARTIFACT_VERSION = "1.4.0"
+ACTIVE_PRODUCT_SCHEMA_VERSION = "v1.5"
+ACTIVE_PRODUCT_ARTIFACT_VERSION = "1.5.0"
 HISTORICAL_SCHEMA_VERSIONS = ("v1.3", "v1.2")
 SCHEMA_DIR = ROOT / "schemas" / CURRENT_SCHEMA_VERSION
+ACTIVE_PRODUCT_SCHEMA_DIR = ROOT / "schemas" / ACTIVE_PRODUCT_SCHEMA_VERSION
 HISTORICAL_SCHEMA_DIRS = {
     version: ROOT / "schemas" / version for version in HISTORICAL_SCHEMA_VERSIONS
 }
 EXAMPLE_DIR = ROOT / "examples" / "contracts" / CURRENT_SCHEMA_VERSION
+ACTIVE_PRODUCT_EXAMPLE_DIR = ROOT / "examples" / "contracts" / ACTIVE_PRODUCT_SCHEMA_VERSION
 G0_FIXTURE_DIR = ROOT / "data" / "fixtures" / "g0"
 G0_SOURCE_DIR = G0_FIXTURE_DIR / "source-documents"
 G0_FACT_DIR = G0_FIXTURE_DIR / "financial-facts"
@@ -42,11 +46,15 @@ CONTINGENCY_CHUNK_DIR = CONTINGENCY_FIXTURE_DIR / "evidence-chunks"
 CONTINGENCY_CASE_DIR = CONTINGENCY_FIXTURE_DIR / "cases"
 CONTINGENCY_MANIFEST_PATH = CONTINGENCY_FIXTURE_DIR / "manifest.json"
 CONTINGENCY_SUITE_PATH = ROOT / "benchmark" / "suites" / "v1.5-contingency-preregistered.json"
+PRODUCT_REGISTRY_PATH = ROOT / "data" / "product" / "filing-catalog.json"
+PRODUCT_PACKAGE_DIR = ROOT / "data" / "product" / "packages" / "catl-2024h1"
+PRODUCT_PACKAGE_MANIFEST_PATH = PRODUCT_PACKAGE_DIR / "manifest.json"
+PRODUCT_INGESTION_MANIFEST_PATH = PRODUCT_PACKAGE_DIR / "ingestion-manifest.json"
 HISTORICAL_EXAMPLE_DIRS = {
     "v1.3": ROOT / "examples" / "contracts" / "v1.3",
     "v1.2": ROOT / "examples" / "contracts",
 }
-CONTRACT_PACKAGE_VERSION = "1.4.0"
+CONTRACT_PACKAGE_VERSION = "1.5.0"
 G0_REQUIRED_METRICS = {
     "accounts_receivable",
     "inventory",
@@ -80,6 +88,14 @@ REQUIRED_SCHEMAS = {
     "evolution-experiment.schema.json",
     "retrieval-evaluation.schema.json",
     "simulated-usability-evaluation.schema.json",
+}
+
+ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
+    "common.schema.json",
+    "human-usability-session.schema.json",
+    "ingestion-manifest.schema.json",
+    "product-research-request.schema.json",
+    "project-checkpoint.schema.json",
 }
 
 HISTORICAL_REQUIRED_SCHEMAS = {
@@ -121,6 +137,12 @@ CURRENT_EXAMPLES = {
     "source-document.example.json": "source-document.schema.json",
     "tool-record.example.json": "tool-record.schema.json",
     "workflow-trace.example.json": "workflow-trace.schema.json",
+}
+
+ACTIVE_PRODUCT_EXAMPLES = {
+    "human-usability-session.example.json": "human-usability-session.schema.json",
+    "ingestion-manifest.example.json": "ingestion-manifest.schema.json",
+    "product-research-request.example.json": "product-research-request.schema.json",
 }
 
 HISTORICAL_EXAMPLES = {
@@ -165,11 +187,16 @@ REQUIRED_CONTRACTS = {
     PRIMARY_SUITE_PATH,
     CONTINGENCY_MANIFEST_PATH,
     CONTINGENCY_SUITE_PATH,
+    PRODUCT_REGISTRY_PATH,
+    PRODUCT_PACKAGE_MANIFEST_PATH,
+    PRODUCT_INGESTION_MANIFEST_PATH,
     ROOT / "skills" / "fundamental-research" / "README.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json",
     ROOT / "docs" / "architecture" / "implementation-blueprint.md",
     ROOT / "docs" / "product" / "researchforge-v1.4-scope.md",
+    ROOT / "docs" / "product" / "researchforge-v1.5-product-thesis.md",
+    ROOT / "docs" / "product" / "v1.4-to-v1.5-productization-change-note.md",
     ROOT / "docs" / "product" / "v1.3-to-v1.4-change-note.md",
     ROOT / "docs" / "product" / "researchforge-v1.3-scope.md",
     ROOT / "docs" / "product" / "v1.2-to-v1.3-change-note.md",
@@ -184,6 +211,10 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "contracts" / "evolution-adoption-policy.md",
     ROOT / "docs" / "contracts" / "run-lifecycle.md",
     ROOT / "docs" / "contracts" / "development-gates.md",
+    ROOT / "docs" / "contracts" / "v1.5" / "README.md",
+    ROOT / "docs" / "contracts" / "v1.5" / "real-data-ingestion.md",
+    ROOT / "docs" / "contracts" / "v1.5" / "product-research-run.md",
+    ROOT / "docs" / "contracts" / "v1.5" / "human-usability-pilot.md",
     ROOT / "docs" / "evidence" / "g0-source-spike.md",
     ROOT / "docs" / "evidence" / "g0-filing-read-plan.md",
     ROOT / "docs" / "evidence" / "g0-reconciliation.md",
@@ -195,14 +226,26 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "evidence" / "g4-engineering-progress.md",
     ROOT / "docs" / "demo" / "demo-script.md",
     ROOT / "docs" / "demo" / "walkthrough.md",
+    ROOT / "docs" / "demo" / "v1.5-demo-evidence.md",
+    ROOT / "docs" / "usability" / "README.md",
+    ROOT / "docs" / "usability" / "privacy-notice.md",
+    ROOT / "docs" / "usability" / "participant-task-sheet.md",
+    ROOT / "docs" / "usability" / "facilitator-guide.md",
+    ROOT / "docs" / "usability" / "observation-rubric.md",
+    ROOT / "docs" / "usability" / "pilot-status.md",
     ROOT / "docs" / "assets" / "research-page.png",
     ROOT / "docs" / "assets" / "skill-lab-page.png",
+    ROOT / "docs" / "assets" / "research-page-v1.5-start.png",
+    ROOT / "docs" / "assets" / "research-page-v1.5-result.png",
+    ROOT / "docs" / "assets" / "research-page-v1.5-evidence.png",
+    ROOT / "docs" / "assets" / "quality-lab-page-v1.5.png",
     ROOT / "docs" / "assets" / "researchforge-v1.4-demo.mp4",
     ROOT / "docs" / "operations" / "resume-playbook.md",
     ROOT / "docs" / "strategy" / "project-scorecard.md",
     ROOT / "docs" / "strategy" / "risk-register.md",
     ROOT / "docs" / "strategy" / "solo-success-plan.md",
     *{EXAMPLE_DIR / name for name in CURRENT_EXAMPLES},
+    *{ACTIVE_PRODUCT_EXAMPLE_DIR / name for name in ACTIVE_PRODUCT_EXAMPLES},
     *{
         HISTORICAL_EXAMPLE_DIRS[version] / name
         for version, example_map in HISTORICAL_EXAMPLES.items()
@@ -303,7 +346,11 @@ def validate_schema_shape(path: Path, schema: dict[str, Any]) -> None:
     if schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
         raise ContractError(f"{relative}: must use JSON Schema Draft 2020-12")
     version_directory = path.parent.name
-    recognized_versions = {CURRENT_SCHEMA_VERSION, *HISTORICAL_SCHEMA_VERSIONS}
+    recognized_versions = {
+        ACTIVE_PRODUCT_SCHEMA_VERSION,
+        CURRENT_SCHEMA_VERSION,
+        *HISTORICAL_SCHEMA_VERSIONS,
+    }
     if version_directory not in recognized_versions:
         raise ContractError(f"{relative}: schema must live in a recognized version directory")
     expected_id = f"https://researchforge.local/schemas/{version_directory}/{path.name}"
@@ -557,7 +604,7 @@ def validate_project_checkpoint(checkpoint: dict[str, Any]) -> int:
     required_mirror_text = (
         f"Contract package: {CONTRACT_PACKAGE_VERSION}",
         f"Current gate: {current_gate}",
-        "Scope: V1.4 active baseline",
+        "Scope: V1.5 active productization",
     )
     for expected in required_mirror_text:
         if expected not in status_text:
@@ -760,6 +807,83 @@ def validate_v14_semantics(
         ROOT / "DATA_NOTICE.md": (
             "complete third-party announcement or annual-report PDFs",
             "synthetic evidence",
+        ),
+    }
+    for path, fragments in active_requirements.items():
+        require_text(path, fragments)
+
+
+def validate_v15_product_semantics(
+    schemas: dict[Path, dict[str, Any]],
+    examples: dict[str, dict[str, Any]],
+) -> None:
+    request_schema = schemas[
+        (ACTIVE_PRODUCT_SCHEMA_DIR / "product-research-request.schema.json").resolve()
+    ]
+    if request_schema["properties"]["data_namespace"].get("const") != "product":
+        raise ContractError("V1.5 product requests must require the product namespace")
+
+    ingestion_schema = schemas[
+        (ACTIVE_PRODUCT_SCHEMA_DIR / "ingestion-manifest.schema.json").resolve()
+    ]
+    if ingestion_schema["properties"]["data_namespace"].get("const") != "product":
+        raise ContractError("V1.5 ingestion must require the product namespace")
+    raw_payload = ingestion_schema["properties"]["acquisition"]["anyOf"][0]["properties"][
+        "raw_payload_committed"
+    ]
+    if raw_payload.get("const") is not False:
+        raise ContractError("V1.5 ingestion must prohibit committing raw filings")
+
+    human_schema = schemas[
+        (ACTIVE_PRODUCT_SCHEMA_DIR / "human-usability-session.schema.json").resolve()
+    ]
+    if human_schema["properties"]["evidence_label"].get("const") != "REAL_HUMAN":
+        raise ContractError("V1.5 human pilot records must be labeled REAL_HUMAN")
+    if human_schema["properties"]["simulated"].get("const") is not False:
+        raise ContractError("V1.5 human pilot records cannot be simulated")
+
+    ingestion = examples["ingestion-manifest.example.json"]
+    if ingestion["status"] != "ready" or ingestion["abstentions"]:
+        raise ContractError("V1.5 ingestion example must be a ready, non-abstained package")
+    if ingestion["acquisition"]["content_hash"] != (
+        "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1"
+    ):
+        raise ContractError("V1.5 CATL example must retain the reviewed official PDF hash")
+
+    active_requirements = {
+        ROOT / "README.md": (
+            "evidence-grounded AI fundamental research workspace",
+            "Company + Period + Research Question",
+            "Quality Lab",
+        ),
+        ROOT / "docs" / "product" / "researchforge-v1.5-product-thesis.md": (
+            "## 1. Problem",
+            "## 2. Target User",
+            "## 3. Job To Be Done",
+            "## 4. Product Promise",
+            "## 6. Core Workflow",
+            "## 7. User Story",
+            "## 8. Current Repository Audit and Gaps",
+            "## 9. V1.5 Scope",
+            "## 11. Non-goals",
+            "## 12. Acceptance Criteria",
+            "## 14. Migration Plan from V1.4",
+            "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
+        ),
+        ROOT / "docs" / "contracts" / "v1.5" / "real-data-ingestion.md": (
+            "MUST NOT search or",
+            "abstention",
+            "300750.SZ",
+        ),
+        ROOT / "docs" / "usability" / "pilot-status.md": (
+            "PILOT_READY",
+            "UNVALIDATED",
+            "Completed real-human sessions | 0",
+        ),
+        ROOT / "docs" / "demo" / "v1.5-demo-evidence.md": (
+            "fdd6cc077607144b46b741aae3fe713eae09ca7c54c00bfbc43960847be45765",
+            "run_b69d4aaf34e045c19619d4b9f88ebaca",
+            "run_158b579d17b84c5db602847ab864f340",
         ),
     }
     for path, fragments in active_requirements.items():
@@ -1475,6 +1599,117 @@ def validate_contingency_benchmark(
     return actual_counts
 
 
+def validate_product_disclosure_package(
+    schemas: dict[Path, dict[str, Any]],
+) -> tuple[int, int, int]:
+    """Validate the first real product slice without requiring the ignored raw PDF."""
+    if any(PRODUCT_PACKAGE_DIR.rglob("*.pdf")):
+        raise ContractError("V1.5 product package must not contain a raw filing PDF")
+
+    registry = load_json(PRODUCT_REGISTRY_PATH)
+    if registry.get("schema_version") != "1.5.0" or registry.get("data_namespace") != "product":
+        raise ContractError("V1.5 filing registry must be isolated in the product namespace")
+    records = registry.get("records")
+    if not isinstance(records, list) or len(records) != 1:
+        raise ContractError("V1.5 initial product registry must contain exactly one filing")
+    record = records[0]
+    if record.get("expected_sha256") != (
+        "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1"
+    ):
+        raise ContractError("V1.5 CATL registry official PDF hash changed")
+    if urlparse(record.get("source_uri", "")).netloc != "disc.static.szse.cn":
+        raise ContractError("V1.5 CATL registry must use the official SZSE document host")
+
+    ingestion = load_json(PRODUCT_INGESTION_MANIFEST_PATH)
+    ingestion_schema_path = (ACTIVE_PRODUCT_SCHEMA_DIR / "ingestion-manifest.schema.json").resolve()
+    validate_instance(
+        ingestion,
+        schemas[ingestion_schema_path],
+        ingestion_schema_path,
+        schemas,
+    )
+    if ingestion["status"] != "ready" or ingestion["data_namespace"] != "product":
+        raise ContractError("V1.5 product ingestion manifest must be ready and real-data only")
+    if ingestion["abstentions"]:
+        raise ContractError("V1.5 ready product package cannot retain an abstention")
+    if ingestion["acquisition"]["raw_payload_committed"] is not False:
+        raise ContractError("V1.5 product package cannot commit the raw filing")
+    if ingestion["parser"]["page_count"] != 174:
+        raise ContractError("V1.5 CATL page count differs from the reviewed document")
+
+    source_paths = sorted((PRODUCT_PACKAGE_DIR / "source-documents").glob("*.json"))
+    fact_paths = sorted((PRODUCT_PACKAGE_DIR / "financial-facts").glob("*.json"))
+    chunk_paths = sorted((PRODUCT_PACKAGE_DIR / "evidence-chunks").glob("*.json"))
+    if (len(source_paths), len(fact_paths), len(chunk_paths)) != (1, 6, 8):
+        raise ContractError("V1.5 CATL package must contain 1 source, 6 facts, and 8 chunks")
+
+    source_schema_path = (SCHEMA_DIR / "source-document.schema.json").resolve()
+    fact_schema_path = (SCHEMA_DIR / "financial-fact.schema.json").resolve()
+    chunk_schema_path = (SCHEMA_DIR / "evidence-chunk.schema.json").resolve()
+    source = load_json(source_paths[0])
+    validate_instance(source, schemas[source_schema_path], source_schema_path, schemas)
+    if source["content_hash"] != record["expected_sha256"]:
+        raise ContractError("V1.5 Source Document hash differs from the registry")
+
+    values: dict[str, str] = {}
+    for path in fact_paths:
+        fact = load_json(path)
+        validate_instance(fact, schemas[fact_schema_path], fact_schema_path, schemas)
+        if fact["source"]["document_id"] != source["document_id"]:
+            raise ContractError("V1.5 fact points to an unexpected Source Document")
+        if fact["source"]["content_hash"] != source["content_hash"]:
+            raise ContractError("V1.5 fact source hash differs from the Source Document")
+        if not all(
+            fact["source_locator"].get(key)
+            for key in ("page", "section", "table", "row_label", "column_label")
+        ):
+            raise ContractError("V1.5 fact has an incomplete source locator")
+        values[fact["metric_code"]] = fact["value"]
+    expected_values = {
+        "accounts_receivable": "58099476000.00",
+        "inventory": "48050676200.00",
+        "revenue": "166766833600.00",
+        "operating_cost": "122517848800.00",
+        "net_income": "22864987400.00",
+        "operating_cash_flow": "44708954600.00",
+    }
+    if values != expected_values:
+        raise ContractError("V1.5 CATL normalized fact values changed")
+
+    counter_sections = 0
+    for path in chunk_paths:
+        chunk = load_json(path)
+        validate_instance(chunk, schemas[chunk_schema_path], chunk_schema_path, schemas)
+        if chunk["document_id"] != source["document_id"]:
+            raise ContractError("V1.5 evidence points to an unexpected Source Document")
+        if "SYNTHETIC PUBLIC EVIDENCE" in chunk["text"]:
+            raise ContractError("V1.5 real product evidence cannot be a synthetic fixture")
+        if chunk["section"].startswith("Counter evidence:"):
+            counter_sections += 1
+    if counter_sections != 2:
+        raise ContractError("V1.5 product package must preserve two filing-based limitations")
+
+    package = load_json(PRODUCT_PACKAGE_MANIFEST_PATH)
+    if package.get("data_namespace") != "product" or package.get("status") != "ready":
+        raise ContractError("V1.5 product package manifest is not ready product data")
+    artifact_paths = sorted((*source_paths, *fact_paths, *chunk_paths))
+    artifact_hashes = {
+        str(path.relative_to(PRODUCT_PACKAGE_DIR)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in artifact_paths
+    }
+    if package.get("artifact_hashes") != artifact_hashes:
+        raise ContractError("V1.5 product package artifact hashes do not match files")
+    if package.get("package_hash") != _canonical_hash(artifact_hashes):
+        raise ContractError("V1.5 product package hash does not match artifact hashes")
+    output_hashes = {item["path"]: item["content_hash"] for item in ingestion["outputs"]}
+    if output_hashes != artifact_hashes:
+        raise ContractError("V1.5 ingestion output references differ from package artifacts")
+    if ingestion["package_hash"] != package["package_hash"]:
+        raise ContractError("V1.5 ingestion and product package hashes differ")
+
+    return len(source_paths), len(fact_paths), len(chunk_paths)
+
+
 def main() -> int:
     try:
         missing_files = [
@@ -1483,7 +1718,14 @@ def main() -> int:
         if missing_files:
             raise ContractError(f"missing required contract files: {sorted(missing_files)}")
 
-        for screenshot_name in ("research-page.png", "skill-lab-page.png"):
+        for screenshot_name in (
+            "research-page.png",
+            "skill-lab-page.png",
+            "research-page-v1.5-start.png",
+            "research-page-v1.5-result.png",
+            "research-page-v1.5-evidence.png",
+            "quality-lab-page-v1.5.png",
+        ):
             screenshot = ROOT / "docs" / "assets" / screenshot_name
             if not screenshot.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
                 raise ContractError(f"demo screenshot is not PNG: {screenshot_name}")
@@ -1493,6 +1735,11 @@ def main() -> int:
             raise ContractError("demo video is missing a valid MP4 file header or payload")
 
         validate_schema_catalog(SCHEMA_DIR, REQUIRED_SCHEMAS, "current V1.4")
+        validate_schema_catalog(
+            ACTIVE_PRODUCT_SCHEMA_DIR,
+            ACTIVE_PRODUCT_REQUIRED_SCHEMAS,
+            "active V1.5 productization",
+        )
         for version, directory in HISTORICAL_SCHEMA_DIRS.items():
             validate_schema_catalog(
                 directory,
@@ -1502,6 +1749,7 @@ def main() -> int:
 
         schemas: dict[Path, dict[str, Any]] = {}
         schema_paths = sorted(SCHEMA_DIR.glob("*.schema.json"))
+        schema_paths.extend(sorted(ACTIVE_PRODUCT_SCHEMA_DIR.glob("*.schema.json")))
         for version in HISTORICAL_SCHEMA_VERSIONS:
             schema_paths.extend(sorted(HISTORICAL_SCHEMA_DIRS[version].glob("*.schema.json")))
         for path in schema_paths:
@@ -1520,6 +1768,13 @@ def main() -> int:
         current_schema_const = current_common["$defs"]["schemaVersion"]["const"]
         if current_schema_const != CURRENT_ARTIFACT_VERSION:
             raise ContractError("current common schema version does not match V1.4")
+        active_product_common = schemas[
+            (ACTIVE_PRODUCT_SCHEMA_DIR / "common.schema.json").resolve()
+        ]
+        if active_product_common["$defs"]["schemaVersion"]["const"] != (
+            ACTIVE_PRODUCT_ARTIFACT_VERSION
+        ):
+            raise ContractError("active product common schema version does not match V1.5")
         historical_versions = {"v1.3": "1.3.0", "v1.2": "1.2.0"}
         for version, artifact_version in historical_versions.items():
             historical_common = schemas[
@@ -1536,6 +1791,13 @@ def main() -> int:
             SCHEMA_DIR,
             schemas,
             "V1.4",
+        )
+        active_product_examples = validate_example_catalog(
+            ACTIVE_PRODUCT_EXAMPLE_DIR,
+            ACTIVE_PRODUCT_EXAMPLES,
+            ACTIVE_PRODUCT_SCHEMA_DIR,
+            schemas,
+            "V1.5 productization",
         )
         for version, example_map in HISTORICAL_EXAMPLES.items():
             validate_example_catalog(
@@ -1554,7 +1816,9 @@ def main() -> int:
 
         checkpoint_path = ROOT / "project-status.json"
         checkpoint = load_json(checkpoint_path)
-        project_schema_path = (SCHEMA_DIR / "project-checkpoint.schema.json").resolve()
+        project_schema_path = (
+            ACTIVE_PRODUCT_SCHEMA_DIR / "project-checkpoint.schema.json"
+        ).resolve()
         validate_instance(
             checkpoint,
             schemas[project_schema_path],
@@ -1600,6 +1864,7 @@ def main() -> int:
             raise ContractError("V1.4 insufficient_data run must reject a Research Result artifact")
 
         validate_v14_semantics(schemas, current_examples)
+        validate_v15_product_semantics(schemas, active_product_examples)
         validate_seed_skill(schemas)
         g0_source_count, g0_fact_count, g0_golden_count = validate_g0_fixtures(schemas)
         primary_source_count, primary_fact_count, primary_chunk_count, primary_case_count = (
@@ -1611,18 +1876,23 @@ def main() -> int:
             contingency_chunk_count,
             contingency_case_count,
         ) = validate_contingency_benchmark(schemas)
+        product_source_count, product_fact_count, product_chunk_count = (
+            validate_product_disclosure_package(schemas)
+        )
         validate_historical_scope_hashes()
 
         markdown_link_count = validate_markdown_links()
 
         print(
-            f"PASS: {len(REQUIRED_SCHEMAS)} current V1.4, "
+            f"PASS: {len(ACTIVE_PRODUCT_REQUIRED_SCHEMAS)} active V1.5 productization, "
+            f"{len(REQUIRED_SCHEMAS)} preserved V1.4, "
             f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.3'])} historical V1.3, and "
             f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.2'])} historical V1.2 schemas parsed"
         )
         print(f"PASS: {reference_count} local schema references resolved")
         print(
-            f"PASS: {len(CURRENT_EXAMPLES)} V1.4, "
+            f"PASS: {len(ACTIVE_PRODUCT_EXAMPLES)} V1.5 productization, "
+            f"{len(CURRENT_EXAMPLES)} V1.4, "
             f"{len(HISTORICAL_EXAMPLES['v1.3'])} V1.3, and "
             f"{len(HISTORICAL_EXAMPLES['v1.2'])} V1.2 examples validated"
         )
@@ -1645,13 +1915,18 @@ def main() -> int:
             f"{contingency_chunk_count} synthetic chunks, "
             f"{contingency_case_count} frozen cases)"
         )
+        print(
+            "PASS: V1.5 real CATL product package validated "
+            f"({product_source_count} source, {product_fact_count} facts, "
+            f"{product_chunk_count} real evidence chunks)"
+        )
         print("PASS: historical V1.3 and V1.2 scope hashes validated")
         print(
             "PASS: project-status.json validated "
             f"({checkpoint_path_count} referenced paths present)"
         )
         print(f"PASS: {markdown_link_count} local Markdown links resolved")
-        print("PASS: two PNG screenshots and the MP4 demo asset validated")
+        print("PASS: six PNG screenshots and the preserved V1.4 MP4 demo asset validated")
         print(f"PASS: {len(REQUIRED_CONTRACTS)} required contract files present")
         return 0
     except ContractError as exc:

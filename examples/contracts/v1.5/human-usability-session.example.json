@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.5.0",
+  "session_id": "pilot_session_template_001",
+  "evidence_label": "REAL_HUMAN",
+  "simulated": false,
+  "status": "scheduled",
+  "participant": {
+    "pseudonym": "participant_pending_001",
+    "user_group": "finance_learner",
+    "prior_experience": "basic"
+  },
+  "consent": {
+    "obtained": false,
+    "privacy_notice_version": "v1.0",
+    "recording_allowed": false
+  },
+  "scenario": {
+    "company_id": "cn_300750",
+    "period": "2024H1",
+    "question": "2024 年上半年利润是否真正转化成了经营现金流？",
+    "run_id": "run_pending_real_human_pilot"
+  },
+  "task_outcomes": {
+    "selected_company": false,
+    "submitted_question": false,
+    "understood_conclusion": false,
+    "found_supporting_evidence": false,
+    "found_limitation_or_counter_evidence": false,
+    "identified_monitoring_item": false
+  },
+  "feedback": {
+    "what_worked": [],
+    "confusions": [],
+    "requested_changes": []
+  },
+  "started_at": "2026-09-02T18:00:00+08:00",
+  "completed_at": null
+}

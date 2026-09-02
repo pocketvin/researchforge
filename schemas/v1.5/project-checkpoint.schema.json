@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.5/project-checkpoint.schema.json",
+  "title": "ResearchForge V1.5 Productization Checkpoint",
+  "description": "Machine-readable V1.5 product gate, frozen V1.4 evidence, verification and resumption state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "product_scope_version", "contract_package_version", "completed_gates", "current_gate", "gate_status", "current_milestone", "frozen_v1_4", "last_verified", "next_action", "blockers", "pending_decisions", "resumption", "last_session", "updated_at"],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schemaVersion"},
+    "project_id": {"type": "string", "const": "researchforge"},
+    "product_scope_version": {"type": "string", "const": "1.5"},
+    "contract_package_version": {"type": "string", "const": "1.5.0"},
+    "completed_gates": {"type": "array", "items": {"$ref": "#/$defs/gate"}, "uniqueItems": true},
+    "current_gate": {"$ref": "#/$defs/gate"},
+    "gate_status": {"$ref": "#/$defs/gateStatus"},
+    "current_milestone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "outcome", "status"],
+      "properties": {
+        "id": {"$ref": "common.schema.json#/$defs/identifier"},
+        "title": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "outcome": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "status": {"$ref": "#/$defs/gateStatus"}
+      }
+    },
+    "frozen_v1_4": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "primary_result_hash", "contingency_result_hash", "combined_outcome_hash", "additional_formal_experiments_authorized"],
+      "properties": {
+        "outcome": {"type": "string", "const": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS"},
+        "primary_result_hash": {"$ref": "common.schema.json#/$defs/sha256"},
+        "contingency_result_hash": {"$ref": "common.schema.json#/$defs/sha256"},
+        "combined_outcome_hash": {"$ref": "common.schema.json#/$defs/sha256"},
+        "additional_formal_experiments_authorized": {"type": "boolean", "const": false}
+      }
+    },
+    "last_verified": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "commands"],
+      "properties": {
+        "at": {"type": "string", "format": "date-time"},
+        "commands": {"type": "array", "items": {"$ref": "#/$defs/verifiedCommand"}, "minItems": 1, "maxItems": 20}
+      }
+    },
+    "next_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "why", "first_step", "acceptance_evidence"],
+      "properties": {
+        "title": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "why": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "first_step": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "acceptance_evidence": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "minItems": 1, "maxItems": 12}
+      }
+    },
+    "blockers": {"type": "array", "items": {"$ref": "#/$defs/blocker"}, "maxItems": 20},
+    "pending_decisions": {"type": "array", "items": {"$ref": "#/$defs/pendingDecision"}, "maxItems": 20},
+    "resumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["working_directory", "read_first", "commands"],
+      "properties": {
+        "working_directory": {"type": "string", "const": "."},
+        "read_first": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/relativePath"}, "minItems": 1, "maxItems": 6, "uniqueItems": true},
+        "commands": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 1000}, "minItems": 1, "maxItems": 6}
+      }
+    },
+    "last_session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ended_at", "summary", "files_changed"],
+      "properties": {
+        "ended_at": {"type": "string", "format": "date-time"},
+        "summary": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "files_changed": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/relativePath"}, "maxItems": 100, "uniqueItems": true}
+      }
+    },
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "gate": {"type": "string", "enum": ["V15_DIRECTION", "V15_REAL_DATA", "V15_RESEARCH_UX", "V15_PILOT_READY", "V15_DEMO", "V15_PRODUCT"]},
+    "gateStatus": {"type": "string", "enum": ["not_started", "in_progress", "blocked", "completed"]},
+    "verifiedCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "exit_code", "summary"],
+      "properties": {
+        "command": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "exit_code": {"type": "integer", "minimum": 0, "maximum": 255},
+        "summary": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "blocks", "owner_action"],
+      "properties": {
+        "id": {"$ref": "common.schema.json#/$defs/identifier"},
+        "description": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "blocks": {"type": "array", "items": {"$ref": "#/$defs/gate"}, "minItems": 1, "uniqueItems": true},
+        "owner_action": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+      }
+    },
+    "pendingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "question", "blocks_gate"],
+      "properties": {
+        "decision_id": {"$ref": "common.schema.json#/$defs/identifier"},
+        "question": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "blocks_gate": {"$ref": "#/$defs/gate"}
+      }
+    }
+  }
+}

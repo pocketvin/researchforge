@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.5/common.schema.json",
+  "title": "ResearchForge V1.5 Common Product Definitions",
+  "description": "Shared definitions for the V1.5 productization layer. V1.4 research artifacts remain governed by schemas/v1.4.",
+  "$defs": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.5.0"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*\\.\\.).+$"
+    },
+    "company": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["company_id", "legal_name", "ticker", "exchange", "country_code"],
+      "properties": {
+        "company_id": {"$ref": "#/$defs/identifier"},
+        "legal_name": {"type": "string", "minLength": 1, "maxLength": 256},
+        "ticker": {"type": "string", "minLength": 1, "maxLength": 32},
+        "exchange": {"type": "string", "enum": ["SZSE", "SSE"]},
+        "country_code": {"type": "string", "const": "CN"}
+      }
+    },
+    "reportingPeriod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["period_start", "period_end", "fiscal_year", "fiscal_period", "period_basis", "accounting_standard", "statement_scope", "restatement_status"],
+      "properties": {
+        "period_start": {"type": "string", "format": "date"},
+        "period_end": {"type": "string", "format": "date"},
+        "fiscal_year": {"type": "integer", "minimum": 1900, "maximum": 2200},
+        "fiscal_period": {"type": "string", "enum": ["Q1", "Q2", "Q3", "Q4", "H1", "FY"]},
+        "period_basis": {"type": "string", "enum": ["instant", "discrete", "ytd"]},
+        "accounting_standard": {"type": "string", "enum": ["CAS", "IFRS", "OTHER"]},
+        "statement_scope": {"type": "string", "enum": ["consolidated", "parent_company", "company_only"]},
+        "restatement_status": {"type": "string", "enum": ["as_reported", "restated", "derived_from_restated"]}
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_kind", "schema_version", "content_hash", "path"],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/identifier"},
+        "artifact_kind": {"type": "string", "enum": ["source_document", "evidence_chunk", "financial_fact", "parser_output"]},
+        "schema_version": {"type": "string", "enum": ["1.4.0", "1.5.0"]},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "path": {"$ref": "#/$defs/relativePath"}
+      }
+    }
+  }
+}

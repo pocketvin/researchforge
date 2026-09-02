@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.5/product-research-request.schema.json",
+  "title": "ResearchForge V1.5 Product Research Request",
+  "description": "The minimum real-product input boundary. Product requests may resolve only product data and must never fall back to fixtures or benchmarks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "data_namespace", "company", "reporting_period", "question", "research_time", "idempotency_key"],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schemaVersion"},
+    "request_id": {"$ref": "common.schema.json#/$defs/identifier"},
+    "data_namespace": {"type": "string", "const": "product"},
+    "company": {"$ref": "common.schema.json#/$defs/company"},
+    "reporting_period": {"$ref": "common.schema.json#/$defs/reportingPeriod"},
+    "question": {"type": "string", "minLength": 8, "maxLength": 2000},
+    "research_time": {"type": "string", "format": "date-time"},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 128}
+  }
+}

@@ -2,269 +2,255 @@
 
 [![CI](https://github.com/pocketvin/researchforge/actions/workflows/ci.yml/badge.svg)](https://github.com/pocketvin/researchforge/actions/workflows/ci.yml)
 
-> A Financial Research Agent with Verifiable Procedures and a Controlled Learning Experiment.
+> **An evidence-grounded AI fundamental research workspace for A-share company research.**
 
-ResearchForge V1.4 is an evidence-grounded company fundamental-research product and a controlled skill-evolution experiment. The current local product turns frozen A-share financial facts into schema-valid reports, deterministic evaluations, and sanitized ten-stage LangGraph traces without asking a model to perform arithmetic.
+ResearchForge is for individual researchers, finance learners and junior analysts who want a
+fast first-pass company study but do not want to trust a financial chatbot's black box.
 
-## 中文概览
+Give it:
 
-ResearchForge V1.4 是一个面向 A 股基本面研究的本地单用户产品，也是一个封闭的 Skill 演化实验。Research 页面把五种研究任务转成可追溯的财务事实、`Decimal` 公式、Claim—Fact—Evidence、反证、限制与十阶段 LangGraph Trace；Skill Lab 只读展示失败聚类、Experience、Candidate Skill Diff、Validation 配对指标和一次性 Final Test。React、FastAPI 与 PostgreSQL 可由 Docker Compose 一键启动，大型不可变 JSON 使用内容寻址文件保存。
+```text
+Company + Period + Research Question
+```
 
-项目不会提供交易、实时行情或投资建议，也不会开放式自我修改。两次正式实验均已按冻结协议完成，结果都是 `NO_ELIGIBLE_CLUSTER`；没有生成 Candidate，也没有开启 Validation 或消费 Final Test。工程产品已进入最终发布验收，研究假设则按停止规则标记为未获支持。三次可用性复验全部标记为 `SIMULATED`，真实用户价值仍未验证；OpenAI 累计消费为 0.1523062 美元。
+For example:
 
-快速启动：`docker compose up -d --build --wait`，随后执行 `uv run python scripts/docker_smoke.py`。完整中英文演示见 [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md)。
+```text
+宁德时代 + 2024H1 + “2024 年上半年利润是否真正转化成了经营现金流？”
+```
 
-## Status
+ResearchForge turns official public disclosures into a result you can audit:
 
-- Product/research scope: **V1.4 active baseline**
-- Contract package: **1.4.0**
-- Historical independently accepted gates: **V1.4 C0 + G0**
-- Engineering status: **V1.4 Full Engineering Product Ready release candidate; final independent acceptance pending**
-- Research status: **hypothesis unsupported after two formal experiments; stopping rule applied**
-- Supported deployment for V1.4: **local or controlled single-user demo**
-- Public repository: **[pocketvin/researchforge](https://github.com/pocketvin/researchforge)**
+```text
+Official Disclosure → Evidence → Financial Facts → Deterministic Calculations
+→ Research Reasoning → Counter Evidence → Verification → Monitoring Plan
+```
 
-Current critical path: perform the one deferred independent acceptance. The complete local gate and GitHub Actions run [`33613092646`](https://github.com/pocketvin/researchforge/actions/runs/33613092646) are green on commit `06e870a`. Formal research is closed: the primary and once-only contingency experiments both stopped without an eligible cluster, so no `SUPPORTED` or self-evolution claim is permitted. See [`docs/evidence/g3-primary-formal-result.md`](docs/evidence/g3-primary-formal-result.md), [`docs/evidence/g3-contingency-formal-result.md`](docs/evidence/g3-contingency-formal-result.md), and [`docs/evidence/g4-simulated-usability.md`](docs/evidence/g4-simulated-usability.md).
+Unlike a general financial chatbot, ResearchForge does not ask the model to remember filings or
+perform important arithmetic. Every material conclusion links back to facts and source locators;
+every important number has a deterministic formula record; missing or incompatible evidence
+causes an explicit limitation or abstention.
 
-## Run the Zero-Cost Product Core
+## What the user gets
 
-The default runtime is deterministic and does not read `OPENAI_API_KEY` or make provider calls.
+A completed research report answers:
+
+1. What is the conclusion?
+2. Which financial facts matter?
+3. How were the numbers calculated?
+4. Where does each important fact come from?
+5. Was conflicting evidence found?
+6. What are the current limitations?
+7. What should be monitored in the next filing?
+
+The primary product is the **Research** workspace. The historical Skill Evolution system is
+preserved as an experimental, read-only **Quality Lab** and is not required for normal research.
+
+## Current status
+
+- Active direction: **V1.5 Productization**
+- Current milestone: release verification after the complete local product gate passed
+- Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
+- Default runtime: strict `product` namespace with one reviewed CATL 2024H1 disclosure
+- Human usefulness: **not yet validated**
+- Investment advice, trading and price prediction: **not provided**
+
+The authoritative V1.5 direction is
+[`docs/product/researchforge-v1.5-product-thesis.md`](docs/product/researchforge-v1.5-product-thesis.md).
+It defines the target user, product promise, real-data boundary, acceptance criteria and migration
+from V1.4.
+
+## Product architecture
+
+| Layer | Owns |
+|---|---|
+| LLM | question understanding and bounded research reasoning over supplied evidence |
+| Deterministic Python | `Decimal` formulas, period semantics, calculations and policy decisions |
+| Evidence System | document identity, provenance, page/section locators and claim traceability |
+| Verifier | consistency, citation resolution, required coverage and counter-evidence checks |
+| LangGraph | one bounded ten-stage workflow, routing, checkpoint/recovery, cancellation and trace |
+| Quality Lab | frozen experimental quality evidence, separate from the user journey |
+
+ResearchForge uses Python 3.12, FastAPI, Pydantic 2, LangGraph, SQLAlchemy/Alembic,
+PostgreSQL, React, TypeScript and Vite. Immutable JSON artifacts use content-addressed storage.
+
+## Product preview
+
+![ResearchForge V1.5 real-data result](docs/assets/research-page-v1.5-result.png)
+
+Facts, formulas, evidence and trace stay collapsed until the user chooses to inspect them.
+Quality Lab has a separate secondary surface and is not part of the normal research journey.
+
+## Run the real-data demo
+
+The repository includes a reviewed, public-safe derived package for the official CATL 2024H1
+filing. This zero-cost command forces deterministic wording, makes no provider call and never
+falls back to fixtures:
 
 ```bash
+RESEARCHFORGE_REASONING_MODE=deterministic \
 uv run researchforge catalog
 
+RESEARCHFORGE_REASONING_MODE=deterministic \
 uv run researchforge run \
   --task-type filing_analysis \
   --company cn_300750 \
   --period 2024H1 \
   --question '2024年上半年利润是否转化为经营现金流?' \
-  --research-time '2024-08-01T00:00:00+08:00' \
-  --idempotency-key 'demo-catl-2024h1'
+  --research-time '2026-09-03T00:00:00+08:00' \
+  --idempotency-key 'v1.5-catl-2024h1-demo'
 ```
 
-The output bundle contains the persisted Run Manifest, Research Result, and Workflow Trace. Immutable JSON is stored below `artifacts/objects/sha256/`; small run/idempotency pointers live alongside it and the whole directory is Git-ignored. The same workflow supports all five allowlisted research modes.
+To rebuild the derived package, acquire the same allowlisted official PDF and verify its expected
+hash before parsing:
 
-Start the API with the app factory:
+```bash
+uv run researchforge ingest-disclosure --company cn_300750 --period 2024H1
+```
+
+If a confirmed rotated `OPENAI_API_KEY` is present in ignored `.env`, `auto` mode uses the
+Responses API for bounded wording over supplied facts and calculations. It does not enable web
+search or model-side arithmetic, and `store` remains false.
+
+Start the API:
 
 ```bash
 uv run uvicorn researchforge.api.app:create_app --factory --reload
 ```
 
-The API implements create/status/result/trace/facts/cancel resources, `GET /v1/catalog`, and read-only Evolution experiment/artifact endpoints. It returns `202` on creation, `425` while an artifact is not ready, and `409` for an idempotency conflict or a terminal run without a result.
-
-## Inspect or Reproduce the Formal Controls Safely
-
-First validate the one-request calibration boundary without contacting OpenAI:
-
-```bash
-uv run researchforge calibration-preflight
-```
-
-After the rotated key is confirmed, `calibrate` sends exactly one synthetic request and
-freezes its model, prompt, Structured Output, coverage, usage, and cost evidence. This
-request is explicitly marked `SYNTHETIC_CALIBRATION_ONLY_NOT_RESEARCH_EVIDENCE` and cannot
-support the research hypothesis:
-
-```bash
-uv run researchforge calibrate
-```
-
-The formal offline preflight then validates the passed calibration, public hashes, 24
-verifier-only ground-truth hashes, the Seed Skill, the 144-run plan, one-time Final Test
-policy, and both budget ceilings. It never contacts OpenAI:
-
-```bash
-uv run researchforge evolution-preflight
-```
-
-On a fresh checkout without local credentials, the expected result is `status: BLOCKED`
-with `provider_contacted: false`. Never paste a key into a command or Git-tracked file.
-The completed project evidence records a passed synthetic calibration, two immutable
-formal negative outcomes, and the applied two-experiment stopping rule. Re-running a
-formal experiment is no longer authorized by the frozen protocol.
-
-The maximum plan is 144 formal runs: 72 Base/Seed Evolution runs, 36 paired
-Seed/Candidate Validation runs, and—only after adoption—36 paired runs in the single
-sealed Final Test stage. Every run uses the same ten-stage LangGraph; ordinary Python
-owns clustering, patch policy, budget enforcement, and adoption decisions.
-
-Start the frontend separately:
+Start the frontend:
 
 ```bash
 npm ci --prefix frontend
 npm run dev --prefix frontend
 ```
 
-Or start the complete packaged product:
+Or run the packaged stack:
 
 ```bash
 docker compose up -d --build --wait
 uv run python scripts/docker_smoke.py
 ```
 
-The verified stack runs PostgreSQL, FastAPI, and Nginx/React with health checks and persistent volumes. Standard Docker Hub image names remain the defaults; optional `PYTHON_IMAGE`, `NODE_IMAGE`, `NGINX_IMAGE`, and `POSTGRES_IMAGE` build overrides are available for compatible mirrors.
+Docker Compose starts PostgreSQL, FastAPI and Nginx/React with persistent volumes and health
+checks. See [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) for the reproducible V1.5
+walkthrough and [`docs/demo/v1.5-demo-evidence.md`](docs/demo/v1.5-demo-evidence.md) for exact
+source, run and verification evidence.
 
-The same aggregate budget ledger controls three fresh-context usability sessions. Offline preflight never contacts OpenAI:
+## Research workflow
 
-```bash
-uv run researchforge usability-preflight \
-  --run-id <persisted-succeeded-run-id>
-```
-
-The completed batch writes exactly three schema-valid records with `evidence_label: SIMULATED` and `human_user_value_validated: false`. All three sessions passed the four locateability checks; two met both high-score thresholds. This remains simulation evidence only.
-
-## Start Here
-
-1. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — current gate, blockers, and one next action.
-2. [`docs/product/researchforge-v1.4-scope.md`](docs/product/researchforge-v1.4-scope.md) — current product and research authority.
-3. [`DECISIONS.md`](DECISIONS.md) — accepted and pending architecture/data choices.
-4. [`docs/strategy/solo-success-plan.md`](docs/strategy/solo-success-plan.md) — L0–L4 delivery ladder and fallbacks.
-5. [`docs/contracts/research-workflow.md`](docs/contracts/research-workflow.md) — bounded LangGraph orchestration.
-6. [`PORTFOLIO.md`](PORTFOLIO.md) — claims that are safe at each evidence level.
-7. [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) — bilingual live demo and packaged evidence.
-
-## Authority Order
-
-When documents conflict, use this order:
-
-1. [`docs/product/researchforge-v1.4-scope.md`](docs/product/researchforge-v1.4-scope.md) defines active product and research scope.
-2. [`docs/contracts/`](docs/contracts/) defines executable behavior, financial semantics, experiment isolation, and acceptance rules.
-3. [`schemas/v1.4/`](schemas/v1.4/) defines current machine-readable artifact shapes.
-4. Application code and UI must conform to the three layers above.
-
-[`docs/product/v1.3-to-v1.4-change-note.md`](docs/product/v1.3-to-v1.4-change-note.md) records the current upgrade. V1.2 and V1.3 scope/schema packages remain immutable historical evidence; they are not current implementation authority.
-
-A scope change is allowed only through an explicit decision, change note, contract update, and version impact assessment.
-
-## V1.4 Outcomes
-
-V1.4 has two separate outcomes:
-
-1. A useful, evidence-grounded fundamental research workflow.
-2. A controlled `failure → experience → skill patch → held-out validation` research experiment for earnings-quality omissions.
-
-Engineering delivery remains useful after the negative research result. Under the frozen stop condition, the correct terminal state is “engineering complete, research hypothesis unsupported,” not a fabricated `SUPPORTED` result. V1.4 does not provide investment advice, price predictions, trading, portfolio optimization, real-time market data, or autonomous open-ended model training.
-
-## Delivery Ladder
-
-| Level | Outcome | Current status |
-|---|---|---|
-| L0 Contract Ready | Scope, schemas, methods, validation | complete |
-| L1 Resume Ready | One LangGraph research slice, deterministic tools, report, tests | complete |
-| L2 Demo Ready | Verifier, trace, and replayable failure evidence | complete |
-| L3 Research Supported | Adopted Candidate and supported sealed Final Test | not achieved; hypothesis unsupported after two experiments |
-| L4 Full Engineering Product | Five modes, two pages, storage, Docker, CI, three labeled simulations | release candidate; final independent acceptance pending |
-
-Stopping earlier preserves honest portfolio value. “Self-improving” is not a completed claim until L3 adoption and sealed-test evidence exist.
-
-## Repository Layout
+All supported research tasks reuse one LangGraph:
 
 ```text
-ResearchForge/
-├── .env.example
-├── .python-version
-├── AGENTS.md
-├── CHANGELOG.md
-├── DATA_NOTICE.md
-├── DECISIONS.md
-├── LICENSE
-├── PORTFOLIO.md
-├── PROJECT_STATUS.md
-├── README.md
-├── pyproject.toml
-├── project-status.json
-├── uv.lock
-├── docs/
-│   ├── architecture/
-│   │   └── implementation-blueprint.md
-│   ├── product/
-│   │   ├── researchforge-v1.4-scope.md
-│   │   ├── v1.3-to-v1.4-change-note.md
-│   │   ├── researchforge-v1.3-scope.md          # historical
-│   │   └── researchforge-v1.2-scope-freeze.md  # historical
-│   ├── contracts/
-│   │   ├── README.md
-│   │   ├── benchmark-protocol.md
-│   │   ├── data-source-acceptance.md
-│   │   ├── development-gates.md
-│   │   ├── evolution-adoption-policy.md
-│   │   ├── financial-methodology.md
-│   │   ├── product-success-metrics.md
-│   │   ├── research-workflow.md
-│   │   ├── run-lifecycle.md
-│   │   └── task-capability-matrix.md
-│   ├── operations/
-│   │   └── resume-playbook.md
-│   ├── demo/                                  # bilingual walkthrough and script
-│   ├── assets/                                # verified screenshots and short MP4 preview
-│   └── strategy/
-│       ├── project-scorecard.md
-│       ├── risk-register.md
-│       └── solo-success-plan.md
-├── examples/
-│   └── contracts/
-│       ├── benchmark-case.example.json         # historical V1.2
-│       └── v1.4/
-│           └── 12 current contract examples
-├── schemas/
-│   ├── v1.2/                                  # historical contracts
-│   ├── v1.3/                                  # historical contracts
-│   └── v1.4/                                  # 19 current schemas
-├── scripts/
-│   ├── build_g0_fixtures.py
-│   ├── docker_smoke.py
-│   ├── run_reliability_batch.py
-│   └── validate_contracts.py
-├── frontend/                                 # React Research + Skill Lab
-├── migrations/                               # Alembic schema history
-├── benchmark/suites/                         # pre-registered split membership
-├── src/
-│   └── researchforge/
-│       ├── adapters/                         # fixtures, storage, OpenAI boundary
-│       ├── api/                              # FastAPI resources
-│       ├── application/                      # lifecycle, budget, analysis services
-│       ├── domain/                           # Decimal formulas and period semantics
-│       └── workflow/                         # bounded ten-stage LangGraph
-└── tests/                                    # domain, adapters, workflow, API and CLI
+understanding_question
+→ planning
+→ loading_financial_data
+→ retrieving_evidence
+→ calculating
+→ cross_checking
+→ searching_counter_evidence
+→ forming_conclusion
+→ validating_output
+→ completed
 ```
 
-## Contract Rules
+LangGraph orchestrates. Plain Python owns finance, retrieval, verification and persistence.
+The graph stores sanitized trace events and artifact IDs, not hidden chain-of-thought.
 
-- Every persisted artifact carries `schema_version`.
-- Every research result is traceable to immutable facts, evidence, skill version, formula version, model configuration, and evidence cutoff.
-- Important numbers are calculated by deterministic tools, never by LLM mental arithmetic.
-- LangGraph orchestrates the single Research Agent's typed workflow, conditional failure paths, checkpoint/resume, and Workflow Trace. Plain Python owns finance, retrieval, verification, storage semantics, and Evolution.
-- External filings are untrusted data. They cannot modify prompts, tools, permissions, skills, or experiment policy.
-- Counter-evidence search is mandatory; fabricating counter evidence is prohibited. A recorded `not_found` result is valid.
-- Final-test data and labels are sealed from the Researcher and Optimizer until the candidate skill is frozen.
-- Raw hidden chain-of-thought is not persisted. Store only explicit plans, tool records, evidence links, and concise decision summaries.
+## API surface
 
-## Implementation Order
+Research resources:
+
+- `POST /v1/research-runs`
+- `GET /v1/research-runs/{run_id}`
+- `GET /v1/research-runs/{run_id}/result`
+- `GET /v1/research-runs/{run_id}/facts`
+- `GET /v1/research-runs/{run_id}/evidence`
+- `GET /v1/research-runs/{run_id}/calculations`
+- `GET /v1/research-runs/{run_id}/trace`
+- `POST /v1/research-runs/{run_id}/cancel`
+- `GET /v1/catalog`
+
+Quality Lab resources remain read-only. They are documented in the preserved V1.4 scope and are
+not part of the normal research flow.
+
+## Data safety and provenance
+
+V1.5 separates three namespaces:
+
+| Namespace | Purpose | Product fallback? |
+|---|---|---:|
+| `product` | acquired real public disclosures and derived research artifacts | primary |
+| `fixture` | deterministic tests and reproducible local examples | explicit fixture mode only |
+| `benchmark` | frozen evaluation and Quality Lab evidence | never |
+
+Real acquisitions must retain official URL, document identity, publication and retrieval times,
+content hash, page/section locator, parser/mapping version and provenance. Raw filing PDFs remain
+ignored and are not committed. Unverified values are never filled from model memory.
+
+## Quality Lab: preserved, not the product thesis
+
+V1.4 executed two controlled formal experiments. Both ended at `NO_ELIGIBLE_CLUSTER`; no
+Candidate was created, Validation was not opened and Final Test was not consumed. The immutable
+terminal result is:
 
 ```text
-Contracts and data-source acceptance ✓
-→ golden earnings-quality cases ✓
-→ one LangGraph-orchestrated end-to-end research slice ✓
-→ checkpoint recovery + deterministic and coverage verifier ✓
-→ remaining product modes + 20-run reliability ✓
-→ two-page UI + PostgreSQL + CI definitions ✓
-→ primary + contingency package freeze ✓
-→ Docker smoke + simulation executor + demo packaging ✓
-→ rotated key + calibration + controlled primary experiment ✓
-→ once-only disjoint contingency experiment + stopping rule ✓
-→ three labeled simulations + evidence-driven UI correction ✓
-→ public packaging + GitHub CI ✓
-→ one final independent acceptance ← current
+RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
 ```
 
-## Validate the Contract Package
+That negative result, its thresholds, benchmark packages, hashes and audit evidence are frozen.
+No third experiment is authorized. The result demonstrates honest experimentation but does not
+define V1.5 product success.
+
+Historical simulated usability records are also preserved and always labeled `SIMULATED` with
+`human_user_value_validated: false`.
+
+## Start here
+
+1. [`docs/product/researchforge-v1.5-product-thesis.md`](docs/product/researchforge-v1.5-product-thesis.md) — active product authority.
+2. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — current milestone, completed evidence and next action.
+3. [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) — reproducible demo and V1.5 target.
+4. [`PORTFOLIO.md`](PORTFOLIO.md) — evidence-backed interview positioning.
+5. [`docs/contracts/research-workflow.md`](docs/contracts/research-workflow.md) — preserved workflow contract.
+6. [`DECISIONS.md`](DECISIONS.md) — architecture and scope decisions.
+
+## Authority order
+
+For V1.5 Productization:
+
+1. `docs/product/researchforge-v1.5-product-thesis.md`;
+2. V1.5 contracts and schemas added through its migration plan;
+3. unchanged V1.4 finance, evidence, workflow and safety contracts;
+4. code and UI.
+
+V1.2, V1.3 and V1.4 historical schemas, scope documents and frozen research evidence are not
+silently reinterpreted or rewritten.
+
+## Non-goals
+
+ResearchForge does not add multi-agent debate, full-market ingestion, complex vector
+infrastructure, real-time行情, news trading, price prediction, portfolio optimization, order
+execution, investment recommendations, open-ended self-modification, mobile apps, Kubernetes or
+enterprise multi-tenancy.
+
+## Verification
 
 ```bash
-python3 scripts/validate_contracts.py
+uv lock --check
+uv run ruff format --check .
+uv run ruff check .
+uv run mypy --strict src scripts tests migrations
+uv run pytest -q
+uv run python scripts/validate_contracts.py
+npm run typecheck --prefix frontend
+npm run lint --prefix frontend
+npm test --prefix frontend -- --run
+npm run build --prefix frontend
 ```
 
-The dependency-free validator checks V1.4 JSON syntax, schema metadata, local `$ref` resolution, current examples and live project checkpoint, historical V1.2/V1.3 integrity, Markdown links, and required project files.
+The public repository is [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
 
-## Safety and Disclaimer
+## Disclaimer
 
-ResearchForge is a research-assistance prototype, not investment advice. Any future data integration must document its license, provenance, retrieval time, publication time, and redistribution restrictions. Secrets and licensed raw datasets must not be committed.
+ResearchForge is research-assistance software, not investment advice. Source availability,
+parsing and normalized values must still be verified by the user before any financial decision.

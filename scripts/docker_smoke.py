@@ -61,8 +61,17 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
     catalog = request_json(f"{base_url}/v1/catalog")
     if health != "ok":
         raise RuntimeError("packaged frontend health response was not 'ok'")
-    if not isinstance(catalog, dict) or len(catalog.get("supported_task_types", [])) != 5:
-        raise RuntimeError("catalog did not advertise all five research modes")
+    if not isinstance(catalog, dict):
+        raise RuntimeError("catalog was not a JSON object")
+    if catalog.get("data_namespace") != "product":
+        raise RuntimeError("packaged product did not enforce the product namespace")
+    if catalog.get("supported_task_types") != ["filing_analysis"]:
+        raise RuntimeError("catalog advertised an unverified product capability")
+    companies = catalog.get("companies", [])
+    if len(companies) != 1 or companies[0].get("company_id") != "cn_300750":
+        raise RuntimeError("catalog did not enforce the CATL product boundary")
+    if companies[0].get("period_labels") != ["2024H1"]:
+        raise RuntimeError("catalog did not enforce the reviewed product period")
 
     submission = request_json(
         f"{base_url}/v1/research-runs",
@@ -71,7 +80,7 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
             "research_question": "2024年上半年利润是否转化为经营现金流?",
             "company_ids": ["cn_300750"],
             "requested_period_labels": ["2024H1"],
-            "research_time": "2024-08-01T00:00:00+08:00",
+            "research_time": "2026-09-03T00:00:00+08:00",
             "idempotency_key": f"docker-smoke-{uuid4().hex}",
         },
     )
@@ -92,20 +101,42 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
         raise RuntimeError("persisted run did not expose its financial facts")
     if not isinstance(evidence, list) or not evidence:
         raise RuntimeError("persisted run did not expose bounded evidence chunks")
+    if any("SYNTHETIC" in str(chunk.get("text", "")) for chunk in evidence):
+        raise RuntimeError("product run exposed synthetic fixture evidence")
+    if not all(
+        str(chunk.get("source_uri", "")).startswith("https://disc.static.szse.cn/")
+        for chunk in evidence
+    ):
+        raise RuntimeError("product evidence did not resolve to the official source host")
     if not isinstance(calculations, list) or not calculations:
         raise RuntimeError("persisted run did not expose deterministic calculation records")
     if not result.get("monitoring_items"):
         raise RuntimeError("result did not expose an actionable monitoring item")
+    if not result.get("limitations"):
+        raise RuntimeError("result did not expose limitations")
+    material_claims = [
+        claim for claim in result.get("claims", []) if claim.get("materiality") == "material"
+    ]
+    if not material_claims or not all(
+        claim.get("support_evidence_ids") for claim in material_claims
+    ):
+        raise RuntimeError("material claims did not resolve supporting evidence")
+    if not any(
+        claim.get("counter_evidence_search", {}).get("result") == "found"
+        for claim in material_claims
+    ):
+        raise RuntimeError("product result did not expose filing-based counter evidence")
 
     frontend = request_text(f"{base_url}/")
     if 'id="root"' not in frontend:
         raise RuntimeError("frontend root was not served")
     return {
         "status": "PASS",
-        "schema_version": "1.4.0",
+        "schema_version": "1.5.0",
+        "data_namespace": catalog["data_namespace"],
         "run_id": run_id,
         "lifecycle_state": manifest["lifecycle_state"],
-        "research_modes": len(catalog["supported_task_types"]),
+        "product_capabilities": len(catalog["supported_task_types"]),
         "workflow_stages": len(trace["stages"]),
         "fact_count": len(facts),
         "evidence_count": len(evidence),

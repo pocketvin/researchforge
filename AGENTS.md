@@ -6,22 +6,25 @@ These instructions apply to all work under this project and supplement the Works
 
 Read, in order:
 
-1. `docs/product/researchforge-v1.4-scope.md`
-2. `docs/contracts/README.md`
-3. The contract document and JSON schemas relevant to the change
+1. `docs/product/researchforge-v1.5-product-thesis.md`
+2. `docs/product/v1.4-to-v1.5-productization-change-note.md`
+3. `docs/contracts/README.md`
+4. The contract document and JSON schemas relevant to the change
 
 Do not implement behavior from memory or from the demo narrative alone.
 
 ## Scope Control
 
-- V1.4 is the active versioned baseline. Do not add excluded capabilities such as trading, price prediction, multi-agent debate, complex RAG, full-market data, or open-ended optimization without an explicit scope decision.
+- V1.5 Productization is the active product direction. V1.4 remains the preserved engineering and research baseline; new persisted semantics require V1.5 contracts/schemas rather than silent V1.4 mutation.
+- Research is the primary product. Evolution is a frozen, read-only Quality / Research Lab and must not drive new features unless real usage later establishes a stable failure pattern and a new protocol is approved.
+- Do not add excluded capabilities such as trading, price prediction, multi-agent debate, complex RAG, full-market data, or open-ended optimization without an explicit scope decision.
 - A scope change requires a decision-log entry, change note, contract/schema impact assessment, and updated acceptance evidence.
 - Preserve V1.2 and V1.3 scope and schemas as read-only history. Never silently reinterpret an older artifact as V1.4.
 
 ## Execution Discipline
 
 - Maintain one active milestone and one work-in-progress slice.
-- The current critical path is the data-source acceptance spike. Do not start runtime infrastructure until its outcome is recorded.
+- The current critical path is one real-public-disclosure product ingestion slice with strict `product` / `fixture` / `benchmark` isolation, followed by the primary Research UX.
 - Update both `PROJECT_STATUS.md` and `project-status.json` at the end of every implementation session.
 - Record architecture, data, cost, or scope choices in `DECISIONS.md`; chat history is not a decision record.
 - Do not introduce infrastructure unless `docs/architecture/implementation-blueprint.md` shows a current gate requires it and a smaller option was evaluated.
@@ -45,6 +48,7 @@ Do not implement behavior from memory or from the demo narrative alone.
 
 ## Research and Experiment Isolation
 
+- Product, fixture and benchmark data use explicit, non-fallback namespaces. A product run must never read hidden Benchmark truth or silently substitute a fixture.
 - Product data and frozen benchmark packages must use separate storage namespaces.
 - Evolution may read only the Evolution split. Candidate selection may read Validation results. Final Test labels remain sealed until the candidate is frozen.
 - Base, Seed, and Evolved comparisons must use the same model, tools, data, budgets, and runtime parameters. Only the skill may differ.
@@ -52,6 +56,7 @@ Do not implement behavior from memory or from the demo narrative alone.
 - Never hard-code illustrative demo metrics such as `41% → 18%`.
 - Simulated usability evidence must always be labeled `SIMULATED` with `human_user_value_validated: false`.
 - Formal OpenAI calls must stop before aggregate worst-case spend can exceed USD 20.
+- Do not run another formal Evolution experiment. Preserve `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS` and all supporting hashes exactly.
 
 ## Financial Data Safety
 

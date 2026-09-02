@@ -1,117 +1,126 @@
 # ResearchForge Project Status
 
-Last updated: 2026-09-02
-
+Last updated: 2026-09-03
 Machine-readable mirror: [`project-status.json`](project-status.json)
+
+Contract package: 1.5.0
+Current gate: V15_PRODUCT
+Scope: V1.5 active productization
 
 ## Current Position
 
-- Scope: V1.4 active baseline; V1.2 and V1.3 are read-only history.
-- Contract package: 1.4.0.
-- Current gate: G4.
-- Engineering: `V1.4 Full Engineering Product Ready` release candidate.
-- Research: `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS`.
-- Release gate: full local evidence and GitHub Actions run `33613092646` pass; only the one deferred independent acceptance remains.
+- Active product direction: **V1.5 Productization**.
+- Product thesis: **Direction Ready**.
+- Real-data vertical slice: **verified**.
+- Research UX and Quality Lab: **verified in unit, E2E and live-browser runs**.
+- Human pilot kit: **implemented; 0 real-human sessions, usefulness UNVALIDATED**.
+- Local engineering gate: **passed; GitHub CI and final independent acceptance pending**.
+- Current product boundary: CATL `2024H1`, `filing_analysis`, strict `product` namespace.
 - Public repository: [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
-- OpenAI spend: USD `0.1523062` of USD `20.00`; no reservation remains.
-- Human usefulness and market demand: unvalidated.
 
-## Engineering Evidence
+The current authority is
+[`docs/product/researchforge-v1.5-product-thesis.md`](docs/product/researchforge-v1.5-product-thesis.md).
+V1.5 success does not depend on a supported Evolution hypothesis.
 
-- Five research modes use one bounded ten-stage LangGraph with checkpoint/recovery,
-  cancellation, timeout, conditional degradation, and one structure-only repair.
-- Financial formulas, evidence loading, Verifier policy, persistence, and Evolution remain
-  ordinary Python services independent of LangGraph.
-- Research Result contains Claim—Fact—Evidence links, persisted synthetic Evidence Chunks,
-  source hashes/locators, deterministic Calculation Records, counter-evidence boundaries,
-  limitations, and explicit monitoring triggers.
-- FastAPI exposes asynchronous run lifecycle resources, facts, evidence, calculations, trace,
-  cancellation, catalog, and read-only Evolution artifacts.
-- Content-addressed immutable JSON and eight PostgreSQL logical records pass migration
-  `up/down/up`; Docker smoke resolves 6 facts, 1 evidence chunk, 4 calculations, 1 monitoring
-  item, and 10 workflow stages through the frontend proxy.
-- React Research and Skill Lab pages pass typecheck, lint, unit tests, production build,
-  Playwright navigation, critical-impact accessibility checks, and browser inspection.
-- The fixed reliability batch remains 20/20 successful with four runs per mode and zero
-  provider calls.
-- Current full backend suite: 160 tests passed before the final documentation refresh; the
-  final release gate reruns the exact count after all edits.
+## Implemented V1.5 Evidence
 
-## Formal Research Outcome
+### Product narrative and contracts
 
-### Primary V1.4
+- README, Portfolio, demo and product docs lead with Company + Period + Research Question.
+- V1.5 schemas cover product requests, ingestion manifests, pilot records and checkpoints.
+- The primary user journey contains no Candidate, Validation or Final Test terminology.
 
-- `experiment_primary_v1_4_001`
-- 72/72 formal Evolution evaluations succeeded.
-- Base: 36 evaluations, 9 failed evaluations, 10 failure events.
-- Seed: 36 evaluations, no failure events.
-- Outcome: `NO_ELIGIBLE_CLUSTER`.
-- No Candidate, Validation, or Final Test.
-- Spend: USD `0.0680124`.
-- Result hash: `60d7620ca0f620e926c99f22a091d7305097dd787c28d89270977cb8a6c735ed`.
+### Real public disclosure
 
-### Contingency V1.5
+- Allowlisted official SZSE CATL 2024H1 PDF acquired and hash-checked.
+- Source PDF: 1,684,794 bytes; SHA-256
+  `2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1`.
+- Derived package: one Source Document, six reviewed Financial Facts and eight page-located
+  Evidence Chunks; package hash
+  `fdd6cc077607144b46b741aae3fe713eae09ca7c54c00bfbc43960847be45765`.
+- Product, fixture and Benchmark namespaces are explicit; mismatch refuses fallback.
+- Hash, byte-count, PDF-magic or reviewed-cell mismatch causes abstention.
 
-- `experiment_contingency_v1_5_001`
-- Activated once after the frozen primary negative result.
-- 72 formal Evolution evaluations succeeded.
-- Base: 36 evaluations, 10 failed evaluations, 14 failure events.
-- Seed: 36 evaluations, no failure events.
-- Two zero-provider-token technical failures were retained as audit records and excluded from
-  the formal denominator under the one-retry policy.
-- Outcome: `NO_ELIGIBLE_CLUSTER`.
-- No Candidate, Validation, or Final Test.
-- Spend: USD `0.0646992`.
-- Result hash: `dadd29917979b53a2b47ed66e7bfa9deae6ba8486802acc12bdba38ab3a3877f`.
+### Research result
 
-The two-experiment stopping rule is applied. No further formal experiment is authorized. The
-combined terminal outcome hash is
-`bdc0c1aed55e930312f01ecaebee8969e96e7ff625b27b735b940fcff8a1d2af`.
+- The real-data cash-conversion path completed through all ten LangGraph stages.
+- Net income: CNY `22,864,987,400.00`; operating cash flow: CNY
+  `44,708,954,600.00`; deterministic cash conversion: `1.96x` displayed.
+- Material claims resolve to exact fact and evidence IDs.
+- Filing-based counter evidence covers non-recurring-profit context and unaudited status.
+- Result includes limitations, monitoring trigger and a sanitized trace.
+- A bounded model-backed smoke passed the Verifier with all main metrics at `1.0`; request cost
+  was USD `0.0012008`.
 
-## Simulated Usability Evidence
+### Core product UX
 
-- Initial batch `simulated_usability_v1_4_001`: `FAIL`; monitoring actions and direct evidence
-  linkage were not sufficiently explicit.
-- Corrections: materialized Evidence Chunk IDs/excerpts/hashes, added monitoring triggers and
-  next-review timing, exposed deterministic Calculation Records, and taught the Verifier to
-  resolve evidence citations.
-- Final batch `simulated_usability_v1_4_002`: `PASS`.
-- All 3/3 isolated sessions located the key result, supporting evidence, a counter-evidence item
-  or limitation, and a monitoring item; 2/3 met both high-score thresholds.
-- Every record is `SIMULATED` and `human_user_value_validated: false`.
+- Research begins with Company, Period, Question and Start Research.
+- Output order is Executive Conclusion, Key Findings, Financial Facts, Calculations, Supporting
+  Evidence, Counter Evidence, Risks & Limitations, Monitoring Plan and Research Trace.
+- Facts, calculations, evidence and trace use keyboard-accessible progressive disclosure.
+- Skill Lab is renamed **Quality Lab**, marked experimental/read-only and treated as secondary.
+
+### Pilot and demo
+
+- A privacy notice, participant task sheet, facilitator guide, observation rubric, frozen
+  acceptance threshold and schema-valid session template are ready.
+- A real-data three-to-five-minute demo script and exact evidence record are present.
+- `PILOT_READY` must not be described as `HUMAN_VALIDATED`.
+
+## Preserved V1.4 Baseline
+
+The frozen Quality Lab result remains:
+
+```text
+RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
+```
+
+- Primary result hash:
+  `60d7620ca0f620e926c99f22a091d7305097dd787c28d89270977cb8a6c735ed`
+- Contingency result hash:
+  `dadd29917979b53a2b47ed66e7bfa9deae6ba8486802acc12bdba38ab3a3877f`
+- Combined outcome hash:
+  `bdc0c1aed55e930312f01ecaebee8969e96e7ff625b27b735b940fcff8a1d2af`
+- Aggregate OpenAI spend after V1.5 smoke: USD `0.1547530 / 20.00`.
+- No Candidate, Validation or Final Test was created or consumed.
+- No further formal Evolution experiment is authorized.
+
+V1.2–V1.4 schemas, historical scopes, fixture/Benchmark packages, thresholds and hashes are not
+rewritten by V1.5.
+
+## Remaining Gate Work
+
+1. Commit and push the authorized repository update.
+2. Verify GitHub CI on the published commit.
+3. Run the one final independent completion review and record the share-safe Codex review file.
 
 ## Honest Non-Claims
 
-- The research hypothesis is not supported.
-- No Candidate was adopted and no sealed Final Test was consumed.
-- ResearchForge is not a self-evolving agent.
-- The public synthetic evidence is not verbatim filing text; official links and physical-page
-  locators remain the source-verification path.
-- The product is research assistance, not investment advice.
-- AI simulations do not validate real-user usefulness or market demand.
-
-## Remaining Required Work
-
-1. Invoke the one final `$verify-completion` workflow and obtain `VERDICT: PASS` from the
-   independent read-only reviewer. Implementation, public-safety scans, publication, and CI are
-   already complete.
+- Coverage is one company and one reporting period, not the full A-share market.
+- No real-human pilot has occurred; usefulness and market demand are unvalidated.
+- Simulated usability evidence is not human evidence.
+- ResearchForge is not a self-evolving or multi-agent system.
+- The Evolution research hypothesis remains unsupported.
+- The product does not provide investment advice, price prediction or trade execution.
 
 ## Single Next Action
 
-Run the independent read-only acceptance against the verified public commit. Do not run another
-formal experiment or change the research outcome.
+Publish the locally verified V1.5 implementation, verify GitHub CI, then run the final independent
+acceptance review.
 
 ## Fast Resume
+
+Read, in order:
+
+1. `docs/product/researchforge-v1.5-product-thesis.md`
+2. `PROJECT_STATUS.md`
+3. `docs/demo/v1.5-demo-evidence.md`
+4. `docs/usability/README.md`
+5. `DECISIONS.md`
+
+Then run:
 
 ```bash
 uv run python scripts/validate_contracts.py
 git status --short
 ```
-
-Then read, in order:
-
-1. `PROJECT_STATUS.md`
-2. `docs/evidence/g3-primary-formal-result.md`
-3. `docs/evidence/g3-contingency-formal-result.md`
-4. `docs/evidence/g4-simulated-usability.md`
-5. `DECISIONS.md`

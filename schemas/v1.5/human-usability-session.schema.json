@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.5/human-usability-session.schema.json",
+  "title": "ResearchForge V1.5 Real Human Usability Session",
+  "description": "A privacy-minimized record of one real human pilot session. Simulated evaluations cannot satisfy this contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "session_id", "evidence_label", "simulated", "status", "participant", "consent", "scenario", "task_outcomes", "feedback", "started_at", "completed_at"],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schemaVersion"},
+    "session_id": {"$ref": "common.schema.json#/$defs/identifier"},
+    "evidence_label": {"type": "string", "const": "REAL_HUMAN"},
+    "simulated": {"type": "boolean", "const": false},
+    "status": {"type": "string", "enum": ["scheduled", "completed", "withdrawn"]},
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pseudonym", "user_group", "prior_experience"],
+      "properties": {
+        "pseudonym": {"$ref": "common.schema.json#/$defs/identifier"},
+        "user_group": {"type": "string", "enum": ["individual_researcher", "finance_learner", "junior_researcher"]},
+        "prior_experience": {"type": "string", "enum": ["none", "basic", "intermediate", "advanced"]}
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obtained", "privacy_notice_version", "recording_allowed"],
+      "properties": {
+        "obtained": {"type": "boolean"},
+        "privacy_notice_version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "recording_allowed": {"type": "boolean"}
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["company_id", "period", "question", "run_id"],
+      "properties": {
+        "company_id": {"$ref": "common.schema.json#/$defs/identifier"},
+        "period": {"type": "string", "minLength": 2, "maxLength": 16},
+        "question": {"type": "string", "minLength": 8, "maxLength": 2000},
+        "run_id": {"$ref": "common.schema.json#/$defs/identifier"}
+      }
+    },
+    "task_outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selected_company", "submitted_question", "understood_conclusion", "found_supporting_evidence", "found_limitation_or_counter_evidence", "identified_monitoring_item"],
+      "properties": {
+        "selected_company": {"type": "boolean"},
+        "submitted_question": {"type": "boolean"},
+        "understood_conclusion": {"type": "boolean"},
+        "found_supporting_evidence": {"type": "boolean"},
+        "found_limitation_or_counter_evidence": {"type": "boolean"},
+        "identified_monitoring_item": {"type": "boolean"}
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what_worked", "confusions", "requested_changes"],
+      "properties": {
+        "what_worked": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "maxItems": 20},
+        "confusions": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "maxItems": 20},
+        "requested_changes": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "maxItems": 20}
+      }
+    },
+    "started_at": {"type": "string", "format": "date-time"},
+    "completed_at": {"type": ["string", "null"], "format": "date-time"}
+  }
+}

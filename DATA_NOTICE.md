@@ -22,6 +22,18 @@ It must not contain:
 
 When a real excerpt cannot safely be redistributed, public fixtures use synthetic evidence with explicit labels. The corresponding real experiment may publish only its hash, metrics, official source locator, and method. A source link is attribution, not proof of permission to redistribute its contents.
 
+## V1.5 real-data slice
+
+`data/product/packages/catl-2024h1/` contains one derived product package for the official CATL
+2024 half-year report. It includes six reviewed normalized facts, eight minimal evidence chunks,
+the official URL, publication/retrieval times, page locators, parser identity and hashes. The
+1,684,794-byte source PDF is not committed. Factual table cells and two short limitation snippets
+are included to make claim-level provenance demonstrable; no substantial portion of the filing is
+reproduced.
+
+This package is separate from `data/fixtures/` and frozen Benchmark packages. Product execution
+rejects namespace mismatch rather than silently falling back to either one.
+
 ## Intended use
 
 ResearchForge is a local, single-user research engineering demonstration. It does not provide investment advice, trade execution, real-time prices, or a warranty that source data is complete or correct. Users remain responsible for source terms, factual verification, and investment decisions.

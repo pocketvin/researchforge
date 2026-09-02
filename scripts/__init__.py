@@ -1,1 +1,1 @@
-"""Repository build and validation scripts."""
+"""Repository verification and fixture-building helpers used by tests."""

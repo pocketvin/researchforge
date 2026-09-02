@@ -101,20 +101,15 @@ function failureEventCount(batch: EvaluationBatch | null): number {
 function EvidenceLink({
   claim,
   facts,
-  evidence,
 }: {
   claim: Claim
   facts: FinancialFact[]
-  evidence: EvidenceChunk[]
 }) {
   const linked = claim.fact_ids
     .map((id) => facts.find((fact) => fact.fact_id === id))
     .filter((fact): fact is FinancialFact => Boolean(fact))
-  const linkedEvidence = claim.support_evidence_ids
-    .map((id) => evidence.find((chunk) => chunk.chunk_id === id))
-    .filter((chunk): chunk is EvidenceChunk => Boolean(chunk))
   return (
-    <div className="claim-card">
+    <article className="claim-card">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`status-pill ${statusTone(claim.epistemic_status)}`}>
           {claim.epistemic_status}
@@ -130,33 +125,19 @@ function EvidenceLink({
           </span>
         ))}
       </div>
-      {linkedEvidence.map((chunk) => (
-        <div className="evidence-snippet" key={chunk.chunk_id}>
-          <div>
-            <BookOpenCheck size={14} />
-            <strong>证据摘录 · 第 {chunk.locator.page_start}–{chunk.locator.page_end} 页</strong>
-            <span title={chunk.text_hash}>HASH {chunk.text_hash.slice(0, 10)}</span>
-          </div>
-          <p>{chunk.text}</p>
-        </div>
-      ))}
-      <div className="counter-note">
-        <Search size={14} />
-        <span>
-          反证搜索: {claim.counter_evidence_search.result} —{' '}
-          {claim.counter_evidence_search.summary}
-        </span>
-      </div>
-    </div>
+      <small className="finding-provenance">
+        {claim.fact_ids.length} 项事实 · {claim.support_evidence_ids.length} 条支持证据
+      </small>
+    </article>
   )
 }
 
 function ResearchPage() {
   const [catalog, setCatalog] = useState<Catalog | null>(null)
-  const [taskType, setTaskType] = useState<TaskType>('filing_analysis')
+  const taskType: TaskType = 'filing_analysis'
   const [companies, setCompanies] = useState<string[]>([])
   const [periods, setPeriods] = useState<string[]>([])
-  const [question, setQuestion] = useState('所选期间的利润是否有效转化为经营现金流？')
+  const [question, setQuestion] = useState('2024 年上半年利润是否真正转化成了经营现金流？')
   const [manifest, setManifest] = useState<RunManifest | null>(null)
   const [result, setResult] = useState<ResearchResult | null>(null)
   const [trace, setTrace] = useState<Trace | null>(null)
@@ -207,20 +188,10 @@ function ResearchPage() {
     return [...byMetric.values()]
   }, [facts])
 
-  function selectTask(next: TaskType) {
-    setTaskType(next)
-    setCompanies((current) => current.slice(0, next === 'peer_comparison' ? 2 : 1))
-    setPeriods([])
-  }
-
-  function toggleCompany(companyId: string) {
-    setCompanies((current) => {
-      if (current.includes(companyId)) return current.filter((id) => id !== companyId)
-      const limit = taskType === 'peer_comparison' ? 2 : 1
-      return [...current, companyId].slice(-limit)
-    })
-    setPeriods([])
-  }
+  const supportingEvidence = useMemo(
+    () => evidence.filter((chunk) => !chunk.section.startsWith('Counter evidence:')),
+    [evidence],
+  )
 
   async function poll(runId: string) {
     for (let attempt = 0; attempt < 60; attempt += 1) {
@@ -289,85 +260,54 @@ function ResearchPage() {
     }
   }
 
-  const invalidCompanyCount =
-    companies.length !== (taskType === 'peer_comparison' ? 2 : 1)
-  const invalidPeriodCount =
-    periods.length === 0 ||
-    (['company_research', 'risk_detection'].includes(taskType) && periods.length < 2)
+  const invalidCompanyCount = companies.length !== 1
+  const invalidPeriodCount = periods.length !== 1
 
   return (
     <main className="page-shell">
       <section className="research-grid">
         <aside className="control-panel">
           <div>
-            <p className="eyebrow">NEW RESEARCH RUN</p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">建立研究任务</h1>
+            <p className="eyebrow">COMPANY · PERIOD · QUESTION</p>
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">开始公司研究</h1>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              模型只接触冻结事实、确定性计算与允许证据。
+              基于真实官方披露回答一个可核验的基本面问题。
             </p>
           </div>
 
           <form className="mt-7 space-y-6" onSubmit={(event) => void submit(event)}>
-            <fieldset>
-              <legend className="field-label">研究模式</legend>
-              <div className="task-options">
-                {catalog?.supported_task_types.map((task) => (
-                  <button
-                    className={task === taskType ? 'task-option selected' : 'task-option'}
-                    key={task}
-                    onClick={() => selectTask(task)}
-                    type="button"
-                  >
-                    {taskLabels[task]}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend className="field-label">
-                公司 {taskType === 'peer_comparison' ? '· 请选择两家' : ''}
-              </legend>
-              <div className="space-y-2">
+            <label className="block">
+              <span className="field-label">Company / 公司</span>
+              <select
+                aria-label="Company selector"
+                className="product-select"
+                onChange={(event) => {
+                  setCompanies(event.target.value ? [event.target.value] : [])
+                  setPeriods([])
+                }}
+                value={companies[0] ?? ''}
+              >
+                <option value="">请选择公司</option>
                 {catalog?.companies.map((company) => (
-                  <label className="company-option" key={company.company_id}>
-                    <input
-                      checked={companies.includes(company.company_id)}
-                      onChange={() => toggleCompany(company.company_id)}
-                      type="checkbox"
-                    />
-                    <span className="company-mark">{company.ticker.slice(-2)}</span>
-                    <span className="min-w-0 flex-1">
-                      <strong>{company.legal_name.replace('新能源科技股份有限公司', '')}</strong>
-                      <small>{company.exchange} · {company.ticker}</small>
-                    </span>
-                    {companies.includes(company.company_id) && <Check size={16} />}
-                  </label>
+                  <option key={company.company_id} value={company.company_id}>
+                    {company.legal_name} · {company.ticker}.{company.exchange}
+                  </option>
                 ))}
-              </div>
-            </fieldset>
+              </select>
+            </label>
 
-            <fieldset>
-              <legend className="field-label">报告期</legend>
-              <div className="flex flex-wrap gap-2">
-                {availablePeriods.map((period) => (
-                  <label className={periods.includes(period) ? 'period-chip selected' : 'period-chip'} key={period}>
-                    <input
-                      checked={periods.includes(period)}
-                      onChange={() =>
-                        setPeriods((current) =>
-                          current.includes(period)
-                            ? current.filter((value) => value !== period)
-                            : [...current, period],
-                        )
-                      }
-                      type="checkbox"
-                    />
-                    {period}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            <label className="block">
+              <span className="field-label">Period / 报告期</span>
+              <select
+                aria-label="Period selector"
+                className="product-select"
+                onChange={(event) => setPeriods(event.target.value ? [event.target.value] : [])}
+                value={periods[0] ?? ''}
+              >
+                <option value="">请选择报告期</option>
+                {availablePeriods.map((period) => <option key={period}>{period}</option>)}
+              </select>
+            </label>
 
             <label className="block">
               <span className="field-label">研究问题</span>
@@ -386,8 +326,16 @@ function ResearchPage() {
               type="submit"
             >
               {submitting ? <LoaderCircle className="animate-spin" size={17} /> : <Sparkles size={17} />}
-              {submitting ? '正在执行研究链路' : '开始可审计研究'}
+              {submitting ? '正在执行研究链路' : 'Start Research / 开始研究'}
             </button>
+
+            <div className="data-boundary-note">
+              <ShieldCheck size={15} />
+              <span>
+                {catalog?.data_namespace === 'product' ? '真实披露数据' : '非产品数据'} ·
+                官方来源、确定性公式、Claim-level evidence
+              </span>
+            </div>
           </form>
         </aside>
 
@@ -426,7 +374,7 @@ function ResearchPage() {
             <div className="empty-state">
               <div className="empty-orbit"><BarChart3 size={32} /></div>
               <h3>把问题变成证据链</h3>
-              <p>选择研究模式、公司和报告期。结果将展示事实、计算、反证与限制，而不是只有一段不可审计的回答。</p>
+              <p>选择公司和报告期，提出一个具体问题。ResearchForge 会给出结论，并允许你逐层核对数字、公式、证据、反证和后续监控项。</p>
               <div className="empty-features">
                 <span><ShieldCheck size={15} /> 截止时间控制</span>
                 <span><GitBranch size={15} /> LangGraph Trace</span>
@@ -437,7 +385,7 @@ function ResearchPage() {
 
           {manifest && (
             <>
-              <div className="stage-strip">
+              {!result && <div className="stage-strip">
                 {(trace?.stages ?? []).map((stage) => (
                   <div className="stage-item" key={`${stage.sequence}-${stage.stage}`} title={stage.sanitized_summary}>
                     <span className={`stage-dot ${statusTone(stage.status)}`}>
@@ -447,7 +395,7 @@ function ResearchPage() {
                   </div>
                 ))}
                 {!trace && <div className="stage-loading"><LoaderCircle className="animate-spin" size={16} /> 正在生成 Trace…</div>}
-              </div>
+              </div>}
 
               {manifest.failure && (
                 <div className="error-banner" role="alert">
@@ -460,32 +408,18 @@ function ResearchPage() {
                 <div className="report-stack">
                   <section className="summary-card">
                     <div className="section-heading">
-                      <span><Sparkles size={16} /> 执行摘要</span>
+                      <span><Sparkles size={16} /> Executive Conclusion / 核心结论</span>
                       <span className="micro-label">{taskLabels[result.task_type]}</span>
                     </div>
                     <p>{result.executive_summary}</p>
                   </section>
 
                   <section>
-                    <div className="section-heading"><span><BarChart3 size={16} /> 财务快照</span><span className="micro-label">API FACTS</span></div>
-                    <div className="metric-grid">
-                      {latestFacts.map((fact) => (
-                        <article className="metric-card" key={fact.fact_id}>
-                          <span>{fact.company.ticker} · {fact.period.fiscal_year}{fact.period.fiscal_period}</span>
-                          <strong>{formatFact(fact)}</strong>
-                          <small>{metricLabels[fact.metric_code] ?? fact.metric_code}</small>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
-
-                  <section>
-                    <div className="section-heading"><span><GitBranch size={16} /> Claim—Fact—Evidence</span><span className="micro-label">{result.claims.length} CLAIMS</span></div>
+                    <div className="section-heading"><span><BarChart3 size={16} /> Key Findings / 关键发现</span><span className="micro-label">{result.claims.length} FINDINGS</span></div>
                     <div className="space-y-3">
                       {result.claims.map((claim) => (
                         <EvidenceLink
                           claim={claim}
-                          evidence={evidence}
                           facts={facts}
                           key={claim.claim_id}
                         />
@@ -493,65 +427,106 @@ function ResearchPage() {
                     </div>
                   </section>
 
-                  <section className="two-column-report">
-                    <div className="report-panel">
-                      <div className="section-heading"><span><Activity size={16} /> 后续监控</span><span className="micro-label">ACTIONABLE</span></div>
-                      <div className="monitor-list">
-                        {result.monitoring_items.map((item) => (
-                          <article key={item.monitor_code}>
-                            <strong>{item.title}</strong>
-                            <p>{item.rationale}</p>
-                            <small>触发条件：{item.trigger}</small>
-                            <small>复核时间：{item.next_review}</small>
-                          </article>
-                        ))}
-                      </div>
+                  <details className="audit-section">
+                    <summary><span><BarChart3 size={16} /> Financial Facts / 财务事实</span><small>{latestFacts.length} VERIFIED FACTS</small></summary>
+                    <div className="metric-grid audit-content">
+                      {latestFacts.map((fact) => (
+                        <article className="metric-card" key={fact.fact_id}>
+                          <span>{fact.company.ticker} · {fact.period.fiscal_year}{fact.period.fiscal_period} · P{fact.source_locator.page ?? '—'}</span>
+                          <strong>{formatFact(fact)}</strong>
+                          <small>{metricLabels[fact.metric_code] ?? fact.metric_code}</small>
+                        </article>
+                      ))}
                     </div>
-                    <div className="report-panel">
-                      <div className="section-heading"><span><BarChart3 size={16} /> 公式与计算</span><span className="micro-label">V1.0.0</span></div>
-                      <div className="calculation-list">
-                        {calculations.map((calculation) => (
-                          <article key={calculation.calculation_id}>
+                  </details>
+
+                  <details className="audit-section">
+                    <summary><span><Activity size={16} /> Calculations / 确定性计算</span><small>FORMULA V1.0.0</small></summary>
+                    <div className="calculation-list audit-content">
+                      {calculations.map((calculation) => (
+                        <article key={calculation.calculation_id}>
                             <span className={`status-dot ${statusTone(calculation.status)}`} />
                             <p>
                               <strong>{calculation.formula_code} · {calculation.value ?? '不适用'}</strong>
                               <small>{calculation.explanation}</small>
                             </p>
-                          </article>
-                        ))}
-                      </div>
+                        </article>
+                      ))}
                     </div>
-                  </section>
+                  </details>
 
-                  <section className="two-column-report">
-                    <div className="report-panel">
-                      <div className="section-heading"><span><ShieldCheck size={16} /> 核验项目</span></div>
-                      <div className="check-list">
-                        {result.mandatory_checks.map((check, index) => (
-                          <div key={`${check.check_code}-${index}`}>
-                            <span className={`status-dot ${statusTone(check.status)}`} />
-                            <p><strong>{check.check_code}</strong><small>{check.finding}</small></p>
-                          </div>
-                        ))}
-                      </div>
+                  <details className="audit-section">
+                    <summary><span><BookOpenCheck size={16} /> Supporting Evidence / 支持证据</span><small>{supportingEvidence.length} CITATIONS</small></summary>
+                    <div className="audit-content evidence-list">
+                      {supportingEvidence.map((chunk) => (
+                        <article className="evidence-snippet" key={chunk.chunk_id}>
+                          <div><BookOpenCheck size={14} /><strong>{chunk.section} · P{chunk.locator.page_start}</strong><span title={chunk.text_hash}>HASH {chunk.text_hash.slice(0, 10)}</span></div>
+                          <p>{chunk.text}</p>
+                          <a href={chunk.source_uri} rel="noreferrer" target="_blank">打开官方披露 <ArrowUpRight size={13} /></a>
+                        </article>
+                      ))}
                     </div>
-                    <div className="report-panel">
-                      <div className="section-heading"><span><CircleAlert size={16} /> 限制</span></div>
-                      <ul className="limitation-list">
-                        {result.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
-                      </ul>
-                    </div>
-                  </section>
+                  </details>
 
-                  <section className="sources-panel">
-                    <div className="section-heading"><span><BookOpenCheck size={16} /> 官方来源</span><span className="micro-label">{result.source_document_ids.length} DOCUMENTS</span></div>
-                    {[...new Map(facts.map((fact) => [fact.source.document_id, fact])).values()].map((fact) => (
-                      <a href={fact.source.uri} key={fact.source.document_id} rel="noreferrer" target="_blank">
-                        <span><strong>{fact.company.legal_name}</strong><small>{fact.source.document_id} · 发布 {new Date(fact.source.published_at).toLocaleDateString('zh-CN')}</small></span>
-                        <ArrowUpRight size={16} />
-                      </a>
+                  <section className="report-panel counter-panel">
+                    <div className="section-heading"><span><Search size={16} /> Counter Evidence / 反证与相反信号</span><span className="micro-label">SEARCHED</span></div>
+                    {[...new Map(result.claims.filter((claim) => claim.counter_evidence_search.performed).map((claim) => [claim.counter_evidence_search.summary, claim.counter_evidence_search])).values()].map((counter) => (
+                      <article className="counter-result" key={counter.summary}>
+                        <div className="counter-result-heading">
+                          <span className={`status-pill ${counter.result === 'found' ? 'active' : 'muted'}`}>{counter.result}</span>
+                          <p>{counter.summary}</p>
+                        </div>
+                        {counter.evidence_ids.length > 0 && (
+                          <details className="counter-sources">
+                            <summary>查看反证来源 ({counter.evidence_ids.length})</summary>
+                            <div className="evidence-list">
+                              {evidence.filter((chunk) => counter.evidence_ids.includes(chunk.chunk_id)).map((chunk) => (
+                                <article className="evidence-snippet" key={chunk.chunk_id}>
+                                  <div><BookOpenCheck size={14} /><strong>{chunk.section} · P{chunk.locator.page_start}</strong><span title={chunk.text_hash}>HASH {chunk.text_hash.slice(0, 10)}</span></div>
+                                  <p>{chunk.text}</p>
+                                  <a href={chunk.source_uri} rel="noreferrer" target="_blank">打开官方披露 <ArrowUpRight size={13} /></a>
+                                </article>
+                              ))}
+                            </div>
+                          </details>
+                        )}
+                      </article>
                     ))}
                   </section>
+
+                  <section className="report-panel">
+                    <div className="section-heading"><span><CircleAlert size={16} /> Risks & Limitations / 风险与限制</span></div>
+                    <ul className="limitation-list">
+                      {result.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
+                    </ul>
+                  </section>
+
+                  <section className="report-panel">
+                    <div className="section-heading"><span><Activity size={16} /> Monitoring Plan / 后续监控</span><span className="micro-label">NEXT FILING</span></div>
+                    <div className="monitor-list">
+                      {result.monitoring_items.map((item) => (
+                        <article key={item.monitor_code}>
+                          <strong>{item.title}</strong><p>{item.rationale}</p><small>触发条件：{item.trigger}</small><small>复核时间：{item.next_review}</small>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+
+                  <details className="audit-section">
+                    <summary><span><GitBranch size={16} /> Research Trace / 研究轨迹</span><small>{trace?.stages.length ?? 0} LANGGRAPH STAGES</small></summary>
+                    <div className="audit-content">
+                      <div className="stage-strip embedded">
+                        {(trace?.stages ?? []).map((stage) => (
+                          <div className="stage-item" key={`${stage.sequence}-${stage.stage}`} title={stage.sanitized_summary}><span className={`stage-dot ${statusTone(stage.status)}`}><Check size={11} /></span><small>{stageLabels[stage.stage] ?? stage.stage}</small></div>
+                        ))}
+                      </div>
+                      <div className="check-list trace-checks">
+                        {result.mandatory_checks.map((check, index) => (
+                          <div key={`${check.check_code}-${index}`}><span className={`status-dot ${statusTone(check.status)}`} /><p><strong>{check.check_code}</strong><small>{check.finding}</small></p></div>
+                        ))}
+                      </div>
+                    </div>
+                  </details>
                 </div>
               )}
             </>
@@ -562,7 +537,7 @@ function ResearchPage() {
   )
 }
 
-function SkillLabPage() {
+function QualityLabPage() {
   const [experimentId, setExperimentId] = useState('experiment_contingency_v1_5_001')
   const [experiment, setExperiment] = useState<EvolutionExperiment | null>(null)
   const [artifacts, setArtifacts] = useState<EvolutionArtifacts | null>(null)
@@ -640,11 +615,11 @@ function SkillLabPage() {
     <main className="page-shell lab-page">
       <section className="lab-hero">
         <div>
-          <p className="eyebrow">CONTROLLED EVOLUTION</p>
-          <h1>Skill Lab</h1>
-          <p>从已核验失败到有边界的 Skill Diff。这里是只读实验台，不允许 UI 触发自我修改。</p>
+          <p className="eyebrow">EXPERIMENTAL · READ-ONLY</p>
+          <h1>Quality Lab</h1>
+          <p>ResearchForge 背后的质量研究档案。它保存 V1.4 的冻结实验与负结果，但不是完成普通公司研究所必需的功能。</p>
         </div>
-        <div className="lab-principle"><ShieldCheck size={19} /><span><strong>封闭实验</strong><small>Evolution → Validation → Final Test</small></span></div>
+        <div className="lab-principle"><ShieldCheck size={19} /><span><strong>只读技术资产</strong><small>NOT REQUIRED FOR NORMAL RESEARCH</small></span></div>
       </section>
 
       <section className="lab-grid">
@@ -658,8 +633,8 @@ function SkillLabPage() {
           {!experiment && !error && (
             <div className="lab-empty">
               <FlaskConical size={36} />
-              <h2>等待受控实验产物</h2>
-              <p>没有硬编码的“成功故事”。当 CLI 冻结真实 Evolution Experiment 后，失败聚类、Candidate Diff、Validation 决策与 Final Test 才会在此渲染。</p>
+              <h2>读取冻结质量研究</h2>
+              <p>这里不会运行或追加正式 Evolution 实验。读取已有记录，可检查失败聚类、Candidate Diff、Validation 决策、Final Test 与已冻结负结果。</p>
             </div>
           )}
           {experiment && (
@@ -855,11 +830,11 @@ export default function App() {
         </button>
         <nav aria-label="主导航">
           <button className={page === 'research' ? 'active' : ''} onClick={() => setPage('research')}><BarChart3 size={16} />Research</button>
-          <button className={page === 'lab' ? 'active' : ''} onClick={() => setPage('lab')}><FlaskConical size={16} />Skill Lab</button>
+          <button className={`secondary ${page === 'lab' ? 'active' : ''}`} onClick={() => setPage('lab')}><FlaskConical size={16} />Quality Lab</button>
         </nav>
-        <div className="header-badge"><span /> LOCAL · V1.4</div>
+        <div className="header-badge"><span /> REAL DATA · V1.5</div>
       </header>
-      {page === 'research' ? <ResearchPage /> : <SkillLabPage />}
+      {page === 'research' ? <ResearchPage /> : <QualityLabPage />}
       <footer>ResearchForge · 研究辅助工具，不构成投资建议 · 真实用户价值尚未验证</footer>
     </div>
   )

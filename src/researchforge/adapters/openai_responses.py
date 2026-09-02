@@ -6,7 +6,7 @@ import hashlib
 import json
 import time
 from decimal import Decimal
-from typing import Any, Protocol, cast
+from typing import Any, Literal, Protocol, cast
 
 from pydantic import ValidationError
 
@@ -53,6 +53,7 @@ class OpenAIResponsesConclusionGenerator:
         max_input_tokens: int = 8000,
         max_output_tokens: int = 4000,
         skill_content: str | None = None,
+        reasoning_effort: Literal["none", "low", "medium", "high", "xhigh", "max"] = "medium",
     ) -> None:
         self.responses = responses
         self.ledger = ledger
@@ -60,6 +61,7 @@ class OpenAIResponsesConclusionGenerator:
         self.max_input_tokens = max_input_tokens
         self.max_output_tokens = max_output_tokens
         self.skill_content = skill_content
+        self.reasoning_effort = reasoning_effort
         self._usage = self._empty_usage()
 
     @staticmethod
@@ -120,7 +122,7 @@ class OpenAIResponsesConclusionGenerator:
                 model=self.model,
                 instructions=self._instructions(),
                 input=prompt,
-                reasoning={"effort": "medium"},
+                reasoning={"effort": self.reasoning_effort},
                 max_output_tokens=self.max_output_tokens,
                 store=False,
                 tools=[],

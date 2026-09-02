@@ -15,6 +15,7 @@ COPY benchmark ./benchmark
 COPY schemas ./schemas
 COPY skills ./skills
 COPY data/fixtures ./data/fixtures
+COPY data/product ./data/product
 COPY src ./src
 RUN uv sync --frozen --no-dev
 
