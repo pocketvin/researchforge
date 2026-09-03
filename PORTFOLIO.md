@@ -46,7 +46,7 @@ problem: every important result must be traceable and every missing input must r
 | Bounded AI workflow | ten-stage LangGraph and Workflow Trace | implemented |
 | Verification | calculation, citation, cutoff and coverage Verifier | implemented |
 | Product API | async lifecycle, facts, evidence, calculations, trace, cancel | implemented |
-| Product UI | product-first Research page and secondary read-only Quality Lab | implemented; final E2E pending |
+| Product UI | product-first Research page and secondary read-only Quality Lab | implemented; unit, E2E, accessibility and live-browser checks pass |
 | Real disclosure ingestion | discovery/acquisition/parsing with strict product namespace | implemented for CATL 2024H1 |
 | Human usability | real participant sessions | not run |
 | Quality research | two frozen formal experiments and stopping rule | complete negative result |
@@ -75,8 +75,10 @@ problem: every important result must be traceable and every missing input must r
 - “The Evolution hypothesis is supported.”
 - “The system provides investment recommendations or predicts returns.”
 
-Human-usability claims unlock only after matching real-participant evidence exists. The current
-real-ingestion claim is bounded to the one allowlisted CATL 2024H1 filing.
+Human-usability claims unlock only after the final dual-surface evaluation uses real participants.
+That evaluation is deliberately deferred until reusable extraction, generalization, n8n, Web UX
+and demo hardening are frozen. The current real-ingestion claim is bounded to the one allowlisted
+CATL 2024H1 filing.
 
 ## Resume Bullets: Current Evidence
 
@@ -84,7 +86,7 @@ real-ingestion claim is bounded to the one allowlisted CATL 2024H1 filing.
   React, PostgreSQL and content-addressed artifacts, with claim-level provenance and a
   reproducible three-container demo.
 - Implemented deterministic `Decimal` finance, A-share reporting-period controls, YTD-to-quarter
-  derivation, source cutoffs and verifier-backed abstention across 160 backend tests plus
+  derivation, source cutoffs and verifier-backed abstention across 165 backend tests plus
   frontend E2E/accessibility gates.
 - Designed a single-agent ten-stage workflow with checkpoint recovery, cancellation, timeouts,
   idempotent runs, structured-output repair and sanitized trace replay.

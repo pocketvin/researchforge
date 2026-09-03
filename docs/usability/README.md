@@ -1,9 +1,14 @@
-# V1.5 Real Human Usability Pilot
+# Legacy V1.5 Web-only Human Usability Preparation
 
-This directory is the ready-to-use kit for a small real-human pilot. It is preparation evidence,
-not proof that a participant study has happened.
+This directory preserves the V1.5 Web-only preparation kit. It is not proof that a participant
+study happened and it is not the final ResearchForge evaluation protocol.
 
-Current status: **PILOT_READY · 0 completed real-human sessions · HUMAN_UNVALIDATED**.
+Current status: **PREPARATION_ONLY · 0 completed real-human sessions · HUMAN_UNVALIDATED**.
+
+Do not run a formal Pilot from this kit. The frozen delivery roadmap defers real-human evaluation
+until reusable extraction, cross-period/company evidence, n8n integration, Web/n8n UX and the
+demo are stable. The final protocol must evaluate both surfaces over the same backend with at
+least six real target users and criteria frozen before testing.
 
 Use the files in this order:
 

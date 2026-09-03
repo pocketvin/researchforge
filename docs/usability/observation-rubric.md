@@ -1,4 +1,10 @@
-# Real Human Pilot Observation Rubric
+# Legacy V1.5 Web-only Observation Rubric
+
+Status: **PREPARATION ONLY — NOT THE FINAL PROJECT EVALUATION PROTOCOL**
+
+This rubric is retained as a V1.5 design artifact. Do not use its three-person threshold to claim
+final human validation. The final Phase 6 evaluation must cover Web and n8n, use at least six real
+target users, counterbalance order and freeze all criteria before testing.
 
 ## Contract outcomes
 
@@ -18,12 +24,10 @@ the six schema fields remain stable for cross-session comparison.
 
 ## Acceptance rule
 
-`V1.5 Human Validated` requires at least three completed real-human sessions on the same stable
-product slice. Every counted participant must independently complete the two trust-critical tasks:
-finding supporting evidence and finding a limitation/counter-evidence item. Across counted
-sessions, at least 90% of all six binary outcomes must be true, and every participant must identify
-a monitoring item. Withdrawn, simulated or technically invalid sessions do not enter the
-denominator.
+The historical V1.5 preparation threshold proposed three completed sessions, 90% of six binary
+outcomes, and universal completion of the monitoring task. It was never executed and is
+superseded for final-release evaluation by the frozen delivery roadmap.
 
-This threshold is defined before any real session. Failure is reported as failure and may inform a
-later version; it does not change the V1.4 research evidence.
+The final protocol must retain failed users in its frozen denominator, must not count simulated
+personas, and must not count facilitator-assisted completion as an independent pass. Failure is
+reported as failure and does not change V1.4 research evidence.

@@ -13,9 +13,9 @@
   "current_gate": "V15_PRODUCT",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "publish_ci_and_independent_acceptance",
-    "title": "Publish V1.5, verify CI and complete independent acceptance",
-    "outcome": "The public commit passes GitHub CI and the independent completion reviewer returns PASS.",
+    "id": "close_v1_5_with_independent_acceptance",
+    "title": "Close V1.5 with independent acceptance",
+    "outcome": "The already CI-green V1.5 productization slice receives an independent completion-reviewer PASS.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -26,7 +26,7 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-03T06:09:32+08:00",
+    "at": "2026-09-03T15:15:06+08:00",
     "commands": [
       {
         "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py",
@@ -34,23 +34,28 @@
         "summary": "Backend formatting, lint, strict typing, 165 tests and all current/historical contracts passed."
       },
       {
-        "command": "npm run lint && npm run typecheck && npm test -- --run && npm run build",
+        "command": "npm run lint && npm run typecheck && npm test -- --run && npm run build && PLAYWRIGHT_EXECUTABLE_PATH=<installed-chrome> npm run test:e2e",
         "exit_code": 0,
         "summary": "The product-first Research and secondary Quality Lab frontend passed lint, typing, four unit tests, production build and two E2E accessibility journeys."
       },
       {
-        "command": "docker compose: Alembic up/down/up; scripts/docker_smoke.py; live browser journey",
+        "command": "docker compose: Alembic down/up; rebuild; scripts/docker_smoke.py",
         "exit_code": 0,
-        "summary": "The database migration round-trip, healthy product stack and real CATL workflow passed with expandable evidence, counter evidence, calculations, limitations, monitoring and ten trace stages."
+        "summary": "The PostgreSQL migration round-trip, rebuilt three-container stack and real CATL workflow passed with six facts, eight evidence chunks, four calculations, monitoring and ten trace stages."
+      },
+      {
+        "command": "GitHub Actions CI run 33690111534 on commit 9a0feb1",
+        "exit_code": 0,
+        "summary": "The published backend, frontend and container jobs all completed successfully."
       }
     ]
   },
   "next_action": {
-    "title": "Publish and independently accept V1.5",
-    "why": "All local product and engineering gates passed; the remaining release evidence is public CI and an independent PASS.",
-    "first_step": "Commit and push the authorized update, wait for GitHub CI, then invoke verify-completion.",
+    "title": "Independently accept and close V1.5",
+    "why": "Local product gates and public GitHub CI passed; only the independent read-only PASS remains for Phase 1.",
+    "first_step": "Run the full local verification gate, then invoke verify-completion and require VERDICT: PASS.",
     "acceptance_evidence": [
-      "Published commit passes all GitHub Actions jobs.",
+      "Published commit 9a0feb1 has a successful GitHub Actions run with backend, frontend and container jobs green.",
       "Final independent reviewer returns VERDICT: PASS.",
       "Share-safe Codex review records commands, evidence, boundaries and remaining honest non-claims."
     ]
@@ -61,9 +66,9 @@
     "working_directory": ".",
     "read_first": [
       "docs/product/researchforge-v1.5-product-thesis.md",
+      "docs/product/researchforge-final-delivery-roadmap.md",
       "PROJECT_STATUS.md",
       "docs/demo/v1.5-demo-evidence.md",
-      "docs/usability/README.md",
       "DECISIONS.md"
     ],
     "commands": [
@@ -74,35 +79,23 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-03T06:09:32+08:00",
-    "summary": "Locally verified the strict real-data slice, bounded reasoning, product-first Research UX, source-linked counter evidence, secondary Quality Lab, real-human pilot kit, demo, migrations and Docker stack while preserving V1.4.",
+    "ended_at": "2026-09-03T15:15:06+08:00",
+    "summary": "Corrected stale V1.5 status and gap language, froze the final seven-phase delivery order, verified the complete local gate, and retained the green published GitHub CI evidence. Formal real-human evaluation is deferred until the final Web+n8n phase.",
     "files_changed": [
-      ".env.example",
-      "AGENTS.md",
       "CHANGELOG.md",
-      "DATA_NOTICE.md",
       "DECISIONS.md",
-      "Dockerfile",
       "PORTFOLIO.md",
       "PROJECT_STATUS.md",
       "README.md",
-      "data/product",
-      "docker-compose.yml",
-      "docs/contracts/v1.5",
-      "docs/demo",
+      "docs/demo/walkthrough.md",
       "docs/product/researchforge-v1.5-product-thesis.md",
-      "docs/product/v1.4-to-v1.5-productization-change-note.md",
-      "docs/usability",
-      "examples/contracts/v1.5",
-      "frontend",
+      "docs/product/researchforge-final-delivery-roadmap.md",
+      "docs/usability/README.md",
+      "docs/usability/observation-rubric.md",
+      "docs/usability/pilot-status.md",
       "project-status.json",
-      "pyproject.toml",
-      "schemas/v1.5",
-      "scripts/validate_contracts.py",
-      "src/researchforge",
-      "tests",
-      "uv.lock"
+      "scripts/validate_contracts.py"
     ]
   },
-  "updated_at": "2026-09-03T06:09:32+08:00"
+  "updated_at": "2026-09-03T15:15:06+08:00"
 }

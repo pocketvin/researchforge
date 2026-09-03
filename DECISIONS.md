@@ -36,6 +36,10 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-020 | One zero-token technical retry with denominator audit | ACCEPTED | 2026-09-02 | — |
 | RF-021 | Freeze unsupported terminal research outcome | ACCEPTED | 2026-09-02 | Final release |
 | RF-022 | Make evidence, calculations, and monitoring directly auditable | ACCEPTED | 2026-09-02 | Final release |
+| RF-023 | Make real, auditable company research the V1.5 product thesis | ACCEPTED | 2026-09-02 | — |
+| RF-024 | Isolate a reviewed real-disclosure product namespace | ACCEPTED | 2026-09-02 | — |
+| RF-025 | Use the model only for bounded research language | ACCEPTED | 2026-09-02 | — |
+| RF-026 | Freeze final delivery order and defer human evaluation | ACCEPTED | 2026-09-03 | Final release |
 
 ## RF-001 — Contract-First Implementation
 
@@ -554,3 +558,29 @@ Consequence:
 The model may not invent missing facts, recalculate ratios or retrieve disclosures. Provider
 unavailability degrades to the configured deterministic path only when that mode is explicitly
 selected; a forced OpenAI mode without a confirmed rotated key fails before dispatch.
+
+## RF-026 — Freeze Final Delivery Order and Defer Human Evaluation
+
+Status: **ACCEPTED**
+
+Decision:
+
+Close V1.5 before new feature work, then deliver reusable deterministic six-metric extraction,
+cross-period/company generalization, a bounded n8n integration, and final Web/n8n hardening in
+that order. Only after those phases are stable and the protocol is frozen may at least six real
+target users evaluate both surfaces over the same ResearchForge backend and verified pipeline.
+
+Reason:
+
+Early Web-only testing would measure a temporary data boundary and omit the external automation
+surface. Deferring the Pilot avoids making a human-value claim about an interface or extraction
+path that will materially change, while preserving all existing preparation and simulated
+evidence honestly.
+
+Consequence:
+
+The old three-person Web-only rubric is retained as preparation history but cannot grant a final
+human-validation label. Formal participants are not recruited before Phase 6. n8n owns only
+external orchestration; finance, provenance, verification, reasoning and LangGraph remain one
+shared backend pipeline. The exact phase order and release freeze are governed by
+`docs/product/researchforge-final-delivery-roadmap.md`.

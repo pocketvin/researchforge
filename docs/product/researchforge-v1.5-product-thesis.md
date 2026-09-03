@@ -150,63 +150,59 @@ multiple agents or move formulas into LangGraph.
 7. A separate **Quality Lab** link is available to technical reviewers, clearly labeled
    experimental, read-only and unnecessary for ordinary research.
 
-## 8. Current Repository Audit and Gaps
+## 8. V1.4 Starting Audit and V1.5 Closure Status
 
-### 8.1 Product narrative
+This section preserves the gap that motivated V1.5 and records its current disposition. It is not
+a list of unresolved work. Remaining delivery work is governed by
+[`researchforge-final-delivery-roadmap.md`](researchforge-final-delivery-roadmap.md).
 
-- `README.md`, `PORTFOLIO.md` and the current demo lead with the Controlled Skill Evolution
-  experiment instead of the user's research problem.
-- The current five-minute demo spends about half its time on Candidate, cluster, Validation and
-  Final Test mechanics.
-- `pyproject.toml` still describes the package as both a research workflow and a controlled
-  skill-evolution experiment.
+### 8.1 Product narrative — closed in V1.5
 
-### 8.2 Real-world data
+- README, Portfolio, package metadata and demo now lead with the user's auditable company-research
+  problem and Company + Period + Research Question.
+- Candidate, cluster, Validation and Final Test mechanics are confined to the secondary Quality
+  Lab story.
 
-- The default runtime uses `data/fixtures/g0` through `G0FixtureCatalog`; it has no runtime
-  disclosure discovery or acquisition adapter.
-- The existing fixture builders contain useful official URLs, hashes, page locators and manually
-  reviewed values, but they are offline package-construction scripts, not a product ingestion
-  pipeline.
-- Public Evidence Chunks are explicitly synthetic normalized summaries. They are safe benchmark
-  evidence, but they do not satisfy a real-document product demo.
-- Real raw PDFs are intentionally ignored and no product namespace currently distinguishes an
-  acquired disclosure from a benchmark fixture at runtime.
+### 8.2 Real-world data — first slice closed; generalization remains
 
-### 8.3 Research reasoning and verification
+- The default runtime uses a strict `product` namespace and a real-disclosure acquisition/parser
+  adapter; fixture and Benchmark fallback are rejected.
+- CATL 2024H1 preserves official source identity, hash, page locators, Evidence Chunks and six
+  reviewed facts while raw PDFs remain ignored.
+- The remaining gap is not first-slice availability. It is reusable deterministic cell extraction
+  without registry-provided values, followed by cross-period and cross-company evidence.
 
-- The default product core uses the deterministic conclusion generator. The OpenAI adapter is
-  exercised by the frozen experiment and simulation paths, not yet as a separately controlled
-  real-research reasoning path.
+### 8.3 Research reasoning and verification — closed for the first slice
+
+- Product mode supports bounded OpenAI reasoning over supplied evidence and a zero-cost
+  deterministic mode; neither path owns financial arithmetic or source truth.
 - Deterministic formulas, point-in-time checks, Claim—Fact—Evidence linkage, Verifier rules and
-  abstention behavior are strong reusable assets.
-- Five modes exist, but the current data depth is an earnings-quality slice; V1.5 product value
-  should first make one real company-research path excellent rather than expanding mode breadth.
+  abstention behavior are active in the real CATL path.
+- Breadth remains deliberately bounded to the useful earnings-quality path; new modes are not a
+  remaining V1.5 objective.
 
-### 8.4 Core user experience
+### 8.4 Core user experience — closed for the first slice
 
-- Research currently exposes mode choice and engineering artifacts early, while the intended
-  user primarily needs Company, Period, Question and Start Research.
-- Facts, calculations, evidence and trace are largely displayed at the same visual depth instead
-  of progressively disclosed.
-- The UI has the right audit objects but not yet the requested narrative order: conclusion,
-  findings, facts, calculations, support, counter evidence, risks/limitations, monitoring, trace.
+- Research now starts with Company, Period, Question and Start Research.
+- Facts, calculations, evidence, counter evidence and trace use progressive disclosure.
+- The completed report follows the requested conclusion-to-monitoring narrative order and is
+  covered by unit, E2E, accessibility and live-browser checks.
 
-### 8.5 Quality Lab and validation
+### 8.5 Quality Lab and validation — product surface closed, human evidence deferred
 
-- Skill Lab is a top-level peer of Research and uses experiment terminology that a normal user
-  should not need to understand.
+- Quality Lab is secondary, experimental, read-only and unnecessary for normal research.
 - The frozen outcome `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS` is honest and must
   remain immutable.
-- Simulated usability evidence is correctly labeled, but no human pilot has been run and no
-  human-usefulness claim is allowed.
+- No human Pilot has been run and no human-usefulness claim is allowed. Formal evaluation is
+  deliberately deferred until extraction, generalization, n8n, Web UX and demo hardening are
+  stable; it must then evaluate both Web and n8n over the same backend.
 
-### 8.6 Demo and career value
+### 8.6 Demo and career value — first real demo closed; final hardening remains
 
-- The current demo is reproducible and technically rich, but it uses frozen facts and synthetic
-  evidence and centers the negative experiment.
-- A hiring demonstration still needs one real disclosure, real values, deterministic arithmetic,
-  source citations, counter evidence, monitoring and a complete trace in a few minutes.
+- The current product-first demo uses the official CATL 2024H1 disclosure, verified values,
+  deterministic arithmetic, source citations, counter evidence, monitoring and a complete trace.
+- Final delivery still requires generalized extraction and a matching n8n surface before the demo
+  and interview narrative are release-frozen.
 
 ## 9. V1.5 Scope
 
@@ -276,15 +272,15 @@ namespaces and identifiers. A product run cannot silently fall back to benchmark
 - Move it behind a secondary navigation treatment.
 - Keep every V1.4 experiment artifact and negative result unchanged.
 
-### P1 — Human usability pilot readiness
+### P1 — Human usability preparation
 
 - Add a participant script, task sheet, consent/privacy note, observation rubric and feedback
   record schema or template.
-- Pilot tasks must test whether a participant can select a company, ask a question, understand
-  the conclusion, locate evidence, locate a limitation/counter-evidence item and identify the
-  monitoring action.
+- The legacy V1.5 kit prepares a Web-only session but is not the final evaluation protocol.
 - No record is marked human unless a real participant actually completes it.
 - Simulated evidence remains available only as historical engineering evidence.
+- Formal recruitment and execution are deferred until the frozen final roadmap's Phase 6, after
+  Web and n8n share one stable backend and verified pipeline.
 
 ### P1 — Job-search demo
 
@@ -366,13 +362,15 @@ V1.5 does not add:
 - Evidence, Calculation and Trace details are expandable and keyboard accessible.
 - Frontend unit, E2E and critical accessibility checks cover the primary real-research journey.
 
-### E. Human pilot readiness and evidence
+### E. Human evaluation preparation and evidence boundary
 
-- A complete pilot kit can be used with at least three target users.
+- A legacy Web-only Pilot kit exists as preparation evidence; it is not executed as the final
+  evaluation.
 - Human usefulness remains `UNVALIDATED` until real sessions exist.
 - If sessions occur, raw feedback and dissent are retained; no simulated persona is counted as a
   person.
-- V1.5 may be labeled `PILOT_READY` before the sessions, but not `HUMAN_VALIDATED`.
+- Final human evaluation must cover Web and n8n with at least six real target users under criteria
+  frozen before testing. Facilitator-assisted completion is not an independent pass.
 
 ### F. Demo and career evidence
 
@@ -395,10 +393,12 @@ V1.5 does not add:
 - **V1.5 Direction Ready** — this Product Thesis, migration decision and scope authority are
   accepted.
 - **V1.5 Real-data Slice Ready** — Acceptance C passes for one real filing.
-- **V1.5 Pilot Ready** — Acceptance B–D and the pilot kit pass; no human-value claim yet.
-- **V1.5 Human Validated** — at least three real target users independently complete the pilot
-  tasks and the measured acceptance threshold is met.
+- **V1.5 Pilot Preparation Ready** — Acceptance B–D and the legacy Web-only kit pass; no
+  human-value claim and no authorization to run the final Pilot.
 - **V1.5 Product Ready** — real-data, UX, demo, engineering and final independent acceptance pass.
+
+Human validation is a final-delivery label, not a V1.5 closure label. It requires the dual-surface
+Phase 6 protocol in the frozen final roadmap.
 
 The Evolution hypothesis is not part of any V1.5 Productization success label.
 
@@ -434,12 +434,14 @@ The Evolution hypothesis is not part of any V1.5 Productization success label.
 3. Add progressive disclosure and accessibility coverage.
 4. Move Skill Lab to the secondary, read-only Quality Lab surface.
 
-### Phase 4 — Validate and demonstrate
+### Phase 4 — Verify and demonstrate
 
 1. Package the real-data demo and exact reproduction steps.
-2. Add the human pilot kit and invite real sessions only after the product slice is stable.
-3. Preserve failures and dissent; update status based on observed evidence only.
-4. Run full verification, CI and one final independent acceptance.
+2. Add the legacy Web-only human-evaluation preparation kit without recruiting participants.
+3. Run full verification, public CI and one final independent acceptance.
+
+The post-V1.5 sequence, including reusable extraction, n8n and final real-human evaluation, is
+defined by [`researchforge-final-delivery-roadmap.md`](researchforge-final-delivery-roadmap.md).
 
 ## 15. Complexity Removal Rule
 
@@ -457,9 +459,10 @@ Quality Lab code may remain for reproducibility, but it does not set the product
 For V1.5 Productization decisions, authority order is:
 
 1. this Product Thesis;
-2. the future V1.5 contracts and schemas created under its migration plan;
-3. preserved V1.4 contracts for unchanged finance, evidence, workflow and safety semantics;
-4. application code and UI.
+2. the frozen final delivery roadmap for sequencing and phase exits;
+3. V1.5 contracts and schemas created under its migration plan;
+4. preserved V1.4 contracts for unchanged finance, evidence, workflow and safety semantics;
+5. application code and UI.
 
 When V1.5 work conflicts with frozen V1.4 experimental evidence, preserve the V1.4 evidence and
 change only the V1.5 product path. No productization change may rewrite a historical experiment.

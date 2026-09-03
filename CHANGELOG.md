@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.5.0] — Productization In Progress
+## [1.5.0] — Final Independent Acceptance Pending
 
 ### Direction
 
@@ -47,8 +47,10 @@
 ### Still honest
 
 - The real-data coverage is one company/period, not broad A-share support.
-- The pilot kit is ready, but zero real-human sessions have occurred and usefulness remains
+- The legacy Web-only Pilot kit was not executed. Formal Web+n8n human evaluation is deferred
+  until extraction, generalization, integration and UX hardening are frozen; usefulness remains
   unvalidated.
+- Local verification and published GitHub CI pass; final independent V1.5 acceptance remains.
 
 ## [1.4.0] — Release Candidate
 

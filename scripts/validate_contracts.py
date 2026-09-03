@@ -863,7 +863,7 @@ def validate_v15_product_semantics(
             "## 4. Product Promise",
             "## 6. Core Workflow",
             "## 7. User Story",
-            "## 8. Current Repository Audit and Gaps",
+            "## 8. V1.4 Starting Audit and V1.5 Closure Status",
             "## 9. V1.5 Scope",
             "## 11. Non-goals",
             "## 12. Acceptance Criteria",
@@ -876,7 +876,8 @@ def validate_v15_product_semantics(
             "300750.SZ",
         ),
         ROOT / "docs" / "usability" / "pilot-status.md": (
-            "PILOT_READY",
+            "PREPARATION_ONLY",
+            "FORMAL EVALUATION DEFERRED TO PHASE 6",
             "UNVALIDATED",
             "Completed real-human sessions | 0",
         ),

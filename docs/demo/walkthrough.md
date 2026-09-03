@@ -92,4 +92,5 @@ evidence. A V1.5 video can be recorded from this walkthrough without making it a
 ## Safety statement / 安全声明
 
 The repository contains no API key, hidden ground truth or raw filing PDF. ResearchForge is not
-investment advice. `PILOT_READY` does not mean human usefulness has been validated.
+investment advice. `PREPARATION_ONLY` does not mean human usefulness has been validated; formal
+Web+n8n evaluation is deferred until final Phase 6.

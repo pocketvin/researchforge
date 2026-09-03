@@ -49,16 +49,19 @@ preserved as an experimental, read-only **Quality Lab** and is not required for 
 ## Current status
 
 - Active direction: **V1.5 Productization**
-- Current milestone: release verification after the complete local product gate passed
+- Current milestone: Phase 1 V1.5 closure; local gates and published GitHub CI passed, final
+  independent acceptance pending
 - Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
 - Default runtime: strict `product` namespace with one reviewed CATL 2024H1 disclosure
-- Human usefulness: **not yet validated**
+- Human usefulness: **not yet validated; formal Web+n8n evaluation is deferred to final Phase 6**
 - Investment advice, trading and price prediction: **not provided**
 
 The authoritative V1.5 direction is
 [`docs/product/researchforge-v1.5-product-thesis.md`](docs/product/researchforge-v1.5-product-thesis.md).
 It defines the target user, product promise, real-data boundary, acceptance criteria and migration
 from V1.4.
+The remaining delivery sequence is frozen in
+[`docs/product/researchforge-final-delivery-roadmap.md`](docs/product/researchforge-final-delivery-roadmap.md).
 
 ## Product architecture
 
@@ -208,10 +211,10 @@ Historical simulated usability records are also preserved and always labeled `SI
 ## Start here
 
 1. [`docs/product/researchforge-v1.5-product-thesis.md`](docs/product/researchforge-v1.5-product-thesis.md) — active product authority.
-2. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — current milestone, completed evidence and next action.
-3. [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) — reproducible demo and V1.5 target.
-4. [`PORTFOLIO.md`](PORTFOLIO.md) — evidence-backed interview positioning.
-5. [`docs/contracts/research-workflow.md`](docs/contracts/research-workflow.md) — preserved workflow contract.
+2. [`docs/product/researchforge-final-delivery-roadmap.md`](docs/product/researchforge-final-delivery-roadmap.md) — frozen phase order and final release gate.
+3. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — current milestone, completed evidence and next action.
+4. [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) — reproducible demo and V1.5 target.
+5. [`PORTFOLIO.md`](PORTFOLIO.md) — evidence-backed interview positioning.
 6. [`DECISIONS.md`](DECISIONS.md) — architecture and scope decisions.
 
 ## Authority order
@@ -219,9 +222,10 @@ Historical simulated usability records are also preserved and always labeled `SI
 For V1.5 Productization:
 
 1. `docs/product/researchforge-v1.5-product-thesis.md`;
-2. V1.5 contracts and schemas added through its migration plan;
-3. unchanged V1.4 finance, evidence, workflow and safety contracts;
-4. code and UI.
+2. `docs/product/researchforge-final-delivery-roadmap.md` for delivery order;
+3. V1.5 contracts and schemas added through its migration plan;
+4. unchanged V1.4 finance, evidence, workflow and safety contracts;
+5. code and UI.
 
 V1.2, V1.3 and V1.4 historical schemas, scope documents and frozen research evidence are not
 silently reinterpreted or rewritten.
