@@ -657,3 +657,24 @@ deterministic formulas, evidence linkage, Verifier and persisted Research Result
 must describe actual retrieved evidence and must not assume every filing is an unaudited interim
 report. Missing unique counter evidence is `not_found`, not manufactured opposition. No new
 Benchmark, model call or formal experiment is introduced.
+
+## RF-030 — Keep n8n as a Bounded Same-backend Transport Surface
+
+Status: **ACCEPTED**
+
+Decision:
+
+Use one portable local webhook workflow on pinned n8n 2.37.9. Read the product capability catalog,
+POST the unchanged ResearchForge API input, wait/poll within fixed bounds, explicitly route failure,
+then return unchanged persisted artifacts and presentation aliases. Keep all finance, evidence,
+Verifier, conclusions and LangGraph logic in ResearchForge. Do not rewrite the core for n8n.
+
+Consequence:
+
+The workflow has no model, financial calculation or third-party side-effect nodes. URLs are trusted
+operator configuration, redirects are off, namespace fallback is refused, and idempotent retries
+preserve both cutoff time and key. Poll exhaustion does not cancel backend research. Real filing
+smokes compare all output artifacts to the backend; a separately labeled transport-only fixture
+tests actual n8n waiting and failures without supplying financial truth. No new research experiment
+or human validation claim is introduced. The custom transport envelope has a new V1.5 schema;
+unchanged financial artifacts retain V1.4 schemas.

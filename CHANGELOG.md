@@ -2,6 +2,17 @@
 
 ## [Unreleased] — Final Delivery Phases
 
+### Phase 4: n8n integration
+
+- Added a portable, inactive-by-default n8n 2.37.9 workflow and optional local Compose service.
+- The webhook reads backend capabilities, submits the existing research API, waits/polls with
+  fixed bounds and maps original result, facts, calculations, evidence, limitations and monitoring.
+- Added explicit input, namespace, idempotency, terminal-state, timeout and missing-artifact exits;
+  trusted URLs cannot be overridden by user input. No ResearchForge core changes are needed.
+- Added a V1.5 output envelope schema, real three-filing webhook comparison, separate transport-only
+  failure fixture, Node routing tests, CI, setup/demo instructions and failure documentation.
+- Human usefulness remains unvalidated and intermediate independent acceptance is not run.
+
 ### Phase 3: generalization evidence
 
 - Added exactly CATL 2024FY and BYD 2024H1 as official identity-only records, preserving the

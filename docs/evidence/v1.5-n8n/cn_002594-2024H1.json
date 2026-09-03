@@ -1,0 +1,1394 @@
+{
+  "schema_version": "1.5.0",
+  "status": "succeeded",
+  "http_status": 200,
+  "data_namespace": "product",
+  "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+  "links": {
+    "status": "http://127.0.0.1:8000/v1/research-runs/run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+    "result": "http://127.0.0.1:8000/v1/research-runs/run_a1beca0db34b4ef8b977e0e0b1bf16fd/result",
+    "trace": "http://127.0.0.1:8000/v1/research-runs/run_a1beca0db34b4ef8b977e0e0b1bf16fd/trace",
+    "cancel": "http://127.0.0.1:8000/v1/research-runs/run_a1beca0db34b4ef8b977e0e0b1bf16fd/cancel"
+  },
+  "request": {
+    "task_type": "filing_analysis",
+    "company_ids": [
+      "cn_002594"
+    ],
+    "requested_period_labels": [
+      "2024H1"
+    ],
+    "research_question": "2024H1利润是否真正转化成了经营现金流?",
+    "research_time": "2026-09-03T00:00:00+08:00",
+    "idempotency_key": "n8n-smoke-5f2d9dc35a264dbb9aaea29127185178"
+  },
+  "conclusion": "比亚迪股份有限公司2024H1经营现金流/净利润为1.04倍, 毛利率为20.01%; 未触发预设的背离信号。结论仅覆盖已核验财务事实, 不构成投资建议。",
+  "findings": [
+    {
+      "alternative_explanations": [
+        "经营现金流与利润确认节奏可能受营运资本时点影响。"
+      ],
+      "claim_id": "claim_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_earnings_quality",
+      "claim_type": "earnings_quality",
+      "confidence": {
+        "basis": "结论直接依赖两个已核验财务事实和确定性公式。",
+        "level": "high"
+      },
+      "counter_evidence_search": {
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_non_recurring_profit",
+          "chunk_product_byd_2024h1_unaudited_interim_report"
+        ],
+        "performed": true,
+        "queries": [
+          "利润质量反证: 非经常性损益、审计状态与口径限制"
+        ],
+        "result": "found",
+        "summary": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。"
+      },
+      "direction": "positive",
+      "epistemic_status": "supported_inference",
+      "fact_ids": [
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "materiality": "material",
+      "schema_version": "1.4.0",
+      "support_evidence_ids": [
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ],
+      "text": "经营现金流与净利润的现金转化比为1.04倍, 未触发预设的背离信号。"
+    },
+    {
+      "alternative_explanations": [],
+      "claim_id": "claim_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_margin",
+      "claim_type": "observation",
+      "confidence": {
+        "basis": "营业收入、营业成本与公式均已冻结。",
+        "level": "high"
+      },
+      "counter_evidence_search": {
+        "evidence_ids": [],
+        "performed": false,
+        "queries": [],
+        "result": "not_applicable",
+        "summary": "该支持性观察不单独触发反证搜索。"
+      },
+      "direction": "neutral",
+      "epistemic_status": "verified_fact",
+      "fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "materiality": "supporting",
+      "schema_version": "1.4.0",
+      "support_evidence_ids": [
+        "chunk_product_byd_2024h1_operating_cost",
+        "chunk_product_byd_2024h1_revenue"
+      ],
+      "text": "按营业收入减营业成本计算, 2024H1毛利率为20.01%。"
+    }
+  ],
+  "financial_facts": [
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "created_at": "2026-09-03T22:42:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_byd_2024h1_accounts_receivable",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "accounts_receivable",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+        "document_id": "doc_product_byd_2024h1",
+        "license_id": null,
+        "published_at": "2024-08-29T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-09-03T22:42:00+08:00",
+        "source_id": "source_cninfo",
+        "source_type": "official_filing",
+        "uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "2024年6月30日",
+        "page": 81,
+        "row_label": "应收账款",
+        "section": "财务报表",
+        "table": "合并资产负债表"
+      },
+      "value": "71814516000"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "created_at": "2026-09-03T22:42:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_byd_2024h1_inventory",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "inventory",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+        "document_id": "doc_product_byd_2024h1",
+        "license_id": null,
+        "published_at": "2024-08-29T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-09-03T22:42:00+08:00",
+        "source_id": "source_cninfo",
+        "source_type": "official_filing",
+        "uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "2024年6月30日",
+        "page": 81,
+        "row_label": "存货",
+        "section": "财务报表",
+        "table": "合并资产负债表"
+      },
+      "value": "112753013000"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "created_at": "2026-09-03T22:42:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_byd_2024h1_net_income",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "net_income",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+        "document_id": "doc_product_byd_2024h1",
+        "license_id": null,
+        "published_at": "2024-08-29T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-09-03T22:42:00+08:00",
+        "source_id": "source_cninfo",
+        "source_type": "official_filing",
+        "uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "page": 84,
+        "row_label": "归属于母公司所有者的净利润",
+        "section": "财务报表",
+        "table": "合并利润表"
+      },
+      "value": "13631257000"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "created_at": "2026-09-03T22:42:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_byd_2024h1_operating_cash_flow",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "operating_cash_flow",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+        "document_id": "doc_product_byd_2024h1",
+        "license_id": null,
+        "published_at": "2024-08-29T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-09-03T22:42:00+08:00",
+        "source_id": "source_cninfo",
+        "source_type": "official_filing",
+        "uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "page": 88,
+        "row_label": "经营活动产生的现金流量净额",
+        "section": "财务报表",
+        "table": "合并现金流量表"
+      },
+      "value": "14178310000"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "created_at": "2026-09-03T22:42:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_byd_2024h1_operating_cost",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "operating_cost",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+        "document_id": "doc_product_byd_2024h1",
+        "license_id": null,
+        "published_at": "2024-08-29T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-09-03T22:42:00+08:00",
+        "source_id": "source_cninfo",
+        "source_type": "official_filing",
+        "uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "page": 84,
+        "row_label": "营业成本",
+        "section": "财务报表",
+        "table": "合并利润表"
+      },
+      "value": "240859982000"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "created_at": "2026-09-03T22:42:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_byd_2024h1_revenue",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "revenue",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+        "document_id": "doc_product_byd_2024h1",
+        "license_id": null,
+        "published_at": "2024-08-29T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-09-03T22:42:00+08:00",
+        "source_id": "source_cninfo",
+        "source_type": "official_filing",
+        "uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "page": 84,
+        "row_label": "营业收入",
+        "section": "财务报表",
+        "table": "合并利润表"
+      },
+      "value": "301126713000"
+    }
+  ],
+  "calculations": [
+    {
+      "calculation_id": "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_profit",
+      "created_at": "2026-09-03T16:39:43.683571+00:00",
+      "explanation": "Calculated as revenue minus operating cost.",
+      "formula_code": "gross_profit",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "measurement_unit": "CURRENCY",
+      "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "60266731000"
+    },
+    {
+      "calculation_id": "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_margin",
+      "created_at": "2026-09-03T16:39:43.683571+00:00",
+      "explanation": "Calculated as gross profit / revenue.",
+      "formula_code": "gross_margin",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "measurement_unit": "RATIO",
+      "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "0.2001374451292868195323475005"
+    },
+    {
+      "calculation_id": "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_cash_conversion",
+      "created_at": "2026-09-03T16:39:43.683571+00:00",
+      "explanation": "Calculated as operating cash flow / net income.",
+      "formula_code": "cash_conversion",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_net_income"
+      ],
+      "measurement_unit": "RATIO",
+      "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "1.040132248992150907286099881"
+    },
+    {
+      "calculation_id": "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_profit_cash_divergence",
+      "created_at": "2026-09-03T16:39:43.683571+00:00",
+      "explanation": "No frozen profit/cash divergence rule was triggered.",
+      "formula_code": "profit_cash_divergence",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "measurement_unit": "COUNT",
+      "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "0"
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "chunk_id": "chunk_product_byd_2024h1_accounts_receivable",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 81,
+        "page_start": 81,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 应收账款",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "应收账款 4  71,814,516   61,866,019",
+      "text_hash": "b3f4adabca8b98cdfb25fa7e66e483de0408960cbd9e7aeeb9d3511088c9ac06"
+    },
+    {
+      "chunk_id": "chunk_product_byd_2024h1_inventory",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 81,
+        "page_start": 81,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 存货",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "存货 8   112,753,013    87,676,748",
+      "text_hash": "ce3b26d144b6e47276b3a2043c53450617d22c46adf400f93843c814a4ebadc2"
+    },
+    {
+      "chunk_id": "chunk_product_byd_2024h1_net_income",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 84,
+        "page_start": 84,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 归属于母公司所有者的净利润",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "归属于母公司所有者的净利润   13,631,257   10,954,145",
+      "text_hash": "de7c09b4fd2dedcec36ce40263b0bfb69c3a59ab3bdce1acf18c0c666d49d2c0"
+    },
+    {
+      "chunk_id": "chunk_product_byd_2024h1_non_recurring_profit",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 7,
+        "page_start": 7,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Counter evidence: non-recurring profit contribution",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "归属于上市公司股东的扣除非经常性 损益的净利润（元） 12,315,414,000.00 9,694,855,000.00 27.03%",
+      "text_hash": "762d70ef9324a5e70ee6fe8c4f209c3ee6bbad6d70439d5e6a279b65ec32dd58"
+    },
+    {
+      "chunk_id": "chunk_product_byd_2024h1_operating_cash_flow",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 88,
+        "page_start": 88,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 经营活动产生的现金流量净额",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "经营活动产生的现金流量净额 62    14,178,310    81,971,177",
+      "text_hash": "12387ad2b3baa1f1b6c28da74298d97bbe29d39bb0593b12f6cca577a9bd23a5"
+    },
+    {
+      "chunk_id": "chunk_product_byd_2024h1_operating_cost",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 84,
+        "page_start": 84,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 营业成本",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "减：营业成本 45  240,859,982    212,451,556",
+      "text_hash": "a63928da41e6355dc6987a9d995b6772ce753d863697a4670e1ec391eebd1535"
+    },
+    {
+      "chunk_id": "chunk_product_byd_2024h1_revenue",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 84,
+        "page_start": 84,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 营业收入",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "一、 营业收入 45   301,126,713    260,124,143",
+      "text_hash": "98c224718b07d9251c60f5776a4624adc7ce7b4ab44d0efcf799b239528a5cc6"
+    },
+    {
+      "chunk_id": "chunk_product_byd_2024h1_unaudited_interim_report",
+      "company": {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_byd_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 81,
+        "page_start": 81,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-09-03T22:42:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Counter evidence: audit status",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "text": "公司半年度财务报告未经审计。",
+      "text_hash": "c7fade1a001974588e6e5a39865400a7e58723f412c722e82caf0035501460f1"
+    }
+  ],
+  "counter_evidence": [
+    {
+      "claim_id": "claim_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_earnings_quality",
+      "search": {
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_non_recurring_profit",
+          "chunk_product_byd_2024h1_unaudited_interim_report"
+        ],
+        "performed": true,
+        "queries": [
+          "利润质量反证: 非经常性损益、审计状态与口径限制"
+        ],
+        "result": "found",
+        "summary": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。"
+      }
+    },
+    {
+      "claim_id": "claim_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_margin",
+      "search": {
+        "evidence_ids": [],
+        "performed": false,
+        "queries": [],
+        "result": "not_applicable",
+        "summary": "该支持性观察不单独触发反证搜索。"
+      }
+    }
+  ],
+  "limitations": [
+    "当前结论仅覆盖所选期间已哈希核验的官方报告和六项财务事实。",
+    "一次性损益未纳入确定性公式; 反证与审计边界以实际来源证据为准。",
+    "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+    "单一报告期的现金转化不能证明长期收益质量, 需在下一同口径报告期复核。"
+  ],
+  "monitoring": [
+    {
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_accounts_receivable",
+        "chunk_product_byd_2024h1_inventory",
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_accounts_receivable",
+        "fact_product_byd_2024h1_inventory"
+      ],
+      "monitor_code": "working_capital_cash_conversion_cn_002594",
+      "next_review": "下一同口径财务报告发布后",
+      "rationale": "经营现金流与净利润存在背离时, 应同时跟踪应收账款和存货, 避免把营运资本时点影响误判为长期盈利质量变化。",
+      "title": "下一同口径报告期复核现金转化与营运资本",
+      "trigger": "经营现金流为负, 或现金转化比低于1.00倍。"
+    }
+  ],
+  "research_result": {
+    "claims": [
+      {
+        "alternative_explanations": [
+          "经营现金流与利润确认节奏可能受营运资本时点影响。"
+        ],
+        "claim_id": "claim_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_earnings_quality",
+        "claim_type": "earnings_quality",
+        "confidence": {
+          "basis": "结论直接依赖两个已核验财务事实和确定性公式。",
+          "level": "high"
+        },
+        "counter_evidence_search": {
+          "evidence_ids": [
+            "chunk_product_byd_2024h1_non_recurring_profit",
+            "chunk_product_byd_2024h1_unaudited_interim_report"
+          ],
+          "performed": true,
+          "queries": [
+            "利润质量反证: 非经常性损益、审计状态与口径限制"
+          ],
+          "result": "found",
+          "summary": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。"
+        },
+        "direction": "positive",
+        "epistemic_status": "supported_inference",
+        "fact_ids": [
+          "fact_product_byd_2024h1_net_income",
+          "fact_product_byd_2024h1_operating_cash_flow"
+        ],
+        "materiality": "material",
+        "schema_version": "1.4.0",
+        "support_evidence_ids": [
+          "chunk_product_byd_2024h1_net_income",
+          "chunk_product_byd_2024h1_operating_cash_flow"
+        ],
+        "text": "经营现金流与净利润的现金转化比为1.04倍, 未触发预设的背离信号。"
+      },
+      {
+        "alternative_explanations": [],
+        "claim_id": "claim_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_margin",
+        "claim_type": "observation",
+        "confidence": {
+          "basis": "营业收入、营业成本与公式均已冻结。",
+          "level": "high"
+        },
+        "counter_evidence_search": {
+          "evidence_ids": [],
+          "performed": false,
+          "queries": [],
+          "result": "not_applicable",
+          "summary": "该支持性观察不单独触发反证搜索。"
+        },
+        "direction": "neutral",
+        "epistemic_status": "verified_fact",
+        "fact_ids": [
+          "fact_product_byd_2024h1_revenue",
+          "fact_product_byd_2024h1_operating_cost"
+        ],
+        "materiality": "supporting",
+        "schema_version": "1.4.0",
+        "support_evidence_ids": [
+          "chunk_product_byd_2024h1_operating_cost",
+          "chunk_product_byd_2024h1_revenue"
+        ],
+        "text": "按营业收入减营业成本计算, 2024H1毛利率为20.01%。"
+      }
+    ],
+    "companies": [
+      {
+        "company_id": "cn_002594",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594"
+      }
+    ],
+    "evidence_cutoff": "2026-09-03T00:00:00+08:00",
+    "executive_summary": "比亚迪股份有限公司2024H1经营现金流/净利润为1.04倍, 毛利率为20.01%; 未触发预设的背离信号。结论仅覆盖已核验财务事实, 不构成投资建议。",
+    "financial_snapshot_fact_ids": [
+      "fact_product_byd_2024h1_accounts_receivable",
+      "fact_product_byd_2024h1_inventory",
+      "fact_product_byd_2024h1_net_income",
+      "fact_product_byd_2024h1_operating_cash_flow",
+      "fact_product_byd_2024h1_operating_cost",
+      "fact_product_byd_2024h1_revenue"
+    ],
+    "formula_version": "1.0.0",
+    "generated_at": "2026-09-03T16:39:43.684535+00:00",
+    "limitations": [
+      "当前结论仅覆盖所选期间已哈希核验的官方报告和六项财务事实。",
+      "一次性损益未纳入确定性公式; 反证与审计边界以实际来源证据为准。",
+      "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+      "单一报告期的现金转化不能证明长期收益质量, 需在下一同口径报告期复核。"
+    ],
+    "mandatory_checks": [
+      {
+        "check_code": "operating_cash_flow",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_operating_cash_flow"
+        ],
+        "finding": "已核对经营活动现金流。",
+        "status": "performed"
+      },
+      {
+        "check_code": "accounts_receivable",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_accounts_receivable"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_accounts_receivable"
+        ],
+        "finding": "已核对应收账款期末余额。",
+        "status": "performed"
+      },
+      {
+        "check_code": "inventory",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_inventory"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_inventory"
+        ],
+        "finding": "已核对存货期末余额。",
+        "status": "performed"
+      },
+      {
+        "check_code": "gross_margin",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_operating_cost",
+          "chunk_product_byd_2024h1_revenue"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_revenue",
+          "fact_product_byd_2024h1_operating_cost"
+        ],
+        "finding": "毛利率由确定性公式计算。",
+        "status": "performed"
+      },
+      {
+        "check_code": "cash_conversion",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_net_income",
+          "chunk_product_byd_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_operating_cash_flow",
+          "fact_product_byd_2024h1_net_income"
+        ],
+        "finding": "Calculated as operating cash flow / net income.",
+        "status": "performed"
+      },
+      {
+        "check_code": "profit_cash_divergence",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_net_income",
+          "chunk_product_byd_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_net_income",
+          "fact_product_byd_2024h1_operating_cash_flow"
+        ],
+        "finding": "No frozen profit/cash divergence rule was triggered.",
+        "status": "performed"
+      },
+      {
+        "check_code": "one_off_contribution",
+        "evidence_ids": [],
+        "fact_ids": [],
+        "finding": "当前事实集没有一次性损益贡献字段, 未作推断。",
+        "status": "unavailable"
+      },
+      {
+        "check_code": "revenue_trend",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_revenue"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_revenue"
+        ],
+        "finding": "当前请求没有较早同口径期间, 未生成趋势。",
+        "status": "unavailable"
+      },
+      {
+        "check_code": "profit_trend",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_net_income"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_net_income"
+        ],
+        "finding": "当前请求没有较早同口径期间, 未生成趋势。",
+        "status": "unavailable"
+      },
+      {
+        "check_code": "counter_evidence",
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_non_recurring_profit",
+          "chunk_product_byd_2024h1_unaudited_interim_report"
+        ],
+        "fact_ids": [],
+        "finding": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+        "status": "performed"
+      }
+    ],
+    "monitoring_items": [
+      {
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_accounts_receivable",
+          "chunk_product_byd_2024h1_inventory",
+          "chunk_product_byd_2024h1_net_income",
+          "chunk_product_byd_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_byd_2024h1_operating_cash_flow",
+          "fact_product_byd_2024h1_net_income",
+          "fact_product_byd_2024h1_accounts_receivable",
+          "fact_product_byd_2024h1_inventory"
+        ],
+        "monitor_code": "working_capital_cash_conversion_cn_002594",
+        "next_review": "下一同口径财务报告发布后",
+        "rationale": "经营现金流与净利润存在背离时, 应同时跟踪应收账款和存货, 避免把营运资本时点影响误判为长期盈利质量变化。",
+        "title": "下一同口径报告期复核现金转化与营运资本",
+        "trigger": "经营现金流为负, 或现金转化比低于1.00倍。"
+      }
+    ],
+    "requested_periods": [
+      {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      }
+    ],
+    "research_plan": [
+      {
+        "description": "加载截止时点可用财务事实",
+        "status": "completed",
+        "step_id": "step_run_a1beca0db34b4ef8b977e0e0b1bf16fd_load"
+      },
+      {
+        "description": "执行冻结收益质量公式",
+        "status": "completed",
+        "step_id": "step_run_a1beca0db34b4ef8b977e0e0b1bf16fd_calculate"
+      },
+      {
+        "description": "搜索当前证据包中的反证",
+        "status": "completed",
+        "step_id": "step_run_a1beca0db34b4ef8b977e0e0b1bf16fd_counter"
+      },
+      {
+        "description": "组装并验证结构化结果",
+        "status": "completed",
+        "step_id": "step_run_a1beca0db34b4ef8b977e0e0b1bf16fd_validate"
+      }
+    ],
+    "research_question": "2024H1利润是否真正转化成了经营现金流?",
+    "research_time": "2026-09-03T00:00:00+08:00",
+    "result_id": "result_run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+    "risk_claim_ids": [],
+    "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+    "schema_version": "1.4.0",
+    "skill_hash": "71991b5a424638e4437699e63d3649a3ca0b36b308b456e2172d6a3922785890",
+    "skill_version": "1.0.0",
+    "source_document_ids": [
+      "doc_product_byd_2024h1"
+    ],
+    "status": "completed",
+    "task_type": "filing_analysis"
+  },
+  "research_trace": {
+    "checkpoint_schema_version": "1.0.0",
+    "engine": "langgraph",
+    "finished_at": "2026-09-03T16:39:43.947032+00:00",
+    "graph_version": "1.0.0",
+    "repair_attempts": 0,
+    "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+    "schema_version": "1.4.0",
+    "stages": [
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.672078+00:00",
+        "input_artifact_ids": [
+          "request_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "task_spec_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "sanitized_summary": "Validated one bounded filing-analysis earnings-quality request.",
+        "sequence": 1,
+        "stage": "understanding_question",
+        "started_at": "2026-09-03T16:39:43.672078+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.682477+00:00",
+        "input_artifact_ids": [
+          "task_spec_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "plan_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "sanitized_summary": "Persistable four-step research plan prepared.",
+        "sequence": 2,
+        "stage": "planning",
+        "started_at": "2026-09-03T16:39:43.682477+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.682848+00:00",
+        "input_artifact_ids": [
+          "plan_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "fact_product_byd_2024h1_accounts_receivable",
+          "fact_product_byd_2024h1_inventory",
+          "fact_product_byd_2024h1_net_income",
+          "fact_product_byd_2024h1_operating_cash_flow",
+          "fact_product_byd_2024h1_operating_cost",
+          "fact_product_byd_2024h1_revenue"
+        ],
+        "sanitized_summary": "Loaded 6 eligible normalized financial facts.",
+        "sequence": 3,
+        "stage": "loading_financial_data",
+        "started_at": "2026-09-03T16:39:43.682848+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.683206+00:00",
+        "input_artifact_ids": [
+          "fact_product_byd_2024h1_accounts_receivable",
+          "fact_product_byd_2024h1_inventory",
+          "fact_product_byd_2024h1_net_income",
+          "fact_product_byd_2024h1_operating_cash_flow",
+          "fact_product_byd_2024h1_operating_cost",
+          "fact_product_byd_2024h1_revenue"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "chunk_product_byd_2024h1_accounts_receivable",
+          "chunk_product_byd_2024h1_inventory",
+          "chunk_product_byd_2024h1_net_income",
+          "chunk_product_byd_2024h1_non_recurring_profit",
+          "chunk_product_byd_2024h1_operating_cash_flow",
+          "chunk_product_byd_2024h1_operating_cost",
+          "chunk_product_byd_2024h1_revenue",
+          "chunk_product_byd_2024h1_unaudited_interim_report"
+        ],
+        "sanitized_summary": "Resolved 8 bounded evidence chunks across 1 official source documents.",
+        "sequence": 4,
+        "stage": "retrieving_evidence",
+        "started_at": "2026-09-03T16:39:43.683206+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.683614+00:00",
+        "input_artifact_ids": [
+          "fact_product_byd_2024h1_accounts_receivable",
+          "fact_product_byd_2024h1_inventory",
+          "fact_product_byd_2024h1_net_income",
+          "fact_product_byd_2024h1_operating_cash_flow",
+          "fact_product_byd_2024h1_operating_cost",
+          "fact_product_byd_2024h1_revenue"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_profit",
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_margin",
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_cash_conversion",
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_profit_cash_divergence"
+        ],
+        "sanitized_summary": "Calculated gross profit, gross margin, cash conversion and divergence signal.",
+        "sequence": 5,
+        "stage": "calculating",
+        "started_at": "2026-09-03T16:39:43.683614+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.683955+00:00",
+        "input_artifact_ids": [
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_profit",
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_gross_margin",
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_cash_conversion",
+          "calc_run_a1beca0db34b4ef8b977e0e0b1bf16fd_cn_002594_profit_cash_divergence"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "checks_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "sanitized_summary": "Completed 9 deterministic checks.",
+        "sequence": 6,
+        "stage": "cross_checking",
+        "started_at": "2026-09-03T16:39:43.683955+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.684174+00:00",
+        "input_artifact_ids": [
+          "checks_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "counter_search_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "sanitized_summary": "Counter-evidence search found 2 filing-based evidence chunks.",
+        "sequence": 7,
+        "stage": "searching_counter_evidence",
+        "started_at": "2026-09-03T16:39:43.684174+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.684301+00:00",
+        "input_artifact_ids": [
+          "checks_run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+          "counter_search_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "conclusion_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "sanitized_summary": "Formed bounded language from precomputed facts and calculations.",
+        "sequence": 8,
+        "stage": "forming_conclusion",
+        "started_at": "2026-09-03T16:39:43.684301+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.684540+00:00",
+        "input_artifact_ids": [
+          "conclusion_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "result_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "sanitized_summary": "Assembled the canonical Research Result with fact-linked material claims.",
+        "sequence": 9,
+        "stage": "validating_output",
+        "started_at": "2026-09-03T16:39:43.684540+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:43.684668+00:00",
+        "input_artifact_ids": [
+          "result_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "manifest_run_a1beca0db34b4ef8b977e0e0b1bf16fd"
+        ],
+        "sanitized_summary": "Completed the bounded workflow; immutable artifacts are ready to persist.",
+        "sequence": 10,
+        "stage": "completed",
+        "started_at": "2026-09-03T16:39:43.684668+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      }
+    ],
+    "started_at": "2026-09-03T16:39:43.671206+00:00",
+    "terminal_state": "succeeded",
+    "trace_hash": "eabbd4db98c83881915755536ec32beba18195ff98bc77e5508bd7feca9e7545",
+    "trace_id": "trace_run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+    "usage": {
+      "cost_currency": "USD",
+      "estimated_cost": 0,
+      "input_tokens": 0,
+      "latency_ms": 0,
+      "output_tokens": 0,
+      "tool_calls": 0,
+      "total_tokens": 0
+    }
+  },
+  "trust_boundary": "n8n 只编排并转交 ResearchForge 产物，不生成结论或计算财务数字。真实用户价值尚未验证。"
+}

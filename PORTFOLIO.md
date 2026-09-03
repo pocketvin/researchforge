@@ -48,6 +48,7 @@ problem: every important result must be traceable and every missing input must r
 | Product API | async lifecycle, facts, evidence, calculations, trace, cancel | implemented |
 | Product UI | product-first Research page and secondary read-only Quality Lab | implemented; unit, E2E, accessibility and live-browser checks pass |
 | Real disclosure ingestion | same deterministic six-metric extractor; strict product namespace | CATL 2024H1, CATL 2024FY, BYD 2024H1 |
+| n8n integration | [actual same-backend outputs and failure evidence](docs/evidence/v1.5-n8n/README.md) | local runtime verified; final UX/human validation pending |
 | Human usability | real participant sessions | not run |
 | Quality research | two frozen formal experiments and stopping rule | complete negative result |
 

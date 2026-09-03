@@ -17,7 +17,7 @@ jobs:
       - run: uv lock --check
       - run: uv run ruff format --check .
       - run: uv run ruff check .
-      - run: uv run mypy --strict src scripts tests migrations
+      - run: uv run mypy --strict src scripts tests migrations integrations/n8n/runtime-fixture.py
       - run: uv run pytest -q
       - run: uv run python scripts/validate_contracts.py
 
@@ -47,15 +47,36 @@ jobs:
       - run: uv sync --frozen --all-groups
         working-directory: .
       - run: npm run test:e2e:live
+      - run: node integrations/n8n/build-workflow.mjs --check
+        working-directory: .
+      - run: node --test integrations/n8n/workflow.test.mjs
+        working-directory: .
+      - run: node frontend/node_modules/eslint/bin/eslint.js --config integrations/n8n/eslint.config.mjs integrations/n8n
+        working-directory: .
 
   containers:
     runs-on: ubuntu-latest
+    env:
+      RESEARCHFORGE_REASONING_MODE: deterministic
     steps:
       - uses: actions/checkout@v5
       - run: docker compose build
       - run: docker compose up -d --wait
       - run: python scripts/docker_smoke.py
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+      - run: node integrations/n8n/build-runtime-fixture.mjs
+      - name: Import and publish n8n workflows
+        run: |
+          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n import:workflow --input=/files/researchforge.workflow.json
+          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n publish:workflow --id=researchforgeV15
+          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n import:workflow --input=/fixture/workflow.json
+          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n publish:workflow --id=rfTransportTest
+      - run: docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n --profile n8n-test up -d --no-deps --wait --wait-timeout 90 n8n n8n-failure-fixture
+      - run: python -m scripts.n8n_smoke
+      - run: python -m scripts.n8n_smoke --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test --failure-fixture
       - if: always()
-        run: docker compose logs --no-color
+        run: docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n --profile n8n-test logs --no-color
       - if: always()
-        run: docker compose down --volumes
+        run: docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n --profile n8n-test down --volumes

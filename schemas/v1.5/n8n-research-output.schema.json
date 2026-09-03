@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.5/n8n-research-output.schema.json",
+  "title": "ResearchForge n8n transport output",
+  "description": "Presentation aliases of unchanged backend artifacts, or an explicit orchestration failure. Never a second research engine.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "http_status", "run_id", "links"],
+  "properties": {
+    "schema_version": {"const": "1.5.0", "type": "string"},
+    "status": {"enum": ["succeeded", "error"], "type": "string"},
+    "http_status": {"enum": [200, 409, 422, 502, 504], "type": "integer"},
+    "run_id": {"type": ["string", "null"], "pattern": "^run_[a-f0-9]{32}$"},
+    "links": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/links"}]},
+    "ok": {"type": "boolean", "const": false},
+    "route": {"type": "string", "const": "error"},
+    "polls": {"type": "integer", "minimum": 1, "maximum": 60},
+    "code": {"type": "string", "enum": ["INVALID_INPUT", "BACKEND_UNAVAILABLE_OR_UNSAFE", "IDEMPOTENCY_CONFLICT", "UNSUPPORTED_OR_INVALID_INPUT", "SUBMISSION_UNCONFIRMED", "STATUS_UNAVAILABLE", "POLL_LIMIT_EXCEEDED", "RUN_INSUFFICIENT_DATA", "RUN_FAILED", "RUN_TIMED_OUT", "RUN_CANCELLED", "UNKNOWN_BACKEND_STATE", "RESULT_ARTIFACTS_UNAVAILABLE"]},
+    "message": {"type": "string", "minLength": 1},
+    "retry_request": {"$ref": "#/$defs/request"},
+    "request": {"$ref": "#/$defs/request"},
+    "data_namespace": {"type": "string", "const": "product"},
+    "conclusion": {"type": "string", "minLength": 1},
+    "findings": {"type": "array", "items": {"$ref": "../v1.4/claim.schema.json"}},
+    "financial_facts": {"type": "array", "items": {"$ref": "../v1.4/financial-fact.schema.json"}},
+    "calculations": {"type": "array", "items": {"$ref": "../v1.4/calculation-record.schema.json"}},
+    "supporting_evidence": {"type": "array", "items": {"$ref": "../v1.4/evidence-chunk.schema.json"}},
+    "counter_evidence": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["claim_id", "search"],
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "search": {"$ref": "../v1.4/claim.schema.json#/properties/counter_evidence_search"}
+      }
+    }},
+    "limitations": {"$ref": "../v1.4/research-result.schema.json#/properties/limitations"},
+    "monitoring": {"$ref": "../v1.4/research-result.schema.json#/properties/monitoring_items"},
+    "research_result": {"$ref": "../v1.4/research-result.schema.json"},
+    "research_trace": {"$ref": "../v1.4/workflow-trace.schema.json"},
+    "trust_boundary": {"type": "string", "minLength": 1}
+  },
+  "if": {"properties": {"status": {"const": "succeeded"}}},
+  "then": {
+    "required": ["data_namespace", "request", "conclusion", "findings", "financial_facts", "calculations", "supporting_evidence", "counter_evidence", "limitations", "monitoring", "research_result", "research_trace", "trust_boundary"],
+    "properties": {"http_status": {"const": 200}, "run_id": {"type": "string"}, "links": {"type": "object"}},
+    "not": {"anyOf": [{"required": ["code"]}, {"required": ["message"]}, {"required": ["retry_request"]}, {"required": ["ok"]}, {"required": ["route"]}]}
+  },
+  "else": {
+    "required": ["code", "message"],
+    "properties": {"http_status": {"enum": [409, 422, 502, 504]}},
+    "not": {"anyOf": [{"required": ["research_result"]}, {"required": ["conclusion"]}, {"required": ["financial_facts"]}, {"required": ["calculations"]}, {"required": ["monitoring"]}]}
+  },
+  "$defs": {
+    "links": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "result", "trace", "cancel"],
+      "properties": {
+        "status": {"type": "string", "format": "uri"},
+        "result": {"type": "string", "format": "uri"},
+        "trace": {"type": "string", "format": "uri"},
+        "cancel": {"type": "string", "format": "uri"}
+      }
+    },
+    "request": {
+      "type": "object", "additionalProperties": false,
+      "required": ["task_type", "company_ids", "requested_period_labels", "research_question", "research_time", "idempotency_key"],
+      "properties": {
+        "task_type": {"const": "filing_analysis", "type": "string"},
+        "company_ids": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "string", "pattern": "^cn_[0-9]{6}$"}},
+        "requested_period_labels": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "string"}},
+        "research_question": {"type": "string", "minLength": 8, "maxLength": 2000},
+        "research_time": {"type": "string", "format": "date-time"},
+        "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 128}
+      }
+    }
+  }
+}

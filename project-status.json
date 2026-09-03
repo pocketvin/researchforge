@@ -10,14 +10,15 @@
     "V15_PILOT_READY",
     "V15_DEMO",
     "V15_PRODUCT",
-    "FACT_EXTRACTION"
+    "FACT_EXTRACTION",
+    "GENERALIZATION"
   ],
-  "current_gate": "GENERALIZATION",
+  "current_gate": "N8N_INTEGRATION",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "generalization_evidence",
-    "title": "Three-filing deterministic extraction generalization",
-    "outcome": "All three official filings reproduce 18 six-metric facts and reach the same verified Research Result; local backend, real Web E2E and Docker/migration gates passed. Public CI is pending publication.",
+    "id": "n8n_integration",
+    "title": "Bounded n8n orchestration over the same ResearchForge backend",
+    "outcome": "Phase 3 is green and published on main. Phase 4 local gates passed: real n8n three-filing artifact equality, bounded failure routing, 192 backend tests and Web E2E. Public Phase 4 CI is pending.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -28,17 +29,17 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-04T00:14:13+08:00",
+    "at": "2026-09-04T00:50:00+08:00",
     "commands": [
       {
         "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
         "exit_code": 0,
-        "summary": "Local gate passed: 185 backend tests, 7 V1.5 schemas, 18 facts and all three persisted research evidence bundles, including the CLI output-directory safety regression."
+        "summary": "Local gate passed: 192 backend tests, 88 strictly typed source files, 8 V1.5 schemas and all three persisted n8n outputs. Existing frozen package tests remain green."
       },
       {
         "command": "npm lint/typecheck/test/build; Playwright mocked E2E and live-backend E2E",
         "exit_code": 0,
-        "summary": "Four frontend unit tests, two mocked journeys and three unmocked real-backend filing journeys passed with no critical accessibility errors."
+        "summary": "Four frontend unit tests, two mocked and three live-backend journeys passed with no critical accessibility errors. Local E2E uses installed Chrome via PLAYWRIGHT_EXECUTABLE_PATH; default downloaded browser was unavailable."
       },
       {
         "command": "Docker Compose build/up; docker_smoke.py; Alembic downgrade base/upgrade head; docker_smoke.py",
@@ -51,21 +52,26 @@
         "summary": "All three ignored official PDFs reproduced package/recovery hashes; published 3 actual Research Results with zero deterministic Verifier failures and zero provider calls."
       },
       {
-        "command": "GitHub Actions run 33731347766 on b96c4b0",
+        "command": "n8n import/publish; python -m scripts.n8n_smoke; failure-fixture; Node tests and ESLint",
         "exit_code": 0,
-        "summary": "Last published CI is Phase 2; Phase 3 changes have not yet been published or checked by GitHub CI."
+        "summary": "Actual n8n 2.37.9 passed three real filing cases with five artifact families identical to backend, minimum input, replay, five real HTTP failures, five transport-only runtime scenarios and eight Node test groups."
+      },
+      {
+        "command": "GitHub Actions main run 33778511182 on da8367f",
+        "exit_code": 0,
+        "summary": "Phase 3 backend, frontend and containers passed on both the CI branch and main. Phase 4 has not yet been published."
       }
     ]
   },
   "next_action": {
-    "title": "Publish the generalization checkpoint, then implement n8n",
-    "why": "Three real filing paths now work with one architecture; the frozen roadmap proceeds directly to n8n without intermediate independent acceptance.",
-    "first_step": "Complete the final local regression run, publish to a CI branch, and advance the main branch only after GitHub CI passes.",
+    "title": "Finish the n8n engineering checkpoint, then harden the product/demo",
+    "why": "The same backend now serves both surfaces; final UX and demo hardening precede any real-human evaluation.",
+    "first_step": "Complete the Phase 4 regression run and CI branch; advance main only after public CI passes.",
     "acceptance_evidence": [
-      "18 deterministic source-recovered facts across exactly three filings.",
-      "Three real persisted and verified Research Results with calculations, citations, limitations and monitoring.",
-      "Backend, contract, frontend live E2E, Docker/migration and GitHub CI gates pass.",
-      "Then proceed directly to Phase 4 n8n over the same ResearchForge backend."
+      "Three actual n8n filing runs preserve all backend artifacts and presentation aliases.",
+      "Input, namespace, idempotency, waiting, timeout and terminal failure paths are explicit and tested.",
+      "Backend, contracts, frontend E2E, Docker/n8n runtime and GitHub CI pass.",
+      "Proceed directly to Phase 5 without an intermediate independent reviewer."
     ]
   },
   "blockers": [],
@@ -88,8 +94,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-04T00:14:13+08:00",
-    "summary": "Implemented three-filing generalization and final-only acceptance policy; all real-data paths work locally, including live Web and Docker/migration verification. Public Phase 3 CI is the remaining checkpoint.",
+    "ended_at": "2026-09-04T00:50:00+08:00",
+    "summary": "Published Phase 3 after green CI; implemented and locally verified same-backend n8n integration without core changes or intermediate independent acceptance. Phase 4 public CI is next; human validation remains deferred.",
     "files_changed": [
       "AGENTS.md",
       "DECISIONS.md",
@@ -98,25 +104,19 @@
       "README.md",
       "PORTFOLIO.md",
       "CHANGELOG.md",
-      "data/product/filing-catalog.json",
-      "data/product/packages/manifest.json",
-      "data/product/packages/catl-2024fy",
-      "data/product/packages/byd-2024h1",
-      "docs/evidence/v1.5-generalization",
-      "src/researchforge/ingestion/extraction.py",
-      "src/researchforge/adapters/fixtures.py",
-      "src/researchforge/application/research.py",
-      "src/researchforge/workflow/graph.py",
-      "src/researchforge/cli.py",
-      "schemas/v1.5/product-package-index.schema.json",
-      "scripts/generalization_evidence.py",
+      "integrations/n8n",
+      "docs/evidence/v1.5-n8n",
+      "docs/contracts/v1.5/n8n-integration.md",
+      "docs/contracts/v1.5/README.md",
+      "docs/product/researchforge-v1.5-product-thesis.md",
+      "schemas/v1.5/n8n-research-output.schema.json",
+      "examples/contracts/v1.5/n8n-research-output.error.example.json",
+      "scripts/n8n_smoke.py",
       "scripts/validate_contracts.py",
-      "scripts/docker_smoke.py",
-      "tests/ingestion/test_generalization.py",
-      "frontend/e2e-live/research.spec.ts",
-      "frontend/playwright.live.config.ts",
+      "tests/test_n8n_output_contract.py",
+      "tests/test_contract_package.py",
       ".github/workflows/ci.yml"
     ]
   },
-  "updated_at": "2026-09-04T00:14:13+08:00"
+  "updated_at": "2026-09-04T00:50:00+08:00"
 }

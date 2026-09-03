@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.5.0",
+  "status": "error",
+  "http_status": 422,
+  "run_id": null,
+  "links": null,
+  "code": "INVALID_INPUT",
+  "message": "示例失败输出：请提供支持的公司、报告期和研究问题。"
+}

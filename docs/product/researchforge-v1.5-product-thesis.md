@@ -163,15 +163,16 @@ a list of unresolved work. Remaining delivery work is governed by
 - Candidate, cluster, Validation and Final Test mechanics are confined to the secondary Quality
   Lab story.
 
-### 8.2 Real-world data — first slice closed; generalization remains
+### 8.2 Real-world data — three-filing generalization checkpoint passed
 
 - The default runtime uses a strict `product` namespace and a real-disclosure acquisition/parser
   adapter; fixture and Benchmark fallback are rejected.
 - CATL 2024H1 preserves official source identity, hash, page locators, Evidence Chunks and six
   reviewed facts while raw PDFs remain ignored.
 - Reusable deterministic extraction without registry-provided values is now implemented. Phase 3
-  adds CATL 2024FY and BYD 2024H1 through the same implementation, with its engineering evidence
-  recorded separately from human usefulness and final project acceptance.
+  added CATL 2024FY and BYD 2024H1 through the same implementation: 18 facts and three verified
+  Research Results, with backend, live Web E2E, Docker and public CI passing. This engineering
+  evidence remains separate from human usefulness and final project acceptance.
 
 ### 8.3 Research reasoning and verification — closed for the first slice
 
@@ -202,8 +203,9 @@ a list of unresolved work. Remaining delivery work is governed by
 
 - The current product-first demo uses the official CATL 2024H1 disclosure, verified values,
   deterministic arithmetic, source citations, counter evidence, monitoring and a complete trace.
-- Final delivery still requires generalized extraction and a matching n8n surface before the demo
-  and interview narrative are release-frozen.
+- Generalized extraction has passed its checkpoint. A same-backend n8n surface is implemented
+  and undergoing its engineering checkpoint; final dual-surface UX, demo hardening and real-human
+  evaluation are still required before release freeze.
 
 ## 9. V1.5 Scope
 

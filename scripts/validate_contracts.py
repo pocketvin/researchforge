@@ -99,6 +99,7 @@ ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "product-research-request.schema.json",
     "project-checkpoint.schema.json",
     "product-package-index.schema.json",
+    "n8n-research-output.schema.json",
 }
 
 HISTORICAL_REQUIRED_SCHEMAS = {
@@ -143,6 +144,7 @@ CURRENT_EXAMPLES = {
 }
 
 ACTIVE_PRODUCT_EXAMPLES = {
+    "n8n-research-output.error.example.json": "n8n-research-output.schema.json",
     "human-usability-session.example.json": "human-usability-session.schema.json",
     "ingestion-manifest.example.json": "ingestion-manifest.schema.json",
     "product-research-request.example.json": "product-research-request.schema.json",
@@ -195,6 +197,9 @@ REQUIRED_CONTRACTS = {
     PRODUCT_INGESTION_MANIFEST_PATH,
     PRODUCT_INDEX_PATH,
     ROOT / "docs/evidence/v1.5-generalization/README.md",
+    ROOT / "integrations/n8n/researchforge.workflow.json",
+    ROOT / "integrations/n8n/README.md",
+    ROOT / "docs/contracts/v1.5/n8n-integration.md",
     ROOT / "skills" / "fundamental-research" / "README.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json",
@@ -1664,6 +1669,52 @@ def validate_contingency_benchmark(
     return actual_counts
 
 
+def validate_n8n_evidence(schemas: dict[Path, dict[str, Any]]) -> None:
+    """Check the published real runtime outputs and their workflow binding."""
+    directory = ROOT / "docs/evidence/v1.5-n8n"
+    summary = load_json(directory / "summary.json")
+    workflow = ROOT / "integrations/n8n/researchforge.workflow.json"
+    if summary["workflow_sha256"] != hashlib.sha256(workflow.read_bytes()).hexdigest():
+        raise ContractError("n8n evidence belongs to a different workflow artifact")
+    if summary["human_user_value_validated"] is not False or summary["status"] != "PASS":
+        raise ContractError("n8n engineering evidence must not claim human validation")
+    expected = {("cn_300750", "2024H1"), ("cn_300750", "2024FY"), ("cn_002594", "2024H1")}
+    if {(row["company_id"], row["period"]) for row in summary["cases"]} != expected:
+        raise ContractError("n8n runtime evidence must cover exactly the three real filings")
+    schema = ACTIVE_PRODUCT_SCHEMA_DIR / "n8n-research-output.schema.json"
+    for row in summary["cases"]:
+        output = load_json(directory / f"{row['company_id']}-{row['period']}.json")
+        validate_instance(output, schemas[schema], schema, schemas)
+        result = output["research_result"]
+        if (
+            not output["run_id"]
+            == result["run_id"]
+            == output["research_trace"]["run_id"]
+            == row["run_id"]
+        ):
+            raise ContractError("n8n artifact run linkage mismatch")
+        for alias, field in {
+            "conclusion": "executive_summary",
+            "findings": "claims",
+            "limitations": "limitations",
+            "monitoring": "monitoring_items",
+        }.items():
+            if output[alias] != result[field]:
+                raise ContractError(f"n8n presentation alias changed: {alias}")
+        if output["counter_evidence"] != [
+            {"claim_id": claim["claim_id"], "search": claim["counter_evidence_search"]}
+            for claim in result["claims"]
+        ]:
+            raise ContractError("n8n counter evidence differs from backend claims")
+        for field, count in {
+            "financial_facts": "fact_count",
+            "calculations": "calculation_count",
+            "supporting_evidence": "evidence_count",
+        }.items():
+            if len(output[field]) != row[count]:
+                raise ContractError("n8n summary count mismatch")
+
+
 def validate_product_disclosure_package(
     schemas: dict[Path, dict[str, Any]],
 ) -> tuple[int, int, int]:
@@ -2034,6 +2085,7 @@ def main() -> int:
             validate_product_disclosure_package(schemas)
         )
         validate_historical_scope_hashes()
+        validate_n8n_evidence(schemas)
 
         markdown_link_count = validate_markdown_links()
 

@@ -1,0 +1,826 @@
+{
+  "id": "researchforgeV15",
+  "name": "ResearchForge — Verified Company Research",
+  "active": false,
+  "nodes": [
+    {
+      "id": "research-webhook",
+      "name": "Research webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "researchforge-v15",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "researchforge-v15"
+    },
+    {
+      "id": "prepare-request",
+      "name": "Prepare request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Transport validation only. Backend configuration is never taken from the webhook body.\nconst body = $input.first().json.body;\nconst fail = (message) => [{ json: {\n  ok: false, http_status: 422, schema_version: '1.5.0', status: 'error',\n  code: 'INVALID_INPUT', message, run_id: null, links: null,\n} }];\nif (!body || typeof body !== 'object' || Array.isArray(body)) {\n  return fail('请提交 JSON: company_id、period、research_question。');\n}\nconst allowed = ['company_id', 'period', 'research_question', 'research_time', 'idempotency_key'];\nif (Object.keys(body).some((key) => !allowed.includes(key))) {\n  return fail('包含不支持的字段；后端地址、模式和数据命名空间不可由请求覆盖。');\n}\nif (!/^cn_[0-9]{6}$/.test(body.company_id || '') ||\n    !/^20[0-9]{2}(Q[1-4]|H1|FY)$/.test(body.period || '') ||\n    typeof body.research_question !== 'string' ||\n    body.research_question.trim().length < 8 || body.research_question.length > 2000) {\n  return fail('请检查公司 ID、报告期和研究问题（8–2000 字）；可用范围见后端 /v1/catalog。');\n}\nif (body.idempotency_key !== undefined &&\n    (typeof body.idempotency_key !== 'string' ||\n     !/^[A-Za-z0-9._:-]{8,128}$/.test(body.idempotency_key) || !body.research_time)) {\n  return fail('重试时必须同时提供原 idempotency_key 和 research_time，保持输入不变。');\n}\nif (body.research_time !== undefined &&\n    (typeof body.research_time !== 'string' ||\n     !/T.*(Z|[+-][0-9]{2}:[0-9]{2})$/.test(body.research_time) ||\n     !Number.isFinite(Date.parse(body.research_time)))) {\n  return fail('research_time 必须是含时区的 ISO 日期时间。');\n}\nreturn [{ json: {\n  ok: true,\n  backend_url: 'http://api:8000',\n  public_api_url: 'http://127.0.0.1:8000',\n  started_at_ms: Date.now(),\n  max_polls: 60,\n  max_wait_ms: 150000,\n  request: {\n    task_type: 'filing_analysis',\n    company_ids: [body.company_id],\n    requested_period_labels: [body.period],\n    research_question: body.research_question.trim(),\n    research_time: body.research_time || new Date().toISOString(),\n    idempotency_key: body.idempotency_key || `n8n-run-${$execution.id}`,\n  },\n} }];\n"
+      }
+    },
+    {
+      "id": "input-valid",
+      "name": "Input valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ String($json.ok) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "check-product-backend",
+      "name": "Check product backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + '/v1/catalog' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "check-catalog",
+      "name": "Check catalog",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst config = $('Prepare request').first().json;\nconst catalog = response.body;\nconst valid = response.statusCode === 200 && catalog?.data_namespace === 'product' &&\n  Array.isArray(catalog.companies) && Array.isArray(catalog.supported_task_types) &&\n  catalog.supported_task_types.includes(config.request.task_type);\nif (!valid) {\n  return [{ json: { ok: false, http_status: 502, schema_version: '1.5.0', status: 'error',\n    code: 'BACKEND_UNAVAILABLE_OR_UNSAFE', run_id: null, links: null,\n    message: '后端不可达或不是 product 数据环境；未创建研究任务。请检查服务和配置。',\n  } }];\n}\n// Read capabilities from the same backend catalog used by Web; never embed a company list.\nconst supported = catalog.companies.some((company) =>\n  company.company_id === config.request.company_ids[0] &&\n  Array.isArray(company.period_labels) &&\n  company.period_labels.includes(config.request.requested_period_labels[0]));\nif (!supported) {\n  return [{ json: { ok: false, http_status: 422, schema_version: '1.5.0', status: 'error',\n    code: 'UNSUPPORTED_OR_INVALID_INPUT', run_id: null, links: null,\n    message: '该公司/期间不在后端公开的支持范围内；未创建研究任务。请检查 /v1/catalog。',\n  } }];\n}\nreturn [{ json: { ok: true } }];\n"
+      }
+    },
+    {
+      "id": "backend-ready",
+      "name": "Backend ready",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ String($json.ok) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "create-run",
+      "name": "Create run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + '/v1/research-runs' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Prepare request').first().json.request }}"
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "accept-submission",
+      "name": "Accept submission",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst config = $('Prepare request').first().json;\nconst id = response.body?.run_id;\nif (response.statusCode !== 202 || typeof id !== 'string' ||\n    !/^run_[a-f0-9]{32}$/.test(id)) {\n  const conflict = response.statusCode === 409;\n  const invalid = response.statusCode === 422;\n  return [{ json: { ok: false, http_status: conflict ? 409 : invalid ? 422 : 502,\n    schema_version: '1.5.0', status: 'error', run_id: null, links: null,\n    code: conflict ? 'IDEMPOTENCY_CONFLICT' : invalid ? 'UNSUPPORTED_OR_INVALID_INPUT' : 'SUBMISSION_UNCONFIRMED',\n    message: conflict ? '该幂等键已用于不同输入；请还原原请求或使用新键。' :\n      invalid ? '后端拒绝了公司、期间或研究输入；请检查 /v1/catalog。' :\n        '提交未获确认；请求可能已被接收。请使用下方原请求重试，不要生成新幂等键。',\n    retry_request: config.request,\n  } }];\n}\nconst path = `/v1/research-runs/${id}`;\nreturn [{ json: { ok: true, run_id: id, path,\n  links: {\n    status: config.public_api_url + path,\n    result: config.public_api_url + path + '/result',\n    trace: config.public_api_url + path + '/trace',\n    cancel: config.public_api_url + path + '/cancel',\n  },\n} }];\n"
+      }
+    },
+    {
+      "id": "submission-accepted",
+      "name": "Submission accepted",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ String($json.ok) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "wait-before-polling",
+      "name": "Wait before polling",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1980,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 2,
+        "unit": "seconds"
+      }
+    },
+    {
+      "id": "poll-status",
+      "name": "Poll status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "classify-status",
+      "name": "Classify status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2420,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst config = $('Prepare request').first().json;\nconst run = $('Accept submission').first().json;\nconst state = response.body?.lifecycle_state;\nconst polls = $runIndex + 1;\nconst base = { schema_version: '1.5.0', run_id: run.run_id, links: run.links, polls };\nif (response.statusCode !== 200 || response.body?.run_id !== run.run_id) {\n  return [{ json: { ...base, route: 'error', status: 'error', http_status: 502,\n    code: 'STATUS_UNAVAILABLE',\n    message: '无法确认后端任务状态；任务可能仍在运行。请检查状态链接，不要重复创建任务。',\n  } }];\n}\nif (state === 'succeeded') return [{ json: { ...base, route: 'completed' } }];\nif (state === 'queued' || state === 'running') {\n  if (polls < config.max_polls && Date.now() - config.started_at_ms < config.max_wait_ms) {\n    return [{ json: { ...base, route: 'waiting', lifecycle_state: state } }];\n  }\n  return [{ json: { ...base, route: 'error', status: 'error', http_status: 504,\n    code: 'POLL_LIMIT_EXCEEDED',\n    message: 'n8n 已达到等待上限；后端未被自动取消，可能仍在运行。请使用状态或取消链接。',\n  } }];\n}\nconst terminal = ['insufficient_data', 'failed', 'timed_out', 'cancelled'];\nreturn [{ json: { ...base, route: 'error', status: 'error', http_status: 409,\n  code: terminal.includes(state) ? `RUN_${state.toUpperCase()}` : 'UNKNOWN_BACKEND_STATE',\n  message: state === 'insufficient_data' ? '可验证数据不足；没有生成研究报告。请检查来源和支持范围。' :\n    state === 'cancelled' ? '后端任务已取消；没有可用研究报告。' :\n      '后端任务没有可用研究结果。请检查状态和 Trace；n8n 不会编造报告或自动重跑研究。',\n} }];\n"
+      }
+    },
+    {
+      "id": "run-completed",
+      "name": "Run completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "keep-waiting",
+      "name": "Keep waiting",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "waiting",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "fetch-result",
+      "name": "Fetch result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2860,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/result' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-facts",
+      "name": "Fetch facts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3080,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/facts' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-calculations",
+      "name": "Fetch calculations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3300,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/calculations' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-evidence",
+      "name": "Fetch evidence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3520,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/evidence' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-trace",
+      "name": "Fetch trace",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3740,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/trace' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "map-verified-output",
+      "name": "Map verified output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3960,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Presentation aliases only: never calculate finance or generate a conclusion here.\nconst run = $('Accept submission').first().json;\nconst config = $('Prepare request').first().json;\nconst responses = ['Fetch result', 'Fetch facts', 'Fetch calculations', 'Fetch evidence', 'Fetch trace']\n  .map((name) => $(name).first().json);\nconst [result, facts, calculations, evidence, trace] = responses.map((response) => response.body);\nif (responses.some((response) => response.statusCode !== 200) ||\n    result?.run_id !== run.run_id || result?.status !== 'completed' ||\n    trace?.run_id !== run.run_id || !Array.isArray(trace?.stages) ||\n    typeof result?.executive_summary !== 'string' ||\n    !Array.isArray(result?.claims) || !Array.isArray(result?.limitations) ||\n    !Array.isArray(result?.monitoring_items) ||\n    !Array.isArray(facts) || !Array.isArray(calculations) || !Array.isArray(evidence)) {\n  return [{ json: { schema_version: '1.5.0', status: 'error', http_status: 502,\n    run_id: run.run_id, links: run.links, code: 'RESULT_ARTIFACTS_UNAVAILABLE',\n    message: '后端报告或审计产物不可用/不匹配；未把缺失内容呈现为成功。请检查结果和 Trace 链接。',\n  } }];\n}\nreturn [{ json: {\n  schema_version: '1.5.0', status: 'succeeded', http_status: 200, data_namespace: 'product',\n  run_id: run.run_id, links: run.links, request: config.request,\n  conclusion: result.executive_summary,\n  findings: result.claims,\n  financial_facts: facts,\n  calculations,\n  supporting_evidence: evidence,\n  counter_evidence: result.claims.map((claim) => ({\n    claim_id: claim.claim_id, search: claim.counter_evidence_search,\n  })),\n  limitations: result.limitations,\n  monitoring: result.monitoring_items,\n  research_result: result,\n  research_trace: trace,\n  trust_boundary: 'n8n 只编排并转交 ResearchForge 产物，不生成结论或计算财务数字。真实用户价值尚未验证。',\n} }];\n"
+      }
+    },
+    {
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4200,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.http_status }}"
+        }
+      }
+    },
+    {
+      "id": "read-me",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -380
+      ],
+      "parameters": {
+        "width": 640,
+        "height": 280,
+        "content": "## ResearchForge × n8n\nCompany + Period + Research Question → verified research.\n\n**Local-only.** Configure trusted backend/public URLs in Prepare request, never in user input.\n\nWait: 2s; ≤60 polls / 150s. Failure output never invents research. n8n timeout does not cancel backend.\n\nAll facts, calculations, evidence and conclusions come from the SAME backend as Web. No LLM, finance formula or verifier lives here.\n\nSee integrations/n8n/README.md for import, demo, retries and failures. Human usefulness UNVALIDATED."
+      }
+    }
+  ],
+  "connections": {
+    "Research webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare request": {
+      "main": [
+        [
+          {
+            "node": "Input valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input valid": {
+      "main": [
+        [
+          {
+            "node": "Check product backend",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check product backend": {
+      "main": [
+        [
+          {
+            "node": "Check catalog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check catalog": {
+      "main": [
+        [
+          {
+            "node": "Backend ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Backend ready": {
+      "main": [
+        [
+          {
+            "node": "Create run",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create run": {
+      "main": [
+        [
+          {
+            "node": "Accept submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Accept submission": {
+      "main": [
+        [
+          {
+            "node": "Submission accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submission accepted": {
+      "main": [
+        [
+          {
+            "node": "Wait before polling",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait before polling": {
+      "main": [
+        [
+          {
+            "node": "Poll status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll status": {
+      "main": [
+        [
+          {
+            "node": "Classify status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify status": {
+      "main": [
+        [
+          {
+            "node": "Run completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run completed": {
+      "main": [
+        [
+          {
+            "node": "Fetch result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Keep waiting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch result": {
+      "main": [
+        [
+          {
+            "node": "Fetch facts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch facts": {
+      "main": [
+        [
+          {
+            "node": "Fetch calculations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch calculations": {
+      "main": [
+        [
+          {
+            "node": "Fetch evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch evidence": {
+      "main": [
+        [
+          {
+            "node": "Fetch trace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch trace": {
+      "main": [
+        [
+          {
+            "node": "Map verified output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map verified output": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep waiting": {
+      "main": [
+        [
+          {
+            "node": "Wait before polling",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 300,
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "tags": []
+}

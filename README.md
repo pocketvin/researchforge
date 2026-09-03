@@ -50,7 +50,7 @@ preserved as an experimental, read-only **Quality Lab** and is not required for 
 
 - Active direction: **V1.5 Productization**
 - V1.5 productization: **independently accepted — VERDICT: PASS**
-- Current milestone: Phase 3 generalization across CATL 2024H1, CATL 2024FY and BYD 2024H1
+- Current milestone: Phase 4 n8n integration over the same three-filing research backend
 - Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
 - Default runtime: strict `product` namespace with CATL 2024H1, CATL 2024FY and BYD 2024H1
 - Human usefulness: **not yet validated; formal Web+n8n evaluation is deferred to final Phase 6**
@@ -72,6 +72,7 @@ The remaining delivery sequence is frozen in
 | Evidence System | document identity, provenance, page/section locators and claim traceability |
 | Verifier | consistency, citation resolution, required coverage and counter-evidence checks |
 | LangGraph | one bounded ten-stage workflow, routing, checkpoint/recovery, cancellation and trace |
+| n8n (optional) | external input, bounded wait/poll, explicit failures and unchanged backend output |
 | Quality Lab | frozen experimental quality evidence, separate from the user journey |
 
 ResearchForge uses Python 3.12, FastAPI, Pydantic 2, LangGraph, SQLAlchemy/Alembic,
@@ -144,6 +145,15 @@ Docker Compose starts PostgreSQL, FastAPI and Nginx/React with persistent volume
 checks. See [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) for the reproducible V1.5
 walkthrough and [`docs/demo/v1.5-demo-evidence.md`](docs/demo/v1.5-demo-evidence.md) for exact
 source, run and verification evidence.
+
+### Optional n8n entry
+
+Use the [importable ResearchForge n8n workflow](integrations/n8n/README.md) to submit the same
+Company + Period + Question through a local webhook. It returns the same backend facts,
+calculations, evidence, report and Trace; n8n does not calculate finance or generate conclusions.
+See [three real webhook runs and failure-path evidence](docs/evidence/v1.5-n8n/README.md).
+This is an engineering integration, not a Human Validated label; final UX and Web+n8n evaluation
+are subsequent frozen delivery phases.
 
 ## Research workflow
 

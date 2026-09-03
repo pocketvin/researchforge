@@ -4,7 +4,7 @@ Last updated: 2026-09-04
 Machine-readable mirror: [`project-status.json`](project-status.json)
 
 Contract package: 1.5.0
-Current gate: GENERALIZATION
+Current gate: N8N_INTEGRATION
 Scope: V1.5 active productization
 
 ## Current Position
@@ -17,12 +17,13 @@ Scope: V1.5 active productization
 - Legacy Web-only pilot kit: **implemented but not executed; 0 real-human sessions**.
 - Human usefulness: **UNVALIDATED; formal Web+n8n evaluation is deferred to final Phase 6**.
 - Local engineering gate: **passed**.
-- Published GitHub CI: **passed** on commit `b96c4b0` in run
-  [33731347766](https://github.com/pocketvin/researchforge/actions/runs/33731347766).
+- Published GitHub CI: **passed** on Phase 3 commit `da8367f` in main run
+  [33778511182](https://github.com/pocketvin/researchforge/actions/runs/33778511182).
 - Final independent V1.5 acceptance: **VERDICT: PASS**.
 - Current product boundary: CATL `2024H1`, CATL `2024FY` and BYD `2024H1`, `filing_analysis`,
   strict `product` namespace, one shared deterministic extractor and Research backend.
-- Phase 3 local checkpoint: **passed; public CI for these changes is pending publication**.
+- Phase 3 checkpoint: **passed locally and in public CI; published to main**.
+- Phase 4 n8n: **local gate passed (192 backend tests, Web E2E, real n8n); public CI pending**.
 - Public repository: [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
 
 The current authority is
@@ -91,6 +92,18 @@ V1.5 success does not depend on a supported Evolution hypothesis.
 - A bounded model-backed smoke passed the Verifier with all main metrics at `1.0`; request cost
   was USD `0.0012008`.
 
+### Phase 4 same-backend n8n
+
+- Portable workflow plus local n8n 2.37.9 Compose service, import/publish/demo instructions and
+  explicit failure documentation are implemented without modifying the ResearchForge core.
+- Three real webhook runs returned exactly the same five artifact families as the Web backend:
+  Research Result, Financial Facts, Calculation Records, Evidence Chunks and Workflow Trace.
+- Real replay/minimal-input checks, five real HTTP failure checks, eight Node test groups and
+  five separately labeled transport-only n8n failure scenarios passed.
+- New V1.5 output schema preserves original V1.4 artifact versions. Trusted backend configuration,
+  product catalog checking, bounded polling and honest no-result failures are enforced.
+- [n8n engineering evidence](docs/evidence/v1.5-n8n/README.md) is not human or independent acceptance.
+
 ### Core product UX
 
 - Research begins with Company, Period, Question and Start Research.
@@ -137,7 +150,7 @@ rewritten by V1.5.
    findings.
 4. The share-safe Codex review file records the closure evidence.
 
-Phase 1 remains closed. Phase 2 is closed as an engineering checkpoint. Phase 3 generalization is
+Phase 1 remains closed. Phases 2 and 3 are closed as engineering checkpoints. Phase 4 n8n is
 active. Formal real-human evaluation remains deferred until Phase 6, and the next independent
 review occurs only once at the final Phase 7 release gate.
 
@@ -152,8 +165,8 @@ review occurs only once at the final Phase 7 release gate.
 
 ## Single Next Action
 
-Publish Phase 3 through green GitHub CI, then proceed directly to Phase 4's importable n8n
-workflow over the same backend. No intermediate independent acceptance is required.
+Finish the Phase 4 full regression and green public CI checkpoint, then proceed directly to
+Phase 5 Web/n8n UX and demo hardening. No intermediate independent acceptance is required.
 
 ## Fast Resume
 

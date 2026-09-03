@@ -1,0 +1,40 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.37.9
+    profiles: [n8n]
+    environment:
+      N8N_HOST: localhost
+      N8N_PROTOCOL: http
+      N8N_PORT: "5678"
+      WEBHOOK_URL: http://127.0.0.1:5678/
+      N8N_SECURE_COOKIE: "false"
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"
+      EXECUTIONS_DATA_PRUNE: "true"
+      EXECUTIONS_DATA_MAX_AGE: "168"
+      GENERIC_TIMEZONE: Asia/Shanghai
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - researchforge-n8n:/home/node/.n8n
+      - ./integrations/n8n:/files:ro
+      - ./artifacts/n8n-runtime-fixture:/fixture:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5678/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  n8n-failure-fixture:
+    image: ${PYTHON_IMAGE:-python:3.12-slim}
+    profiles: [n8n-test]
+    command: ["python", "/fixture/runtime-fixture.py"]
+    volumes:
+      - ./integrations/n8n/runtime-fixture.py:/fixture/runtime-fixture.py:ro
+
+volumes:
+  researchforge-n8n:

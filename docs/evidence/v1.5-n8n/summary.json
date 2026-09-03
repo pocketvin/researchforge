@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "evidence_kind": "ENGINEERING_RUNTIME_NOT_HUMAN_EVALUATION",
+  "human_user_value_validated": false,
+  "verified_at": "2026-09-03T16:39:52.139289+00:00",
+  "n8n_version": "2.37.9",
+  "workflow_sha256": "4993f55be251dd60df82c7de3dba43c89c06a10cddbc457dd1d7d55b9fb50bb2",
+  "cases": [
+    {
+      "company_id": "cn_300750",
+      "period": "2024H1",
+      "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+      "status": "PASS",
+      "fact_count": 6,
+      "calculation_count": 4,
+      "evidence_count": 8,
+      "trace_stage_count": 10,
+      "all_five_backend_artifacts_identical": true
+    },
+    {
+      "company_id": "cn_300750",
+      "period": "2024FY",
+      "run_id": "run_91e1816661654ead85ca80f7e6856eff",
+      "status": "PASS",
+      "fact_count": 6,
+      "calculation_count": 4,
+      "evidence_count": 6,
+      "trace_stage_count": 10,
+      "all_five_backend_artifacts_identical": true
+    },
+    {
+      "company_id": "cn_002594",
+      "period": "2024H1",
+      "run_id": "run_a1beca0db34b4ef8b977e0e0b1bf16fd",
+      "status": "PASS",
+      "fact_count": 6,
+      "calculation_count": 4,
+      "evidence_count": 8,
+      "trace_stage_count": 10,
+      "all_five_backend_artifacts_identical": true
+    }
+  ],
+  "idempotent_retry": "PASS",
+  "minimum_input": "PASS",
+  "real_http_failure_checks": 5
+}

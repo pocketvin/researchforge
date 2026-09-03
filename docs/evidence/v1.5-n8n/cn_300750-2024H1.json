@@ -1,0 +1,1394 @@
+{
+  "schema_version": "1.5.0",
+  "status": "succeeded",
+  "http_status": 200,
+  "data_namespace": "product",
+  "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+  "links": {
+    "status": "http://127.0.0.1:8000/v1/research-runs/run_8d7d8391850b46d58e98d75969b4c9a0",
+    "result": "http://127.0.0.1:8000/v1/research-runs/run_8d7d8391850b46d58e98d75969b4c9a0/result",
+    "trace": "http://127.0.0.1:8000/v1/research-runs/run_8d7d8391850b46d58e98d75969b4c9a0/trace",
+    "cancel": "http://127.0.0.1:8000/v1/research-runs/run_8d7d8391850b46d58e98d75969b4c9a0/cancel"
+  },
+  "request": {
+    "task_type": "filing_analysis",
+    "company_ids": [
+      "cn_300750"
+    ],
+    "requested_period_labels": [
+      "2024H1"
+    ],
+    "research_question": "2024H1利润是否真正转化成了经营现金流?",
+    "research_time": "2026-09-03T00:00:00+08:00",
+    "idempotency_key": "n8n-smoke-dee423880d9647ce8e910a96caada869"
+  },
+  "conclusion": "宁德时代新能源科技股份有限公司2024H1经营现金流/净利润为1.96倍, 毛利率为26.53%; 未触发预设的背离信号。结论仅覆盖已核验财务事实, 不构成投资建议。",
+  "findings": [
+    {
+      "alternative_explanations": [
+        "经营现金流与利润确认节奏可能受营运资本时点影响。"
+      ],
+      "claim_id": "claim_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_earnings_quality",
+      "claim_type": "earnings_quality",
+      "confidence": {
+        "basis": "结论直接依赖两个已核验财务事实和确定性公式。",
+        "level": "high"
+      },
+      "counter_evidence_search": {
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_non_recurring_profit",
+          "chunk_product_catl_2024h1_unaudited_interim_report"
+        ],
+        "performed": true,
+        "queries": [
+          "利润质量反证: 非经常性损益、审计状态与口径限制"
+        ],
+        "result": "found",
+        "summary": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。"
+      },
+      "direction": "positive",
+      "epistemic_status": "supported_inference",
+      "fact_ids": [
+        "fact_product_catl_2024h1_net_income",
+        "fact_product_catl_2024h1_operating_cash_flow"
+      ],
+      "materiality": "material",
+      "schema_version": "1.4.0",
+      "support_evidence_ids": [
+        "chunk_product_catl_2024h1_net_income",
+        "chunk_product_catl_2024h1_operating_cash_flow"
+      ],
+      "text": "经营现金流与净利润的现金转化比为1.96倍, 未触发预设的背离信号。"
+    },
+    {
+      "alternative_explanations": [],
+      "claim_id": "claim_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_margin",
+      "claim_type": "observation",
+      "confidence": {
+        "basis": "营业收入、营业成本与公式均已冻结。",
+        "level": "high"
+      },
+      "counter_evidence_search": {
+        "evidence_ids": [],
+        "performed": false,
+        "queries": [],
+        "result": "not_applicable",
+        "summary": "该支持性观察不单独触发反证搜索。"
+      },
+      "direction": "neutral",
+      "epistemic_status": "verified_fact",
+      "fact_ids": [
+        "fact_product_catl_2024h1_revenue",
+        "fact_product_catl_2024h1_operating_cost"
+      ],
+      "materiality": "supporting",
+      "schema_version": "1.4.0",
+      "support_evidence_ids": [
+        "chunk_product_catl_2024h1_operating_cost",
+        "chunk_product_catl_2024h1_revenue"
+      ],
+      "text": "按营业收入减营业成本计算, 2024H1毛利率为26.53%。"
+    }
+  ],
+  "financial_facts": [
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "created_at": "2026-08-30T22:16:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_catl_2024h1_accounts_receivable",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "accounts_receivable",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+        "document_id": "doc_product_catl_2024h1",
+        "license_id": null,
+        "published_at": "2024-07-26T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-08-30T22:16:00+08:00",
+        "source_id": "source_szse",
+        "source_type": "official_filing",
+        "uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "期末余额",
+        "page": 64,
+        "row_label": "应收账款",
+        "section": "财务报表",
+        "table": "合并资产负债表"
+      },
+      "value": "58099476000.00"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "created_at": "2026-08-30T22:16:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_catl_2024h1_inventory",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "inventory",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+        "document_id": "doc_product_catl_2024h1",
+        "license_id": null,
+        "published_at": "2024-07-26T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-08-30T22:16:00+08:00",
+        "source_id": "source_szse",
+        "source_type": "official_filing",
+        "uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "期末余额",
+        "page": 64,
+        "row_label": "存货",
+        "section": "财务报表",
+        "table": "合并资产负债表"
+      },
+      "value": "48050676200.00"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "created_at": "2026-08-30T22:16:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_catl_2024h1_net_income",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "net_income",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+        "document_id": "doc_product_catl_2024h1",
+        "license_id": null,
+        "published_at": "2024-07-26T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-08-30T22:16:00+08:00",
+        "source_id": "source_szse",
+        "source_type": "official_filing",
+        "uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "2024年半年度",
+        "page": 70,
+        "row_label": "归属于母公司股东的净利润",
+        "section": "财务报表",
+        "table": "合并利润表"
+      },
+      "value": "22864987400.00"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "created_at": "2026-08-30T22:16:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_catl_2024h1_operating_cash_flow",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "operating_cash_flow",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+        "document_id": "doc_product_catl_2024h1",
+        "license_id": null,
+        "published_at": "2024-07-26T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-08-30T22:16:00+08:00",
+        "source_id": "source_szse",
+        "source_type": "official_filing",
+        "uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "2024年半年度",
+        "page": 73,
+        "row_label": "经营活动产生的现金流量净额",
+        "section": "财务报表",
+        "table": "合并现金流量表"
+      },
+      "value": "44708954600.00"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "created_at": "2026-08-30T22:16:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_catl_2024h1_operating_cost",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "operating_cost",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+        "document_id": "doc_product_catl_2024h1",
+        "license_id": null,
+        "published_at": "2024-07-26T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-08-30T22:16:00+08:00",
+        "source_id": "source_szse",
+        "source_type": "official_filing",
+        "uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "2024年半年度",
+        "page": 69,
+        "row_label": "营业成本",
+        "section": "财务报表",
+        "table": "合并利润表"
+      },
+      "value": "122517848800.00"
+    },
+    {
+      "availability": "available",
+      "canonical_scale": 1,
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "created_at": "2026-08-30T22:16:00+08:00",
+      "currency": "CNY",
+      "derivation": null,
+      "fact_id": "fact_product_catl_2024h1_revenue",
+      "fact_kind": "reported",
+      "formula_version": null,
+      "measurement_unit": "CURRENCY",
+      "metric_code": "revenue",
+      "period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "quality_flags": [
+        "unit_normalized"
+      ],
+      "schema_version": "1.4.0",
+      "sign_convention": "natural_statement_value",
+      "source": {
+        "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+        "document_id": "doc_product_catl_2024h1",
+        "license_id": null,
+        "published_at": "2024-07-26T23:59:59+08:00",
+        "redistribution_allowed": false,
+        "retrieved_at": "2026-08-30T22:16:00+08:00",
+        "source_id": "source_szse",
+        "source_type": "official_filing",
+        "uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF"
+      },
+      "source_fact_ids": [],
+      "source_locator": {
+        "column_label": "2024年半年度",
+        "page": 69,
+        "row_label": "营业收入",
+        "section": "财务报表",
+        "table": "合并利润表"
+      },
+      "value": "166766833600.00"
+    }
+  ],
+  "calculations": [
+    {
+      "calculation_id": "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_profit",
+      "created_at": "2026-09-03T16:39:39.433436+00:00",
+      "explanation": "Calculated as revenue minus operating cost.",
+      "formula_code": "gross_profit",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_catl_2024h1_revenue",
+        "fact_product_catl_2024h1_operating_cost"
+      ],
+      "measurement_unit": "CURRENCY",
+      "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "44248984800.00"
+    },
+    {
+      "calculation_id": "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_margin",
+      "created_at": "2026-09-03T16:39:39.433436+00:00",
+      "explanation": "Calculated as gross profit / revenue.",
+      "formula_code": "gross_margin",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_catl_2024h1_revenue",
+        "fact_product_catl_2024h1_operating_cost"
+      ],
+      "measurement_unit": "RATIO",
+      "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "0.2653344423755971583069020985"
+    },
+    {
+      "calculation_id": "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_cash_conversion",
+      "created_at": "2026-09-03T16:39:39.433436+00:00",
+      "explanation": "Calculated as operating cash flow / net income.",
+      "formula_code": "cash_conversion",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_catl_2024h1_operating_cash_flow",
+        "fact_product_catl_2024h1_net_income"
+      ],
+      "measurement_unit": "RATIO",
+      "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "1.955345691552841179348299138"
+    },
+    {
+      "calculation_id": "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_profit_cash_divergence",
+      "created_at": "2026-09-03T16:39:39.433436+00:00",
+      "explanation": "No frozen profit/cash divergence rule was triggered.",
+      "formula_code": "profit_cash_divergence",
+      "formula_version": "1.0.0",
+      "input_fact_ids": [
+        "fact_product_catl_2024h1_net_income",
+        "fact_product_catl_2024h1_operating_cash_flow"
+      ],
+      "measurement_unit": "COUNT",
+      "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+      "schema_version": "1.4.0",
+      "status": "calculated",
+      "value": "0"
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "chunk_id": "chunk_product_catl_2024h1_accounts_receivable",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 64,
+        "page_start": 64,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 应收账款",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "应收账款 5,809,947.60 6,402,053.34",
+      "text_hash": "6440a2b5f68b7294f4fa646980188166a2fbecb7fab03ca7816d8b01edd033af"
+    },
+    {
+      "chunk_id": "chunk_product_catl_2024h1_inventory",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 64,
+        "page_start": 64,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 存货",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "存货 4,805,067.62 4,543,389.01",
+      "text_hash": "ed41b5e768987e12c0e77d2b635b5ebd5126c86d24b2051e07f4abac42a5407d"
+    },
+    {
+      "chunk_id": "chunk_product_catl_2024h1_net_income",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 70,
+        "page_start": 70,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 归属于母公司股东的净利润",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "1.归属于母公司股东的净利润 （净亏损以“—”号填列） 2,286,498.74 2,071,726.45",
+      "text_hash": "b7bf89025cc2a0c7463694a1d180427f2bd6f56229b4fdbe498604a06a5d39f8"
+    },
+    {
+      "chunk_id": "chunk_product_catl_2024h1_non_recurring_profit",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 7,
+        "page_start": 7,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Counter evidence: non-recurring profit contribution",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "归属于上市公司股东的扣除 非经常性损益的净利润（万 元） 2,005,394.11  1,755,299.67  14.25%",
+      "text_hash": "f13ee74f18434b332ba91d11ff89cd481e52e6b65f7e3c118fb0b36c7dacf41c"
+    },
+    {
+      "chunk_id": "chunk_product_catl_2024h1_operating_cash_flow",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 73,
+        "page_start": 73,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 经营活动产生的现金流量净额",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "经营活动产生的现金流量净额 4,470,895.46 3,707,036.98",
+      "text_hash": "2cf4e1dcc7534f30e77aa3ef37902b4c1dad33a3f2a9768ef098247ff69b096a"
+    },
+    {
+      "chunk_id": "chunk_product_catl_2024h1_operating_cost",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 69,
+        "page_start": 69,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 营业成本",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "其中：营业成本 12,251,784.88 14,830,593.41",
+      "text_hash": "5f86051d16e6ed2987f8b2c73b56072d296d8cd0b908e7dcdfea37f75b16ad8d"
+    },
+    {
+      "chunk_id": "chunk_product_catl_2024h1_revenue",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 69,
+        "page_start": 69,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Financial statement fact: 营业收入",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "其中：营业收入 16,676,683.36 18,924,604.13",
+      "text_hash": "8a765230d2e6fde08b6f1e0a3aac00826fb247b65ec2e07305c77e3aa2a79ea8"
+    },
+    {
+      "chunk_id": "chunk_product_catl_2024h1_unaudited_interim_report",
+      "company": {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      },
+      "content_role": "untrusted_source",
+      "document_id": "doc_product_catl_2024h1",
+      "document_type": "interim_report",
+      "language": "zh-CN",
+      "locator": {
+        "char_end": null,
+        "char_start": null,
+        "page_end": 64,
+        "page_start": 64,
+        "paragraph_end": null,
+        "paragraph_start": null
+      },
+      "parser_version": "pypdf-6.10.0",
+      "published_at": "2024-07-26T23:59:59+08:00",
+      "quality_flags": [
+        "text_native",
+        "table_linearized"
+      ],
+      "reporting_period": {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      },
+      "retrieved_at": "2026-08-30T22:16:00+08:00",
+      "schema_version": "1.4.0",
+      "section": "Counter evidence: audit status",
+      "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
+      "text": "公司半年度财务报告未经审计。",
+      "text_hash": "c7fade1a001974588e6e5a39865400a7e58723f412c722e82caf0035501460f1"
+    }
+  ],
+  "counter_evidence": [
+    {
+      "claim_id": "claim_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_earnings_quality",
+      "search": {
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_non_recurring_profit",
+          "chunk_product_catl_2024h1_unaudited_interim_report"
+        ],
+        "performed": true,
+        "queries": [
+          "利润质量反证: 非经常性损益、审计状态与口径限制"
+        ],
+        "result": "found",
+        "summary": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。"
+      }
+    },
+    {
+      "claim_id": "claim_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_margin",
+      "search": {
+        "evidence_ids": [],
+        "performed": false,
+        "queries": [],
+        "result": "not_applicable",
+        "summary": "该支持性观察不单独触发反证搜索。"
+      }
+    }
+  ],
+  "limitations": [
+    "当前结论仅覆盖所选期间已哈希核验的官方报告和六项财务事实。",
+    "一次性损益未纳入确定性公式; 反证与审计边界以实际来源证据为准。",
+    "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+    "单一报告期的现金转化不能证明长期收益质量, 需在下一同口径报告期复核。"
+  ],
+  "monitoring": [
+    {
+      "evidence_ids": [
+        "chunk_product_catl_2024h1_accounts_receivable",
+        "chunk_product_catl_2024h1_inventory",
+        "chunk_product_catl_2024h1_net_income",
+        "chunk_product_catl_2024h1_operating_cash_flow"
+      ],
+      "fact_ids": [
+        "fact_product_catl_2024h1_operating_cash_flow",
+        "fact_product_catl_2024h1_net_income",
+        "fact_product_catl_2024h1_accounts_receivable",
+        "fact_product_catl_2024h1_inventory"
+      ],
+      "monitor_code": "working_capital_cash_conversion_cn_300750",
+      "next_review": "下一同口径财务报告发布后",
+      "rationale": "经营现金流与净利润存在背离时, 应同时跟踪应收账款和存货, 避免把营运资本时点影响误判为长期盈利质量变化。",
+      "title": "下一同口径报告期复核现金转化与营运资本",
+      "trigger": "经营现金流为负, 或现金转化比低于1.00倍。"
+    }
+  ],
+  "research_result": {
+    "claims": [
+      {
+        "alternative_explanations": [
+          "经营现金流与利润确认节奏可能受营运资本时点影响。"
+        ],
+        "claim_id": "claim_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_earnings_quality",
+        "claim_type": "earnings_quality",
+        "confidence": {
+          "basis": "结论直接依赖两个已核验财务事实和确定性公式。",
+          "level": "high"
+        },
+        "counter_evidence_search": {
+          "evidence_ids": [
+            "chunk_product_catl_2024h1_non_recurring_profit",
+            "chunk_product_catl_2024h1_unaudited_interim_report"
+          ],
+          "performed": true,
+          "queries": [
+            "利润质量反证: 非经常性损益、审计状态与口径限制"
+          ],
+          "result": "found",
+          "summary": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。"
+        },
+        "direction": "positive",
+        "epistemic_status": "supported_inference",
+        "fact_ids": [
+          "fact_product_catl_2024h1_net_income",
+          "fact_product_catl_2024h1_operating_cash_flow"
+        ],
+        "materiality": "material",
+        "schema_version": "1.4.0",
+        "support_evidence_ids": [
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_operating_cash_flow"
+        ],
+        "text": "经营现金流与净利润的现金转化比为1.96倍, 未触发预设的背离信号。"
+      },
+      {
+        "alternative_explanations": [],
+        "claim_id": "claim_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_margin",
+        "claim_type": "observation",
+        "confidence": {
+          "basis": "营业收入、营业成本与公式均已冻结。",
+          "level": "high"
+        },
+        "counter_evidence_search": {
+          "evidence_ids": [],
+          "performed": false,
+          "queries": [],
+          "result": "not_applicable",
+          "summary": "该支持性观察不单独触发反证搜索。"
+        },
+        "direction": "neutral",
+        "epistemic_status": "verified_fact",
+        "fact_ids": [
+          "fact_product_catl_2024h1_revenue",
+          "fact_product_catl_2024h1_operating_cost"
+        ],
+        "materiality": "supporting",
+        "schema_version": "1.4.0",
+        "support_evidence_ids": [
+          "chunk_product_catl_2024h1_operating_cost",
+          "chunk_product_catl_2024h1_revenue"
+        ],
+        "text": "按营业收入减营业成本计算, 2024H1毛利率为26.53%。"
+      }
+    ],
+    "companies": [
+      {
+        "company_id": "cn_300750",
+        "country_code": "CN",
+        "exchange": "SZSE",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750"
+      }
+    ],
+    "evidence_cutoff": "2026-09-03T00:00:00+08:00",
+    "executive_summary": "宁德时代新能源科技股份有限公司2024H1经营现金流/净利润为1.96倍, 毛利率为26.53%; 未触发预设的背离信号。结论仅覆盖已核验财务事实, 不构成投资建议。",
+    "financial_snapshot_fact_ids": [
+      "fact_product_catl_2024h1_accounts_receivable",
+      "fact_product_catl_2024h1_inventory",
+      "fact_product_catl_2024h1_net_income",
+      "fact_product_catl_2024h1_operating_cash_flow",
+      "fact_product_catl_2024h1_operating_cost",
+      "fact_product_catl_2024h1_revenue"
+    ],
+    "formula_version": "1.0.0",
+    "generated_at": "2026-09-03T16:39:39.435334+00:00",
+    "limitations": [
+      "当前结论仅覆盖所选期间已哈希核验的官方报告和六项财务事实。",
+      "一次性损益未纳入确定性公式; 反证与审计边界以实际来源证据为准。",
+      "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+      "单一报告期的现金转化不能证明长期收益质量, 需在下一同口径报告期复核。"
+    ],
+    "mandatory_checks": [
+      {
+        "check_code": "operating_cash_flow",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_operating_cash_flow"
+        ],
+        "finding": "已核对经营活动现金流。",
+        "status": "performed"
+      },
+      {
+        "check_code": "accounts_receivable",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_accounts_receivable"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_accounts_receivable"
+        ],
+        "finding": "已核对应收账款期末余额。",
+        "status": "performed"
+      },
+      {
+        "check_code": "inventory",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_inventory"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_inventory"
+        ],
+        "finding": "已核对存货期末余额。",
+        "status": "performed"
+      },
+      {
+        "check_code": "gross_margin",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_operating_cost",
+          "chunk_product_catl_2024h1_revenue"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_revenue",
+          "fact_product_catl_2024h1_operating_cost"
+        ],
+        "finding": "毛利率由确定性公式计算。",
+        "status": "performed"
+      },
+      {
+        "check_code": "cash_conversion",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_operating_cash_flow",
+          "fact_product_catl_2024h1_net_income"
+        ],
+        "finding": "Calculated as operating cash flow / net income.",
+        "status": "performed"
+      },
+      {
+        "check_code": "profit_cash_divergence",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_net_income",
+          "fact_product_catl_2024h1_operating_cash_flow"
+        ],
+        "finding": "No frozen profit/cash divergence rule was triggered.",
+        "status": "performed"
+      },
+      {
+        "check_code": "one_off_contribution",
+        "evidence_ids": [],
+        "fact_ids": [],
+        "finding": "当前事实集没有一次性损益贡献字段, 未作推断。",
+        "status": "unavailable"
+      },
+      {
+        "check_code": "revenue_trend",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_revenue"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_revenue"
+        ],
+        "finding": "当前请求没有较早同口径期间, 未生成趋势。",
+        "status": "unavailable"
+      },
+      {
+        "check_code": "profit_trend",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_net_income"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_net_income"
+        ],
+        "finding": "当前请求没有较早同口径期间, 未生成趋势。",
+        "status": "unavailable"
+      },
+      {
+        "check_code": "counter_evidence",
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_non_recurring_profit",
+          "chunk_product_catl_2024h1_unaudited_interim_report"
+        ],
+        "fact_ids": [],
+        "finding": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+        "status": "performed"
+      }
+    ],
+    "monitoring_items": [
+      {
+        "evidence_ids": [
+          "chunk_product_catl_2024h1_accounts_receivable",
+          "chunk_product_catl_2024h1_inventory",
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_operating_cash_flow"
+        ],
+        "fact_ids": [
+          "fact_product_catl_2024h1_operating_cash_flow",
+          "fact_product_catl_2024h1_net_income",
+          "fact_product_catl_2024h1_accounts_receivable",
+          "fact_product_catl_2024h1_inventory"
+        ],
+        "monitor_code": "working_capital_cash_conversion_cn_300750",
+        "next_review": "下一同口径财务报告发布后",
+        "rationale": "经营现金流与净利润存在背离时, 应同时跟踪应收账款和存货, 避免把营运资本时点影响误判为长期盈利质量变化。",
+        "title": "下一同口径报告期复核现金转化与营运资本",
+        "trigger": "经营现金流为负, 或现金转化比低于1.00倍。"
+      }
+    ],
+    "requested_periods": [
+      {
+        "accounting_standard": "CAS",
+        "fiscal_period": "H1",
+        "fiscal_year": 2024,
+        "period_basis": "ytd",
+        "period_end": "2024-06-30",
+        "period_start": "2024-01-01",
+        "restatement_status": "as_reported",
+        "statement_scope": "consolidated"
+      }
+    ],
+    "research_plan": [
+      {
+        "description": "加载截止时点可用财务事实",
+        "status": "completed",
+        "step_id": "step_run_8d7d8391850b46d58e98d75969b4c9a0_load"
+      },
+      {
+        "description": "执行冻结收益质量公式",
+        "status": "completed",
+        "step_id": "step_run_8d7d8391850b46d58e98d75969b4c9a0_calculate"
+      },
+      {
+        "description": "搜索当前证据包中的反证",
+        "status": "completed",
+        "step_id": "step_run_8d7d8391850b46d58e98d75969b4c9a0_counter"
+      },
+      {
+        "description": "组装并验证结构化结果",
+        "status": "completed",
+        "step_id": "step_run_8d7d8391850b46d58e98d75969b4c9a0_validate"
+      }
+    ],
+    "research_question": "2024H1利润是否真正转化成了经营现金流?",
+    "research_time": "2026-09-03T00:00:00+08:00",
+    "result_id": "result_run_8d7d8391850b46d58e98d75969b4c9a0",
+    "risk_claim_ids": [],
+    "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+    "schema_version": "1.4.0",
+    "skill_hash": "71991b5a424638e4437699e63d3649a3ca0b36b308b456e2172d6a3922785890",
+    "skill_version": "1.0.0",
+    "source_document_ids": [
+      "doc_product_catl_2024h1"
+    ],
+    "status": "completed",
+    "task_type": "filing_analysis"
+  },
+  "research_trace": {
+    "checkpoint_schema_version": "1.0.0",
+    "engine": "langgraph",
+    "finished_at": "2026-09-03T16:39:39.638771+00:00",
+    "graph_version": "1.0.0",
+    "repair_attempts": 0,
+    "run_id": "run_8d7d8391850b46d58e98d75969b4c9a0",
+    "schema_version": "1.4.0",
+    "stages": [
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.425610+00:00",
+        "input_artifact_ids": [
+          "request_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "task_spec_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "sanitized_summary": "Validated one bounded filing-analysis earnings-quality request.",
+        "sequence": 1,
+        "stage": "understanding_question",
+        "started_at": "2026-09-03T16:39:39.425610+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.428066+00:00",
+        "input_artifact_ids": [
+          "task_spec_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "plan_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "sanitized_summary": "Persistable four-step research plan prepared.",
+        "sequence": 2,
+        "stage": "planning",
+        "started_at": "2026-09-03T16:39:39.428066+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.431222+00:00",
+        "input_artifact_ids": [
+          "plan_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "fact_product_catl_2024h1_accounts_receivable",
+          "fact_product_catl_2024h1_inventory",
+          "fact_product_catl_2024h1_net_income",
+          "fact_product_catl_2024h1_operating_cash_flow",
+          "fact_product_catl_2024h1_operating_cost",
+          "fact_product_catl_2024h1_revenue"
+        ],
+        "sanitized_summary": "Loaded 6 eligible normalized financial facts.",
+        "sequence": 3,
+        "stage": "loading_financial_data",
+        "started_at": "2026-09-03T16:39:39.431222+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.431630+00:00",
+        "input_artifact_ids": [
+          "fact_product_catl_2024h1_accounts_receivable",
+          "fact_product_catl_2024h1_inventory",
+          "fact_product_catl_2024h1_net_income",
+          "fact_product_catl_2024h1_operating_cash_flow",
+          "fact_product_catl_2024h1_operating_cost",
+          "fact_product_catl_2024h1_revenue"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "chunk_product_catl_2024h1_accounts_receivable",
+          "chunk_product_catl_2024h1_inventory",
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_non_recurring_profit",
+          "chunk_product_catl_2024h1_operating_cash_flow",
+          "chunk_product_catl_2024h1_operating_cost",
+          "chunk_product_catl_2024h1_revenue",
+          "chunk_product_catl_2024h1_unaudited_interim_report"
+        ],
+        "sanitized_summary": "Resolved 8 bounded evidence chunks across 1 official source documents.",
+        "sequence": 4,
+        "stage": "retrieving_evidence",
+        "started_at": "2026-09-03T16:39:39.431630+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.433508+00:00",
+        "input_artifact_ids": [
+          "fact_product_catl_2024h1_accounts_receivable",
+          "fact_product_catl_2024h1_inventory",
+          "fact_product_catl_2024h1_net_income",
+          "fact_product_catl_2024h1_operating_cash_flow",
+          "fact_product_catl_2024h1_operating_cost",
+          "fact_product_catl_2024h1_revenue"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_profit",
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_margin",
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_cash_conversion",
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_profit_cash_divergence"
+        ],
+        "sanitized_summary": "Calculated gross profit, gross margin, cash conversion and divergence signal.",
+        "sequence": 5,
+        "stage": "calculating",
+        "started_at": "2026-09-03T16:39:39.433508+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.433803+00:00",
+        "input_artifact_ids": [
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_profit",
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_gross_margin",
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_cash_conversion",
+          "calc_run_8d7d8391850b46d58e98d75969b4c9a0_cn_300750_profit_cash_divergence"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "checks_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "sanitized_summary": "Completed 9 deterministic checks.",
+        "sequence": 6,
+        "stage": "cross_checking",
+        "started_at": "2026-09-03T16:39:39.433803+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.435021+00:00",
+        "input_artifact_ids": [
+          "checks_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "counter_search_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "sanitized_summary": "Counter-evidence search found 2 filing-based evidence chunks.",
+        "sequence": 7,
+        "stage": "searching_counter_evidence",
+        "started_at": "2026-09-03T16:39:39.435021+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.435145+00:00",
+        "input_artifact_ids": [
+          "checks_run_8d7d8391850b46d58e98d75969b4c9a0",
+          "counter_search_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "conclusion_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "sanitized_summary": "Formed bounded language from precomputed facts and calculations.",
+        "sequence": 8,
+        "stage": "forming_conclusion",
+        "started_at": "2026-09-03T16:39:39.435145+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.435340+00:00",
+        "input_artifact_ids": [
+          "conclusion_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "result_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "sanitized_summary": "Assembled the canonical Research Result with fact-linked material claims.",
+        "sequence": 9,
+        "stage": "validating_output",
+        "started_at": "2026-09-03T16:39:39.435340+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      },
+      {
+        "failure_code": null,
+        "finished_at": "2026-09-03T16:39:39.435470+00:00",
+        "input_artifact_ids": [
+          "result_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "node_version": "1.0.0",
+        "output_artifact_ids": [
+          "manifest_run_8d7d8391850b46d58e98d75969b4c9a0"
+        ],
+        "sanitized_summary": "Completed the bounded workflow; immutable artifacts are ready to persist.",
+        "sequence": 10,
+        "stage": "completed",
+        "started_at": "2026-09-03T16:39:39.435470+00:00",
+        "status": "succeeded",
+        "tool_record_ids": []
+      }
+    ],
+    "started_at": "2026-09-03T16:39:39.423103+00:00",
+    "terminal_state": "succeeded",
+    "trace_hash": "eb5430f17f744b2c540bafa51777109df117a02be6c5c6373181e3fb99b1b3ee",
+    "trace_id": "trace_run_8d7d8391850b46d58e98d75969b4c9a0",
+    "usage": {
+      "cost_currency": "USD",
+      "estimated_cost": 0,
+      "input_tokens": 0,
+      "latency_ms": 0,
+      "output_tokens": 0,
+      "tool_calls": 0,
+      "total_tokens": 0
+    }
+  },
+  "trust_boundary": "n8n 只编排并转交 ResearchForge 产物，不生成结论或计算财务数字。真实用户价值尚未验证。"
+}
