@@ -50,7 +50,7 @@ preserved as an experimental, read-only **Quality Lab** and is not required for 
 
 - Active direction: **V1.5 Productization**
 - V1.5 productization: **independently accepted — VERDICT: PASS**
-- Current milestone: Phase 4 n8n integration over the same three-filing research backend
+- Current milestone: Phase 5 Web/n8n UX and demo hardening over the same verified backend
 - Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
 - Default runtime: strict `product` namespace with CATL 2024H1, CATL 2024FY and BYD 2024H1
 - Human usefulness: **not yet validated; formal Web+n8n evaluation is deferred to final Phase 6**

@@ -4,7 +4,7 @@ Last updated: 2026-09-04
 Machine-readable mirror: [`project-status.json`](project-status.json)
 
 Contract package: 1.5.0
-Current gate: N8N_INTEGRATION
+Current gate: PRODUCT_HARDENING
 Scope: V1.5 active productization
 
 ## Current Position
@@ -23,7 +23,7 @@ Scope: V1.5 active productization
 - Current product boundary: CATL `2024H1`, CATL `2024FY` and BYD `2024H1`, `filing_analysis`,
   strict `product` namespace, one shared deterministic extractor and Research backend.
 - Phase 3 checkpoint: **passed locally and in public CI; published to main**.
-- Phase 4 n8n: **local gate passed (192 backend tests, Web E2E, real n8n); public CI pending**.
+- Phase 4 n8n: **engineering checkpoint passed locally and in public CI; published to main**.
 - Public repository: [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
 
 The current authority is
@@ -150,7 +150,7 @@ rewritten by V1.5.
    findings.
 4. The share-safe Codex review file records the closure evidence.
 
-Phase 1 remains closed. Phases 2 and 3 are closed as engineering checkpoints. Phase 4 n8n is
+Phase 1 remains closed. Phases 2–4 are closed as engineering checkpoints. Phase 5 hardening is
 active. Formal real-human evaluation remains deferred until Phase 6, and the next independent
 review occurs only once at the final Phase 7 release gate.
 
@@ -165,8 +165,8 @@ review occurs only once at the final Phase 7 release gate.
 
 ## Single Next Action
 
-Finish the Phase 4 full regression and green public CI checkpoint, then proceed directly to
-Phase 5 Web/n8n UX and demo hardening. No intermediate independent acceptance is required.
+Harden Web/n8n UX, screenshots, reproducible startup, demo/interview narrative and freeze the
+dual-surface human-evaluation protocol. No intermediate independent acceptance is required.
 
 ## Fast Resume
 

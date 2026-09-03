@@ -11,14 +11,15 @@
     "V15_DEMO",
     "V15_PRODUCT",
     "FACT_EXTRACTION",
-    "GENERALIZATION"
+    "GENERALIZATION",
+    "N8N_INTEGRATION"
   ],
-  "current_gate": "N8N_INTEGRATION",
+  "current_gate": "PRODUCT_HARDENING",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "n8n_integration",
-    "title": "Bounded n8n orchestration over the same ResearchForge backend",
-    "outcome": "Phase 3 is green and published on main. Phase 4 local gates passed: real n8n three-filing artifact equality, bounded failure routing, 192 backend tests and Web E2E. Public Phase 4 CI is pending.",
+    "id": "product_hardening",
+    "title": "Final Web and n8n UX, demo and evaluation-protocol hardening",
+    "outcome": "Phases 3 and 4 passed public CI and are published on main. Web and n8n now share one verified backend; final dual-surface UX and evaluation protocol remain to be frozen before any human sessions.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -29,8 +30,13 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-04T00:50:00+08:00",
+    "at": "2026-09-04T00:59:14+08:00",
     "commands": [
+      {
+        "command": "GitHub Actions run 33781494639 on ba17df0",
+        "exit_code": 0,
+        "summary": "Phase 4 backend, frontend and container/n8n jobs all passed after the readiness-race repair. Failed run 33781018823 is retained."
+      },
       {
         "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
         "exit_code": 0,
@@ -64,14 +70,14 @@
     ]
   },
   "next_action": {
-    "title": "Finish the n8n engineering checkpoint, then harden the product/demo",
-    "why": "The same backend now serves both surfaces; final UX and demo hardening precede any real-human evaluation.",
-    "first_step": "Complete the Phase 4 regression run and CI branch; advance main only after public CI passes.",
+    "title": "Freeze final dual-surface UX and evaluation protocol",
+    "why": "The same verified backend now serves both surfaces; usability criteria must be frozen before real-human sessions.",
+    "first_step": "Harden the n8n human entry and Web failure/readability experience, capture screenshots and update the demo/interview story.",
     "acceptance_evidence": [
-      "Three actual n8n filing runs preserve all backend artifacts and presentation aliases.",
-      "Input, namespace, idempotency, waiting, timeout and terminal failure paths are explicit and tested.",
-      "Backend, contracts, frontend E2E, Docker/n8n runtime and GitHub CI pass.",
-      "Proceed directly to Phase 5 without an intermediate independent reviewer."
+      "Web and n8n ordinary users can independently initiate equivalent research over one backend.",
+      "Both surfaces expose conclusion, facts, formulas, evidence, limitations and monitoring with clear failure/abstention behavior.",
+      "Screenshots, reproducible demo, CI/Docker/E2E and interview narrative are release-ready.",
+      "Final Web+n8n human evaluation criteria and denominator rules are frozen before recruitment."
     ]
   },
   "blockers": [],
@@ -94,8 +100,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-04T00:50:00+08:00",
-    "summary": "Published Phase 3 after green CI; implemented and locally verified same-backend n8n integration without core changes or intermediate independent acceptance. Phase 4 public CI is next; human validation remains deferred.",
+    "ended_at": "2026-09-04T00:59:14+08:00",
+    "summary": "Published Phases 3 and 4 after green CI; same-backend n8n passed real and failure paths without core changes or intermediate independent acceptance. Phase 5 hardening is active; human validation remains deferred.",
     "files_changed": [
       "AGENTS.md",
       "DECISIONS.md",
@@ -118,5 +124,5 @@
       ".github/workflows/ci.yml"
     ]
   },
-  "updated_at": "2026-09-04T00:50:00+08:00"
+  "updated_at": "2026-09-04T00:59:14+08:00"
 }

@@ -1,6 +1,9 @@
 # Phase 4 — Same-backend n8n Engineering Evidence
 
-Status: **LOCAL ENGINEERING CHECKPOINT PASSED; PUBLIC CI PENDING**
+Status: **ENGINEERING CHECKPOINT PASSED — LOCAL + PUBLIC CI**
+
+Published implementation: `ba17df0b6f20e4d7b90b2d798bc169191d7bd91f` ·
+[GitHub Actions 33781494639](https://github.com/pocketvin/researchforge/actions/runs/33781494639)
 
 This is real n8n 2.37.9 executing the imported/published workflow, not a JSON-only simulation.
 ResearchForge and its PostgreSQL-backed API are the same containers serving Web. Research wording
