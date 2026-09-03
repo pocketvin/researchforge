@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "evidence_kind": "ENGINEERING_RUNTIME_NOT_HUMAN_EVALUATION",
+  "human_user_value_validated": false,
+  "verified_at": "2026-09-03T21:36:32.660083+00:00",
+  "n8n_version": "2.37.9",
+  "workflow_sha256": "af6184dacfe25ee11492f87e15a0c1413c0a856c1cc536ac3aedc94027c98ddf",
+  "cases": [
+    {"company_id": "cn_300750", "period": "2024H1", "status": "PASS"},
+    {"company_id": "cn_300750", "period": "2024FY", "status": "PASS"},
+    {"company_id": "cn_002594", "period": "2024H1", "status": "PASS"}
+  ],
+  "idempotent_retry": "PASS",
+  "minimum_input": "PASS",
+  "native_form_success": "PASS",
+  "native_form_failure": "PASS",
+  "real_http_failure_checks": 5
+}

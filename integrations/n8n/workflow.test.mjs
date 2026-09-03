@@ -25,7 +25,7 @@ test('workflow is portable, unpinned, bounded and all IF outputs are wired', () 
   assert.equal(workflow.settings.executionTimeout, 300);
   const names = new Set(workflow.nodes.map((node) => node.name));
   assert.equal(names.size, workflow.nodes.length);
-  const allowed = ['webhook', 'code', 'if', 'httpRequest', 'wait', 'respondToWebhook', 'stickyNote'];
+  const allowed = ['webhook', 'formTrigger', 'code', 'if', 'httpRequest', 'wait', 'respondToWebhook', 'stickyNote'];
   for (const node of workflow.nodes) {
     assert(allowed.includes(node.type.replace('n8n-nodes-base.', '')));
     assert.equal(node.credentials, undefined);
@@ -41,6 +41,22 @@ test('workflow is portable, unpinned, bounded and all IF outputs are wired', () 
   for (const edges of Object.values(workflow.connections)) {
     for (const branch of edges.main) for (const edge of branch) assert(names.has(edge.node));
   }
+});
+test('native form and webhook enter the same bounded backend request path', () => {
+  const form = execute('Prepare request', {
+    'Company / 公司': '宁德时代 · 300750.SZSE',
+    'Period / 报告期': request.period,
+    'Research Question / 研究问题': request.research_question,
+    submittedAt: '2026-09-04T00:00:00Z', formMode: 'production',
+  });
+  assert.equal(config.surface, 'webhook');
+  assert.equal(form.surface, 'form');
+  assert.equal(form.ok, true);
+  assert.deepEqual(form.request.company_ids, config.request.company_ids);
+  assert.deepEqual(form.request.requested_period_labels, config.request.requested_period_labels);
+  assert.equal(form.request.research_question, config.request.research_question);
+  assert.deepEqual(workflow.connections['Research webhook'].main[0], [{ node: 'Prepare request', type: 'main', index: 0 }]);
+  assert.deepEqual(workflow.connections['Research form'].main[0], [{ node: 'Prepare request', type: 'main', index: 0 }]);
 });
 test('minimum input maps to the same backend request, no namespace override', () => {
   assert.equal(config.ok, true);
@@ -122,4 +138,20 @@ test('mapped fields equal backend artifacts without numerical or prose generatio
     assert.equal(execute('Map verified output', {}, { ...caseRefs,
       [`Fetch ${kind}`]: { statusCode: 500 } }).code, 'RESULT_ARTIFACTS_UNAVAILABLE');
   }
+});
+test('form response escapes backend text and transport response remains unchanged', () => {
+  const success = {
+    status: 'succeeded', conclusion: '<script>alert(1)</script>', findings: [],
+    financial_facts: [], calculations: [], supporting_evidence: [], counter_evidence: [],
+    limitations: ['<b>limit</b>'], monitoring: [], links: { result: 'http://example/result', trace: 'http://example/trace' },
+    trust_boundary: 'same backend',
+  };
+  const rendered = execute('Render surface response', success, { 'Prepare request': config });
+  assert.deepEqual(rendered.transport, success);
+  assert(!rendered.formPage.includes('<script>alert'));
+  assert(rendered.formPage.includes('&lt;script&gt;'));
+  assert(rendered.formPage.includes('完整 Research Trace'));
+  const failure = execute('Render surface response', { status: 'error', code: 'RUN_FAILED', message: '<failure>', links: null }, { 'Prepare request': config });
+  assert(failure.formPage.includes('研究未生成'));
+  assert(!failure.formPage.includes('<failure>'));
 });

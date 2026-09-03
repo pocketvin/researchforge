@@ -2,6 +2,19 @@
 
 ## [Unreleased] — Final Delivery Phases
 
+### Phase 5: final product and demo hardening
+
+- Added an ordinary-user n8n form and readable success/failure pages over the unchanged same-backend
+  workflow; webhook JSON and HTTP behavior remain stable for automation.
+- Added explicit Web no-result guidance, direct Result/Trace audit links and a visible handoff to
+  the optional n8n entry.
+- Added one reproducible deterministic launcher for Web, API, PostgreSQL and imported/published
+  n8n, plus an automated native-form smoke and screenshot capture.
+- Frozen the final six-plus-person Web+n8n evaluation tasks, A/B order, record schema, thresholds
+  and denominator before recruitment; added a deterministic summary tool and tests.
+- Captured actual Web and n8n form/result/abstention screenshots. These are engineering/demo
+  evidence only; completed human sessions remain zero.
+
 ### Phase 4: n8n integration
 
 - Added a portable, inactive-by-default n8n 2.37.9 workflow and optional local Compose service.

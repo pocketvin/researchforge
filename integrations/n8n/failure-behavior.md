@@ -3,6 +3,10 @@
 所有错误 JSON 都有 `status: error`、`code`、可操作 `message`、HTTP 状态、`run_id` 和 `links`
 （任务尚未确认时为 null）。不转发网络异常原文、HTTP 响应头或任何秘密。
 
+下表 HTTP 状态适用于 webhook 自动化契约。n8n 原生表单为了在浏览器中呈现完成页，领域失败
+会返回 HTTP 200 的“研究未生成”页面，但保留相同 `code` / `message`，且绝不显示 Executive
+Conclusion。自动化客户端必须使用 webhook，不应从表单 HTML 推断机器状态。
+
 | 场景 | HTTP / code | 用户下一步 |
 |---|---|---|
 | 参数格式、额外字段或不完整重试信息 | 422 `INVALID_INPUT` | 修正输入；不创建 run |

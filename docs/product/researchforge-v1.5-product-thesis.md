@@ -189,23 +189,26 @@ a list of unresolved work. Remaining delivery work is governed by
 - Facts, calculations, evidence, counter evidence and trace use progressive disclosure.
 - The completed report follows the requested conclusion-to-monitoring narrative order and is
   covered by unit, E2E, accessibility and live-browser checks.
+- Final hardening adds a direct n8n-form entry, raw Result/Trace links and an explicit Web terminal
+  state that says when no research result was generated.
 
 ### 8.5 Quality Lab and validation — product surface closed, human evidence deferred
 
 - Quality Lab is secondary, experimental, read-only and unnecessary for normal research.
 - The frozen outcome `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS` is honest and must
   remain immutable.
-- No human Pilot has been run and no human-usefulness claim is allowed. Formal evaluation is
-  deliberately deferred until extraction, generalization, n8n, Web UX and demo hardening are
-  stable; it must then evaluate both Web and n8n over the same backend.
+- No human Pilot has been run and no human-usefulness claim is allowed. The final dual-surface
+  tasks, A/B allocation, outcome fields, thresholds and denominator are frozen before recruitment;
+  execution remains deferred until the Phase 5 candidate passes its engineering gate.
 
 ### 8.6 Demo and career value — first real demo closed; final hardening remains
 
 - The current product-first demo uses the official CATL 2024H1 disclosure, verified values,
   deterministic arithmetic, source citations, counter evidence, monitoring and a complete trace.
-- Generalized extraction has passed its checkpoint. A same-backend n8n surface is implemented
-  and undergoing its engineering checkpoint; final dual-surface UX, demo hardening and real-human
-  evaluation are still required before release freeze.
+- Generalized extraction and same-backend n8n engineering have passed their checkpoints. The
+  native n8n form, bounded failure page, dual-surface screenshots and reproducible launcher are
+  implemented for Phase 5; public CI and real-human evaluation are still required before release
+  freeze.
 
 ## 9. V1.5 Scope
 
@@ -374,6 +377,8 @@ V1.5 does not add:
   person.
 - Final human evaluation must cover Web and n8n with at least six real target users under criteria
   frozen before testing. Facilitator-assisted completion is not an independent pass.
+- The frozen final record uses four outcomes—independent pass, assisted, failed and not attempted—
+  so help, abandonment and failure cannot disappear from the denominator.
 
 ### F. Demo and career evidence
 
@@ -389,7 +394,8 @@ V1.5 does not add:
 - Public-safety checks find no secret, private benchmark truth, raw filing PDF or local absolute
   path in tracked files.
 - GitHub CI passes on the published commit.
-- Final independent acceptance returns `VERDICT: PASS` before completion is claimed.
+- One final project-wide independent acceptance returns `VERDICT: PASS` at Phase 7 before release
+  completion is claimed; there are no Phase 2–6 independent reviews.
 
 ## 13. V1.5 Success Labels
 

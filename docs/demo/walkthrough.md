@@ -3,11 +3,12 @@
 ## Evidence boundary / 证据边界
 
 The default runtime uses only the strict `product` namespace. The current allowlist contains CATL
-`2024H1`, derived from the official SZSE filing. Frozen fixture and Benchmark packages remain for
-tests and Quality Lab but cannot serve a product run.
+`2024H1`, CATL `2024FY` and BYD `2024H1`, all derived from hash-verified official SZSE filings by
+the same six-metric extractor. Frozen fixture and Benchmark packages remain for tests and Quality
+Lab but cannot serve a product run.
 
-默认运行时只使用严格的 `product` 命名空间。当前白名单只包含宁德时代 `2024H1`，来源为
-深交所官方披露。冻结 fixture 和 Benchmark 只用于测试与 Quality Lab，不能回退为产品数据。
+默认运行时只使用严格的 `product` 命名空间。白名单包含宁德时代 `2024H1`/`2024FY` 与比亚迪
+`2024H1`。冻结 fixture 和 Benchmark 只用于测试与 Quality Lab，不能回退为产品数据。
 
 ## Zero-cost preflight / 零成本预检
 
@@ -20,8 +21,7 @@ Expected catalog boundary:
 
 ```text
 data_namespace: product
-company: cn_300750
-period: 2024H1
+companies: cn_300750 (2024H1, 2024FY); cn_002594 (2024H1)
 supported_task_types: filing_analysis
 ```
 
@@ -30,11 +30,12 @@ supported_task_types: filing_analysis
 For a reproducible zero-provider-cost UI run:
 
 ```bash
-RESEARCHFORGE_REASONING_MODE=deterministic docker compose up -d --build --wait
-uv run python scripts/docker_smoke.py
+uv run python scripts/start_demo.py
 ```
 
-Open `http://127.0.0.1:4173/`.
+Open Web at `http://127.0.0.1:4173/` or the n8n form at
+`http://127.0.0.1:5678/form/researchforge-v15-form`. The launcher imports/publishes the exact
+workflow and runs both smoke paths. `--dry-run` prints commands; `--no-build` reuses images.
 
 If ignored `.env` contains a confirmed rotated key, omit the deterministic override to use the
 bounded OpenAI wording adapter. API keys are never committed or pasted into demo evidence.
@@ -53,6 +54,17 @@ bounded OpenAI wording adapter. API keys are never committed or pasted into demo
 8. Read the unaudited-report and non-recurring-profit counter evidence.
 9. Read Risks & Limitations and the next-filing Monitoring Plan.
 10. Expand Research Trace and inspect all ten bounded LangGraph stages.
+
+## n8n walkthrough / n8n 演示
+
+1. From Web, follow **使用 n8n 表单入口**, or open the form URL above.
+2. Submit CATL `2024H1` with the same question. The page waits on bounded polling and renders the
+   same backend conclusion and artifacts without requiring an n8n editor account.
+3. Expand Financial Facts, Calculations and Supporting Evidence; open Result/Trace links to prove
+   backend identity.
+4. Submit BYD `2024FY`. The page must say **研究未生成** with
+   `UNSUPPORTED_OR_INVALID_INPUT` and no Executive Conclusion.
+5. Use the webhook only when demonstrating machine integration and exact HTTP/error contracts.
 
 ## CLI reproduction / CLI 复现
 
@@ -81,9 +93,11 @@ manufacture a successful Candidate.
 
 V1.5 product screenshots:
 
-- `docs/assets/research-page-v1.5-start.png`
-- `docs/assets/research-page-v1.5-result.png`
-- `docs/assets/research-page-v1.5-evidence.png`
+- `docs/assets/research-page-v1.5-final-start.png`
+- `docs/assets/research-page-v1.5-final-result.png`
+- `docs/assets/n8n-form-v1.5.png`
+- `docs/assets/n8n-result-v1.5.png`
+- `docs/assets/n8n-abstention-v1.5.png`
 - `docs/assets/quality-lab-page-v1.5.png`
 
 The older `research-page.png`, `skill-lab-page.png` and V1.4 MP4 remain untouched historical
@@ -92,5 +106,5 @@ evidence. A V1.5 video can be recorded from this walkthrough without making it a
 ## Safety statement / 安全声明
 
 The repository contains no API key, hidden ground truth or raw filing PDF. ResearchForge is not
-investment advice. `PREPARATION_ONLY` does not mean human usefulness has been validated; formal
-Web+n8n evaluation is deferred until final Phase 6.
+investment advice. The final dual-surface protocol is frozen but remains `PREPARATION_ONLY` with
+zero sessions; formal Web+n8n evaluation is deferred until Phase 6.

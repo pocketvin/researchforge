@@ -351,6 +351,10 @@ describe('ResearchForge UI', () => {
   it('keeps Quality Lab secondary to the primary research product', async () => {
     render(<App />)
     expect(await screen.findByText('开始公司研究')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '使用 n8n 表单入口' })).toHaveAttribute(
+      'href',
+      'http://127.0.0.1:5678/form/researchforge-v15-form',
+    )
 
     fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
 
@@ -381,6 +385,7 @@ describe('ResearchForge UI', () => {
     fireEvent.click(screen.getByText(/查看反证来源/))
     expect(screen.getByText('本半年度报告未经审计。')).toBeInTheDocument()
     expect(screen.getAllByText(/真实用户价值尚未验证/)).toHaveLength(2)
+    expect(screen.getByRole('navigation', { name: '后端原始产物' })).toBeInTheDocument()
   })
 
   it('renders persisted Evolution state without inventing a supported result', async () => {

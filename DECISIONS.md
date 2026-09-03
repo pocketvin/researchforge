@@ -678,3 +678,30 @@ smokes compare all output artifacts to the backend; a separately labeled transpo
 tests actual n8n waiting and failures without supplying financial truth. No new research experiment
 or human validation claim is introduced. The custom transport envelope has a new V1.5 schema;
 unchanged financial artifacts retain V1.4 schemas.
+
+## RF-031 — Freeze a Human-readable n8n Surface and the Final Evaluation Denominator
+
+Status: **ACCEPTED**
+
+Decision:
+
+Add a native n8n Form Trigger to the existing webhook workflow and route both inputs through the
+same Prepare → catalog check → ResearchForge run → bounded poll → artifact mapping chain. Webhook
+responses retain the machine JSON/HTTP contract; the form renders escaped backend-owned facts,
+calculations, evidence, limitations, monitoring and Result/Trace links. Freeze the final Web+n8n
+evaluation at protocol `final-dual-surface-v1.0-frozen` before recruiting anyone.
+
+Reason:
+
+An ordinary target user should not need an n8n editor account or understand workflow nodes to use
+the automation entry. A final human claim also needs predetermined tasks and denominators so
+assistance or missing attempts cannot be reclassified after results are known.
+
+Consequence:
+
+The form uses only semantic company aliases and the backend catalog remains authoritative.
+Unsupported input returns a no-report page; automation clients continue to use the webhook.
+At least six real users must attempt both surfaces with counterbalanced order. Only independent
+completion counts; assisted, failed and not-attempted outcomes remain in the denominator. Current
+records remain `TEMPLATE_ONLY`, completed session count is zero and human usefulness is
+unvalidated until Phase 6 actually runs.

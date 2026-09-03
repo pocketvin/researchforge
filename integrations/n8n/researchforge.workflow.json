@@ -21,6 +21,67 @@
       "webhookId": "researchforge-v15"
     },
     {
+      "id": "research-form",
+      "name": "Research form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        180
+      ],
+      "parameters": {
+        "path": "researchforge-v15-form",
+        "formTitle": "ResearchForge · 可核验 A 股基本面研究",
+        "formDescription": "输入公司、报告期和研究问题。支持：宁德时代 2024H1/2024FY、比亚迪 2024H1。结果来自与 Web 相同的后端、确定性计算和证据验证链路。",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Company / 公司",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "宁德时代 · 300750.SZSE"
+                  },
+                  {
+                    "option": "比亚迪 · 002594.SZSE"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Period / 报告期",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "2024H1"
+                  },
+                  {
+                    "option": "2024FY"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Research Question / 研究问题",
+              "fieldType": "textarea",
+              "requiredField": true,
+              "placeholder": "例如：2024 年上半年利润是否真正转化成了经营现金流？"
+            }
+          ]
+        },
+        "responseMode": "responseNode",
+        "options": {
+          "buttonLabel": "Start Research / 开始研究",
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "researchforge-v15-form"
+    },
+    {
       "id": "prepare-request",
       "name": "Prepare request",
       "type": "n8n-nodes-base.code",
@@ -30,7 +91,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "// Transport validation only. Backend configuration is never taken from the webhook body.\nconst body = $input.first().json.body;\nconst fail = (message) => [{ json: {\n  ok: false, http_status: 422, schema_version: '1.5.0', status: 'error',\n  code: 'INVALID_INPUT', message, run_id: null, links: null,\n} }];\nif (!body || typeof body !== 'object' || Array.isArray(body)) {\n  return fail('请提交 JSON: company_id、period、research_question。');\n}\nconst allowed = ['company_id', 'period', 'research_question', 'research_time', 'idempotency_key'];\nif (Object.keys(body).some((key) => !allowed.includes(key))) {\n  return fail('包含不支持的字段；后端地址、模式和数据命名空间不可由请求覆盖。');\n}\nif (!/^cn_[0-9]{6}$/.test(body.company_id || '') ||\n    !/^20[0-9]{2}(Q[1-4]|H1|FY)$/.test(body.period || '') ||\n    typeof body.research_question !== 'string' ||\n    body.research_question.trim().length < 8 || body.research_question.length > 2000) {\n  return fail('请检查公司 ID、报告期和研究问题（8–2000 字）；可用范围见后端 /v1/catalog。');\n}\nif (body.idempotency_key !== undefined &&\n    (typeof body.idempotency_key !== 'string' ||\n     !/^[A-Za-z0-9._:-]{8,128}$/.test(body.idempotency_key) || !body.research_time)) {\n  return fail('重试时必须同时提供原 idempotency_key 和 research_time，保持输入不变。');\n}\nif (body.research_time !== undefined &&\n    (typeof body.research_time !== 'string' ||\n     !/T.*(Z|[+-][0-9]{2}:[0-9]{2})$/.test(body.research_time) ||\n     !Number.isFinite(Date.parse(body.research_time)))) {\n  return fail('research_time 必须是含时区的 ISO 日期时间。');\n}\nreturn [{ json: {\n  ok: true,\n  backend_url: 'http://api:8000',\n  public_api_url: 'http://127.0.0.1:8000',\n  started_at_ms: Date.now(),\n  max_polls: 60,\n  max_wait_ms: 150000,\n  request: {\n    task_type: 'filing_analysis',\n    company_ids: [body.company_id],\n    requested_period_labels: [body.period],\n    research_question: body.research_question.trim(),\n    research_time: body.research_time || new Date().toISOString(),\n    idempotency_key: body.idempotency_key || `n8n-run-${$execution.id}`,\n  },\n} }];\n"
+        "jsCode": "// Transport validation only. Backend configuration is never taken from either user surface.\nconst incoming = $input.first().json;\nconst fromWebhook = Object.prototype.hasOwnProperty.call(incoming, 'body');\nconst surface = fromWebhook ? 'webhook' : 'form';\nconst body = fromWebhook ? incoming.body : incoming;\nconst fail = (message) => [{ json: {\n  ok: false, http_status: 422, schema_version: '1.5.0', status: 'error',\n  code: 'INVALID_INPUT', message, run_id: null, links: null, surface,\n} }];\nif (!body || typeof body !== 'object' || Array.isArray(body)) {\n  return fail('请提交 JSON: company_id、period、research_question。');\n}\nconst allowed = ['company_id', 'period', 'research_question', 'research_time', 'idempotency_key'];\nconst formMetadata = ['submittedAt', 'formMode'];\nconst rawSupplied = Object.fromEntries(Object.entries(body)\n  .filter(([key]) => !formMetadata.includes(key)));\nconst formFields = ['Company / 公司', 'Period / 报告期', 'Research Question / 研究问题'];\nif (Object.keys(rawSupplied).some((key) => !(fromWebhook ? allowed : formFields).includes(key))) {\n  return fail('包含不支持的字段；后端地址、模式和数据命名空间不可由请求覆盖。');\n}\n// Display aliases are semantic UI metadata only; catalog validation remains authoritative.\nconst companyAliases = {\n  '宁德时代 · 300750.SZSE': 'cn_300750',\n  '比亚迪 · 002594.SZSE': 'cn_002594',\n};\nconst supplied = fromWebhook ? rawSupplied : {\n  company_id: companyAliases[rawSupplied['Company / 公司']],\n  period: rawSupplied['Period / 报告期'],\n  research_question: rawSupplied['Research Question / 研究问题'],\n};\nif (!/^cn_[0-9]{6}$/.test(supplied.company_id || '') ||\n    !/^20[0-9]{2}(Q[1-4]|H1|FY)$/.test(supplied.period || '') ||\n    typeof supplied.research_question !== 'string' ||\n    supplied.research_question.trim().length < 8 || supplied.research_question.length > 2000) {\n  return fail('请检查公司 ID、报告期和研究问题（8–2000 字）；可用范围见后端 /v1/catalog。');\n}\nif (supplied.idempotency_key !== undefined &&\n    (typeof supplied.idempotency_key !== 'string' ||\n     !/^[A-Za-z0-9._:-]{8,128}$/.test(supplied.idempotency_key) || !supplied.research_time)) {\n  return fail('重试时必须同时提供原 idempotency_key 和 research_time，保持输入不变。');\n}\nif (supplied.research_time !== undefined &&\n    (typeof supplied.research_time !== 'string' ||\n     !/T.*(Z|[+-][0-9]{2}:[0-9]{2})$/.test(supplied.research_time) ||\n     !Number.isFinite(Date.parse(supplied.research_time)))) {\n  return fail('research_time 必须是含时区的 ISO 日期时间。');\n}\nreturn [{ json: {\n  ok: true,\n  surface,\n  backend_url: 'http://api:8000',\n  public_api_url: 'http://127.0.0.1:8000',\n  started_at_ms: Date.now(),\n  max_polls: 60,\n  max_wait_ms: 150000,\n  request: {\n    task_type: 'filing_analysis',\n    company_ids: [supplied.company_id],\n    requested_period_labels: [supplied.period],\n    research_question: supplied.research_question.trim(),\n    research_time: supplied.research_time || new Date().toISOString(),\n    idempotency_key: supplied.idempotency_key || `n8n-run-${$execution.id}`,\n  },\n} }];\n"
       }
     },
     {
@@ -526,19 +587,82 @@
       }
     },
     {
-      "id": "respond",
-      "name": "Respond",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
+      "id": "render-surface-response",
+      "name": "Render surface response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        4200,
+        4180,
         0
       ],
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ $json }}",
+        "jsCode": "// Render backend-owned artifacts for the native form without creating research content.\nconst incoming = $input.first().json;\n// `surface` is internal routing metadata and is never part of the public webhook contract.\nconst transport = { ...incoming };\ndelete transport.surface;\nconst escape = (value) => String(value ?? '')\n  .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')\n  .replaceAll('\"', '&quot;').replaceAll(\"'\", '&#39;');\nconst safeUrl = (value) => /^https?:\\/\\//.test(String(value ?? '')) ? escape(value) : '#';\nconst list = (items) => items.length > 0 ? `<ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul>` : '<p>无可呈现项目。</p>';\n\nlet content;\nif (transport.status !== 'succeeded') {\n  content = `\n    <header><p class=\"eyebrow\">BOUNDED FAILURE</p><h1>研究未生成</h1></header>\n    <section class=\"failure\">\n    <p><strong>${escape(transport.code)}</strong> — ${escape(transport.message)}</p>\n    <p>ResearchForge 在输入、数据、状态或产物无法确认时会停止，不会补写结论或数字。</p>\n    ${transport.links?.status ? `<p><a href=\"${safeUrl(transport.links.status)}\">检查后端运行状态</a></p>` : ''}\n    </section>`;\n} else {\n  const facts = transport.financial_facts.map((fact) => `<strong>${escape(fact.metric_code)}</strong>: ${escape(fact.value ?? 'ABSTAINED')} ${escape(fact.currency ?? fact.measurement_unit ?? '')} · P${escape(fact.source_locator?.page ?? '—')}`);\n  const calculations = transport.calculations.map((calculation) => `<strong>${escape(calculation.formula_code)}</strong>: ${escape(calculation.value ?? '不适用')} · ${escape(calculation.explanation)}`);\n  const findings = transport.findings.map((finding) => escape(finding.text));\n  const evidence = transport.supporting_evidence.map((chunk) => `<strong>${escape(chunk.section)} · P${escape(chunk.locator?.page_start ?? '—')}</strong><br>${escape(chunk.text)}<br><a href=\"${safeUrl(chunk.source_uri)}\">打开官方披露</a>`);\n  const counters = transport.counter_evidence.map((entry) => `<strong>${escape(entry.search?.result)}</strong>: ${escape(entry.search?.summary)}`);\n  const monitoring = transport.monitoring.map((item) => `<strong>${escape(item.title)}</strong>: ${escape(item.rationale)} · 触发条件 ${escape(item.trigger)} · ${escape(item.next_review)}`);\n  content = `\n    <header><p class=\"eyebrow\">SAME BACKEND · VERIFIED PIPELINE</p><h1>ResearchForge 研究完成</h1><span class=\"status\">SUCCEEDED</span></header>\n    <section class=\"conclusion\"><h2>Executive Conclusion / 核心结论</h2><p>${escape(transport.conclusion)}</p></section>\n    <details open><summary>Key Findings / 关键发现</summary>${list(findings)}</details>\n    <details><summary>Financial Facts / 财务事实</summary>${list(facts)}</details>\n    <details><summary>Calculations / 确定性计算</summary>${list(calculations)}</details>\n    <details><summary>Supporting Evidence / 支持证据</summary>${list(evidence)}</details>\n    <details open><summary>Counter Evidence & Limitations / 反证与限制</summary>${list([...counters, ...transport.limitations.map(escape)])}</details>\n    <details open><summary>Monitoring Plan / 后续监控</summary>${list(monitoring)}</details>\n    <nav><a href=\"${safeUrl(transport.links.result)}\">完整 Research Result</a><a href=\"${safeUrl(transport.links.trace)}\">完整 Research Trace</a></nav>\n    <footer>${escape(transport.trust_boundary)}</footer>`;\n}\nconst formPage = `<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>ResearchForge 研究结果</title><style>\n:root{font-family:Inter,system-ui,sans-serif;color:#dce4eb;background:#071015}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% -10%,#173d33 0,transparent 35%),#071015}main{max-width:920px;margin:auto;padding:44px 22px 70px}header{position:relative;margin-bottom:22px}.eyebrow{color:#43d6a3;font:11px ui-monospace,monospace;letter-spacing:.14em}h1{margin:8px 0;color:#fff;font-size:30px}.status{position:absolute;right:0;top:15px;padding:5px 9px;border:1px solid #2c8064;border-radius:99px;color:#72e7bd;font:10px ui-monospace,monospace}.conclusion,details,.failure{margin:12px 0;padding:18px;border:1px solid #23343e;border-radius:12px;background:#0d1921}.conclusion{border-left:3px solid #43d6a3}.conclusion h2{margin:0 0 10px;color:#8fa5b1;font-size:12px}.conclusion p{margin:0;color:#e3eaed;font:17px/1.85 Georgia,serif}summary{cursor:pointer;color:#c9d5da;font-weight:650}ul{margin:14px 0 0;padding-left:20px}li{margin:9px 0;color:#9eb0b9;line-height:1.65}a{color:#71d7b2}nav{display:flex;gap:12px;margin-top:18px}nav a{padding:10px 12px;border:1px solid #285846;border-radius:8px;text-decoration:none}footer{margin-top:20px;color:#657d88;font:10px/1.7 ui-monospace,monospace}.failure{border-color:#663b3b;color:#ffaaa4}@media(max-width:600px){main{padding:28px 14px}.status{position:static;display:inline-block}nav{flex-direction:column}}\n</style></head><body><main>${content}</main></body></html>`;\nreturn [{ json: { transport, formPage } }];\n"
+      }
+    },
+    {
+      "id": "form-surface",
+      "name": "Form surface",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4400,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ $('Prepare request').first().json.surface }}",
+              "rightValue": "form",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "respond-form",
+      "name": "Respond form",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4620,
+        -100
+      ],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.formPage }}",
         "options": {
-          "responseCode": "={{ $json.http_status }}"
+          "responseCode": 200
+        }
+      }
+    },
+    {
+      "id": "respond-webhook",
+      "name": "Respond webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4620,
+        100
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.transport }}",
+        "options": {
+          "responseCode": "={{ $json.transport.http_status }}"
         }
       }
     },
@@ -592,7 +716,7 @@
         ],
         [
           {
-            "node": "Respond",
+            "node": "Render surface response",
             "type": "main",
             "index": 0
           }
@@ -632,7 +756,7 @@
         ],
         [
           {
-            "node": "Respond",
+            "node": "Render surface response",
             "type": "main",
             "index": 0
           }
@@ -672,7 +796,7 @@
         ],
         [
           {
-            "node": "Respond",
+            "node": "Render surface response",
             "type": "main",
             "index": 0
           }
@@ -789,7 +913,29 @@
       "main": [
         [
           {
-            "node": "Respond",
+            "node": "Render surface response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render surface response": {
+      "main": [
+        [
+          {
+            "node": "Form surface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research form": {
+      "main": [
+        [
+          {
+            "node": "Prepare request",
             "type": "main",
             "index": 0
           }
@@ -807,7 +953,25 @@
         ],
         [
           {
-            "node": "Respond",
+            "node": "Render surface response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form surface": {
+      "main": [
+        [
+          {
+            "node": "Respond form",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond webhook",
             "type": "main",
             "index": 0
           }

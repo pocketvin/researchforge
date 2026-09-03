@@ -14,11 +14,12 @@ Scope: V1.5 active productization
 - Product thesis: **Direction Ready**.
 - Real-data vertical slice: **verified; six metrics now originate from deterministic PDF recovery**.
 - Research UX and Quality Lab: **verified in unit, E2E and live-browser runs**.
-- Legacy Web-only pilot kit: **implemented but not executed; 0 real-human sessions**.
+- Final Web+n8n evaluation kit: **criteria frozen, not executed; 0 real-human sessions**.
 - Human usefulness: **UNVALIDATED; formal Web+n8n evaluation is deferred to final Phase 6**.
 - Local engineering gate: **passed**.
-- Published GitHub CI: **passed** on Phase 3 commit `da8367f` in main run
-  [33778511182](https://github.com/pocketvin/researchforge/actions/runs/33778511182).
+- Published GitHub CI: **passed** on current main baseline `0f9c275` in run
+  [33781903537](https://github.com/pocketvin/researchforge/actions/runs/33781903537). Phase 5
+  candidate CI is pending publication.
 - Final independent V1.5 acceptance: **VERDICT: PASS**.
 - Current product boundary: CATL `2024H1`, CATL `2024FY` and BYD `2024H1`, `filing_analysis`,
   strict `product` namespace, one shared deterministic extractor and Research backend.
@@ -104,6 +105,25 @@ V1.5 success does not depend on a supported Evolution hypothesis.
   product catalog checking, bounded polling and honest no-result failures are enforced.
 - [n8n engineering evidence](docs/evidence/v1.5-n8n/README.md) is not human or independent acceptance.
 
+### Phase 5 product-hardening candidate
+
+- Web now links directly to the optional n8n form, exposes original Result/Trace artifacts and
+  renders explicit insufficient-data/cancel/failure/timeout guidance without a report.
+- The same n8n workflow accepts either a human-readable native form or the stable automation
+  webhook, while both share catalog checking, run creation, bounded polling and artifact mapping.
+- Actual n8n 2.37.9 form success and unsupported-pair failure passed; all three real filing cases
+  still matched the five authoritative backend artifact families exactly.
+- `scripts/start_demo.py` starts and smoke-tests PostgreSQL, API, Web and imported/published n8n;
+  actual Docker build and the `--no-build` full launcher run passed locally.
+- Five new final product screenshots cover Web start/result and n8n form/result/abstention.
+- The final at-least-six-person A/B Web+n8n protocol, outcome schema, immutable denominator and
+  deterministic summary tool are frozen. They remain `TEMPLATE_ONLY`; no participant exists.
+- Local candidate gate: 197 backend/contract tests, strict typing of 92 files, 4 frontend unit
+  tests, 3 mocked E2E, 3 live-backend E2E, 10 n8n Node groups, form/webhook runtime, Docker smoke,
+  9 active V1.5 schemas and 11 screenshots all pass.
+- [Phase 5 evidence](docs/evidence/v1.5-product-hardening/README.md) is automated engineering
+  evidence only. Public candidate CI has not yet run.
+
 ### Core product UX
 
 - Research begins with Company, Period, Question and Start Research.
@@ -112,11 +132,10 @@ V1.5 success does not depend on a supported Evolution hypothesis.
 - Facts, calculations, evidence and trace use keyboard-accessible progressive disclosure.
 - Skill Lab is renamed **Quality Lab**, marked experimental/read-only and treated as secondary.
 
-### Pilot and demo
+### Human evaluation preparation and demo
 
-- A privacy notice, participant task sheet, facilitator guide, observation rubric and schema-valid
-  session template exist as legacy Web-only preparation assets. They are not the final dual-surface
-  evaluation protocol and must not be run as the formal project Pilot.
+- The legacy Web-only kit remains as history. The final dual-surface task sheet, neutral facilitator
+  guide, A/B allocation, acceptance contract and schema-valid `TEMPLATE_ONLY` record now exist.
 - A real-data three-to-five-minute demo script and exact evidence record are present.
 - Formal participants are not recruited until reusable extraction, generalization, n8n, UX and
   demo hardening are complete and the Web+n8n acceptance rules are frozen.
@@ -150,9 +169,10 @@ rewritten by V1.5.
    findings.
 4. The share-safe Codex review file records the closure evidence.
 
-Phase 1 remains closed. Phases 2–4 are closed as engineering checkpoints. Phase 5 hardening is
-active. Formal real-human evaluation remains deferred until Phase 6, and the next independent
-review occurs only once at the final Phase 7 release gate.
+Phase 1 remains closed. Phases 2–4 are closed as engineering checkpoints. Phase 5 implementation
+passes locally and awaits public CI before its engineering checkpoint closes. Formal real-human
+evaluation remains deferred until Phase 6, and the next independent review occurs only once at
+the final Phase 7 release gate.
 
 ## Honest Non-Claims
 
@@ -165,8 +185,9 @@ review occurs only once at the final Phase 7 release gate.
 
 ## Single Next Action
 
-Harden Web/n8n UX, screenshots, reproducible startup, demo/interview narrative and freeze the
-dual-surface human-evaluation protocol. No intermediate independent acceptance is required.
+Publish the Phase 5 candidate branch, require all GitHub Actions jobs to pass, then close
+PRODUCT_HARDENING and begin the frozen real-human Web+n8n evaluation. No intermediate independent
+acceptance is required.
 
 ## Fast Resume
 
@@ -175,8 +196,8 @@ Read, in order:
 1. `docs/product/researchforge-v1.5-product-thesis.md`
 2. `docs/product/researchforge-final-delivery-roadmap.md`
 3. `PROJECT_STATUS.md`
-4. `docs/demo/v1.5-demo-evidence.md`
-5. `docs/evidence/v1.5-phase2-financial-fact-extraction.md`
+4. `docs/evidence/v1.5-product-hardening/README.md`
+5. `docs/usability/final-dual-surface-protocol.md`
 6. `DECISIONS.md`
 
 Then run:

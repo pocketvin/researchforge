@@ -13,6 +13,7 @@ experiment contract.
 | [`product-research-run.md`](product-research-run.md) | The Company + Period + Question product boundary and non-fallback rule |
 | [`n8n-integration.md`](n8n-integration.md) | Same-backend orchestration, bounded polling, exact artifact mapping and failure behavior |
 | [`human-usability-pilot.md`](human-usability-pilot.md) | Preparation and evidence rules for real human pilot sessions |
+| [`final-human-evaluation.md`](final-human-evaluation.md) | Frozen dual-surface record, denominator and evidence boundary |
 
 Machine-readable schemas live in `schemas/v1.5/`. Existing research artifacts produced by the
 bounded V1.4 workflow continue to validate against `schemas/v1.4/`; their content hashes and

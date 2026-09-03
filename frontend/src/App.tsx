@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Sparkles,
   Square,
+  Workflow,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
@@ -66,6 +67,16 @@ const metricLabels: Record<string, string> = {
   operating_cash_flow: '经营现金流',
   accounts_receivable: '应收账款',
   inventory: '存货',
+}
+
+const terminalStateGuidance: Record<string, { title: string; action: string }> = {
+  insufficient_data: {
+    title: '资料不足，ResearchForge 已弃权',
+    action: '检查公司、报告期和研究截止时间；只有后端目录支持且来源可核验时才会生成报告。',
+  },
+  cancelled: { title: '研究已取消', action: '本次没有生成研究结果；如需继续，请重新发起一次新研究。' },
+  failed: { title: '研究执行失败', action: '保留 Run ID 并检查 Research Trace；失败状态不会被包装成结论。' },
+  timed_out: { title: '研究超时', action: '检查后端运行状态和 Trace 后再决定是否使用相同输入重试。' },
 }
 
 function formatFact(fact: FinancialFact): string {
@@ -336,6 +347,18 @@ function ResearchPage() {
                 官方来源、确定性公式、Claim-level evidence
               </span>
             </div>
+
+            <a
+              aria-label="使用 n8n 表单入口"
+              className="automation-entry"
+              href="http://127.0.0.1:5678/form/researchforge-v15-form"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <Workflow size={17} />
+              <span><strong>使用 n8n 表单入口</strong><small>同一后端 · 同一证据与验证链路</small></span>
+              <ArrowUpRight size={14} />
+            </a>
           </form>
         </aside>
 
@@ -397,11 +420,22 @@ function ResearchPage() {
                 {!trace && <div className="stage-loading"><LoaderCircle className="animate-spin" size={16} /> 正在生成 Trace…</div>}
               </div>}
 
-              {manifest.failure && (
-                <div className="error-banner" role="alert">
-                  <CircleAlert size={17} />
-                  <span><strong>{manifest.failure.code}</strong> — {manifest.failure.message}</span>
-                </div>
+              {manifest.failure && !result && (
+                <section className="terminal-state-card" role="alert">
+                  <CircleAlert size={21} />
+                  <div>
+                    <span className="micro-label">NO RESEARCH RESULT GENERATED</span>
+                    <h3>{terminalStateGuidance[manifest.lifecycle_state]?.title ?? '研究未生成结果'}</h3>
+                    <p><strong>{manifest.failure.code}</strong> — {manifest.failure.message}</p>
+                    <small>{terminalStateGuidance[manifest.lifecycle_state]?.action ?? '请检查运行状态和研究轨迹。'}</small>
+                    <nav>
+                      <a href={`/v1/research-runs/${manifest.run_id}`} target="_blank">查看运行状态 <ArrowUpRight size={12} /></a>
+                      {manifest.artifacts.workflow_trace_id && (
+                        <a href={`/v1/research-runs/${manifest.run_id}/trace`} target="_blank">查看 Research Trace <ArrowUpRight size={12} /></a>
+                      )}
+                    </nav>
+                  </div>
+                </section>
               )}
 
               {result && (
@@ -527,6 +561,12 @@ function ResearchPage() {
                       </div>
                     </div>
                   </details>
+
+                  <nav className="artifact-links" aria-label="后端原始产物">
+                    <span>验证同一后端原始产物</span>
+                    <a href={`/v1/research-runs/${manifest.run_id}/result`} target="_blank">Research Result <ArrowUpRight size={12} /></a>
+                    <a href={`/v1/research-runs/${manifest.run_id}/trace`} target="_blank">Research Trace <ArrowUpRight size={12} /></a>
+                  </nav>
                 </div>
               )}
             </>

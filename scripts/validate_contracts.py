@@ -93,6 +93,7 @@ REQUIRED_SCHEMAS = {
 
 ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "common.schema.json",
+    "final-human-evaluation-session.schema.json",
     "financial-fact-extraction.schema.json",
     "human-usability-session.schema.json",
     "ingestion-manifest.schema.json",
@@ -144,6 +145,7 @@ CURRENT_EXAMPLES = {
 }
 
 ACTIVE_PRODUCT_EXAMPLES = {
+    "final-human-evaluation-session.template.json": ("final-human-evaluation-session.schema.json"),
     "n8n-research-output.error.example.json": "n8n-research-output.schema.json",
     "human-usability-session.example.json": "human-usability-session.schema.json",
     "ingestion-manifest.example.json": "ingestion-manifest.schema.json",
@@ -177,6 +179,9 @@ REQUIRED_CONTRACTS = {
     ROOT / ".github" / "workflows" / "ci.yml",
     ROOT / "Dockerfile",
     ROOT / "docker-compose.yml",
+    ROOT / "scripts" / "start_demo.py",
+    ROOT / "scripts" / "summarize_human_evaluation.py",
+    ROOT / "frontend" / "scripts" / "capture-demo-screenshots.mjs",
     ROOT / "scripts" / "build_g0_fixtures.py",
     ROOT / "scripts" / "build_primary_benchmark.py",
     ROOT / "scripts" / "build_contingency_benchmark.py",
@@ -225,6 +230,7 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "contracts" / "v1.5" / "real-data-ingestion.md",
     ROOT / "docs" / "contracts" / "v1.5" / "product-research-run.md",
     ROOT / "docs" / "contracts" / "v1.5" / "human-usability-pilot.md",
+    ROOT / "docs" / "contracts" / "v1.5" / "final-human-evaluation.md",
     ROOT / "docs" / "evidence" / "g0-source-spike.md",
     ROOT / "docs" / "evidence" / "g0-filing-read-plan.md",
     ROOT / "docs" / "evidence" / "g0-reconciliation.md",
@@ -244,12 +250,20 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "usability" / "facilitator-guide.md",
     ROOT / "docs" / "usability" / "observation-rubric.md",
     ROOT / "docs" / "usability" / "pilot-status.md",
+    ROOT / "docs" / "usability" / "final-dual-surface-protocol.md",
+    ROOT / "docs" / "usability" / "final-participant-task-sheet.md",
+    ROOT / "docs" / "usability" / "final-facilitator-guide.md",
     ROOT / "docs" / "assets" / "research-page.png",
     ROOT / "docs" / "assets" / "skill-lab-page.png",
     ROOT / "docs" / "assets" / "research-page-v1.5-start.png",
     ROOT / "docs" / "assets" / "research-page-v1.5-result.png",
     ROOT / "docs" / "assets" / "research-page-v1.5-evidence.png",
     ROOT / "docs" / "assets" / "quality-lab-page-v1.5.png",
+    ROOT / "docs" / "assets" / "research-page-v1.5-final-start.png",
+    ROOT / "docs" / "assets" / "research-page-v1.5-final-result.png",
+    ROOT / "docs" / "assets" / "n8n-form-v1.5.png",
+    ROOT / "docs" / "assets" / "n8n-result-v1.5.png",
+    ROOT / "docs" / "assets" / "n8n-abstention-v1.5.png",
     ROOT / "docs" / "assets" / "researchforge-v1.4-demo.mp4",
     ROOT / "docs" / "operations" / "resume-playbook.md",
     ROOT / "docs" / "strategy" / "project-scorecard.md",
@@ -852,6 +866,31 @@ def validate_v15_product_semantics(
         raise ContractError("V1.5 human pilot records must be labeled REAL_HUMAN")
     if human_schema["properties"]["simulated"].get("const") is not False:
         raise ContractError("V1.5 human pilot records cannot be simulated")
+
+    final_human_schema = schemas[
+        (ACTIVE_PRODUCT_SCHEMA_DIR / "final-human-evaluation-session.schema.json").resolve()
+    ]
+    if final_human_schema["properties"]["simulated"].get("const") is not False:
+        raise ContractError("final human evaluation records cannot be simulated")
+    protocol_version = final_human_schema["properties"]["protocol_version"].get("const")
+    if protocol_version != "final-dual-surface-v1.0-frozen":
+        raise ContractError("final human evaluation protocol must remain frozen")
+    final_template = examples["final-human-evaluation-session.template.json"]
+    if (
+        final_template["status"] != "scheduled"
+        or final_template["evidence_label"] != "TEMPLATE_ONLY"
+        or final_template["study_started"] is not False
+        or final_template["consent"]["obtained"] is not False
+    ):
+        raise ContractError("final human evaluation example must remain non-evidence preparation")
+    surfaces = [attempt["surface"] for attempt in final_template["surface_attempts"]]
+    if sorted(surfaces) != ["n8n", "web"]:
+        raise ContractError("final human evaluation template must cover Web and n8n exactly once")
+    for attempt in final_template["surface_attempts"]:
+        if attempt["attempt_status"] != "not_started" or any(
+            outcome != "not_attempted" for outcome in attempt["common_outcomes"].values()
+        ):
+            raise ContractError("final human template cannot contain fabricated task outcomes")
 
     ingestion = examples["ingestion-manifest.example.json"]
     if ingestion["status"] != "ready" or ingestion["abstentions"]:
@@ -1670,12 +1709,14 @@ def validate_contingency_benchmark(
 
 
 def validate_n8n_evidence(schemas: dict[Path, dict[str, Any]]) -> None:
-    """Check the published real runtime outputs and their workflow binding."""
+    """Check preserved Phase 4 outputs and the active Phase 5 workflow binding."""
     directory = ROOT / "docs/evidence/v1.5-n8n"
     summary = load_json(directory / "summary.json")
     workflow = ROOT / "integrations/n8n/researchforge.workflow.json"
-    if summary["workflow_sha256"] != hashlib.sha256(workflow.read_bytes()).hexdigest():
-        raise ContractError("n8n evidence belongs to a different workflow artifact")
+    if summary["workflow_sha256"] != (
+        "4993f55be251dd60df82c7de3dba43c89c06a10cddbc457dd1d7d55b9fb50bb2"
+    ):
+        raise ContractError("preserved Phase 4 n8n workflow binding changed")
     if summary["human_user_value_validated"] is not False or summary["status"] != "PASS":
         raise ContractError("n8n engineering evidence must not claim human validation")
     expected = {("cn_300750", "2024H1"), ("cn_300750", "2024FY"), ("cn_002594", "2024H1")}
@@ -1713,6 +1754,21 @@ def validate_n8n_evidence(schemas: dict[Path, dict[str, Any]]) -> None:
         }.items():
             if len(output[field]) != row[count]:
                 raise ContractError("n8n summary count mismatch")
+
+    hardening = load_json(
+        ROOT / "docs/evidence/v1.5-product-hardening/n8n-form-runtime-summary.json"
+    )
+    if hardening["workflow_sha256"] != hashlib.sha256(workflow.read_bytes()).hexdigest():
+        raise ContractError("Phase 5 n8n form evidence belongs to a different workflow artifact")
+    if (
+        hardening["status"] != "PASS"
+        or hardening["human_user_value_validated"] is not False
+        or hardening["native_form_success"] != "PASS"
+        or hardening["native_form_failure"] != "PASS"
+    ):
+        raise ContractError("Phase 5 n8n form evidence is incomplete or claims human validation")
+    if {(row["company_id"], row["period"]) for row in hardening["cases"]} != expected:
+        raise ContractError("Phase 5 n8n form evidence must retain all three real filing cases")
 
 
 def validate_product_disclosure_package(
@@ -1923,14 +1979,20 @@ def main() -> int:
         if missing_files:
             raise ContractError(f"missing required contract files: {sorted(missing_files)}")
 
-        for screenshot_name in (
+        screenshot_names = (
             "research-page.png",
             "skill-lab-page.png",
             "research-page-v1.5-start.png",
             "research-page-v1.5-result.png",
             "research-page-v1.5-evidence.png",
             "quality-lab-page-v1.5.png",
-        ):
+            "research-page-v1.5-final-start.png",
+            "research-page-v1.5-final-result.png",
+            "n8n-form-v1.5.png",
+            "n8n-result-v1.5.png",
+            "n8n-abstention-v1.5.png",
+        )
+        for screenshot_name in screenshot_names:
             screenshot = ROOT / "docs" / "assets" / screenshot_name
             if not screenshot.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
                 raise ContractError(f"demo screenshot is not PNG: {screenshot_name}")
@@ -2132,7 +2194,10 @@ def main() -> int:
             f"({checkpoint_path_count} referenced paths present)"
         )
         print(f"PASS: {markdown_link_count} local Markdown links resolved")
-        print("PASS: six PNG screenshots and the preserved V1.4 MP4 demo asset validated")
+        print(
+            f"PASS: {len(screenshot_names)} PNG screenshots and the preserved V1.4 MP4 "
+            "demo asset validated"
+        )
         print(f"PASS: {len(REQUIRED_CONTRACTS)} required contract files present")
         return 0
     except ContractError as exc:

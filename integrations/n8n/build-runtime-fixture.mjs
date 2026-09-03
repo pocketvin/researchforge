@@ -6,6 +6,9 @@ workflow.name = '[TEST ONLY] ResearchForge transport failure checks';
 const webhook = workflow.nodes.find((node) => node.name === 'Research webhook');
 webhook.parameters.path = 'researchforge-runtime-test';
 webhook.webhookId = 'researchforge-runtime-test';
+// Keep the failure fixture transport-only and avoid colliding with the production form path.
+workflow.nodes = workflow.nodes.filter((node) => node.name !== 'Research form');
+delete workflow.connections['Research form'];
 const prepare = workflow.nodes.find((node) => node.name === 'Prepare request');
 prepare.parameters.jsCode = prepare.parameters.jsCode
   .replace("backend_url: 'http://api:8000'", "backend_url: 'http://n8n-failure-fixture:8018'")

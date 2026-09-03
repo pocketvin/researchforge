@@ -29,6 +29,10 @@ test('research and secondary Quality Lab are navigable', async ({ page }) => {
   await expect(page.getByLabel('Company selector')).toHaveValue('cn_300750')
   await expect(page.getByLabel('Period selector')).toHaveValue('2024H1')
   await expect(page.getByText(/真实披露数据/)).toBeVisible()
+  await expect(page.getByRole('link', { name: '使用 n8n 表单入口' })).toHaveAttribute(
+    'href',
+    'http://127.0.0.1:5678/form/researchforge-v15-form',
+  )
   const researchAccessibility = await new AxeBuilder({ page }).analyze()
   expect(
     researchAccessibility.violations.filter((violation) => violation.impact === 'critical'),
@@ -256,4 +260,33 @@ test('real-data research journey exposes a progressively auditable result', asyn
   expect(accessibility.violations.filter((violation) => violation.impact === 'critical')).toEqual(
     [],
   )
+})
+
+test('terminal abstention is explicit and never renders a research report', async ({ page }) => {
+  const runId = 'run_e2e_insufficient_data'
+  await page.route('**/v1/**', (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path === '/v1/catalog') return route.fulfill({ json: productCatalog })
+    if (path === '/v1/research-runs' && route.request().method() === 'POST') {
+      return route.fulfill({ status: 202, json: { run_id: runId } })
+    }
+    if (path === `/v1/research-runs/${runId}`) {
+      return route.fulfill({ json: {
+        run_id: runId,
+        lifecycle_state: 'insufficient_data',
+        input: { task_type: 'filing_analysis', research_question: '资料不足时是否会弃权？', company_ids: ['cn_300750'], requested_period_labels: ['2024H1'], research_time: '2020-01-01T00:00:00Z' },
+        artifacts: { result_id: null, workflow_trace_id: `trace_${runId}`, evaluation_id: null },
+        failure: { code: 'EVIDENCE_CUTOFF', message: '研究截止时间早于可用官方披露。' },
+      } })
+    }
+    if (path.endsWith('/trace')) return route.fulfill({ json: { run_id: runId, terminal_state: 'insufficient_data', stages: [] } })
+    return route.fulfill({ status: 404, json: {} })
+  })
+
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Start Research / 开始研究' }).click()
+  await expect(page.getByRole('heading', { name: '资料不足，ResearchForge 已弃权' })).toBeVisible()
+  await expect(page.getByText(/不会被包装成结论|只有后端目录支持/)).toBeVisible()
+  await expect(page.getByText('Executive Conclusion / 核心结论')).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /查看 Research Trace/ })).toBeVisible()
 })

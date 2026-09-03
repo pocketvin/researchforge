@@ -48,7 +48,7 @@ problem: every important result must be traceable and every missing input must r
 | Product API | async lifecycle, facts, evidence, calculations, trace, cancel | implemented |
 | Product UI | product-first Research page and secondary read-only Quality Lab | implemented; unit, E2E, accessibility and live-browser checks pass |
 | Real disclosure ingestion | same deterministic six-metric extractor; strict product namespace | CATL 2024H1, CATL 2024FY, BYD 2024H1 |
-| n8n integration | [actual same-backend outputs and failure evidence](docs/evidence/v1.5-n8n/README.md) | local runtime verified; final UX/human validation pending |
+| n8n integration | [same-backend webhook + native-form evidence](docs/evidence/v1.5-product-hardening/README.md) | native input, readable result and bounded failure implemented; human validation pending |
 | Human usability | real participant sessions | not run |
 | Quality research | two frozen formal experiments and stopping rule | complete negative result |
 
@@ -65,6 +65,8 @@ problem: every important result must be traceable and every missing input must r
 - “Preserved two preregistered negative experiments and applied the stopping rule rather than
   changing thresholds to manufacture a result.”
 - “Kept simulated usability evidence explicitly separate from real-user validation.”
+- “Exposed the same verified pipeline through Web and an importable n8n form/webhook without
+  moving financial arithmetic, evidence truth or verifier policy into the automation layer.”
 
 ## Claims Not Yet Allowed
 
@@ -84,8 +86,8 @@ in the [generalization evidence](docs/evidence/v1.5-generalization/README.md), n
 ## Resume Bullets: Current Evidence
 
 - Built an auditable financial-research workspace using Python, FastAPI, Pydantic, LangGraph,
-  React, PostgreSQL and content-addressed artifacts, with claim-level provenance and a
-  reproducible three-container demo.
+  React, PostgreSQL, n8n and content-addressed artifacts, with claim-level provenance and a
+  reproducible dual-surface Docker demo.
 - Implemented deterministic `Decimal` finance, A-share reporting-period controls, YTD-to-quarter
   derivation, source cutoffs and verifier-backed abstention across 165 backend tests plus
   frontend E2E/accessibility gates.
@@ -110,6 +112,9 @@ in the [generalization evidence](docs/evidence/v1.5-generalization/README.md), n
    alternative explanation.
 6. **Next action — 25 seconds:** show the monitoring trigger and next review period.
 7. **Engineering — 35 seconds:** expand the ten-stage trace and explain the ownership boundary.
+
+Then use the optional n8n form for the same input, show the readable result and submit BYD 2024FY
+to demonstrate that unsupported automation fails without manufacturing a report.
 
 Quality Lab is optional after the main story. If time remains, use it to explain why honest
 negative results are a feature of the engineering culture, not the product's core value.

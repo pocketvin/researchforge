@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.5/final-human-evaluation-session.schema.json",
+  "title": "ResearchForge final dual-surface human evaluation session",
+  "description": "One privacy-minimized Web+n8n session. Scheduled templates are not human evidence; only consented real participants may produce completed REAL_HUMAN records.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "protocol_version", "session_id", "evidence_label", "simulated", "status", "study_started", "participant", "consent", "surface_order", "surface_attempts", "overall_feedback", "started_at", "completed_at"],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schemaVersion"},
+    "protocol_version": {"type": "string", "const": "final-dual-surface-v1.0-frozen"},
+    "session_id": {"$ref": "common.schema.json#/$defs/identifier"},
+    "evidence_label": {"type": "string", "enum": ["TEMPLATE_ONLY", "REAL_HUMAN"]},
+    "simulated": {"type": "boolean", "const": false},
+    "status": {"type": "string", "enum": ["scheduled", "completed", "withdrawn"]},
+    "study_started": {"type": "boolean"},
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pseudonym", "user_group", "prior_experience"],
+      "properties": {
+        "pseudonym": {"$ref": "common.schema.json#/$defs/identifier"},
+        "user_group": {"type": "string", "enum": ["individual_researcher", "finance_learner", "junior_researcher"]},
+        "prior_experience": {"type": "string", "enum": ["none", "basic", "intermediate", "advanced"]}
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obtained", "privacy_notice_version", "recording_allowed", "public_summary_allowed"],
+      "properties": {
+        "obtained": {"type": "boolean"},
+        "privacy_notice_version": {"type": "string", "const": "final-v1.0"},
+        "recording_allowed": {"type": "boolean"},
+        "public_summary_allowed": {"type": "boolean"}
+      }
+    },
+    "surface_order": {"type": "string", "enum": ["web_then_n8n", "n8n_then_web"]},
+    "surface_attempts": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/surfaceAttempt"}
+    },
+    "overall_feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preferred_surface", "preference_reason", "what_worked", "confusions", "requested_changes"],
+      "properties": {
+        "preferred_surface": {"type": "string", "enum": ["web", "n8n", "no_preference", "not_answered"]},
+        "preference_reason": {"type": "string", "maxLength": 4000},
+        "what_worked": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "maxItems": 20},
+        "confusions": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "maxItems": 20},
+        "requested_changes": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "maxItems": 20}
+      }
+    },
+    "started_at": {"type": ["string", "null"], "format": "date-time"},
+    "completed_at": {"type": ["string", "null"], "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "scheduled"}}},
+      "then": {"properties": {"evidence_label": {"const": "TEMPLATE_ONLY"}, "study_started": {"const": false}, "started_at": {"type": "null"}, "completed_at": {"type": "null"}}},
+      "else": {"properties": {"evidence_label": {"const": "REAL_HUMAN"}, "study_started": {"const": true}, "started_at": {"type": "string"}}}
+    }
+  ],
+  "$defs": {
+    "outcome": {"type": "string", "enum": ["independent_pass", "assisted", "failed", "not_attempted"]},
+    "commonOutcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["successful_task_initiation", "conclusion_understanding", "key_financial_fact_discovery", "calculation_understanding", "evidence_discovery", "limitation_or_counter_evidence_discovery", "monitoring_discovery", "trust_boundary_understanding"],
+      "properties": {
+        "successful_task_initiation": {"$ref": "#/$defs/outcome"},
+        "conclusion_understanding": {"$ref": "#/$defs/outcome"},
+        "key_financial_fact_discovery": {"$ref": "#/$defs/outcome"},
+        "calculation_understanding": {"$ref": "#/$defs/outcome"},
+        "evidence_discovery": {"$ref": "#/$defs/outcome"},
+        "limitation_or_counter_evidence_discovery": {"$ref": "#/$defs/outcome"},
+        "monitoring_discovery": {"$ref": "#/$defs/outcome"},
+        "trust_boundary_understanding": {"$ref": "#/$defs/outcome"}
+      }
+    },
+    "webOutcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["navigation", "information_hierarchy", "progressive_disclosure", "report_readability"],
+      "properties": {
+        "navigation": {"$ref": "#/$defs/outcome"},
+        "information_hierarchy": {"$ref": "#/$defs/outcome"},
+        "progressive_disclosure": {"$ref": "#/$defs/outcome"},
+        "report_readability": {"$ref": "#/$defs/outcome"}
+      }
+    },
+    "n8nOutcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workflow_entry_usability", "run_status_comprehension", "asynchronous_waiting_experience", "failure_path_comprehension", "perceived_automation_value"],
+      "properties": {
+        "workflow_entry_usability": {"$ref": "#/$defs/outcome"},
+        "run_status_comprehension": {"$ref": "#/$defs/outcome"},
+        "asynchronous_waiting_experience": {"$ref": "#/$defs/outcome"},
+        "failure_path_comprehension": {"$ref": "#/$defs/outcome"},
+        "perceived_automation_value": {"$ref": "#/$defs/outcome"}
+      }
+    },
+    "surfaceAttempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "attempt_status", "company_id", "period", "question", "run_id", "facilitator_assistance", "common_outcomes", "web_outcomes", "n8n_outcomes", "duration_seconds", "notes"],
+      "properties": {
+        "surface": {"type": "string", "enum": ["web", "n8n"]},
+        "attempt_status": {"type": "string", "enum": ["not_started", "completed", "abandoned"]},
+        "company_id": {"type": "string", "enum": ["cn_300750", "cn_002594"]},
+        "period": {"type": "string", "const": "2024H1"},
+        "question": {"type": "string", "minLength": 8, "maxLength": 2000},
+        "run_id": {"type": ["string", "null"], "pattern": "^run_[a-f0-9]{32}$"},
+        "facilitator_assistance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provided", "notes"],
+          "properties": {"provided": {"type": "boolean"}, "notes": {"type": "string", "maxLength": 4000}}
+        },
+        "common_outcomes": {"$ref": "#/$defs/commonOutcomes"},
+        "web_outcomes": {"oneOf": [{"$ref": "#/$defs/webOutcomes"}, {"type": "null"}]},
+        "n8n_outcomes": {"oneOf": [{"$ref": "#/$defs/n8nOutcomes"}, {"type": "null"}]},
+        "duration_seconds": {"type": ["integer", "null"], "minimum": 0, "maximum": 7200},
+        "notes": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}, "maxItems": 30}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"surface": {"const": "web"}}},
+          "then": {"properties": {"web_outcomes": {"$ref": "#/$defs/webOutcomes"}, "n8n_outcomes": {"type": "null"}}},
+          "else": {"properties": {"web_outcomes": {"type": "null"}, "n8n_outcomes": {"$ref": "#/$defs/n8nOutcomes"}}}
+        }
+      ]
+    }
+  }
+}

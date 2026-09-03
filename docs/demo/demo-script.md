@@ -18,8 +18,8 @@ Select:
 2024 年上半年利润是否真正转化成了经营现金流？
 ```
 
-Choose **Start Research**. State the exact boundary: this release supports one reviewed real
-filing and does not claim full-market coverage.
+Choose **Start Research**. State the exact boundary: this release supports three reviewed real
+filings across two companies and does not claim full-market coverage.
 
 ## 3. Executive Conclusion and Key Findings — 40 seconds
 
@@ -60,6 +60,13 @@ Expand the ten-stage LangGraph trace. Explain that LangGraph owns bounded orches
 checkpoint/recovery and sanitized events. Finance, evidence, verification and persistence remain
 ordinary testable Python.
 
+## 8. Same backend through n8n — 45 seconds
+
+Open **使用 n8n 表单入口** and repeat the CATL 2024H1 question. Show that the completion page exposes
+the same facts, calculations, evidence, limitations, monitoring and original Result/Trace links.
+n8n owns entry/wait/poll/presentation only. Then submit BYD 2024FY and show the bounded “研究未生成”
+page: no unsupported pair becomes a research conclusion.
+
 ## Optional: Quality Lab — 30 seconds
 
 Only if the interviewer asks about experimentation, open **Quality Lab** and state:
@@ -71,8 +78,8 @@ Only if the interviewer asks about experimentation, open **Quality Lab** and sta
 
 ## Required closing boundary
 
-- Coverage is CATL `2024H1`, not the full A-share market.
+- Coverage is CATL `2024H1`, CATL `2024FY` and BYD `2024H1`, not the full A-share market.
 - ResearchForge is research assistance, not investment advice.
-- The legacy Web-only kit is `PREPARATION_ONLY`; formal Web+n8n evaluation is deferred to Phase 6,
+- The frozen dual-surface kit is `PREPARATION_ONLY`; formal Web+n8n evaluation is deferred to Phase 6,
   zero real-human sessions exist and usefulness is unvalidated.
 - Historical AI usability sessions remain `SIMULATED` quality evidence only.

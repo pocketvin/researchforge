@@ -11,6 +11,14 @@ n8n 只做外部工作流编排。不做财务运算、证据判断、研究结�
 前置：Docker Compose；主项目的启动前提见 [README](../../README.md)。n8n 固定为 `2.37.9`，
 无需给 n8n 配置 OpenAI Key。默认推荐零消费 deterministic 模式；Web 与 n8n 一起使用同一模式。
 
+完整、可复现并自动 smoke 的启动方式：
+
+```bash
+uv run python scripts/start_demo.py
+```
+
+查看命令而不执行可加 `--dry-run`；复用现有镜像可加 `--no-build`。手工等价步骤如下：
+
 ```bash
 RESEARCHFORGE_REASONING_MODE=deterministic docker compose up -d --build --wait
 docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n import:workflow --input=/files/researchforge.workflow.json
@@ -30,6 +38,16 @@ docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n
 密码或把账户信息提交 Git。CLI 导入/发布和 webhook smoke 不要求绕过账户管理。
 
 ## 发起研究
+
+普通用户优先打开原生表单：
+
+```text
+http://127.0.0.1:5678/form/researchforge-v15-form
+```
+
+选择公司和报告期、输入研究问题后，成功页按结论、发现、事实、计算、证据、反证/限制、监控
+和后端 Result/Trace 分层展示。不支持的公司/期间显示“研究未生成”，不会出现 Executive
+Conclusion。用于外部自动化的 webhook 保留原 JSON 契约：
 
 ```bash
 curl --fail-with-body --max-time 240 \
@@ -91,12 +109,16 @@ uv run python -m scripts.n8n_smoke
 不支持的公司/期间、幂等冲突和证据截止时间不足。另有隔离的纯 transport fixture 检查真实 Wait
 循环、取消、超时和缺失产物；它不提供财务数据，也不算真人或真实研究证据。
 
-参见 [失败行为](failure-behavior.md)、[几分钟演示](demo.md)、[工程证据](../../docs/evidence/v1.5-n8n/README.md)
+参见 [失败行为](failure-behavior.md)、[几分钟演示](demo.md)、[Phase 4 工程证据](../../docs/evidence/v1.5-n8n/README.md)、[表单证据](../../docs/evidence/v1.5-product-hardening/README.md)
 和 [契约](../../docs/contracts/v1.5/n8n-integration.md)。正式 Web+n8n 真人评价仍在最终 Phase 6；
 **当前 human usefulness = UNVALIDATED**。
 
 Compose 健康检查使用 `/healthz/readiness`，只有数据库迁移、服务初始化和发布工作流启动完成后
 才允许 smoke；通用 `/healthz` 只表示进程存活，不足以作为 webhook 就绪信号。
+
+最终产品截图：[`n8n-form-v1.5.png`](../../docs/assets/n8n-form-v1.5.png)、
+[`n8n-result-v1.5.png`](../../docs/assets/n8n-result-v1.5.png)、
+[`n8n-abstention-v1.5.png`](../../docs/assets/n8n-abstention-v1.5.png)。
 
 ## 官方版本/节点依据
 

@@ -80,9 +80,13 @@ PostgreSQL, React, TypeScript and Vite. Immutable JSON artifacts use content-add
 
 ## Product preview
 
-![ResearchForge V1.5 real-data result](docs/assets/research-page-v1.5-result.png)
+![ResearchForge V1.5 final Web result](docs/assets/research-page-v1.5-final-result.png)
 
 Facts, formulas, evidence and trace stay collapsed until the user chooses to inspect them.
+The optional n8n form reaches the same backend and shows the same verified artifacts:
+
+![ResearchForge V1.5 n8n result](docs/assets/n8n-result-v1.5.png)
+
 Quality Lab has a separate secondary surface and is not part of the normal research journey.
 
 ## Run the real-data demo
@@ -137,23 +141,24 @@ npm run dev --prefix frontend
 Or run the packaged stack:
 
 ```bash
-docker compose up -d --build --wait
-uv run python scripts/docker_smoke.py
+uv run python scripts/start_demo.py
 ```
 
-Docker Compose starts PostgreSQL, FastAPI and Nginx/React with persistent volumes and health
-checks. See [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) for the reproducible V1.5
+This starts and verifies PostgreSQL, FastAPI, Nginx/React and the imported/published n8n workflow
+in deterministic zero-provider-cost mode. Web is at `http://127.0.0.1:4173/`; the n8n form is at
+`http://127.0.0.1:5678/form/researchforge-v15-form`. Use `--dry-run` to inspect every command or
+`--no-build` to reuse already-built images. See [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) for the reproducible V1.5
 walkthrough and [`docs/demo/v1.5-demo-evidence.md`](docs/demo/v1.5-demo-evidence.md) for exact
 source, run and verification evidence.
 
 ### Optional n8n entry
 
-Use the [importable ResearchForge n8n workflow](integrations/n8n/README.md) to submit the same
-Company + Period + Question through a local webhook. It returns the same backend facts,
-calculations, evidence, report and Trace; n8n does not calculate finance or generate conclusions.
-See [three real webhook runs and failure-path evidence](docs/evidence/v1.5-n8n/README.md).
-This is an engineering integration, not a Human Validated label; final UX and Web+n8n evaluation
-are subsequent frozen delivery phases.
+Use the [importable ResearchForge n8n workflow](integrations/n8n/README.md) through its ordinary-user
+form or automation webhook. Both return the same backend facts, calculations, evidence, report and
+Trace; n8n does not calculate finance or generate conclusions. Unsupported input renders an
+explicit no-report state. See the preserved [Phase 4 webhook evidence](docs/evidence/v1.5-n8n/README.md)
+and current [native-form runtime evidence](docs/evidence/v1.5-product-hardening/README.md).
+This remains engineering evidence, not a Human Validated label.
 
 ## Research workflow
 
@@ -269,6 +274,8 @@ npm run typecheck --prefix frontend
 npm run lint --prefix frontend
 npm test --prefix frontend -- --run
 npm run build --prefix frontend
+node integrations/n8n/build-workflow.mjs --check
+node --test integrations/n8n/workflow.test.mjs
 ```
 
 The public repository is [pocketvin/researchforge](https://github.com/pocketvin/researchforge).

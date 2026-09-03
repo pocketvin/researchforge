@@ -36,3 +36,6 @@ The final Phase 6 protocol must evaluate both Web and n8n over the same backend,
 real target users, counterbalance order and freeze tasks, metrics, thresholds and denominator
 rules before testing. Failed users remain visible, simulated personas never count, and
 facilitator-assisted completion is not an independent pass.
+
+That final protocol is now frozen in [`final-human-evaluation.md`](final-human-evaluation.md). This
+legacy contract remains read-only and cannot be used as the final denominator.

@@ -1,14 +1,28 @@
 # Legacy V1.5 Web-only Human Usability Preparation
 
-This directory preserves the V1.5 Web-only preparation kit. It is not proof that a participant
-study happened and it is not the final ResearchForge evaluation protocol.
+This directory contains the frozen final Web+n8n preparation kit and preserves the earlier V1.5
+Web-only kit as history. Neither is proof that a participant study happened.
 
 Current status: **PREPARATION_ONLY · 0 completed real-human sessions · HUMAN_UNVALIDATED**.
 
-Do not run a formal Pilot from this kit. The frozen delivery roadmap defers real-human evaluation
-until reusable extraction, cross-period/company evidence, n8n integration, Web/n8n UX and the
-demo are stable. The final protocol must evaluate both surfaces over the same backend with at
-least six real target users and criteria frozen before testing.
+Do not run a formal Pilot until Phase 5 is green and frozen. The final protocol evaluates both
+surfaces over the same backend with at least six real target users; criteria and denominators are
+now frozen before testing.
+
+Final kit:
+
+1. [`final-dual-surface-protocol.md`](final-dual-surface-protocol.md) — allocation, tasks, metrics
+   and frozen acceptance rules.
+2. [`final-participant-task-sheet.md`](final-participant-task-sheet.md) — neutral task with no
+   answers.
+3. [`final-facilitator-guide.md`](final-facilitator-guide.md) — setup, help classification,
+   failure exercise and privacy handling.
+4. [`../contracts/v1.5/final-human-evaluation.md`](../contracts/v1.5/final-human-evaluation.md) —
+   machine-record and denominator contract.
+5. [`../../examples/contracts/v1.5/final-human-evaluation-session.template.json`](../../examples/contracts/v1.5/final-human-evaluation-session.template.json)
+   — `TEMPLATE_ONLY`; copy only after a real person consents.
+
+Legacy Web-only kit (superseded, retained for audit history):
 
 Use the files in this order:
 

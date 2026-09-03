@@ -19,7 +19,7 @@
   "current_milestone": {
     "id": "product_hardening",
     "title": "Final Web and n8n UX, demo and evaluation-protocol hardening",
-    "outcome": "Phases 3 and 4 passed public CI and are published on main. Web and n8n now share one verified backend; final dual-surface UX and evaluation protocol remain to be frozen before any human sessions.",
+    "outcome": "Phase 5 Web+n8n UX, demo launcher, screenshots and frozen evaluation protocol pass locally. Public candidate CI is pending; zero human sessions have occurred.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -30,54 +30,49 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-04T00:59:14+08:00",
+    "at": "2026-09-04T05:39:18+08:00",
     "commands": [
-      {
-        "command": "GitHub Actions run 33781494639 on ba17df0",
-        "exit_code": 0,
-        "summary": "Phase 4 backend, frontend and container/n8n jobs all passed after the readiness-race repair. Failed run 33781018823 is retained."
-      },
       {
         "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
         "exit_code": 0,
-        "summary": "Local gate passed: 192 backend tests, 88 strictly typed source files, 8 V1.5 schemas and all three persisted n8n outputs. Existing frozen package tests remain green."
+        "summary": "Phase 5 local gate passed: 197 tests, 92 strictly typed source files, 9 active V1.5 schemas, preserved frozen packages and 11 PNG screenshots."
       },
       {
         "command": "npm lint/typecheck/test/build; Playwright mocked E2E and live-backend E2E",
         "exit_code": 0,
-        "summary": "Four frontend unit tests, two mocked and three live-backend journeys passed with no critical accessibility errors. Local E2E uses installed Chrome via PLAYWRIGHT_EXECUTABLE_PATH; default downloaded browser was unavailable."
+        "summary": "Four frontend unit tests, three mocked journeys including terminal abstention, and three real-backend filing journeys passed with no critical accessibility errors."
       },
       {
-        "command": "Docker Compose build/up; docker_smoke.py; Alembic downgrade base/upgrade head; docker_smoke.py",
+        "command": "classic Docker build; python scripts/start_demo.py --no-build",
         "exit_code": 0,
-        "summary": "All three PostgreSQL-backed filing cases succeeded before and after migration round-trip; each exposed six facts, four calculations, monitoring and ten trace stages."
+        "summary": "Fresh API/frontend images built after two transient BuildKit registry timeouts; the reproducible launcher then started and smoke-tested PostgreSQL, API, Web and n8n."
       },
       {
-        "command": "uv run python scripts/generalization_evidence.py",
+        "command": "n8n import/publish; python -m scripts.n8n_smoke; test-only transport failure fixture",
         "exit_code": 0,
-        "summary": "All three ignored official PDFs reproduced package/recovery hashes; published 3 actual Research Results with zero deterministic Verifier failures and zero provider calls."
+        "summary": "Actual n8n 2.37.9 passed three identical-backend cases, native form success/refusal, replay, minimum input, five HTTP failures and five transport-only failure scenarios."
       },
       {
-        "command": "n8n import/publish; python -m scripts.n8n_smoke; failure-fixture; Node tests and ESLint",
+        "command": "node workflow generation/check; 10 Node groups; integration ESLint",
         "exit_code": 0,
-        "summary": "Actual n8n 2.37.9 passed three real filing cases with five artifact families identical to backend, minimum input, replay, five real HTTP failures, five transport-only runtime scenarios and eight Node test groups."
+        "summary": "Portable dual-trigger workflow is generated from reviewable Code nodes; routing, escaping, bounds and unchanged webhook output pass."
       },
       {
-        "command": "GitHub Actions main run 33778511182 on da8367f",
+        "command": "GitHub Actions main run 33781903537 on 0f9c275",
         "exit_code": 0,
-        "summary": "Phase 3 backend, frontend and containers passed on both the CI branch and main. Phase 4 has not yet been published."
+        "summary": "Latest published main baseline passed all Phase 4 backend, frontend and container jobs. Phase 5 candidate CI remains pending."
       }
     ]
   },
   "next_action": {
-    "title": "Freeze final dual-surface UX and evaluation protocol",
-    "why": "The same verified backend now serves both surfaces; usability criteria must be frozen before real-human sessions.",
-    "first_step": "Harden the n8n human entry and Web failure/readability experience, capture screenshots and update the demo/interview story.",
+    "title": "Publish and verify the Phase 5 candidate",
+    "why": "Implementation and local gates pass; public CI must be green before the frozen human evaluation may begin.",
+    "first_step": "Push a Phase 5 candidate branch, wait for all GitHub Actions jobs, then advance to HUMAN_EVALUATION only if green.",
     "acceptance_evidence": [
-      "Web and n8n ordinary users can independently initiate equivalent research over one backend.",
-      "Both surfaces expose conclusion, facts, formulas, evidence, limitations and monitoring with clear failure/abstention behavior.",
-      "Screenshots, reproducible demo, CI/Docker/E2E and interview narrative are release-ready.",
-      "Final Web+n8n human evaluation criteria and denominator rules are frozen before recruitment."
+      "All backend, frontend and container GitHub Actions jobs pass on the exact candidate commit.",
+      "The candidate retains actual Web+n8n success and failure evidence over one backend.",
+      "Only after CI passes is PRODUCT_HARDENING added to completed_gates.",
+      "Human evaluation starts with the already frozen protocol and still reports zero sessions until real participants consent."
     ]
   },
   "blockers": [],
@@ -88,41 +83,48 @@
       "docs/product/researchforge-v1.5-product-thesis.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "PROJECT_STATUS.md",
-      "docs/evidence/v1.5-phase2-financial-fact-extraction.md",
-      "docs/demo/v1.5-demo-evidence.md",
+      "docs/evidence/v1.5-product-hardening/README.md",
+      "docs/usability/final-dual-surface-protocol.md",
       "DECISIONS.md"
     ],
     "commands": [
       "uv run python scripts/validate_contracts.py",
-      "npm run build --prefix frontend",
+      "npm run test:e2e --prefix frontend",
       "docker compose ps",
       "git status --short"
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-04T00:59:14+08:00",
-    "summary": "Published Phases 3 and 4 after green CI; same-backend n8n passed real and failure paths without core changes or intermediate independent acceptance. Phase 5 hardening is active; human validation remains deferred.",
+    "ended_at": "2026-09-04T05:39:18+08:00",
+    "summary": "Implemented and locally verified final Web+n8n UX, reproducible demo, screenshots and frozen dual-surface human-evaluation contract. Candidate public CI is pending; human sessions remain zero.",
     "files_changed": [
-      "AGENTS.md",
+      "CHANGELOG.md",
       "DECISIONS.md",
       "PROJECT_STATUS.md",
       "project-status.json",
       "README.md",
       "PORTFOLIO.md",
-      "CHANGELOG.md",
+      "frontend/src/App.tsx",
+      "frontend/src/styles.css",
+      "frontend/e2e/research.spec.ts",
+      "frontend/scripts/capture-demo-screenshots.mjs",
       "integrations/n8n",
-      "docs/evidence/v1.5-n8n",
-      "docs/contracts/v1.5/n8n-integration.md",
-      "docs/contracts/v1.5/README.md",
+      "docs/assets",
+      "docs/contracts/v1.5",
+      "docs/demo",
+      "docs/evidence/v1.5-product-hardening",
       "docs/product/researchforge-v1.5-product-thesis.md",
-      "schemas/v1.5/n8n-research-output.schema.json",
-      "examples/contracts/v1.5/n8n-research-output.error.example.json",
+      "docs/usability",
+      "schemas/v1.5/final-human-evaluation-session.schema.json",
+      "examples/contracts/v1.5/final-human-evaluation-session.template.json",
       "scripts/n8n_smoke.py",
+      "scripts/start_demo.py",
+      "scripts/summarize_human_evaluation.py",
       "scripts/validate_contracts.py",
-      "tests/test_n8n_output_contract.py",
       "tests/test_contract_package.py",
-      ".github/workflows/ci.yml"
+      "tests/test_human_evaluation_summary.py",
+      "tests/test_start_demo.py"
     ]
   },
-  "updated_at": "2026-09-04T00:59:14+08:00"
+  "updated_at": "2026-09-04T05:39:18+08:00"
 }
