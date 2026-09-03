@@ -25,7 +25,7 @@ def test_contract_validator_passes() -> None:
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert "PASS: 5 active V1.5 productization" in completed.stdout
+    assert "PASS: 6 active V1.5 productization" in completed.stdout
     assert "12 V1.4" in completed.stdout
 
 

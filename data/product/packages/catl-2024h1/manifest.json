@@ -1,20 +1,20 @@
 {
   "artifact_hashes": {
-    "evidence-chunks/chunk_product_catl_2024h1_accounts_receivable.json": "87aaddfcef1533f5309df42e8b5e3dfa15f3a2c058dc4ee3bcccaf8046d104d4",
-    "evidence-chunks/chunk_product_catl_2024h1_inventory.json": "61bfdf71421c9e3d28060a66cedccde168f4ae8bbaf79e52ea75db82a84edff2",
-    "evidence-chunks/chunk_product_catl_2024h1_net_income.json": "2b4ab4604c8851b8da9e4186526e4eefd1d32dbb95175edda4166ba62e4daf68",
-    "evidence-chunks/chunk_product_catl_2024h1_non_recurring_profit.json": "09fab21a17ab28542054b82b3c99462c85455d93c302979867b6b5c4d0b3b7ef",
-    "evidence-chunks/chunk_product_catl_2024h1_operating_cash_flow.json": "63446bfc652d1c91bf1b1407d456b069b3687047bf01a71d4ff656cc26238fc0",
-    "evidence-chunks/chunk_product_catl_2024h1_operating_cost.json": "46eec9efd609e554a1b152d88440018f06a3d1c55c495d0c8d553c9942d84314",
-    "evidence-chunks/chunk_product_catl_2024h1_revenue.json": "62c51ee31230a0c7eabb3f57842026b00bfb99b14efcdbebe6a9fe4d771539b3",
-    "evidence-chunks/chunk_product_catl_2024h1_unaudited_interim_report.json": "c221534902bcd16d82148c617a1b0769617d6b3682c34e63a5d0ec8e19042b4c",
+    "evidence-chunks/chunk_product_catl_2024h1_accounts_receivable.json": "7b051f8d8e1aa982fb07506a14b44e8f997830b1511385f033cb3e89aeb7e7e1",
+    "evidence-chunks/chunk_product_catl_2024h1_inventory.json": "855b8aef3d0e9038a14ce4b36bb3a1bfd97f2568191a7584b93aa621c51e83ff",
+    "evidence-chunks/chunk_product_catl_2024h1_net_income.json": "ed5814f23c6ff3b0840c99a80c821d5a8ef802cf073b94cf245efc85c18a52b7",
+    "evidence-chunks/chunk_product_catl_2024h1_non_recurring_profit.json": "12a67a55b9b45250aab5d9611ee513e0ad336d107bb9a966d54667c5984c0ad1",
+    "evidence-chunks/chunk_product_catl_2024h1_operating_cash_flow.json": "b3bfb1ac2b329f0b7d744cc1f529065fd6d737b96d73e644646bcfaf7262379b",
+    "evidence-chunks/chunk_product_catl_2024h1_operating_cost.json": "c693d736d2ae8cf35e7a07df56e22c055367b24e551630f5315877bf391823a5",
+    "evidence-chunks/chunk_product_catl_2024h1_revenue.json": "12aad6b0abc444e9852f1d8c57d2f3370952344f6f4dfcebecf4ce608c55490c",
+    "evidence-chunks/chunk_product_catl_2024h1_unaudited_interim_report.json": "b97ffcd40c1967a016823505740ed3f908f3ac81361baee2cee49d16bbe04c97",
     "financial-facts/fact_product_catl_2024h1_accounts_receivable.json": "11a3636eb2d6f8814ac84284b34f3e809f4e5f310e80b9dbf7efcf8f9674df4d",
     "financial-facts/fact_product_catl_2024h1_inventory.json": "6aaa1d791bb938c2a99b2018c08573c41e14d67c9fa65b6ebe698847005f7113",
     "financial-facts/fact_product_catl_2024h1_net_income.json": "2ac5f59b334186309daa173fa4e2db7c5949daf68ea50e5007c249cee64be71d",
     "financial-facts/fact_product_catl_2024h1_operating_cash_flow.json": "b1bccaa01436d02d826baa76ce8d1e04b1a13de1703bd7951716ea112bf11988",
     "financial-facts/fact_product_catl_2024h1_operating_cost.json": "5b7280a0444fa3a8b39763b211c6f10efa358af6966675673740b523f0017539",
     "financial-facts/fact_product_catl_2024h1_revenue.json": "22ca179d81d3f30ed05900397c274f42b903b9f12fdf4dc3547d1ddb35207152",
-    "source-documents/doc_product_catl_2024h1.json": "a2105088e5c32c83a3e22d3497d4e4cc7e117db457e8eea08bc87dfa4230f852"
+    "source-documents/doc_product_catl_2024h1.json": "d29b67ff4ee391508f752b2fef9e1d4c65bc0b8a785bc52d482b35e48e970dc5"
   },
   "data_namespace": "product",
   "evidence_chunk_count": 8,
@@ -38,7 +38,7 @@
     "fact_product_catl_2024h1_revenue"
   ],
   "ingestion_manifest": "ingestion-manifest.json",
-  "package_hash": "fdd6cc077607144b46b741aae3fe713eae09ca7c54c00bfbc43960847be45765",
+  "package_hash": "2207187bd5d466d8c79a09863703bb373ec1890829f84505fc994c5e071669de",
   "package_id": "product_catl_2024h1_001",
   "schema_version": "1.5.0",
   "source_document_count": 1,

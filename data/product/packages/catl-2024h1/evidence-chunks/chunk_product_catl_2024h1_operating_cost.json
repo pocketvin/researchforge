@@ -23,8 +23,7 @@
   "published_at": "2024-07-26T23:59:59+08:00",
   "quality_flags": [
     "text_native",
-    "table_linearized",
-    "manual_reviewed"
+    "table_linearized"
   ],
   "reporting_period": {
     "accounting_standard": "CAS",
@@ -40,6 +39,6 @@
   "schema_version": "1.4.0",
   "section": "Financial statement fact: 营业成本",
   "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
-  "text": "营业成本 12,251,784.88 14,830,593.41",
-  "text_hash": "9596e54466e2ba942de7f4b037c1108a7a79ff7b19fbd473c72e746e5fb76466"
+  "text": "其中：营业成本 12,251,784.88 14,830,593.41",
+  "text_hash": "5f86051d16e6ed2987f8b2c73b56072d296d8cd0b908e7dcdfea37f75b16ad8d"
 }

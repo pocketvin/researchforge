@@ -50,7 +50,7 @@ preserved as an experimental, read-only **Quality Lab** and is not required for 
 
 - Active direction: **V1.5 Productization**
 - V1.5 productization: **independently accepted — VERDICT: PASS**
-- Current milestone: Phase 2 reusable deterministic extraction for six financial metrics
+- Current milestone: Phase 2 reusable deterministic extraction implemented; independent gate pending
 - Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
 - Default runtime: strict `product` namespace with one reviewed CATL 2024H1 disclosure
 - Human usefulness: **not yet validated; formal Web+n8n evaluation is deferred to final Phase 6**
@@ -87,8 +87,9 @@ Quality Lab has a separate secondary surface and is not part of the normal resea
 ## Run the real-data demo
 
 The repository includes a reviewed, public-safe derived package for the official CATL 2024H1
-filing. This zero-cost command forces deterministic wording, makes no provider call and never
-falls back to fixtures:
+filing. Its six facts are deterministically recovered from the verified PDF rather than copied
+from registry-provided values. This zero-cost command forces deterministic wording, makes no
+provider call and never falls back to fixtures:
 
 ```bash
 RESEARCHFORGE_REASONING_MODE=deterministic \

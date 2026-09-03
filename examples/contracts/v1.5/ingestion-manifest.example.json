@@ -32,7 +32,7 @@
   "acquisition": {
     "retrieved_at": "2026-09-02T18:00:01+08:00",
     "media_type": "application/pdf",
-    "byte_count": 15310153,
+    "byte_count": 1684794,
     "content_hash": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
     "raw_payload_committed": false
   },
@@ -41,7 +41,27 @@
     "parser_version": "6.10.0",
     "page_count": 174,
     "page_boundaries_preserved": true,
-    "text_hash": "55b14dca711e24f028463beb825410b6e13a4d7ab058655d43a12256f6ec5e1e"
+    "text_hash": "a24c5b7307a6379ceac9452a5be588717ff154825091406db9d085d145e4ee2e"
+  },
+  "extraction": {
+    "schema_version": "1.5.0",
+    "extractor_name": "researchforge_deterministic_financial_statement",
+    "extractor_version": "1.0.0",
+    "method": "deterministic_pdf_text_recovery",
+    "numerical_truth_source": "verified_pdf",
+    "llm_used": false,
+    "ambiguity_policy": "abstain_entire_package",
+    "target_metrics": ["revenue", "operating_cost", "net_income", "operating_cash_flow", "accounts_receivable", "inventory"],
+    "promoted_metric_count": 6,
+    "parser_text_hash": "a24c5b7307a6379ceac9452a5be588717ff154825091406db9d085d145e4ee2e",
+    "recoveries": [
+      {"metric_code": "revenue", "statement": "合并利润表", "page": 69, "line_start": 19, "line_end": 19, "row_label": "营业收入", "column_label": "2024年半年度", "raw_value": "16,676,683.36", "reported_value": "16676683.36", "unit_label": "万元", "scale": 10000, "normalized_value": "166766833600.00", "evidence_text": "其中：营业收入 16,676,683.36 18,924,604.13", "evidence_text_hash": "8a765230d2e6fde08b6f1e0a3aac00826fb247b65ec2e07305c77e3aa2a79ea8", "page_text_hash": "d4cca29da8d794685760105a00adfb3ecf56848ce795d7a43b5f8d96cd113d59", "recovery_hash": "dfc74923d73aa67826479dcef70c139333e8e9540ef3a09dcb2b11816f71bdf4"},
+      {"metric_code": "operating_cost", "statement": "合并利润表", "page": 69, "line_start": 24, "line_end": 24, "row_label": "营业成本", "column_label": "2024年半年度", "raw_value": "12,251,784.88", "reported_value": "12251784.88", "unit_label": "万元", "scale": 10000, "normalized_value": "122517848800.00", "evidence_text": "其中：营业成本 12,251,784.88 14,830,593.41", "evidence_text_hash": "5f86051d16e6ed2987f8b2c73b56072d296d8cd0b908e7dcdfea37f75b16ad8d", "page_text_hash": "d4cca29da8d794685760105a00adfb3ecf56848ce795d7a43b5f8d96cd113d59", "recovery_hash": "68c00d6209e919e6bf5bae8ddebdc56165932fa821f991a21ab9dd7efa8cb6bb"},
+      {"metric_code": "net_income", "statement": "合并利润表", "page": 70, "line_start": 32, "line_end": 33, "row_label": "归属于母公司股东的净利润", "column_label": "2024年半年度", "raw_value": "2,286,498.74", "reported_value": "2286498.74", "unit_label": "万元", "scale": 10000, "normalized_value": "22864987400.00", "evidence_text": "1.归属于母公司股东的净利润 （净亏损以“—”号填列） 2,286,498.74 2,071,726.45", "evidence_text_hash": "b7bf89025cc2a0c7463694a1d180427f2bd6f56229b4fdbe498604a06a5d39f8", "page_text_hash": "13e3935b3e0bf22a05995e2709f06568d8eaef26accd7bea3b621da3c5759118", "recovery_hash": "b06efa40f26f4f0efd3ef22017a6d77874f36cbd9ea73523b17863de491712e3"},
+      {"metric_code": "operating_cash_flow", "statement": "合并现金流量表", "page": 73, "line_start": 30, "line_end": 30, "row_label": "经营活动产生的现金流量净额", "column_label": "2024年半年度", "raw_value": "4,470,895.46", "reported_value": "4470895.46", "unit_label": "万元", "scale": 10000, "normalized_value": "44708954600.00", "evidence_text": "经营活动产生的现金流量净额 4,470,895.46 3,707,036.98", "evidence_text_hash": "2cf4e1dcc7534f30e77aa3ef37902b4c1dad33a3f2a9768ef098247ff69b096a", "page_text_hash": "9d2659050cf960a135ef255d4138962423e2ed92ea618f0dd545358df6f71acd", "recovery_hash": "feb2789c392299a986dc2adecdb65715c770ea3c7c1954b1f2993fec3e1a46ae"},
+      {"metric_code": "accounts_receivable", "statement": "合并资产负债表", "page": 64, "line_start": 22, "line_end": 22, "row_label": "应收账款", "column_label": "期末余额", "raw_value": "5,809,947.60", "reported_value": "5809947.60", "unit_label": "万元", "scale": 10000, "normalized_value": "58099476000.00", "evidence_text": "应收账款 5,809,947.60 6,402,053.34", "evidence_text_hash": "6440a2b5f68b7294f4fa646980188166a2fbecb7fab03ca7816d8b01edd033af", "page_text_hash": "4e863c11cc1460a01c824b6847b85cc12536acdefee1670a81e2174de0ca0819", "recovery_hash": "31be592be163aa2af6328c227983cac296ce51cbb49979c3e5325fa9c1153333"},
+      {"metric_code": "inventory", "statement": "合并资产负债表", "page": 64, "line_start": 32, "line_end": 32, "row_label": "存货", "column_label": "期末余额", "raw_value": "4,805,067.62", "reported_value": "4805067.62", "unit_label": "万元", "scale": 10000, "normalized_value": "48050676200.00", "evidence_text": "存货 4,805,067.62 4,543,389.01", "evidence_text_hash": "ed41b5e768987e12c0e77d2b635b5ebd5126c86d24b2051e07f4abac42a5407d", "page_text_hash": "4e863c11cc1460a01c824b6847b85cc12536acdefee1670a81e2174de0ca0819", "recovery_hash": "1bd8ca0073ba31a3855f744004a0758f4474b6194238b4969623386c9ccae9d6"}
+    ]
   },
   "outputs": [
     {

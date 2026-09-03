@@ -5,7 +5,7 @@
   "description": "A provenance-complete manifest for one allowlisted official disclosure and its derived product artifacts.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "ingestion_id", "package_id", "data_namespace", "status", "company", "reporting_period", "discovery", "acquisition", "parser", "outputs", "abstentions", "created_at", "package_hash"],
+  "required": ["schema_version", "ingestion_id", "package_id", "data_namespace", "status", "company", "reporting_period", "discovery", "acquisition", "parser", "extraction", "outputs", "abstentions", "created_at", "package_hash"],
   "properties": {
     "schema_version": {"$ref": "common.schema.json#/$defs/schemaVersion"},
     "ingestion_id": {"$ref": "common.schema.json#/$defs/identifier"},
@@ -61,6 +61,12 @@
         {"type": "null"}
       ]
     },
+    "extraction": {
+      "anyOf": [
+        {"$ref": "financial-fact-extraction.schema.json"},
+        {"type": "null"}
+      ]
+    },
     "outputs": {
       "type": "array",
       "items": {"$ref": "common.schema.json#/$defs/artifactReference"},
@@ -93,6 +99,7 @@
           "abstentions": {"maxItems": 0},
           "acquisition": {"type": "object"},
           "parser": {"type": "object"},
+          "extraction": {"type": "object"},
           "package_hash": {"$ref": "common.schema.json#/$defs/sha256"}
         }
       }

@@ -24,7 +24,7 @@
   "quality_flags": [
     "sha256_verified",
     "page_boundaries_preserved",
-    "reviewed_cells_relocated",
+    "deterministic_cells_recovered",
     "raw_payload_excluded"
   ],
   "reporting_period": {

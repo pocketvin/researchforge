@@ -4,7 +4,7 @@ Last updated: 2026-09-03
 Machine-readable mirror: [`project-status.json`](project-status.json)
 
 Contract package: 1.5.0
-Current gate: V15_PRODUCT
+Current gate: FACT_EXTRACTION
 Scope: V1.5 active productization
 
 ## Current Position
@@ -12,13 +12,13 @@ Scope: V1.5 active productization
 - Active product direction: **V1.5 Productization — independently accepted**.
 - V1.5 productization label: **V1.5 Product Ready**.
 - Product thesis: **Direction Ready**.
-- Real-data vertical slice: **verified**.
+- Real-data vertical slice: **verified; six metrics now originate from deterministic PDF recovery**.
 - Research UX and Quality Lab: **verified in unit, E2E and live-browser runs**.
 - Legacy Web-only pilot kit: **implemented but not executed; 0 real-human sessions**.
 - Human usefulness: **UNVALIDATED; formal Web+n8n evaluation is deferred to final Phase 6**.
 - Local engineering gate: **passed**.
-- Published GitHub CI: **passed** on commit `f98d9be` in run
-  [33727245101](https://github.com/pocketvin/researchforge/actions/runs/33727245101).
+- Published GitHub CI: **passed** on commit `b206876` in run
+  [33728386689](https://github.com/pocketvin/researchforge/actions/runs/33728386689).
 - Final independent V1.5 acceptance: **VERDICT: PASS**.
 - Current product boundary: CATL `2024H1`, `filing_analysis`, strict `product` namespace.
 - Public repository: [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
@@ -42,11 +42,25 @@ V1.5 success does not depend on a supported Evolution hypothesis.
 - Allowlisted official SZSE CATL 2024H1 PDF acquired and hash-checked.
 - Source PDF: 1,684,794 bytes; SHA-256
   `2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1`.
-- Derived package: one Source Document, six reviewed Financial Facts and eight page-located
+- Derived package: one Source Document, six deterministically recovered Financial Facts and eight page-located
   Evidence Chunks; package hash
-  `fdd6cc077607144b46b741aae3fe713eae09ca7c54c00bfbc43960847be45765`.
+  `2207187bd5d466d8c79a09863703bb373ec1890829f84505fc994c5e071669de`.
 - Product, fixture and Benchmark namespaces are explicit; mismatch refuses fallback.
-- Hash, byte-count, PDF-magic or reviewed-cell mismatch causes abstention.
+- The filing registry contains document identity only; it supplies no fact value, page locator or
+  evidence text to the extractor.
+- Hash, byte-count, PDF-magic, missing/duplicate row, unresolved period column, conflicting unit or
+  missing native text causes abstention.
+
+### Phase 2 reusable extraction
+
+- One company-independent extractor supports exactly revenue, operating cost, attributable net
+  income, operating cash flow, accounts receivable and inventory.
+- It detects consolidated statement boundaries, joins wrapped rows, carries cash-flow context
+  across a page boundary, resolves period columns and units, and normalizes with `Decimal`.
+- Every promoted value has raw token, source page/lines, table, row, column, unit, evidence hash,
+  page-text hash and canonical recovery hash in the ingestion manifest.
+- The CATL 2024H1 package and nine focused ingestion tests pass locally. Independent Phase 2
+  acceptance is pending before this phase is closed.
 
 ### Research result
 
@@ -105,8 +119,8 @@ rewritten by V1.5.
    findings.
 4. The share-safe Codex review file records the closure evidence.
 
-After Phase 1 passes, Phase 2 is reusable deterministic extraction for exactly six financial
-metrics. Formal real-human evaluation remains deferred until Phase 6.
+Phase 1 remains closed. Phase 2 implementation is ready for its full repository gate and
+independent read-only acceptance. Formal real-human evaluation remains deferred until Phase 6.
 
 ## Honest Non-Claims
 
@@ -119,8 +133,8 @@ metrics. Formal real-human evaluation remains deferred until Phase 6.
 
 ## Single Next Action
 
-Begin Phase 2 by freezing the extraction contract and golden ambiguity/abstention cases for the
-six allowed metrics before changing the ingestion implementation.
+Run the complete repository gate and independent read-only review for Phase 2. After PASS, begin
+Phase 3 by acquiring CATL 2024FY and BYD 2024H1 identities without adding company-specific code.
 
 ## Fast Resume
 
@@ -130,7 +144,8 @@ Read, in order:
 2. `docs/product/researchforge-final-delivery-roadmap.md`
 3. `PROJECT_STATUS.md`
 4. `docs/demo/v1.5-demo-evidence.md`
-5. `DECISIONS.md`
+5. `docs/evidence/v1.5-phase2-financial-fact-extraction.md`
+6. `DECISIONS.md`
 
 Then run:
 

@@ -23,8 +23,7 @@
   "published_at": "2024-07-26T23:59:59+08:00",
   "quality_flags": [
     "text_native",
-    "table_linearized",
-    "manual_reviewed"
+    "table_linearized"
   ],
   "reporting_period": {
     "accounting_standard": "CAS",
@@ -40,6 +39,6 @@
   "schema_version": "1.4.0",
   "section": "Financial statement fact: 归属于母公司股东的净利润",
   "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
-  "text": "归属于母公司股东的净利润（净亏损以“—”号填列）2,286,498.74 2,071,726.45",
-  "text_hash": "2ac5ab5c44ba01ba34400a7bbc21992f67bdaaab532e36ceeaa882d142050f26"
+  "text": "1.归属于母公司股东的净利润 （净亏损以“—”号填列） 2,286,498.74 2,071,726.45",
+  "text_hash": "b7bf89025cc2a0c7463694a1d180427f2bd6f56229b4fdbe498604a06a5d39f8"
 }

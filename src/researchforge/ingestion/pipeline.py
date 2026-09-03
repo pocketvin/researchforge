@@ -8,7 +8,6 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from decimal import Decimal
 from pathlib import Path
 from typing import IO, Any, cast
 from urllib.parse import urlparse
@@ -16,6 +15,13 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from pypdf import PdfReader
 from pypdf import __version__ as pypdf_version
+
+from researchforge.ingestion.errors import IngestionAbstention
+from researchforge.ingestion.extraction import (
+    DeterministicFinancialFactExtractor,
+    ExtractedFinancialCell,
+    ExtractionBatch,
+)
 
 JsonObject = dict[str, Any]
 Clock = Callable[[], datetime]
@@ -67,20 +73,6 @@ def _validate_official_url(uri: str) -> None:
             "acquisition",
             "Disclosure URL is not HTTPS on an allowlisted official host.",
         )
-
-
-class IngestionAbstention(ValueError):
-    """A bounded refusal to promote unverified disclosure content."""
-
-    def __init__(self, code: str, stage: str, reason: str) -> None:
-        super().__init__(reason)
-        self.code = code
-        self.stage = stage
-        self.reason = reason
-        self.acquisition: JsonObject | None = None
-
-    def artifact(self) -> JsonObject:
-        return {"code": self.code, "stage": self.stage, "reason": self.reason}
 
 
 class _OfficialRedirectHandler(HTTPRedirectHandler):
@@ -279,11 +271,13 @@ class ProductDisclosureIngestion:
         *,
         acquirer: OfficialDocumentAcquirer | None = None,
         parser: PagePreservingPdfParser | None = None,
+        extractor: DeterministicFinancialFactExtractor | None = None,
         clock: Clock = _utc_now,
     ) -> None:
         self.registry = registry
         self.acquirer = acquirer or OfficialDocumentAcquirer(clock=clock)
         self.parser = parser or PagePreservingPdfParser()
+        self.extractor = extractor or DeterministicFinancialFactExtractor()
         self.clock = clock
 
     def run(
@@ -299,6 +293,7 @@ class ProductDisclosureIngestion:
         discovery = self._discovery(record)
         acquisition: JsonObject | None = None
         parser_value: JsonObject | None = None
+        extraction_value: JsonObject | None = None
         try:
             acquired = self.acquirer.acquire(
                 record,
@@ -314,7 +309,8 @@ class ProductDisclosureIngestion:
                     "parsing",
                     "Parsed page count differs from the reviewed disclosure identity.",
                 )
-            artifacts = self._normalize(record, acquired, parsed)
+            artifacts, extraction = self._normalize(record, acquired, parsed)
+            extraction_value = extraction.manifest_value()
         except IngestionAbstention as exc:
             acquisition = exc.acquisition or acquisition
             manifest = self._ingestion_manifest(
@@ -322,6 +318,7 @@ class ProductDisclosureIngestion:
                 discovery=discovery,
                 acquisition=acquisition,
                 parser_value=parser_value,
+                extraction_value=extraction_value,
                 status="abstained",
                 outputs=[],
                 abstentions=[exc.artifact()],
@@ -343,6 +340,7 @@ class ProductDisclosureIngestion:
             discovery=discovery,
             acquisition=acquisition,
             parser_value=parser_value,
+            extraction_value=extraction_value,
             status="ready",
             outputs=outputs,
             abstentions=[],
@@ -362,42 +360,29 @@ class ProductDisclosureIngestion:
         record: JsonObject,
         acquired: AcquiredDocument,
         parsed: ParsedDocument,
-    ) -> dict[str, JsonObject]:
-        for spec in [*record["fact_specs"], *record["counter_evidence_specs"]]:
-            page_number = int(spec["page"])
-            if page_number > len(parsed.pages):
-                raise IngestionAbstention(
-                    "SOURCE_LOCATOR_OUT_OF_RANGE",
-                    "normalization",
-                    f"Reviewed physical page {page_number} is outside the parsed document.",
-                )
-            if _compact(str(spec["evidence_text"])) not in _compact(parsed.pages[page_number - 1]):
-                raise IngestionAbstention(
-                    "REVIEWED_CELL_NOT_FOUND",
-                    "normalization",
-                    (
-                        f"Reviewed text for page {page_number} was not found exactly after "
-                        "whitespace normalization."
-                    ),
-                )
-
+    ) -> tuple[dict[str, JsonObject], ExtractionBatch]:
+        extraction = self.extractor.extract(
+            pages=parsed.pages,
+            parser_text_hash=parsed.text_hash,
+            reporting_period=record["reporting_period"],
+        )
         source = self._source_document(record, acquired)
         artifacts: dict[str, JsonObject] = {
             f"source-documents/{source['document_id']}.json": source
         }
-        for spec in record["fact_specs"]:
-            fact = self._financial_fact(record, acquired, spec)
+        for cell in extraction.cells:
+            fact = self._financial_fact(record, acquired, cell)
             artifacts[f"financial-facts/{fact['fact_id']}.json"] = fact
             chunk = self._evidence_chunk(
                 record,
                 acquired,
-                code=str(spec["metric_code"]),
-                page=int(spec["page"]),
-                section=f"Financial statement fact: {spec['row_label']}",
-                text=str(spec["evidence_text"]),
+                code=cell.metric_code,
+                page=cell.page,
+                section=f"Financial statement fact: {cell.row_label}",
+                text=cell.evidence_text,
             )
             artifacts[f"evidence-chunks/{chunk['chunk_id']}.json"] = chunk
-        for spec in record["counter_evidence_specs"]:
+        for spec in self._counter_evidence(parsed):
             chunk = self._evidence_chunk(
                 record,
                 acquired,
@@ -407,7 +392,7 @@ class ProductDisclosureIngestion:
                 text=str(spec["evidence_text"]),
             )
             artifacts[f"evidence-chunks/{chunk['chunk_id']}.json"] = chunk
-        return artifacts
+        return artifacts, extraction
 
     def _source_document(self, record: JsonObject, acquired: AcquiredDocument) -> JsonObject:
         return {
@@ -438,7 +423,7 @@ class ProductDisclosureIngestion:
             "quality_flags": [
                 "sha256_verified",
                 "page_boundaries_preserved",
-                "reviewed_cells_relocated",
+                "deterministic_cells_recovered",
                 "raw_payload_excluded",
             ],
             "created_at": acquired.retrieved_at,
@@ -448,10 +433,9 @@ class ProductDisclosureIngestion:
         self,
         record: JsonObject,
         acquired: AcquiredDocument,
-        spec: JsonObject,
+        cell: ExtractedFinancialCell,
     ) -> JsonObject:
-        canonical = Decimal(str(spec["reported_value"])) * Decimal(int(spec["scale"]))
-        metric = str(spec["metric_code"])
+        metric = cell.metric_code
         record_slug = str(record["record_id"]).replace("-", "_")
         return {
             "schema_version": "1.4.0",
@@ -459,7 +443,7 @@ class ProductDisclosureIngestion:
             "fact_kind": "reported",
             "company": record["company"],
             "metric_code": metric,
-            "value": format(canonical, "f"),
+            "value": format(cell.normalized_value, "f"),
             "measurement_unit": "CURRENCY",
             "currency": "CNY",
             "canonical_scale": 1,
@@ -477,11 +461,11 @@ class ProductDisclosureIngestion:
                 "redistribution_allowed": False,
             },
             "source_locator": {
-                "page": spec["page"],
-                "section": spec["section"],
-                "table": spec["table"],
-                "row_label": spec["row_label"],
-                "column_label": spec["column_label"],
+                "page": cell.page,
+                "section": "财务报表",
+                "table": cell.statement,
+                "row_label": cell.row_label,
+                "column_label": cell.column_label,
             },
             "formula_version": None,
             "source_fact_ids": [],
@@ -526,8 +510,59 @@ class ProductDisclosureIngestion:
             },
             "language": "zh-CN",
             "parser_version": f"pypdf-{pypdf_version}",
-            "quality_flags": ["text_native", "table_linearized", "manual_reviewed"],
+            "quality_flags": ["text_native", "table_linearized"],
         }
+
+    @staticmethod
+    def _counter_evidence(parsed: ParsedDocument) -> list[JsonObject]:
+        rules = (
+            (
+                "non_recurring_profit",
+                "Counter evidence: non-recurring profit contribution",
+                "归属于上市公司股东的扣除非经常性损益的净利润",
+                5,
+            ),
+            (
+                "unaudited_interim_report",
+                "Counter evidence: audit status",
+                "财务报告未经审计",
+                1,
+            ),
+        )
+        found: list[JsonObject] = []
+        for code, section, phrase, max_lines in rules:
+            matches: list[tuple[int, int, int, list[str]]] = []
+            for page_number, page_text in enumerate(parsed.pages, start=1):
+                lines = [line.strip() for line in page_text.splitlines() if line.strip()]
+                for start in range(len(lines)):
+                    for width in range(1, max_lines + 1):
+                        window = " ".join(lines[start : start + width])
+                        if phrase in _compact(window):
+                            matches.append((width, page_number, start, lines))
+                            break
+            if matches:
+                minimum_width = min(item[0] for item in matches)
+                shortest = [item for item in matches if item[0] == minimum_width]
+            else:
+                shortest = []
+            if len(shortest) == 1:
+                width, page, start, lines = shortest[0]
+                end = start + width
+                if code == "non_recurring_profit":
+                    while end < len(lines) and not re.search(
+                        r"\d[\d,]*\.\d+", " ".join(lines[start:end])
+                    ):
+                        end += 1
+                text = " ".join(lines[start:end])
+                found.append(
+                    {
+                        "chunk_code": code,
+                        "page": page,
+                        "section": section,
+                        "evidence_text": text,
+                    }
+                )
+        return found
 
     def _discovery(self, record: JsonObject) -> JsonObject:
         return {
@@ -546,6 +581,7 @@ class ProductDisclosureIngestion:
         discovery: JsonObject,
         acquisition: JsonObject | None,
         parser_value: JsonObject | None,
+        extraction_value: JsonObject | None,
         status: str,
         outputs: list[JsonObject],
         abstentions: list[JsonObject],
@@ -562,6 +598,7 @@ class ProductDisclosureIngestion:
             "discovery": discovery,
             "acquisition": acquisition,
             "parser": parser_value,
+            "extraction": extraction_value,
             "outputs": outputs,
             "abstentions": abstentions,
             "created_at": self.clock().isoformat(),

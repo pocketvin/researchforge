@@ -11,13 +11,13 @@
     "V15_DEMO",
     "V15_PRODUCT"
   ],
-  "current_gate": "V15_PRODUCT",
-  "gate_status": "completed",
+  "current_gate": "FACT_EXTRACTION",
+  "gate_status": "in_progress",
   "current_milestone": {
-    "id": "close_v1_5_with_independent_acceptance",
-    "title": "V1.5 productization independently accepted",
-    "outcome": "The CI-green V1.5 productization slice received an independent completion-reviewer PASS with no required findings.",
-    "status": "completed"
+    "id": "reusable_financial_fact_extraction",
+    "title": "Reusable six-metric Financial Fact extraction",
+    "outcome": "The CATL 2024H1 package is rebuilt from deterministic native-PDF table recovery with no registry-provided numerical truth; full acceptance is pending.",
+    "status": "in_progress"
   },
   "frozen_v1_4": {
     "outcome": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
@@ -27,43 +27,39 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-03T15:15:06+08:00",
+    "at": "2026-09-03T15:57:07+08:00",
     "commands": [
       {
         "command": "uv lock --check && uv run ruff format --check . && uv run ruff check . && uv run mypy --strict src scripts tests migrations && uv run pytest -q && uv run python scripts/validate_contracts.py",
         "exit_code": 0,
-        "summary": "Backend formatting, lint, strict typing, 165 tests and all current/historical contracts passed."
+        "summary": "Backend lock, formatting, lint, strict typing, 171 tests and 109-file current/historical contract validation passed."
       },
       {
         "command": "npm run lint && npm run typecheck && npm test -- --run && npm run build && PLAYWRIGHT_EXECUTABLE_PATH=<installed-chrome> npm run test:e2e",
         "exit_code": 0,
-        "summary": "The product-first Research and secondary Quality Lab frontend passed lint, typing, four unit tests, production build and two E2E accessibility journeys."
+        "summary": "The unchanged Web surface passed lint, typing, four unit tests, production build and two E2E product journeys."
       },
       {
-        "command": "docker compose: Alembic down/up; rebuild; scripts/docker_smoke.py",
+        "command": "docker compose build/up; Alembic down/up; uv run python scripts/docker_smoke.py; docker compose down --volumes",
         "exit_code": 0,
-        "summary": "The PostgreSQL migration round-trip, rebuilt three-container stack and real CATL workflow passed with six facts, eight evidence chunks, four calculations, monitoring and ten trace stages."
+        "summary": "The rebuilt three-container stack, PostgreSQL migration round-trip and real CATL workflow passed with six facts, eight evidence chunks, four calculations, monitoring and ten trace stages."
       },
       {
-        "command": "GitHub Actions CI run 33727245101 on commit f98d9be",
+        "command": "ingest-disclosure reproducibility plus tracked-secret/PDF/local-path/company-hardcode checks",
         "exit_code": 0,
-        "summary": "The published backend, frontend and container jobs all completed successfully."
-      },
-      {
-        "command": "verify-completion independent read-only review of commit f98d9be",
-        "exit_code": 0,
-        "summary": "The completion reviewer returned VERDICT: PASS with no findings or required implementation work."
+        "summary": "The official CATL PDF reproduced package hash 2207187bd5d466d8c79a09863703bb373ec1890829f84505fc994c5e071669de and all six recovery hashes; safety checks passed."
       }
     ]
   },
   "next_action": {
-    "title": "Start Phase 2 reusable financial-fact extraction",
-    "why": "Phase 1 is independently accepted; the next frozen objective removes registry-provided numerical truth for the six allowed metrics.",
-    "first_step": "Freeze the extraction contract and ambiguity/abstention golden cases before changing the ingestion implementation.",
+    "title": "Accept Phase 2, then start cross-document generalization",
+    "why": "The reusable extractor and CATL recovery evidence are implemented; the frozen roadmap requires acceptance before CATL 2024FY and BYD 2024H1 are added.",
+    "first_step": "Run the complete local, Docker and independent acceptance gates for Phase 2.",
     "acceptance_evidence": [
-      "All six metric candidates are deterministically recoverable from verified PDF text and table coordinates.",
+      "All six CATL 2024H1 facts are deterministically recoverable from verified PDF text and table coordinates.",
+      "The registry contains no reported_value, fact page or evidence_text fields.",
       "Ambiguous period, table, row, column or unit abstains without emitting a Financial Fact.",
-      "CATL 2024H1 no longer depends on registry-provided reported_value, page or evidence_text."
+      "Independent completion reviewer returns VERDICT: PASS."
     ]
   },
   "blockers": [],
@@ -74,6 +70,7 @@
       "docs/product/researchforge-v1.5-product-thesis.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "PROJECT_STATUS.md",
+      "docs/evidence/v1.5-phase2-financial-fact-extraction.md",
       "docs/demo/v1.5-demo-evidence.md",
       "DECISIONS.md"
     ],
@@ -85,26 +82,28 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-03T15:27:20+08:00",
-    "summary": "Closed Phase 1: corrected stale V1.5 status and gap language, froze the final seven-phase delivery order, passed complete local and published CI gates, and received independent VERDICT: PASS. Formal real-human evaluation remains deferred until Phase 6.",
+    "ended_at": "2026-09-03T15:57:07+08:00",
+    "summary": "Implemented Phase 2 reusable six-metric extraction: removed prefilled numerical truth from the registry, rebuilt CATL 2024H1 from verified native-PDF tables, added recovery proofs and explicit ambiguity abstentions, and preserved frozen V1.4 assets.",
     "files_changed": [
-      "AGENTS.md",
-      "CHANGELOG.md",
-      "DECISIONS.md",
-      "PORTFOLIO.md",
       "PROJECT_STATUS.md",
       "README.md",
-      "docs/demo/walkthrough.md",
-      "docs/demo/demo-script.md",
-      "docs/contracts/v1.5/human-usability-pilot.md",
-      "docs/product/researchforge-v1.5-product-thesis.md",
-      "docs/product/researchforge-final-delivery-roadmap.md",
-      "docs/usability/README.md",
-      "docs/usability/observation-rubric.md",
-      "docs/usability/pilot-status.md",
+      "data/product/filing-catalog.json",
+      "data/product/packages/catl-2024h1/ingestion-manifest.json",
+      "data/product/packages/catl-2024h1/manifest.json",
+      "docs/contracts/v1.5/README.md",
+      "docs/contracts/v1.5/real-data-ingestion.md",
+      "docs/evidence/v1.5-phase2-financial-fact-extraction.md",
+      "examples/contracts/v1.5/ingestion-manifest.example.json",
       "project-status.json",
-      "scripts/validate_contracts.py"
+      "schemas/v1.5/financial-fact-extraction.schema.json",
+      "schemas/v1.5/ingestion-manifest.schema.json",
+      "schemas/v1.5/project-checkpoint.schema.json",
+      "scripts/validate_contracts.py",
+      "src/researchforge/ingestion/errors.py",
+      "src/researchforge/ingestion/extraction.py",
+      "src/researchforge/ingestion/pipeline.py",
+      "tests/ingestion/test_product_disclosure.py"
     ]
   },
-  "updated_at": "2026-09-03T15:27:20+08:00"
+  "updated_at": "2026-09-03T15:57:07+08:00"
 }

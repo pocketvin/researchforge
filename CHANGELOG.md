@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased] — Final Delivery Phases
+
+### Phase 2: reusable Financial Fact extraction
+
+- Replaced registry-provided fact values, pages and evidence text with deterministic native-PDF
+  recovery for exactly six financial metrics.
+- Added consolidated statement detection, wrapped-row handling, current-period column and unit
+  resolution, `Decimal` normalization, page-level provenance verification and an all-or-nothing
+  ambiguity policy.
+- Added a V1.5 extraction-recovery schema and embedded six source-cell proofs in every ready
+  ingestion manifest with `llm_used: false` and `numerical_truth_source: verified_pdf`.
+- Rebuilt the CATL 2024H1 public-safe package from the unchanged official PDF identity while
+  preserving all frozen V1.2–V1.4 artifacts.
+- Added tests for exact row selection, parent/consolidated isolation, wrapped rows, missing rows,
+  duplicate rows, wrong-period headers, conflicting units, missing native text and hash mismatch.
+
 ## [1.5.0] — Productization Accepted
 
 ### Direction

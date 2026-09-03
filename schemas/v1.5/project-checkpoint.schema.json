@@ -82,7 +82,7 @@
     "updated_at": {"type": "string", "format": "date-time"}
   },
   "$defs": {
-    "gate": {"type": "string", "enum": ["V15_DIRECTION", "V15_REAL_DATA", "V15_RESEARCH_UX", "V15_PILOT_READY", "V15_DEMO", "V15_PRODUCT"]},
+    "gate": {"type": "string", "enum": ["V15_DIRECTION", "V15_REAL_DATA", "V15_RESEARCH_UX", "V15_PILOT_READY", "V15_DEMO", "V15_PRODUCT", "FACT_EXTRACTION", "GENERALIZATION", "N8N_INTEGRATION", "PRODUCT_HARDENING", "HUMAN_EVALUATION", "RELEASE_FREEZE"]},
     "gateStatus": {"type": "string", "enum": ["not_started", "in_progress", "blocked", "completed"]},
     "verifiedCommand": {
       "type": "object",

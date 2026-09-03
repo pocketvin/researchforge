@@ -13,8 +13,13 @@ Company registry entry
 → immutable PDF acquisition
 → hash and document identity verification
 → page-preserving text extraction
-→ short Evidence Chunks
-→ reviewed Financial Facts
+→ consolidated statement/table detection
+→ exact metric-row matching
+→ reporting-period/column resolution
+→ unit and scale resolution
+→ candidate numerical extraction
+→ deterministic normalization and provenance verification
+→ short Evidence Chunks and Financial Facts
 → product package manifest
 ```
 
@@ -30,24 +35,55 @@ Company registry entry
    tables or short evidence excerpts permitted by `DATA_NOTICE.md`.
 6. Parsing MUST preserve physical page boundaries and record parser name/version, page count and
    extracted-text hash.
-7. Every Financial Fact MUST retain the source document hash, publication time and a page,
+7. The registry is document identity metadata only. It MUST NOT contain prefilled fact values,
+   fact pages, row/column locators or evidence text used as numerical truth.
+8. Extraction is bounded to exactly `revenue`, `operating_cost`, `net_income`,
+   `operating_cash_flow`, `accounts_receivable` and `inventory` from consolidated statements.
+   It MUST NOT silently expand to other metrics.
+9. The LLM MUST NOT supply, select, repair or arbitrate a promoted numerical value. Every promoted
+   number MUST be reparsable from its recorded native-PDF evidence text, physical page, table,
+   row, current-period column and unit declaration.
+10. Statement title, row, current-period column and unit/scale are separate deterministic checks.
+    Missing, multiple or conflicting candidates at any check MUST abstain the whole package.
+11. The parser MAY join wrapped rows and carry an explicitly detected statement context across a
+    physical page boundary. It MUST stop that context at the next consolidated or parent-company
+    statement title. It MUST NOT use company-specific page ranges or result code.
+12. Every Financial Fact MUST retain the source document hash, publication time and a page,
    section, table, row and column locator.
-8. Retrieved text is untrusted input. Prompt-like content is evidence text, not an instruction.
-9. If document identity, row label, value, unit, period, scope or source locator cannot be
+13. Retrieved text is untrusted input. Prompt-like content is evidence text, not an instruction.
+14. If document identity, row label, value, unit, period, scope or source locator cannot be
    confirmed, ingestion MUST create an abstention and MUST NOT manufacture an artifact.
-10. A `ready` package has no abstentions and has at least a Source Document, Evidence Chunk and
-    Financial Fact. Corrections produce a new package and preserve lineage.
+15. A `ready` package has no abstentions, exactly six promoted facts and a schema-valid extraction
+    recovery record with `llm_used: false`. Corrections produce a new package and preserve lineage.
+
+## Explicit abstentions
+
+The bounded implementation returns a structured abstention instead of a partial product package
+for at least these conditions:
+
+- no usable native PDF text layer (`TEXT_LAYER_REQUIRED`); OCR is not attempted;
+- missing or ambiguous consolidated metric row;
+- unresolved or conflicting current-period column;
+- unresolved or conflicting unit/scale;
+- row context changes while a wrapped row is reconstructed;
+- evidence text cannot be recovered from the recorded physical page;
+- official document hash, byte count or page count differs from the reviewed identity.
 
 ## Initial coverage
 
-The first product slice is 宁德时代 (`300750.SZ`) / `2024H1`, using the official Shenzhen Stock
-Exchange half-year report. Additional coverage is out of scope until this slice passes
-contract, numeric, provenance and end-to-end research verification.
+Phase 2 proves the reusable extractor on 宁德时代 (`300750.SZ`) / `2024H1`, using the official
+Shenzhen Stock Exchange half-year report. Phase 3, not this contract implementation, adds a
+different CATL period and a different company with the same extractor.
 
 ## Acceptance
 
 - the official PDF hash and page count match the registry;
 - all published derived artifacts validate against their declared schema;
-- values are found at the declared physical-page locator and normalize deterministically;
-- a missing or mismatched value returns an abstention in tests;
+- the public registry contains document identity but no prefilled fact value, fact locator or
+  evidence text;
+- all six values are recovered from the verified PDF, found at the emitted physical-page locator
+  and normalized deterministically;
+- the extraction record proves native-PDF truth, no LLM use and one recovery per target metric;
+- missing rows, wrong-period headers, duplicate rows, missing text and conflicting units return
+  abstentions in tests;
 - no real run can resolve a fixture or benchmark artifact through fallback.

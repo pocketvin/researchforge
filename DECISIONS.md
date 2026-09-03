@@ -40,6 +40,7 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-024 | Isolate a reviewed real-disclosure product namespace | ACCEPTED | 2026-09-02 | — |
 | RF-025 | Use the model only for bounded research language | ACCEPTED | 2026-09-02 | — |
 | RF-026 | Freeze final delivery order and defer human evaluation | ACCEPTED | 2026-09-03 | Final release |
+| RF-027 | Make verified PDF recovery the only numerical truth source | ACCEPTED | 2026-09-03 | Phase 3 |
 
 ## RF-001 — Contract-First Implementation
 
@@ -584,3 +585,31 @@ human-validation label. Formal participants are not recruited before Phase 6. n8
 external orchestration; finance, provenance, verification, reasoning and LangGraph remain one
 shared backend pipeline. The exact phase order and release freeze are governed by
 `docs/product/researchforge-final-delivery-roadmap.md`.
+
+## RF-027 — Make Verified PDF Recovery the Only Numerical Truth Source
+
+Status: **ACCEPTED**
+
+Decision:
+
+The product filing registry stores only reviewed document identity, company and period metadata.
+One reusable Python extractor must recover exactly revenue, operating cost, attributable net
+income, operating cash flow, accounts receivable and inventory from native PDF statement text.
+It resolves consolidated table, exact row, current-period column and declared unit separately,
+then promotes the value only after deterministic normalization and page-level recovery checks.
+
+Reason:
+
+The first V1.5 slice proved the research experience but its registry repeated manually reviewed
+values and locators. That made the derived package auditable yet did not prove reusable Financial
+Fact extraction across future company/period documents. Numerical truth must be source-recovered,
+not supplied by either configuration or a language model.
+
+Consequence:
+
+Any missing, duplicate or conflicting table, row, period column, unit or provenance check abstains
+the whole package. Parent-company statements cannot satisfy consolidated metrics. Scanned-only
+documents abstain because Phase 2 does not introduce OCR. Each ready ingestion manifest records
+six recovery proofs and `llm_used: false`. This decision replaces RF-024's reviewed-cell mapping
+implementation detail without changing RF-024's source allowlist, document verification,
+namespace isolation or raw-PDF exclusion.

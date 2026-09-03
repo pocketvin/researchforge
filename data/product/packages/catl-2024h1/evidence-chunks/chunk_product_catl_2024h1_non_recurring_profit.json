@@ -23,8 +23,7 @@
   "published_at": "2024-07-26T23:59:59+08:00",
   "quality_flags": [
     "text_native",
-    "table_linearized",
-    "manual_reviewed"
+    "table_linearized"
   ],
   "reporting_period": {
     "accounting_standard": "CAS",
@@ -40,6 +39,6 @@
   "schema_version": "1.4.0",
   "section": "Counter evidence: non-recurring profit contribution",
   "source_uri": "https://disc.static.szse.cn/disc/disk03/finalpage/2024-07-26/6d9c1c9e-239e-4946-a477-84ea91313086.PDF",
-  "text": "归属于上市公司股东的扣除非经常性损益的净利润（万元）2,005,394.11 1,755,299.67",
-  "text_hash": "aa3326786057015f8bb4bbe816d881ca7855b3cbfe62dee20b392bf3a936192d"
+  "text": "归属于上市公司股东的扣除 非经常性损益的净利润（万 元） 2,005,394.11  1,755,299.67  14.25%",
+  "text_hash": "f13ee74f18434b332ba91d11ff89cd481e52e6b65f7e3c118fb0b36c7dacf41c"
 }

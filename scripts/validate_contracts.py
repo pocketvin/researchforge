@@ -92,6 +92,7 @@ REQUIRED_SCHEMAS = {
 
 ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "common.schema.json",
+    "financial-fact-extraction.schema.json",
     "human-usability-session.schema.json",
     "ingestion-manifest.schema.json",
     "product-research-request.schema.json",
@@ -224,6 +225,7 @@ REQUIRED_CONTRACTS = {
     ROOT / "docs" / "evidence" / "g3-experiment-engine.md",
     ROOT / "docs" / "evidence" / "g3-contingency-freeze.md",
     ROOT / "docs" / "evidence" / "g4-engineering-progress.md",
+    ROOT / "docs" / "evidence" / "v1.5-phase2-financial-fact-extraction.md",
     ROOT / "docs" / "demo" / "demo-script.md",
     ROOT / "docs" / "demo" / "walkthrough.md",
     ROOT / "docs" / "demo" / "v1.5-demo-evidence.md",
@@ -849,6 +851,23 @@ def validate_v15_product_semantics(
         "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1"
     ):
         raise ContractError("V1.5 CATL example must retain the reviewed official PDF hash")
+    extraction = ingestion["extraction"]
+    expected_metrics = {
+        "revenue",
+        "operating_cost",
+        "net_income",
+        "operating_cash_flow",
+        "accounts_receivable",
+        "inventory",
+    }
+    if extraction["llm_used"] is not False or extraction["numerical_truth_source"] != (
+        "verified_pdf"
+    ):
+        raise ContractError("V1.5 numerical truth must be deterministic verified-PDF recovery")
+    if set(extraction["target_metrics"]) != expected_metrics:
+        raise ContractError("V1.5 extraction must target exactly the six frozen metrics")
+    for recovery in extraction["recoveries"]:
+        _validate_extraction_recovery(recovery, f"example:{recovery['metric_code']}")
 
     active_requirements = {
         ROOT / "README.md": (
@@ -929,6 +948,47 @@ def _canonical_hash(value: Any) -> str:
         sort_keys=True,
     ).encode()
     return hashlib.sha256(payload).hexdigest()
+
+
+def _validate_extraction_recovery(recovery: dict[str, Any], label: str) -> None:
+    if recovery["line_end"] < recovery["line_start"]:
+        raise ContractError(f"{label}: extraction source line range is reversed")
+    evidence_hash = hashlib.sha256(recovery["evidence_text"].encode("utf-8")).hexdigest()
+    if evidence_hash != recovery["evidence_text_hash"]:
+        raise ContractError(f"{label}: extraction evidence hash is invalid")
+
+    raw = re.sub(r"\s+", "", recovery["raw_value"])
+    parenthesized = raw.startswith("(") and raw.endswith(")")
+    raw = raw.strip("()\uff08\uff09").replace(",", "").replace("\u2212", "-").replace("\uff0d", "-")
+    raw_decimal = _decimal(raw, f"{label}:raw_value")
+    if parenthesized:
+        raw_decimal = -raw_decimal
+    reported = _decimal(recovery["reported_value"], f"{label}:reported_value")
+    normalized = _decimal(recovery["normalized_value"], f"{label}:normalized_value")
+    if raw_decimal != reported or reported * recovery["scale"] != normalized:
+        raise ContractError(f"{label}: extraction numerical normalization is invalid")
+
+    recovery_material = {
+        key: recovery[key]
+        for key in (
+            "metric_code",
+            "statement",
+            "page",
+            "line_start",
+            "line_end",
+            "row_label",
+            "column_label",
+            "raw_value",
+            "reported_value",
+            "unit_label",
+            "scale",
+            "normalized_value",
+            "evidence_text_hash",
+            "page_text_hash",
+        )
+    }
+    if _canonical_hash(recovery_material) != recovery["recovery_hash"]:
+        raise ContractError(f"{label}: extraction recovery hash is invalid")
 
 
 def _fixture_package_hash(artifact_hashes: dict[str, str]) -> str:
@@ -1614,6 +1674,12 @@ def validate_product_disclosure_package(
     if not isinstance(records, list) or len(records) != 1:
         raise ContractError("V1.5 initial product registry must contain exactly one filing")
     record = records[0]
+    serialized_registry = json.dumps(record, ensure_ascii=False)
+    for forbidden_key in ("fact_specs", "reported_value", "page", "evidence_text"):
+        if f'"{forbidden_key}"' in serialized_registry:
+            raise ContractError(
+                f"V1.5 filing registry contains prohibited prefilled field {forbidden_key}"
+            )
     if record.get("expected_sha256") != (
         "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1"
     ):
@@ -1637,6 +1703,13 @@ def validate_product_disclosure_package(
         raise ContractError("V1.5 product package cannot commit the raw filing")
     if ingestion["parser"]["page_count"] != 174:
         raise ContractError("V1.5 CATL page count differs from the reviewed document")
+    extraction = ingestion.get("extraction")
+    if not isinstance(extraction, dict):
+        raise ContractError("V1.5 ready product package lacks deterministic extraction evidence")
+    if extraction.get("llm_used") is not False:
+        raise ContractError("V1.5 financial fact extraction cannot use an LLM")
+    if extraction.get("parser_text_hash") != ingestion["parser"]["text_hash"]:
+        raise ContractError("V1.5 extraction and parser text hashes differ")
 
     source_paths = sorted((PRODUCT_PACKAGE_DIR / "source-documents").glob("*.json"))
     fact_paths = sorted((PRODUCT_PACKAGE_DIR / "financial-facts").glob("*.json"))
@@ -1653,6 +1726,7 @@ def validate_product_disclosure_package(
         raise ContractError("V1.5 Source Document hash differs from the registry")
 
     values: dict[str, str] = {}
+    facts_by_metric: dict[str, dict[str, Any]] = {}
     for path in fact_paths:
         fact = load_json(path)
         validate_instance(fact, schemas[fact_schema_path], fact_schema_path, schemas)
@@ -1666,6 +1740,7 @@ def validate_product_disclosure_package(
         ):
             raise ContractError("V1.5 fact has an incomplete source locator")
         values[fact["metric_code"]] = fact["value"]
+        facts_by_metric[fact["metric_code"]] = fact
     expected_values = {
         "accounts_receivable": "58099476000.00",
         "inventory": "48050676200.00",
@@ -1676,6 +1751,30 @@ def validate_product_disclosure_package(
     }
     if values != expected_values:
         raise ContractError("V1.5 CATL normalized fact values changed")
+    expected_metric_set = set(expected_values)
+    if set(extraction.get("target_metrics", [])) != expected_metric_set:
+        raise ContractError("V1.5 extraction target metrics differ from the frozen six")
+    recoveries = extraction.get("recoveries", [])
+    if not isinstance(recoveries, list) or len(recoveries) != 6:
+        raise ContractError("V1.5 extraction must contain exactly six recoveries")
+    recoveries_by_metric = {item["metric_code"]: item for item in recoveries}
+    if set(recoveries_by_metric) != expected_metric_set:
+        raise ContractError("V1.5 extraction recoveries are not one-per-frozen-metric")
+    if len({item["recovery_hash"] for item in recoveries}) != 6:
+        raise ContractError("V1.5 extraction recovery hashes must be unique")
+    for metric, recovery in recoveries_by_metric.items():
+        fact = facts_by_metric[metric]
+        if recovery["normalized_value"] != fact["value"]:
+            raise ContractError(f"V1.5 {metric} recovery value differs from Financial Fact")
+        locator = fact["source_locator"]
+        if (
+            recovery["page"] != locator["page"]
+            or recovery["statement"] != locator["table"]
+            or recovery["row_label"] != locator["row_label"]
+            or recovery["column_label"] != locator["column_label"]
+        ):
+            raise ContractError(f"V1.5 {metric} recovery locator differs from Financial Fact")
+        _validate_extraction_recovery(recovery, f"product:{metric}")
 
     counter_sections = 0
     for path in chunk_paths:
