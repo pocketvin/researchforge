@@ -1,9 +1,11 @@
-# Real Human Usability Pilot Contract
+# Legacy V1.5 Web-only Human Usability Preparation Contract
+
+Status: **PREPARATION_ONLY — SUPERSEDED FOR FINAL EVALUATION BY THE FROZEN ROADMAP**
 
 ## Goal
 
-Prepare a small, honest pilot in which target users independently complete the normal research
-job. This contract creates no claim that a pilot has occurred.
+Preserve the original Web-only Pilot design as preparation evidence. This contract creates no
+claim that a Pilot occurred and does not authorize formal participant sessions.
 
 ## Required participant tasks
 
@@ -23,11 +25,14 @@ Each participant attempts to:
 - Record a pseudonym and user group, not name, email, employer or other direct identity data.
 - Obtain consent before the session; respect withdrawal and recording choices.
 - Record failures and confusion verbatim when safe, without converting them into successes.
-- Do not claim human usefulness until at least three completed sessions satisfy the published
-  acceptance rule and all evidence is independently reviewable.
+- Do not claim human usefulness from this preparation contract.
 
-## Pilot-ready acceptance
+## Preparation acceptance
 
-The product is `PILOT_READY` when the real-data path, UI scenario, facilitator guide, privacy
-notice, blank record template and reset instructions are verified. `PILOT_READY` is not
-`HUMAN_VALIDATED`.
+The legacy kit is `PREPARATION_ONLY` when its Web scenario, facilitator guide, privacy notice,
+blank record template and reset instructions are present. It cannot grant `HUMAN_VALIDATED`.
+
+The final Phase 6 protocol must evaluate both Web and n8n over the same backend, use at least six
+real target users, counterbalance order and freeze tasks, metrics, thresholds and denominator
+rules before testing. Failed users remain visible, simulated personas never count, and
+facilitator-assisted completion is not an independent pass.

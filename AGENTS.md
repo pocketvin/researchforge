@@ -7,9 +7,10 @@ These instructions apply to all work under this project and supplement the Works
 Read, in order:
 
 1. `docs/product/researchforge-v1.5-product-thesis.md`
-2. `docs/product/v1.4-to-v1.5-productization-change-note.md`
-3. `docs/contracts/README.md`
-4. The contract document and JSON schemas relevant to the change
+2. `docs/product/researchforge-final-delivery-roadmap.md`
+3. `docs/product/v1.4-to-v1.5-productization-change-note.md`
+4. `docs/contracts/README.md`
+5. The contract document and JSON schemas relevant to the change
 
 Do not implement behavior from memory or from the demo narrative alone.
 
@@ -24,7 +25,8 @@ Do not implement behavior from memory or from the demo narrative alone.
 ## Execution Discipline
 
 - Maintain one active milestone and one work-in-progress slice.
-- The current critical path is one real-public-disclosure product ingestion slice with strict `product` / `fixture` / `benchmark` isolation, followed by the primary Research UX.
+- The current critical path is Phase 2: reusable deterministic extraction of the six frozen
+  financial metrics. Follow the phase order in the final delivery roadmap.
 - Update both `PROJECT_STATUS.md` and `project-status.json` at the end of every implementation session.
 - Record architecture, data, cost, or scope choices in `DECISIONS.md`; chat history is not a decision record.
 - Do not introduce infrastructure unless `docs/architecture/implementation-blueprint.md` shows a current gate requires it and a smaller option was evaluated.
@@ -40,8 +42,10 @@ Do not implement behavior from memory or from the demo narrative alone.
 
 ## Contract-First Development
 
-- New persisted/API artifacts must validate against `schemas/v1.4/`.
-- Schema-breaking changes require a new schema version. Do not silently mutate V1.4 semantics.
+- New V1.5 product artifacts must validate against an active V1.5 schema when one exists; reused
+  unchanged research artifacts continue to validate against their preserved V1.4 schema.
+- Schema-breaking changes require a new schema version. Do not silently mutate V1.4 or V1.5
+  semantics.
 - Deterministic finance formulas must follow `docs/contracts/financial-methodology.md` and carry a `formula_version`.
 - Every material research claim must link to fact IDs, evidence IDs, or be explicitly marked as a limitation/hypothesis.
 - Do not persist hidden chain-of-thought. Persist explicit plan steps, tool inputs/outputs, claim-evidence links, and concise decision summaries.

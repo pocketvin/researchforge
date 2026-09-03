@@ -73,5 +73,6 @@ Only if the interviewer asks about experimentation, open **Quality Lab** and sta
 
 - Coverage is CATL `2024H1`, not the full A-share market.
 - ResearchForge is research assistance, not investment advice.
-- The pilot kit is ready, but zero real-human sessions exist and usefulness is unvalidated.
+- The legacy Web-only kit is `PREPARATION_ONLY`; formal Web+n8n evaluation is deferred to Phase 6,
+  zero real-human sessions exist and usefulness is unvalidated.
 - Historical AI usability sessions remain `SIMULATED` quality evidence only.

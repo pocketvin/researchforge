@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.5.0] — Final Independent Acceptance Pending
+## [1.5.0] — Productization Accepted
 
 ### Direction
 
@@ -50,7 +50,8 @@
 - The legacy Web-only Pilot kit was not executed. Formal Web+n8n human evaluation is deferred
   until extraction, generalization, integration and UX hardening are frozen; usefulness remains
   unvalidated.
-- Local verification and published GitHub CI pass; final independent V1.5 acceptance remains.
+- Local verification and published GitHub CI pass; the final independent reviewer returned
+  `VERDICT: PASS` with no required findings.
 
 ## [1.4.0] — Release Candidate
 

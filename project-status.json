@@ -8,15 +8,16 @@
     "V15_REAL_DATA",
     "V15_RESEARCH_UX",
     "V15_PILOT_READY",
-    "V15_DEMO"
+    "V15_DEMO",
+    "V15_PRODUCT"
   ],
   "current_gate": "V15_PRODUCT",
-  "gate_status": "in_progress",
+  "gate_status": "completed",
   "current_milestone": {
     "id": "close_v1_5_with_independent_acceptance",
-    "title": "Close V1.5 with independent acceptance",
-    "outcome": "The already CI-green V1.5 productization slice receives an independent completion-reviewer PASS.",
-    "status": "in_progress"
+    "title": "V1.5 productization independently accepted",
+    "outcome": "The CI-green V1.5 productization slice received an independent completion-reviewer PASS with no required findings.",
+    "status": "completed"
   },
   "frozen_v1_4": {
     "outcome": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
@@ -44,20 +45,25 @@
         "summary": "The PostgreSQL migration round-trip, rebuilt three-container stack and real CATL workflow passed with six facts, eight evidence chunks, four calculations, monitoring and ten trace stages."
       },
       {
-        "command": "GitHub Actions CI run 33690111534 on commit 9a0feb1",
+        "command": "GitHub Actions CI run 33727245101 on commit f98d9be",
         "exit_code": 0,
         "summary": "The published backend, frontend and container jobs all completed successfully."
+      },
+      {
+        "command": "verify-completion independent read-only review of commit f98d9be",
+        "exit_code": 0,
+        "summary": "The completion reviewer returned VERDICT: PASS with no findings or required implementation work."
       }
     ]
   },
   "next_action": {
-    "title": "Independently accept and close V1.5",
-    "why": "Local product gates and public GitHub CI passed; only the independent read-only PASS remains for Phase 1.",
-    "first_step": "Run the full local verification gate, then invoke verify-completion and require VERDICT: PASS.",
+    "title": "Start Phase 2 reusable financial-fact extraction",
+    "why": "Phase 1 is independently accepted; the next frozen objective removes registry-provided numerical truth for the six allowed metrics.",
+    "first_step": "Freeze the extraction contract and ambiguity/abstention golden cases before changing the ingestion implementation.",
     "acceptance_evidence": [
-      "Published commit 9a0feb1 has a successful GitHub Actions run with backend, frontend and container jobs green.",
-      "Final independent reviewer returns VERDICT: PASS.",
-      "Share-safe Codex review records commands, evidence, boundaries and remaining honest non-claims."
+      "All six metric candidates are deterministically recoverable from verified PDF text and table coordinates.",
+      "Ambiguous period, table, row, column or unit abstains without emitting a Financial Fact.",
+      "CATL 2024H1 no longer depends on registry-provided reported_value, page or evidence_text."
     ]
   },
   "blockers": [],
@@ -79,15 +85,18 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-03T15:15:06+08:00",
-    "summary": "Corrected stale V1.5 status and gap language, froze the final seven-phase delivery order, verified the complete local gate, and retained the green published GitHub CI evidence. Formal real-human evaluation is deferred until the final Web+n8n phase.",
+    "ended_at": "2026-09-03T15:27:20+08:00",
+    "summary": "Closed Phase 1: corrected stale V1.5 status and gap language, froze the final seven-phase delivery order, passed complete local and published CI gates, and received independent VERDICT: PASS. Formal real-human evaluation remains deferred until Phase 6.",
     "files_changed": [
+      "AGENTS.md",
       "CHANGELOG.md",
       "DECISIONS.md",
       "PORTFOLIO.md",
       "PROJECT_STATUS.md",
       "README.md",
       "docs/demo/walkthrough.md",
+      "docs/demo/demo-script.md",
+      "docs/contracts/v1.5/human-usability-pilot.md",
       "docs/product/researchforge-v1.5-product-thesis.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "docs/usability/README.md",
@@ -97,5 +106,5 @@
       "scripts/validate_contracts.py"
     ]
   },
-  "updated_at": "2026-09-03T15:15:06+08:00"
+  "updated_at": "2026-09-03T15:27:20+08:00"
 }

@@ -9,16 +9,17 @@ Scope: V1.5 active productization
 
 ## Current Position
 
-- Active product direction: **V1.5 Productization**.
+- Active product direction: **V1.5 Productization — independently accepted**.
+- V1.5 productization label: **V1.5 Product Ready**.
 - Product thesis: **Direction Ready**.
 - Real-data vertical slice: **verified**.
 - Research UX and Quality Lab: **verified in unit, E2E and live-browser runs**.
 - Legacy Web-only pilot kit: **implemented but not executed; 0 real-human sessions**.
 - Human usefulness: **UNVALIDATED; formal Web+n8n evaluation is deferred to final Phase 6**.
 - Local engineering gate: **passed**.
-- Published GitHub CI: **passed** on commit `9a0feb1` in run
-  [33690111534](https://github.com/pocketvin/researchforge/actions/runs/33690111534).
-- Final independent V1.5 acceptance: **pending**.
+- Published GitHub CI: **passed** on commit `f98d9be` in run
+  [33727245101](https://github.com/pocketvin/researchforge/actions/runs/33727245101).
+- Final independent V1.5 acceptance: **VERDICT: PASS**.
 - Current product boundary: CATL `2024H1`, `filing_analysis`, strict `product` namespace.
 - Public repository: [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
 
@@ -96,11 +97,13 @@ RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
 V1.2–V1.4 schemas, historical scopes, fixture/Benchmark packages, thresholds and hashes are not
 rewritten by V1.5.
 
-## Remaining Gate Work
+## Phase 1 Closure Evidence
 
-1. Run the one final independent read-only V1.5 completion review.
-2. Require `VERDICT: PASS`; retain any non-PASS result and correct only required issues.
-3. Record the share-safe Codex review file.
+1. Local backend, frontend, migration, Docker and safety gates passed.
+2. Current published commit passed all GitHub Actions jobs.
+3. The independent read-only completion reviewer returned `VERDICT: PASS` with no required
+   findings.
+4. The share-safe Codex review file records the closure evidence.
 
 After Phase 1 passes, Phase 2 is reusable deterministic extraction for exactly six financial
 metrics. Formal real-human evaluation remains deferred until Phase 6.
@@ -116,8 +119,8 @@ metrics. Formal real-human evaluation remains deferred until Phase 6.
 
 ## Single Next Action
 
-Run the final independent read-only V1.5 acceptance review against the already-published,
-CI-green implementation and the Phase 1 documentation correction.
+Begin Phase 2 by freezing the extraction contract and golden ambiguity/abstention cases for the
+six allowed metrics before changing the ingestion implementation.
 
 ## Fast Resume
 

@@ -49,8 +49,8 @@ preserved as an experimental, read-only **Quality Lab** and is not required for 
 ## Current status
 
 - Active direction: **V1.5 Productization**
-- Current milestone: Phase 1 V1.5 closure; local gates and published GitHub CI passed, final
-  independent acceptance pending
+- V1.5 productization: **independently accepted — VERDICT: PASS**
+- Current milestone: Phase 2 reusable deterministic extraction for six financial metrics
 - Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
 - Default runtime: strict `product` namespace with one reviewed CATL 2024H1 disclosure
 - Human usefulness: **not yet validated; formal Web+n8n evaluation is deferred to final Phase 6**
@@ -238,6 +238,10 @@ execution, investment recommendations, open-ended self-modification, mobile apps
 enterprise multi-tenancy.
 
 ## Verification
+
+V1.5 Phase 1 passed local gates, GitHub Actions
+[run 33727245101](https://github.com/pocketvin/researchforge/actions/runs/33727245101) and final
+independent read-only acceptance.
 
 ```bash
 uv lock --check
