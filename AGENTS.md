@@ -25,8 +25,8 @@ Do not implement behavior from memory or from the demo narrative alone.
 ## Execution Discipline
 
 - Maintain one active milestone and one work-in-progress slice.
-- The current critical path is Phase 2: reusable deterministic extraction of the six frozen
-  financial metrics. Follow the phase order in the final delivery roadmap.
+- The current critical path is Phase 3: three-filing generalization of the same six-metric
+  extractor, followed directly by Phase 4 n8n. Follow the frozen final delivery roadmap.
 - Update both `PROJECT_STATUS.md` and `project-status.json` at the end of every implementation session.
 - Record architecture, data, cost, or scope choices in `DECISIONS.md`; chat history is not a decision record.
 - Do not introduce infrastructure unless `docs/architecture/implementation-blueprint.md` shows a current gate requires it and a smaller option was evaluated.
@@ -77,4 +77,8 @@ For contract-only changes, run:
 python3 scripts/validate_contracts.py
 ```
 
-For later implementation work, also run the repository's applicable formatting, lint, type-check, unit, integration, smoke, and runtime checks. Follow the Workspace independent completion gate before declaring implementation complete.
+For implementation work, run the repository's applicable formatting, lint, type-check, unit,
+integration, smoke, runtime and public CI checks. Under the owner-frozen final delivery policy,
+Phases 2–6 are engineering checkpoints and must not invoke independent acceptance. Invoke the
+Workspace independent completion gate once, for the final project-wide Phase 7 release review,
+after implementation, n8n, final UX, real-human evaluation and release evidence are complete.

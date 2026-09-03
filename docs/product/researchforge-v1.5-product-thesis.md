@@ -169,8 +169,9 @@ a list of unresolved work. Remaining delivery work is governed by
   adapter; fixture and Benchmark fallback are rejected.
 - CATL 2024H1 preserves official source identity, hash, page locators, Evidence Chunks and six
   reviewed facts while raw PDFs remain ignored.
-- The remaining gap is not first-slice availability. It is reusable deterministic cell extraction
-  without registry-provided values, followed by cross-period and cross-company evidence.
+- Reusable deterministic extraction without registry-provided values is now implemented. Phase 3
+  adds CATL 2024FY and BYD 2024H1 through the same implementation, with its engineering evidence
+  recorded separately from human usefulness and final project acceptance.
 
 ### 8.3 Research reasoning and verification — closed for the first slice
 

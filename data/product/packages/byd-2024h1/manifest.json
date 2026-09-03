@@ -1,0 +1,49 @@
+{
+  "artifact_hashes": {
+    "evidence-chunks/chunk_product_byd_2024h1_accounts_receivable.json": "32e08bc0e0af7c2f2aaa063e25701968b53e32fb4490649784bf417989996b20",
+    "evidence-chunks/chunk_product_byd_2024h1_inventory.json": "bddfb5b10a6b74a82c1f9c3d7f8bb9eb828f5a4a849384bbab27e5336a40dd6c",
+    "evidence-chunks/chunk_product_byd_2024h1_net_income.json": "7cc6f6e86fa541cac9c2b536ceb023281a6b58c86f803b5744e1ceb3d9ebd12d",
+    "evidence-chunks/chunk_product_byd_2024h1_non_recurring_profit.json": "ff1b1de9b3327f8561025bb16279795e1a14914407f61ea0cb585529ef016320",
+    "evidence-chunks/chunk_product_byd_2024h1_operating_cash_flow.json": "eeb8c333262b9dea9301f709f04827639becc7b91c7e0e67390f252be67bc742",
+    "evidence-chunks/chunk_product_byd_2024h1_operating_cost.json": "d036c865b1d21d8c764cde9ac36db8577d7385b9fee5bd5264908390549c0057",
+    "evidence-chunks/chunk_product_byd_2024h1_revenue.json": "a0fef4f92f44ddb1b8e8680b1d293a6f34f809850b1db33d987ea686cfd1cd3e",
+    "evidence-chunks/chunk_product_byd_2024h1_unaudited_interim_report.json": "76d0ab4f786b365e07041d4900873550a9c078f1e221ccc413bb0c6d5d4faa3b",
+    "financial-facts/fact_product_byd_2024h1_accounts_receivable.json": "1fc9e0cd34e3ec98f361b6260a2cce80d56932c7858a0f47480e870a50486e24",
+    "financial-facts/fact_product_byd_2024h1_inventory.json": "3f7d8a8d4f4b89187de21864cd839d28c10d2b8d308982773ef722808bc73938",
+    "financial-facts/fact_product_byd_2024h1_net_income.json": "7197ec73e44c9b0d869f84dd4e74e8f8a6b5148b0df44aae85d5abe7ba9545a9",
+    "financial-facts/fact_product_byd_2024h1_operating_cash_flow.json": "87f0da93a54f628be6c26601d53fe3bf56d706ef1cf65919a4e68805c583d69d",
+    "financial-facts/fact_product_byd_2024h1_operating_cost.json": "7b370e4b3842612272594bb4de166958db91b9ae5057ce79a6b84e9f2b01b216",
+    "financial-facts/fact_product_byd_2024h1_revenue.json": "a42760c96a0be2f343912182bdd4b7c2f0edf11cc014163387dc3ca4f5f4b4a3",
+    "source-documents/doc_product_byd_2024h1.json": "b4f5a966e5d7c7b4bea2ab980b0157d7f17edd40c97fefa4744f423cc39f515e"
+  },
+  "data_namespace": "product",
+  "evidence_chunk_count": 8,
+  "evidence_chunk_ids": [
+    "chunk_product_byd_2024h1_accounts_receivable",
+    "chunk_product_byd_2024h1_inventory",
+    "chunk_product_byd_2024h1_net_income",
+    "chunk_product_byd_2024h1_non_recurring_profit",
+    "chunk_product_byd_2024h1_operating_cash_flow",
+    "chunk_product_byd_2024h1_operating_cost",
+    "chunk_product_byd_2024h1_revenue",
+    "chunk_product_byd_2024h1_unaudited_interim_report"
+  ],
+  "financial_fact_count": 6,
+  "financial_fact_ids": [
+    "fact_product_byd_2024h1_accounts_receivable",
+    "fact_product_byd_2024h1_inventory",
+    "fact_product_byd_2024h1_net_income",
+    "fact_product_byd_2024h1_operating_cash_flow",
+    "fact_product_byd_2024h1_operating_cost",
+    "fact_product_byd_2024h1_revenue"
+  ],
+  "ingestion_manifest": "ingestion-manifest.json",
+  "package_hash": "bc6ef857e8170ecc52abd4bcbb730bef6bf0702d796c62f0f17a4d49fa4201aa",
+  "package_id": "product_byd_2024h1_001",
+  "schema_version": "1.5.0",
+  "source_document_count": 1,
+  "source_document_ids": [
+    "doc_product_byd_2024h1"
+  ],
+  "status": "ready"
+}

@@ -1,0 +1,223 @@
+{
+  "schema_version": "1.4.0",
+  "evaluation_id": "eval_run_7289a27ddd714a4e9468578a617f8da4_product_byd_2024h1",
+  "run_id": "run_7289a27ddd714a4e9468578a617f8da4",
+  "case_id": "product_byd_2024h1",
+  "skill_version": "1.0.0",
+  "skill_hash": "71991b5a424638e4437699e63d3649a3ca0b36b308b456e2172d6a3922785890",
+  "verifier_version": "1.0.0",
+  "ground_truth_hash": "8402a03074410f435ca1f5b3f803d7276309ed9ffb242dba877f26d4a479fadf",
+  "deterministic_checks": [
+    {
+      "check_code": "artifact_identity_and_terminal_state",
+      "status": "PASS",
+      "expected": "manifest, result and trace share one succeeded run_id",
+      "observed": "manifest=run_7289a27ddd714a4e9468578a617f8da4:succeeded; result=run_7289a27ddd714a4e9468578a617f8da4; trace=run_7289a27ddd714a4e9468578a617f8da4:succeeded",
+      "fact_ids": [],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "schema_contract_shape",
+      "status": "PASS",
+      "expected": "V1.4 result contains every verifier-required contract field",
+      "observed": "required fields present",
+      "fact_ids": [],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "calculation_gross_profit",
+      "status": "PASS",
+      "expected": "recomputed status/value and golden value equal 60266731000",
+      "observed": "status=calculated; persisted=60266731000; recomputed=60266731000",
+      "fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "calculation_gross_margin",
+      "status": "PASS",
+      "expected": "recomputed status/value and golden value equal 0.2001374451292868195323475005",
+      "observed": "status=calculated; persisted=0.2001374451292868195323475005; recomputed=0.2001374451292868195323475005",
+      "fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "calculation_cash_conversion",
+      "status": "PASS",
+      "expected": "recomputed status/value and golden value equal 1.040132248992150907286099881",
+      "observed": "status=calculated; persisted=1.040132248992150907286099881; recomputed=1.040132248992150907286099881",
+      "fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_net_income"
+      ],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "calculation_profit_cash_divergence",
+      "status": "PASS",
+      "expected": "recomputed status/value and golden value equal 0",
+      "observed": "status=calculated; persisted=0; recomputed=0",
+      "fact_ids": [
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "point_in_time_validity",
+      "status": "PASS",
+      "expected": "every fact and source was published by the evidence cutoff",
+      "observed": "checked 6 facts and 1 sources at 2026-09-03T00:00:00+08:00",
+      "fact_ids": [
+        "fact_product_byd_2024h1_accounts_receivable",
+        "fact_product_byd_2024h1_inventory",
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_operating_cost",
+        "fact_product_byd_2024h1_revenue"
+      ],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "citation_existence",
+      "status": "PASS",
+      "expected": "all fact/source citations exist and material claims are grounded",
+      "observed": "4 fact citations, 4 evidence citations, 1 source citations",
+      "fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_operating_cash_flow",
+        "chunk_product_byd_2024h1_operating_cost",
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_revenue"
+      ]
+    },
+    {
+      "check_code": "tool_record_existence",
+      "status": "PASS",
+      "expected": "every traced tool call resolves to a Tool Record",
+      "observed": "0 traced calls and 0 records",
+      "fact_ids": [],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "period_compatibility",
+      "status": "PASS",
+      "expected": "all facts share period end, accounting standard and statement scope",
+      "observed": "observed company-period contexts=[('cn_002594', '2024-06-30', 'CAS', 'consolidated')]",
+      "fact_ids": [
+        "fact_product_byd_2024h1_accounts_receivable",
+        "fact_product_byd_2024h1_inventory",
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_operating_cost",
+        "fact_product_byd_2024h1_revenue"
+      ],
+      "evidence_ids": []
+    }
+  ],
+  "coverage_checks": [
+    {
+      "check_code": "coverage_operating_cash_flow",
+      "status": "PASS",
+      "expected": "mandatory check is performed",
+      "observed": "status=performed; 已核对经营活动现金流。",
+      "fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ]
+    },
+    {
+      "check_code": "coverage_accounts_receivable",
+      "status": "PASS",
+      "expected": "mandatory check is performed",
+      "observed": "status=performed; 已核对应收账款期末余额。",
+      "fact_ids": [
+        "fact_product_byd_2024h1_accounts_receivable"
+      ],
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_accounts_receivable"
+      ]
+    },
+    {
+      "check_code": "coverage_inventory",
+      "status": "PASS",
+      "expected": "mandatory check is performed",
+      "observed": "status=performed; 已核对存货期末余额。",
+      "fact_ids": [
+        "fact_product_byd_2024h1_inventory"
+      ],
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_inventory"
+      ]
+    },
+    {
+      "check_code": "coverage_cash_conversion",
+      "status": "PASS",
+      "expected": "mandatory check is recorded",
+      "observed": "status=performed; Calculated as operating cash flow / net income.",
+      "fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_net_income"
+      ],
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ]
+    },
+    {
+      "check_code": "coverage_profit_cash_divergence",
+      "status": "PASS",
+      "expected": "mandatory check is performed",
+      "observed": "status=performed; No frozen profit/cash divergence rule was triggered.",
+      "fact_ids": [
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ]
+    },
+    {
+      "check_code": "coverage_one_off_contribution",
+      "status": "PASS",
+      "expected": "mandatory check is recorded",
+      "observed": "status=unavailable; 当前事实集没有一次性损益贡献字段, 未作推断。",
+      "fact_ids": [],
+      "evidence_ids": []
+    },
+    {
+      "check_code": "coverage_counter_evidence",
+      "status": "PASS",
+      "expected": "mandatory check is performed",
+      "observed": "status=performed; 该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+      "fact_ids": [],
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_non_recurring_profit",
+        "chunk_product_byd_2024h1_unaudited_interim_report"
+      ]
+    }
+  ],
+  "qualitative_checks": [],
+  "failure_events": [],
+  "metrics": {
+    "task_score": 1.0,
+    "calculation_accuracy": 1.0,
+    "evidence_coverage": 1.0,
+    "critical_omission_rate": 0.0,
+    "citation_accuracy": 1.0
+  },
+  "created_at": "2026-09-03T16:12:51.221803+00:00"
+}

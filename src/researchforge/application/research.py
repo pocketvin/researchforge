@@ -92,8 +92,9 @@ class DeterministicConclusionGenerator:
         )
         limitations = (
             [
-                "当前结论仅覆盖一份已哈希核验的官方半年度报告和六项财务事实。",
-                "半年度财务报告未经审计, 且一次性损益仅作为反向证据呈现, 未纳入确定性公式。",
+                "当前结论仅覆盖所选期间已哈希核验的官方报告和六项财务事实。",
+                "一次性损益未纳入确定性公式; 反证与审计边界以实际来源证据为准。",
+                str(context.get("counter_evidence", {}).get("summary", "反证搜索状态未提供。")),
                 "单一报告期的现金转化不能证明长期收益质量, 需在下一同口径报告期复核。",
             ]
             if real_disclosure

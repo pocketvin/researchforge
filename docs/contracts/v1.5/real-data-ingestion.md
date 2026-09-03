@@ -71,9 +71,19 @@ for at least these conditions:
 
 ## Initial coverage
 
-Phase 2 proves the reusable extractor on 宁德时代 (`300750.SZ`) / `2024H1`, using the official
-Shenzhen Stock Exchange half-year report. Phase 3, not this contract implementation, adds a
-different CATL period and a different company with the same extractor.
+Phase 2 proved 宁德时代 (`300750.SZ`) / `2024H1`. Phase 3 adds exactly CATL `2024FY` and BYD
+(`002594.SZ`) / `2024H1` through the same implementation. Registry additions are identity metadata,
+not expected values, page ranges or company-specific extraction rules.
+
+The extractor supports two explicit financial value columns, optional declared note references,
+multi-line duration headers and an explicit report-wide unit declaration. Column order is resolved
+from the requested period; the first number is never assumed to be the current amount. Unsupported
+column cardinality, ambiguous note/value placement and missing current values abstain.
+
+The default product root is a bounded index of three child packages. Each child must declare the
+product namespace and a ready ingestion; its files and package hash must match. Nested indexes,
+path escape, duplicate artifacts, tampering and stale ready files after an abstention are refused.
+Single-package roots remain supported explicitly. No package is copied into a fixture or Benchmark.
 
 ## Acceptance
 

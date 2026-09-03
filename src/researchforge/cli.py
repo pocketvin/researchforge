@@ -183,7 +183,7 @@ def _parser() -> argparse.ArgumentParser:
     ingest.add_argument(
         "--package-root",
         type=Path,
-        default=PROJECT_ROOT / "data" / "product" / "packages" / "catl-2024h1",
+        help="output package directory; defaults to the resolved filing record ID",
     )
     ingest.add_argument(
         "--source-file",
@@ -386,11 +386,16 @@ def main(argv: list[str] | None = None) -> None:
         )
         return
     if args.command == "ingest-disclosure":
-        manifest = ProductDisclosureIngestion(FilingRegistry(Path(args.registry))).run(
+        registry = FilingRegistry(Path(args.registry))
+        record = registry.discover(company_id=str(args.company), period_label=str(args.period))
+        package_root = args.package_root or (
+            PROJECT_ROOT / "data" / "product" / "packages" / record["record_id"]
+        )
+        manifest = ProductDisclosureIngestion(registry).run(
             company_id=str(args.company),
             period_label=str(args.period),
             raw_root=Path(args.raw_root),
-            package_root=Path(args.package_root),
+            package_root=Path(package_root),
             source_file=Path(args.source_file) if args.source_file is not None else None,
         )
         _print(manifest)

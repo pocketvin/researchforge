@@ -1,0 +1,223 @@
+{
+  "checkpoint_schema_version": "1.0.0",
+  "engine": "langgraph",
+  "finished_at": "2026-09-03T16:12:42.983539+00:00",
+  "graph_version": "1.0.0",
+  "repair_attempts": 0,
+  "run_id": "run_9bc1b9ad22e849cd93a8f8980324733d",
+  "schema_version": "1.4.0",
+  "stages": [
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.967728+00:00",
+      "input_artifact_ids": [
+        "request_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "task_spec_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "sanitized_summary": "Validated one bounded filing-analysis earnings-quality request.",
+      "sequence": 1,
+      "stage": "understanding_question",
+      "started_at": "2026-09-03T16:12:42.967728+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.968110+00:00",
+      "input_artifact_ids": [
+        "task_spec_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "plan_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "sanitized_summary": "Persistable four-step research plan prepared.",
+      "sequence": 2,
+      "stage": "planning",
+      "started_at": "2026-09-03T16:12:42.968110+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.968556+00:00",
+      "input_artifact_ids": [
+        "plan_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "fact_product_catl_2024h1_accounts_receivable",
+        "fact_product_catl_2024h1_inventory",
+        "fact_product_catl_2024h1_net_income",
+        "fact_product_catl_2024h1_operating_cash_flow",
+        "fact_product_catl_2024h1_operating_cost",
+        "fact_product_catl_2024h1_revenue"
+      ],
+      "sanitized_summary": "Loaded 6 eligible normalized financial facts.",
+      "sequence": 3,
+      "stage": "loading_financial_data",
+      "started_at": "2026-09-03T16:12:42.968556+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.968995+00:00",
+      "input_artifact_ids": [
+        "fact_product_catl_2024h1_accounts_receivable",
+        "fact_product_catl_2024h1_inventory",
+        "fact_product_catl_2024h1_net_income",
+        "fact_product_catl_2024h1_operating_cash_flow",
+        "fact_product_catl_2024h1_operating_cost",
+        "fact_product_catl_2024h1_revenue"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "chunk_product_catl_2024h1_accounts_receivable",
+        "chunk_product_catl_2024h1_inventory",
+        "chunk_product_catl_2024h1_net_income",
+        "chunk_product_catl_2024h1_non_recurring_profit",
+        "chunk_product_catl_2024h1_operating_cash_flow",
+        "chunk_product_catl_2024h1_operating_cost",
+        "chunk_product_catl_2024h1_revenue",
+        "chunk_product_catl_2024h1_unaudited_interim_report"
+      ],
+      "sanitized_summary": "Resolved 8 bounded evidence chunks across 1 official source documents.",
+      "sequence": 4,
+      "stage": "retrieving_evidence",
+      "started_at": "2026-09-03T16:12:42.968995+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.969412+00:00",
+      "input_artifact_ids": [
+        "fact_product_catl_2024h1_accounts_receivable",
+        "fact_product_catl_2024h1_inventory",
+        "fact_product_catl_2024h1_net_income",
+        "fact_product_catl_2024h1_operating_cash_flow",
+        "fact_product_catl_2024h1_operating_cost",
+        "fact_product_catl_2024h1_revenue"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_gross_profit",
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_gross_margin",
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_cash_conversion",
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_profit_cash_divergence"
+      ],
+      "sanitized_summary": "Calculated gross profit, gross margin, cash conversion and divergence signal.",
+      "sequence": 5,
+      "stage": "calculating",
+      "started_at": "2026-09-03T16:12:42.969412+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.969760+00:00",
+      "input_artifact_ids": [
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_gross_profit",
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_gross_margin",
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_cash_conversion",
+        "calc_run_9bc1b9ad22e849cd93a8f8980324733d_cn_300750_profit_cash_divergence"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "checks_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "sanitized_summary": "Completed 9 deterministic checks.",
+      "sequence": 6,
+      "stage": "cross_checking",
+      "started_at": "2026-09-03T16:12:42.969760+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.970090+00:00",
+      "input_artifact_ids": [
+        "checks_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "counter_search_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "sanitized_summary": "Counter-evidence search found 2 filing-based evidence chunks.",
+      "sequence": 7,
+      "stage": "searching_counter_evidence",
+      "started_at": "2026-09-03T16:12:42.970090+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.970474+00:00",
+      "input_artifact_ids": [
+        "checks_run_9bc1b9ad22e849cd93a8f8980324733d",
+        "counter_search_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "conclusion_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "sanitized_summary": "Formed bounded language from precomputed facts and calculations.",
+      "sequence": 8,
+      "stage": "forming_conclusion",
+      "started_at": "2026-09-03T16:12:42.970474+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.970835+00:00",
+      "input_artifact_ids": [
+        "conclusion_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "result_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "sanitized_summary": "Assembled the canonical Research Result with fact-linked material claims.",
+      "sequence": 9,
+      "stage": "validating_output",
+      "started_at": "2026-09-03T16:12:42.970835+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:42.970993+00:00",
+      "input_artifact_ids": [
+        "result_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "manifest_run_9bc1b9ad22e849cd93a8f8980324733d"
+      ],
+      "sanitized_summary": "Completed the bounded workflow; immutable artifacts are ready to persist.",
+      "sequence": 10,
+      "stage": "completed",
+      "started_at": "2026-09-03T16:12:42.970993+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    }
+  ],
+  "started_at": "2026-09-03T16:12:42.966380+00:00",
+  "terminal_state": "succeeded",
+  "trace_hash": "1ded99dfe7fe9fb511670bd79fa4db5ac632384f4822d78c70924aa476b630ed",
+  "trace_id": "trace_run_9bc1b9ad22e849cd93a8f8980324733d",
+  "usage": {
+    "cost_currency": "USD",
+    "estimated_cost": 0,
+    "input_tokens": 0,
+    "latency_ms": 0,
+    "output_tokens": 0,
+    "tool_calls": 0,
+    "total_tokens": 0
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "claims": [
+    {
+      "alternative_explanations": [
+        "经营现金流与利润确认节奏可能受营运资本时点影响。"
+      ],
+      "claim_id": "claim_run_7289a27ddd714a4e9468578a617f8da4_cn_002594_earnings_quality",
+      "claim_type": "earnings_quality",
+      "confidence": {
+        "basis": "结论直接依赖两个已核验财务事实和确定性公式。",
+        "level": "high"
+      },
+      "counter_evidence_search": {
+        "evidence_ids": [
+          "chunk_product_byd_2024h1_non_recurring_profit",
+          "chunk_product_byd_2024h1_unaudited_interim_report"
+        ],
+        "performed": true,
+        "queries": [
+          "利润质量反证: 非经常性损益、审计状态与口径限制"
+        ],
+        "result": "found",
+        "summary": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。"
+      },
+      "direction": "positive",
+      "epistemic_status": "supported_inference",
+      "fact_ids": [
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "materiality": "material",
+      "schema_version": "1.4.0",
+      "support_evidence_ids": [
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ],
+      "text": "经营现金流与净利润的现金转化比为1.04倍, 未触发预设的背离信号。"
+    },
+    {
+      "alternative_explanations": [],
+      "claim_id": "claim_run_7289a27ddd714a4e9468578a617f8da4_cn_002594_gross_margin",
+      "claim_type": "observation",
+      "confidence": {
+        "basis": "营业收入、营业成本与公式均已冻结。",
+        "level": "high"
+      },
+      "counter_evidence_search": {
+        "evidence_ids": [],
+        "performed": false,
+        "queries": [],
+        "result": "not_applicable",
+        "summary": "该支持性观察不单独触发反证搜索。"
+      },
+      "direction": "neutral",
+      "epistemic_status": "verified_fact",
+      "fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "materiality": "supporting",
+      "schema_version": "1.4.0",
+      "support_evidence_ids": [
+        "chunk_product_byd_2024h1_operating_cost",
+        "chunk_product_byd_2024h1_revenue"
+      ],
+      "text": "按营业收入减营业成本计算, 2024H1毛利率为20.01%。"
+    }
+  ],
+  "companies": [
+    {
+      "company_id": "cn_002594",
+      "country_code": "CN",
+      "exchange": "SZSE",
+      "legal_name": "比亚迪股份有限公司",
+      "ticker": "002594"
+    }
+  ],
+  "evidence_cutoff": "2026-09-03T00:00:00+08:00",
+  "executive_summary": "比亚迪股份有限公司2024H1经营现金流/净利润为1.04倍, 毛利率为20.01%; 未触发预设的背离信号。结论仅覆盖已核验财务事实, 不构成投资建议。",
+  "financial_snapshot_fact_ids": [
+    "fact_product_byd_2024h1_accounts_receivable",
+    "fact_product_byd_2024h1_inventory",
+    "fact_product_byd_2024h1_net_income",
+    "fact_product_byd_2024h1_operating_cash_flow",
+    "fact_product_byd_2024h1_operating_cost",
+    "fact_product_byd_2024h1_revenue"
+  ],
+  "formula_version": "1.0.0",
+  "generated_at": "2026-09-03T16:12:51.171072+00:00",
+  "limitations": [
+    "当前结论仅覆盖所选期间已哈希核验的官方报告和六项财务事实。",
+    "一次性损益未纳入确定性公式; 反证与审计边界以实际来源证据为准。",
+    "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+    "单一报告期的现金转化不能证明长期收益质量, 需在下一同口径报告期复核。"
+  ],
+  "mandatory_checks": [
+    {
+      "check_code": "operating_cash_flow",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "finding": "已核对经营活动现金流。",
+      "status": "performed"
+    },
+    {
+      "check_code": "accounts_receivable",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_accounts_receivable"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_accounts_receivable"
+      ],
+      "finding": "已核对应收账款期末余额。",
+      "status": "performed"
+    },
+    {
+      "check_code": "inventory",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_inventory"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_inventory"
+      ],
+      "finding": "已核对存货期末余额。",
+      "status": "performed"
+    },
+    {
+      "check_code": "gross_margin",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_operating_cost",
+        "chunk_product_byd_2024h1_revenue"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_revenue",
+        "fact_product_byd_2024h1_operating_cost"
+      ],
+      "finding": "毛利率由确定性公式计算。",
+      "status": "performed"
+    },
+    {
+      "check_code": "cash_conversion",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_net_income"
+      ],
+      "finding": "Calculated as operating cash flow / net income.",
+      "status": "performed"
+    },
+    {
+      "check_code": "profit_cash_divergence",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_operating_cash_flow"
+      ],
+      "finding": "No frozen profit/cash divergence rule was triggered.",
+      "status": "performed"
+    },
+    {
+      "check_code": "one_off_contribution",
+      "evidence_ids": [],
+      "fact_ids": [],
+      "finding": "当前事实集没有一次性损益贡献字段, 未作推断。",
+      "status": "unavailable"
+    },
+    {
+      "check_code": "revenue_trend",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_revenue"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_revenue"
+      ],
+      "finding": "当前请求没有较早同口径期间, 未生成趋势。",
+      "status": "unavailable"
+    },
+    {
+      "check_code": "profit_trend",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_net_income"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_net_income"
+      ],
+      "finding": "当前请求没有较早同口径期间, 未生成趋势。",
+      "status": "unavailable"
+    },
+    {
+      "check_code": "counter_evidence",
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_non_recurring_profit",
+        "chunk_product_byd_2024h1_unaudited_interim_report"
+      ],
+      "fact_ids": [],
+      "finding": "该官方披露中已定位: 扣除非经常性损益后的净利润披露、财务报告未经审计; 不应仅凭单期现金转化外推长期收益质量。",
+      "status": "performed"
+    }
+  ],
+  "monitoring_items": [
+    {
+      "evidence_ids": [
+        "chunk_product_byd_2024h1_accounts_receivable",
+        "chunk_product_byd_2024h1_inventory",
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow"
+      ],
+      "fact_ids": [
+        "fact_product_byd_2024h1_operating_cash_flow",
+        "fact_product_byd_2024h1_net_income",
+        "fact_product_byd_2024h1_accounts_receivable",
+        "fact_product_byd_2024h1_inventory"
+      ],
+      "monitor_code": "working_capital_cash_conversion_cn_002594",
+      "next_review": "下一同口径财务报告发布后",
+      "rationale": "经营现金流与净利润存在背离时, 应同时跟踪应收账款和存货, 避免把营运资本时点影响误判为长期盈利质量变化。",
+      "title": "下一同口径报告期复核现金转化与营运资本",
+      "trigger": "经营现金流为负, 或现金转化比低于1.00倍。"
+    }
+  ],
+  "requested_periods": [
+    {
+      "accounting_standard": "CAS",
+      "fiscal_period": "H1",
+      "fiscal_year": 2024,
+      "period_basis": "ytd",
+      "period_end": "2024-06-30",
+      "period_start": "2024-01-01",
+      "restatement_status": "as_reported",
+      "statement_scope": "consolidated"
+    }
+  ],
+  "research_plan": [
+    {
+      "description": "加载截止时点可用财务事实",
+      "status": "completed",
+      "step_id": "step_run_7289a27ddd714a4e9468578a617f8da4_load"
+    },
+    {
+      "description": "执行冻结收益质量公式",
+      "status": "completed",
+      "step_id": "step_run_7289a27ddd714a4e9468578a617f8da4_calculate"
+    },
+    {
+      "description": "搜索当前证据包中的反证",
+      "status": "completed",
+      "step_id": "step_run_7289a27ddd714a4e9468578a617f8da4_counter"
+    },
+    {
+      "description": "组装并验证结构化结果",
+      "status": "completed",
+      "step_id": "step_run_7289a27ddd714a4e9468578a617f8da4_validate"
+    }
+  ],
+  "research_question": "2024H1利润是否真正转化成经营现金流?",
+  "research_time": "2026-09-03T00:00:00+08:00",
+  "result_id": "result_run_7289a27ddd714a4e9468578a617f8da4",
+  "risk_claim_ids": [],
+  "run_id": "run_7289a27ddd714a4e9468578a617f8da4",
+  "schema_version": "1.4.0",
+  "skill_hash": "71991b5a424638e4437699e63d3649a3ca0b36b308b456e2172d6a3922785890",
+  "skill_version": "1.0.0",
+  "source_document_ids": [
+    "doc_product_byd_2024h1"
+  ],
+  "status": "completed",
+  "task_type": "filing_analysis"
+}

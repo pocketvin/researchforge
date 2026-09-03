@@ -1,0 +1,44 @@
+{
+  "chunk_id": "chunk_product_byd_2024h1_unaudited_interim_report",
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_product_byd_2024h1",
+  "document_type": "interim_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 81,
+    "page_start": 81,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "pypdf-6.10.0",
+  "published_at": "2024-08-29T23:59:59+08:00",
+  "quality_flags": [
+    "text_native",
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "H1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-06-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-03T22:42:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Counter evidence: audit status",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+  "text": "公司半年度财务报告未经审计。",
+  "text_hash": "c7fade1a001974588e6e5a39865400a7e58723f412c722e82caf0035501460f1"
+}

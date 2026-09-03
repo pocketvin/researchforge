@@ -1,10 +1,10 @@
 # ResearchForge Project Status
 
-Last updated: 2026-09-03
+Last updated: 2026-09-04
 Machine-readable mirror: [`project-status.json`](project-status.json)
 
 Contract package: 1.5.0
-Current gate: FACT_EXTRACTION
+Current gate: GENERALIZATION
 Scope: V1.5 active productization
 
 ## Current Position
@@ -17,10 +17,12 @@ Scope: V1.5 active productization
 - Legacy Web-only pilot kit: **implemented but not executed; 0 real-human sessions**.
 - Human usefulness: **UNVALIDATED; formal Web+n8n evaluation is deferred to final Phase 6**.
 - Local engineering gate: **passed**.
-- Published GitHub CI: **passed** on commit `b206876` in run
-  [33728386689](https://github.com/pocketvin/researchforge/actions/runs/33728386689).
+- Published GitHub CI: **passed** on commit `b96c4b0` in run
+  [33731347766](https://github.com/pocketvin/researchforge/actions/runs/33731347766).
 - Final independent V1.5 acceptance: **VERDICT: PASS**.
-- Current product boundary: CATL `2024H1`, `filing_analysis`, strict `product` namespace.
+- Current product boundary: CATL `2024H1`, CATL `2024FY` and BYD `2024H1`, `filing_analysis`,
+  strict `product` namespace, one shared deterministic extractor and Research backend.
+- Phase 3 local checkpoint: **passed; public CI for these changes is pending publication**.
 - Public repository: [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
 
 The current authority is
@@ -59,10 +61,26 @@ V1.5 success does not depend on a supported Evolution hypothesis.
   across a page boundary, resolves period columns and units, and normalizes with `Decimal`.
 - Every promoted value has raw token, source page/lines, table, row, column, unit, evidence hash,
   page-text hash and canonical recovery hash in the ingestion manifest.
-- The CATL 2024H1 package and nine focused ingestion tests pass locally. Independent Phase 2
-  acceptance is pending before this phase is closed.
+- The CATL 2024H1 package and nine focused ingestion tests pass locally. The full Phase 2
+  engineering gate and GitHub CI passed; independent acceptance is intentionally deferred to the
+  one final project-wide Phase 7 review.
 
-### Research result
+### Phase 3 generalization
+
+- All three official PDFs reproduce the published package and recovery hashes with the same
+  extractor: 18 facts, 22 evidence chunks, 12 calculations and three successful Research Results.
+- CATL 2024FY and BYD 2024H1 identities are configuration only; no expected numbers or source
+  pages are fed into extraction. Missing/ambiguous values abstain.
+- A hash-checked product index exposes the three cases while preserving the original CATL H1
+  package and all frozen V1.4 data. Stale or tampered product artifacts are refused.
+- All three cases passed the deterministic Verifier, live-backend Web E2E and Docker/PostgreSQL
+  smoke before and after an Alembic down/up round-trip.
+- [Generalization evidence](docs/evidence/v1.5-generalization/README.md) includes source identities,
+  every recovered metric and locator, actual calculations, results, limitations and monitoring.
+- CATL annual counter-evidence status is honestly `not_found`; annual results do not inherit an
+  unsupported unaudited-interim limitation.
+
+### Original CATL H1 research result
 
 - The real-data cash-conversion path completed through all ten LangGraph stages.
 - Net income: CNY `22,864,987,400.00`; operating cash flow: CNY
@@ -119,12 +137,13 @@ rewritten by V1.5.
    findings.
 4. The share-safe Codex review file records the closure evidence.
 
-Phase 1 remains closed. Phase 2 implementation is ready for its full repository gate and
-independent read-only acceptance. Formal real-human evaluation remains deferred until Phase 6.
+Phase 1 remains closed. Phase 2 is closed as an engineering checkpoint. Phase 3 generalization is
+active. Formal real-human evaluation remains deferred until Phase 6, and the next independent
+review occurs only once at the final Phase 7 release gate.
 
 ## Honest Non-Claims
 
-- Coverage is one company and one reporting period, not the full A-share market.
+- Coverage is three filings across two companies, not the full A-share market.
 - No real-human pilot has occurred; usefulness and market demand are unvalidated.
 - Simulated usability evidence is not human evidence.
 - ResearchForge is not a self-evolving or multi-agent system.
@@ -133,8 +152,8 @@ independent read-only acceptance. Formal real-human evaluation remains deferred 
 
 ## Single Next Action
 
-Run the complete repository gate and independent read-only review for Phase 2. After PASS, begin
-Phase 3 by acquiring CATL 2024FY and BYD 2024H1 identities without adding company-specific code.
+Publish Phase 3 through green GitHub CI, then proceed directly to Phase 4's importable n8n
+workflow over the same backend. No intermediate independent acceptance is required.
 
 ## Fast Resume
 

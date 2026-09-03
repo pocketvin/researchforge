@@ -1,0 +1,45 @@
+{
+  "artifact_hashes": {
+    "evidence-chunks/chunk_product_catl_2024fy_accounts_receivable.json": "7fa61d2c5a80451e6c393997845450313022745631f95754f44c60dcacd127b6",
+    "evidence-chunks/chunk_product_catl_2024fy_inventory.json": "ea98d5734e4d71ef1862b45b940dce1f59a6f3f899239d5d93a1fb05d790e530",
+    "evidence-chunks/chunk_product_catl_2024fy_net_income.json": "1d920c1b5e4150d422d2723ffd7d8df2a2a6f8b2c5b4c0215fb35ca058b72ae2",
+    "evidence-chunks/chunk_product_catl_2024fy_operating_cash_flow.json": "e235ba773a5198f68c6840a16e311c8269087ec36f0650f9bff4704333964070",
+    "evidence-chunks/chunk_product_catl_2024fy_operating_cost.json": "5d4ad07459486a9a07002949f03f5e0e5df73b39f111fc61c5f0c66548fe9657",
+    "evidence-chunks/chunk_product_catl_2024fy_revenue.json": "1233927597ba5db1c6c46044c667e9d78f34b4972fbe283ac465b2ae319aff33",
+    "financial-facts/fact_product_catl_2024fy_accounts_receivable.json": "f162e5119dc62a41215f00fdda6f6d8d14143ca5a944d0dd0070ebf98cc72e80",
+    "financial-facts/fact_product_catl_2024fy_inventory.json": "a3237a58c9342d650df77f6af58a52ecde5e165b683471d318bdbaae7e79910a",
+    "financial-facts/fact_product_catl_2024fy_net_income.json": "55e35bba7a2008d7af84bcaee61101ea0d1c2fdc3678aa3579b42e66b16569fd",
+    "financial-facts/fact_product_catl_2024fy_operating_cash_flow.json": "684844ee6f8e6efd176d48ec721d638e225d5fed6f07f8c0599900ce180131c8",
+    "financial-facts/fact_product_catl_2024fy_operating_cost.json": "f4214a8f9e6849e6f9cc819cf2eef6fbb0e840919628554a61bfacedb406a4cd",
+    "financial-facts/fact_product_catl_2024fy_revenue.json": "363b8deb9fbffcbb156a3397b7380e2588f50f3a119d77ef097ffbe3282a8edf",
+    "source-documents/doc_product_catl_2024fy.json": "a99c79ea81847821e16d4e421278f5ffddc4df3fa362cc2e122800abdeaf29f2"
+  },
+  "data_namespace": "product",
+  "evidence_chunk_count": 6,
+  "evidence_chunk_ids": [
+    "chunk_product_catl_2024fy_accounts_receivable",
+    "chunk_product_catl_2024fy_inventory",
+    "chunk_product_catl_2024fy_net_income",
+    "chunk_product_catl_2024fy_operating_cash_flow",
+    "chunk_product_catl_2024fy_operating_cost",
+    "chunk_product_catl_2024fy_revenue"
+  ],
+  "financial_fact_count": 6,
+  "financial_fact_ids": [
+    "fact_product_catl_2024fy_accounts_receivable",
+    "fact_product_catl_2024fy_inventory",
+    "fact_product_catl_2024fy_net_income",
+    "fact_product_catl_2024fy_operating_cash_flow",
+    "fact_product_catl_2024fy_operating_cost",
+    "fact_product_catl_2024fy_revenue"
+  ],
+  "ingestion_manifest": "ingestion-manifest.json",
+  "package_hash": "254730983464b0a5206d025b1b1f4d19f918af7ca9e0e3f1549d9fc2a7ae676b",
+  "package_id": "product_catl_2024fy_001",
+  "schema_version": "1.5.0",
+  "source_document_count": 1,
+  "source_document_ids": [
+    "doc_product_catl_2024fy"
+  ],
+  "status": "ready"
+}

@@ -50,6 +50,7 @@ PRODUCT_REGISTRY_PATH = ROOT / "data" / "product" / "filing-catalog.json"
 PRODUCT_PACKAGE_DIR = ROOT / "data" / "product" / "packages" / "catl-2024h1"
 PRODUCT_PACKAGE_MANIFEST_PATH = PRODUCT_PACKAGE_DIR / "manifest.json"
 PRODUCT_INGESTION_MANIFEST_PATH = PRODUCT_PACKAGE_DIR / "ingestion-manifest.json"
+PRODUCT_INDEX_PATH = PRODUCT_PACKAGE_DIR.parent / "manifest.json"
 HISTORICAL_EXAMPLE_DIRS = {
     "v1.3": ROOT / "examples" / "contracts" / "v1.3",
     "v1.2": ROOT / "examples" / "contracts",
@@ -97,6 +98,7 @@ ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "ingestion-manifest.schema.json",
     "product-research-request.schema.json",
     "project-checkpoint.schema.json",
+    "product-package-index.schema.json",
 }
 
 HISTORICAL_REQUIRED_SCHEMAS = {
@@ -191,6 +193,8 @@ REQUIRED_CONTRACTS = {
     PRODUCT_REGISTRY_PATH,
     PRODUCT_PACKAGE_MANIFEST_PATH,
     PRODUCT_INGESTION_MANIFEST_PATH,
+    PRODUCT_INDEX_PATH,
+    ROOT / "docs/evidence/v1.5-generalization/README.md",
     ROOT / "skills" / "fundamental-research" / "README.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "SKILL.md",
     ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json",
@@ -1663,31 +1667,74 @@ def validate_contingency_benchmark(
 def validate_product_disclosure_package(
     schemas: dict[Path, dict[str, Any]],
 ) -> tuple[int, int, int]:
-    """Validate the first real product slice without requiring the ignored raw PDF."""
-    if any(PRODUCT_PACKAGE_DIR.rglob("*.pdf")):
+    """Validate the three real slices without requiring ignored raw PDFs."""
+    if any(PRODUCT_PACKAGE_DIR.parent.rglob("*.pdf")):
         raise ContractError("V1.5 product package must not contain a raw filing PDF")
 
     registry = load_json(PRODUCT_REGISTRY_PATH)
     if registry.get("schema_version") != "1.5.0" or registry.get("data_namespace") != "product":
         raise ContractError("V1.5 filing registry must be isolated in the product namespace")
     records = registry.get("records")
-    if not isinstance(records, list) or len(records) != 1:
-        raise ContractError("V1.5 initial product registry must contain exactly one filing")
-    record = records[0]
-    serialized_registry = json.dumps(record, ensure_ascii=False)
+    if not isinstance(records, list) or len(records) != 3:
+        raise ContractError("Phase 3 product registry must contain exactly three filings")
+    expected_sources = {
+        "catl-2024h1": "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1",
+        "catl-2024fy": "b4f1713d7b821eb076c102711d177fe942ccc2bc8dd171ae5d7a95799a65b0ad",
+        "byd-2024h1": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+    }
+    if {record["record_id"]: record["expected_sha256"] for record in records} != expected_sources:
+        raise ContractError("Phase 3 official document identities changed")
+    serialized_registry = json.dumps(records, ensure_ascii=False)
     for forbidden_key in ("fact_specs", "reported_value", "page", "evidence_text"):
         if f'"{forbidden_key}"' in serialized_registry:
             raise ContractError(
                 f"V1.5 filing registry contains prohibited prefilled field {forbidden_key}"
             )
-    if record.get("expected_sha256") != (
-        "2a690cb2471c1f0d4539d909a9f068c03710a838ddd35313175790169e85eab1"
-    ):
-        raise ContractError("V1.5 CATL registry official PDF hash changed")
-    if urlparse(record.get("source_uri", "")).netloc != "disc.static.szse.cn":
-        raise ContractError("V1.5 CATL registry must use the official SZSE document host")
+    index = load_json(PRODUCT_INDEX_PATH)
+    schema_path = (ACTIVE_PRODUCT_SCHEMA_DIR / "product-package-index.schema.json").resolve()
+    validate_instance(index, schemas[schema_path], schema_path, schemas)
+    if index["package_hash"] != _canonical_hash(index["packages"]):
+        raise ContractError("Product index hash differs from package references")
+    if {entry["path"] for entry in index["packages"]} != set(expected_sources):
+        raise ContractError("Product index does not contain exactly the three filing cases")
+    counts = [0, 0, 0]
+    for record in records:
+        package_dir = PRODUCT_PACKAGE_DIR.parent / record["record_id"]
+        count = _validate_product_case(record, package_dir, schemas)
+        package = load_json(package_dir / "manifest.json")
+        entry = next(item for item in index["packages"] if item["path"] == record["record_id"])
+        if any(entry[key] != package[key] for key in ("package_id", "package_hash")):
+            raise ContractError("Product index reference differs from child manifest")
+        counts = [total + increment for total, increment in zip(counts, count, strict=True)]
+        evidence_dir = ROOT / "docs/evidence/v1.5-generalization" / record["record_id"]
+        for kind in ("run-manifest", "research-result", "workflow-trace", "evaluation-result"):
+            artifact = load_json(evidence_dir / f"{kind}.json")
+            artifact_schema = (SCHEMA_DIR / f"{kind}.schema.json").resolve()
+            validate_instance(artifact, schemas[artifact_schema], artifact_schema, schemas)
+        result = load_json(evidence_dir / "research-result.json")
+        if result["source_document_ids"] != [record["document_id"]]:
+            raise ContractError("Generalization research evidence crossed filing boundaries")
+        if not result["monitoring_items"] or not result["limitations"]:
+            raise ContractError("Generalization result lacks monitoring or limitations")
+        evaluation = load_json(evidence_dir / "evaluation-result.json")
+        if evaluation["failure_events"]:
+            raise ContractError("Generalization result failed its deterministic verifier")
+        calculations = load_json(evidence_dir / "calculation-records.json")
+        for calculation in calculations:
+            calculation_schema = (SCHEMA_DIR / "calculation-record.schema.json").resolve()
+            validate_instance(calculation, schemas[calculation_schema], calculation_schema, schemas)
+    return counts[0], counts[1], counts[2]
 
-    ingestion = load_json(PRODUCT_INGESTION_MANIFEST_PATH)
+
+def _validate_product_case(
+    record: dict[str, Any], package_dir: Path, schemas: dict[Path, dict[str, Any]]
+) -> tuple[int, int, int]:
+    if urlparse(record.get("source_uri", "")).netloc not in {
+        "disc.static.szse.cn",
+        "static.cninfo.com.cn",
+    }:
+        raise ContractError("Product source is not an official disclosure host")
+    ingestion = load_json(package_dir / "ingestion-manifest.json")
     ingestion_schema_path = (ACTIVE_PRODUCT_SCHEMA_DIR / "ingestion-manifest.schema.json").resolve()
     validate_instance(
         ingestion,
@@ -1701,8 +1748,15 @@ def validate_product_disclosure_package(
         raise ContractError("V1.5 ready product package cannot retain an abstention")
     if ingestion["acquisition"]["raw_payload_committed"] is not False:
         raise ContractError("V1.5 product package cannot commit the raw filing")
-    if ingestion["parser"]["page_count"] != 174:
-        raise ContractError("V1.5 CATL page count differs from the reviewed document")
+    if ingestion["parser"]["page_count"] != record["expected_page_count"]:
+        raise ContractError("Product page count differs from reviewed identity")
+    if ingestion["acquisition"]["content_hash"] != record["expected_sha256"]:
+        raise ContractError("Product acquisition hash differs from reviewed identity")
+    if (
+        ingestion["company"] != record["company"]
+        or ingestion["reporting_period"] != record["reporting_period"]
+    ):
+        raise ContractError("Product extraction company or period differs from registry")
     extraction = ingestion.get("extraction")
     if not isinstance(extraction, dict):
         raise ContractError("V1.5 ready product package lacks deterministic extraction evidence")
@@ -1711,11 +1765,11 @@ def validate_product_disclosure_package(
     if extraction.get("parser_text_hash") != ingestion["parser"]["text_hash"]:
         raise ContractError("V1.5 extraction and parser text hashes differ")
 
-    source_paths = sorted((PRODUCT_PACKAGE_DIR / "source-documents").glob("*.json"))
-    fact_paths = sorted((PRODUCT_PACKAGE_DIR / "financial-facts").glob("*.json"))
-    chunk_paths = sorted((PRODUCT_PACKAGE_DIR / "evidence-chunks").glob("*.json"))
-    if (len(source_paths), len(fact_paths), len(chunk_paths)) != (1, 6, 8):
-        raise ContractError("V1.5 CATL package must contain 1 source, 6 facts, and 8 chunks")
+    source_paths = sorted((package_dir / "source-documents").glob("*.json"))
+    fact_paths = sorted((package_dir / "financial-facts").glob("*.json"))
+    chunk_paths = sorted((package_dir / "evidence-chunks").glob("*.json"))
+    if len(source_paths) != 1 or len(fact_paths) != 6 or len(chunk_paths) < 6:
+        raise ContractError("Product case must have 1 source, 6 facts and at least 6 chunks")
 
     source_schema_path = (SCHEMA_DIR / "source-document.schema.json").resolve()
     fact_schema_path = (SCHEMA_DIR / "financial-fact.schema.json").resolve()
@@ -1749,7 +1803,7 @@ def validate_product_disclosure_package(
         "net_income": "22864987400.00",
         "operating_cash_flow": "44708954600.00",
     }
-    if values != expected_values:
+    if record["record_id"] == "catl-2024h1" and values != expected_values:
         raise ContractError("V1.5 CATL normalized fact values changed")
     expected_metric_set = set(expected_values)
     if set(extraction.get("target_metrics", [])) != expected_metric_set:
@@ -1786,15 +1840,15 @@ def validate_product_disclosure_package(
             raise ContractError("V1.5 real product evidence cannot be a synthetic fixture")
         if chunk["section"].startswith("Counter evidence:"):
             counter_sections += 1
-    if counter_sections != 2:
+    if record["record_id"] == "catl-2024h1" and counter_sections != 2:
         raise ContractError("V1.5 product package must preserve two filing-based limitations")
 
-    package = load_json(PRODUCT_PACKAGE_MANIFEST_PATH)
+    package = load_json(package_dir / "manifest.json")
     if package.get("data_namespace") != "product" or package.get("status") != "ready":
         raise ContractError("V1.5 product package manifest is not ready product data")
     artifact_paths = sorted((*source_paths, *fact_paths, *chunk_paths))
     artifact_hashes = {
-        str(path.relative_to(PRODUCT_PACKAGE_DIR)): hashlib.sha256(path.read_bytes()).hexdigest()
+        str(path.relative_to(package_dir)): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in artifact_paths
     }
     if package.get("artifact_hashes") != artifact_hashes:
@@ -2016,7 +2070,7 @@ def main() -> int:
             f"{contingency_case_count} frozen cases)"
         )
         print(
-            "PASS: V1.5 real CATL product package validated "
+            "PASS: V1.5 three-filing product packages and research evidence validated "
             f"({product_source_count} source, {product_fact_count} facts, "
             f"{product_chunk_count} real evidence chunks)"
         )

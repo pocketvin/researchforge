@@ -20,6 +20,17 @@ evidence, counter evidence or limitations, and monitoring plan.
 Formal real-human evaluation happens only after the engineering, data, Web, n8n and demo surfaces
 are stable and frozen. Until then, `human_user_value_validated` remains `false`.
 
+## Final acceptance policy
+
+Phase 1's historical independent acceptance remains valid. Phases 2–6 use normal engineering
+quality gates and honest status updates, but they are not independent completion reviews. No
+intermediate reviewer verdict is required or permitted between these phases.
+
+One project-wide independent read-only acceptance runs at Phase 7 only, after reusable extraction,
+all three real-filing paths, n8n, both final UX surfaces, real-human evaluation and final CI,
+Docker and E2E evidence are complete. An interrupted or quota-limited intermediate review that
+returned no verdict is not an acceptance result.
+
 ## Phase 1 — Close V1.5
 
 No new product feature is permitted in this phase.
@@ -68,8 +79,8 @@ Company-specific result code, a general OCR platform and additional metrics are 
 Use the same extraction implementation for:
 
 1. CATL 2024H1;
-2. one different CATL period, preferably 2024FY;
-3. one different company with a similar period, preferably BYD 2024H1.
+2. CATL 2024FY;
+3. BYD 2024H1.
 
 Each path must reach facts, deterministic calculations, evidence, counter evidence or an honest
 limitation, monitoring and a verified Research Result. No company-specific result generator is
@@ -132,15 +143,17 @@ independent pass.
 
 ## Phase 7 — Release Freeze
 
-Freeze ResearchForge only after all of the following exist:
+Prepare the final ResearchForge freeze only after all of the following exist:
 
-- final independent acceptance PASS;
 - reusable six-metric extraction;
 - CATL 2024H1, an additional CATL period and an additional company;
 - complete n8n integration;
 - complete Web and n8n UX;
 - final real-human evaluation;
 - green CI, Docker and E2E gates.
+
+After those prerequisites are frozen, run the one final project-wide independent acceptance.
+Release freeze requires its `VERDICT: PASS`.
 
 After release freeze, do not add multi-agent systems, Evolution experiments, new benchmark
 systems, trading, price prediction, portfolio optimization, real-time news, complex vector

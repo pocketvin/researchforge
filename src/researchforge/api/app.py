@@ -30,7 +30,7 @@ from researchforge.config import load_runtime_settings
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_FIXTURE_ROOT = PROJECT_ROOT / "data" / "fixtures" / "g0"
-DEFAULT_PRODUCT_ROOT = PROJECT_ROOT / "data" / "product" / "packages" / "catl-2024h1"
+DEFAULT_PRODUCT_ROOT = PROJECT_ROOT / "data" / "product" / "packages"
 DEFAULT_SKILL_MANIFEST = (
     PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json"
 )

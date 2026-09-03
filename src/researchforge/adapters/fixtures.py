@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
 
+from researchforge.adapters.storage import payload_sha256
 from researchforge.application.contracts import CatalogCompany, CatalogResponse, DataNamespace
 from researchforge.application.research import InsufficientDataError, LoadedResearchData
 
@@ -18,6 +21,10 @@ class G0FixtureCatalog:
     Product construction passes ``expected_namespace='product'`` and cannot fall back to a
     fixture or benchmark root.
     """
+
+    _facts: tuple[dict[str, Any], ...]
+    _sources: tuple[dict[str, Any], ...]
+    _evidence: tuple[dict[str, Any], ...]
 
     def __init__(
         self,
@@ -44,6 +51,21 @@ class G0FixtureCatalog:
             )
         if self.data_namespace == "product" and self.manifest.get("status") != "ready":
             raise ValueError("product data package must have ready status")
+        if self.data_namespace == "product" and "packages" in self.manifest:
+            children = self._product_children()
+            self._facts = tuple(fact for child in children for fact in child._facts)
+            self._sources = tuple(source for child in children for source in child._sources)
+            self._evidence = tuple(chunk for child in children for chunk in child._evidence)
+            for records, key in (
+                (self._facts, "fact_id"),
+                (self._sources, "document_id"),
+                (self._evidence, "chunk_id"),
+            ):
+                if len({item[key] for item in records}) != len(records):
+                    raise ValueError("product index contains duplicate artifact identities")
+            return
+        if self.data_namespace == "product":
+            self._verify_product_package()
         self._facts = tuple(self._load(path) for path in sorted(self.fact_dir.glob("*.json")))
         self._sources = tuple(self._load(path) for path in sorted(self.source_dir.glob("*.json")))
         evidence = tuple(self._load(path) for path in sorted(self.evidence_dir.glob("*.json")))
@@ -51,6 +73,49 @@ class G0FixtureCatalog:
         self._evidence = tuple(
             chunk for chunk in evidence if chunk["document_id"] in source_document_ids
         )
+
+    def _product_children(self) -> tuple[G0FixtureCatalog, ...]:
+        entries = self.manifest["packages"]
+        if not isinstance(entries, list) or not 1 <= len(entries) <= 3:
+            raise ValueError("product index requires one to three explicit packages")
+        if payload_sha256(entries) != self.manifest.get("package_hash"):
+            raise ValueError("product index hash mismatch")
+        children = []
+        seen: set[str] = set()
+        for entry in entries:
+            name = entry["path"]
+            if not isinstance(name, str) or re.fullmatch(r"[a-z0-9][a-z0-9-]*", name) is None:
+                raise ValueError("unsafe product package path")
+            child_root = (self.root / name).resolve()
+            if child_root.parent != self.root or name in seen:
+                raise ValueError("product package path escapes root or is duplicated")
+            seen.add(name)
+            manifest = self._load(child_root / "manifest.json")
+            if "packages" in manifest:
+                raise ValueError("nested product indexes are not supported")
+            for key in ("package_id", "package_hash"):
+                if entry[key] != manifest.get(key):
+                    raise ValueError(f"indexed {key} differs from child package")
+            children.append(G0FixtureCatalog(child_root, expected_namespace="product"))
+        return tuple(children)
+
+    def _verify_product_package(self) -> None:
+        ingestion = self._load(self.root / "ingestion-manifest.json")
+        hashes = self.manifest.get("artifact_hashes", {})
+        if not hashes or payload_sha256(hashes) != self.manifest.get("package_hash"):
+            raise ValueError("product package hash mismatch")
+        if (
+            ingestion.get("status") != "ready"
+            or ingestion.get("package_hash") != self.manifest["package_hash"]
+        ):
+            raise ValueError("product ingestion is not ready; stale artifacts refused")
+        actual = {
+            str(path.relative_to(self.root)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for directory in (self.fact_dir, self.source_dir, self.evidence_dir)
+            for path in directory.glob("*.json")
+        }
+        if actual != hashes:
+            raise ValueError("product artifact hashes differ from manifest")
 
     @staticmethod
     def _load(path: Path) -> dict[str, Any]:
@@ -91,7 +156,7 @@ class G0FixtureCatalog:
             implementation_level="V1_5_REAL_DATA" if is_product else "G1_BREADTH",
             limitations=(
                 [
-                    "Initial real-data coverage is limited to one reviewed CATL 2024H1 filing.",
+                    f"Real-data coverage: {len(self._sources)} reviewed filings in this catalog.",
                     "Research results are auditable analysis, not investment advice.",
                     "Human usefulness remains unvalidated until real pilot sessions are completed.",
                 ]

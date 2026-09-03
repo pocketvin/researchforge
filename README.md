@@ -50,9 +50,9 @@ preserved as an experimental, read-only **Quality Lab** and is not required for 
 
 - Active direction: **V1.5 Productization**
 - V1.5 productization: **independently accepted — VERDICT: PASS**
-- Current milestone: Phase 2 reusable deterministic extraction implemented; independent gate pending
+- Current milestone: Phase 3 generalization across CATL 2024H1, CATL 2024FY and BYD 2024H1
 - Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
-- Default runtime: strict `product` namespace with one reviewed CATL 2024H1 disclosure
+- Default runtime: strict `product` namespace with CATL 2024H1, CATL 2024FY and BYD 2024H1
 - Human usefulness: **not yet validated; formal Web+n8n evaluation is deferred to final Phase 6**
 - Investment advice, trading and price prediction: **not provided**
 
@@ -85,6 +85,10 @@ Facts, formulas, evidence and trace stay collapsed until the user chooses to ins
 Quality Lab has a separate secondary surface and is not part of the normal research journey.
 
 ## Run the real-data demo
+
+The same extractor and backend serve CATL 2024H1, CATL 2024FY and BYD 2024H1. See the
+[three-filing recovery and Research Result evidence](docs/evidence/v1.5-generalization/README.md)
+for every metric, source locator, calculation, counter-evidence boundary and monitoring item.
 
 The repository includes a reviewed, public-safe derived package for the official CATL 2024H1
 filing. Its six facts are deterministically recovered from the verified PDF rather than copied
@@ -258,6 +262,10 @@ npm run build --prefix frontend
 ```
 
 The public repository is [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
+
+Phases 2–6 use these engineering gates without intermediate independent acceptance. One
+project-wide independent read-only review runs only at the Phase 7 release freeze, after n8n,
+both final UX surfaces, real-human evaluation and release evidence are complete.
 
 ## Disclaimer
 

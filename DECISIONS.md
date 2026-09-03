@@ -613,3 +613,47 @@ documents abstain because Phase 2 does not introduce OCR. Each ready ingestion m
 six recovery proofs and `llm_used: false`. This decision replaces RF-024's reviewed-cell mapping
 implementation detail without changing RF-024's source allowlist, document verification,
 namespace isolation or raw-PDF exclusion.
+
+## RF-028 — Perform One Final Project-wide Independent Acceptance
+
+Status: **ACCEPTED**
+
+Decision:
+
+Treat Phases 2–6 as engineering checkpoints with tests, formatting, lint, strict typing, contract
+validation, applicable Docker/E2E coverage, public CI and honest status evidence. Do not request an
+independent acceptance verdict for any intermediate phase. Run one independent read-only review at
+Phase 7 after extraction, three-filing generalization, n8n integration, both final UX surfaces,
+real-human evaluation and release evidence are frozen.
+
+Reason:
+
+Intermediate reviewer cycles slow delivery and judge partial surfaces rather than the complete
+product. Normal engineering gates still expose regressions, while the final reviewer can assess
+the shared backend, evidence boundary and both user surfaces as one coherent ResearchForge product.
+
+Consequence:
+
+The completed Phase 1 verdict remains historical evidence. The quota-limited Phase 2 reviewer
+attempt produced no verdict and is neither a pass nor a blocker. Phase 2 closes on its engineering
+checkpoint and Phase 3 begins immediately. This decision is the project-specific implementation of
+RF-013's final-review policy and governs the remaining frozen roadmap.
+
+## RF-029 — Generalize by Financial Semantics, Not Company-specific Answers
+
+Status: **ACCEPTED**
+
+Decision:
+
+Add exactly CATL 2024FY and BYD 2024H1 as identity-only registry records. Extend the same native-text
+extractor for explicit report-wide units, wrapped duration headers, period-column order, optional
+note-reference columns and parent-company/equity-table boundaries. Keep the six-metric and
+all-or-nothing abstention contract. Bind the three product packages in one hash-checked index.
+
+Consequence:
+
+The original CATL 2024H1 package hash remains unchanged. All three paths reach the same LangGraph,
+deterministic formulas, evidence linkage, Verifier and persisted Research Result. Limitation text
+must describe actual retrieved evidence and must not assume every filing is an unaudited interim
+report. Missing unique counter evidence is `not_found`, not manufactured opposition. No new
+Benchmark, model call or formal experiment is introduced.

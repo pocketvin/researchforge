@@ -24,6 +24,7 @@ semantics must not be rewritten.
 - The historical fixture folder named `v1.5-contingency` is a frozen V1.4 experiment input, not
   a V1.5 product data namespace.
 
-The contract package is intentionally narrow: one real filing slice and the reusable six-metric
-extractor must work before Phase 3 adds another period and company. OCR, broader metrics, model-
-selected numbers and general document parsing remain outside this boundary.
+The contract package remains narrow: CATL 2024H1, CATL 2024FY and BYD 2024H1 use the same
+six-metric extractor. `product-package-index.schema.json` binds the three child packages by hash
+without mixing fixtures or Benchmark data. OCR, broader metrics, model-selected numbers and
+general document parsing remain outside this boundary.

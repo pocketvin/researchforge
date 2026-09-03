@@ -1,0 +1,66 @@
+[
+  {
+    "calculation_id": "calc_run_7289a27ddd714a4e9468578a617f8da4_cn_002594_gross_profit",
+    "created_at": "2026-09-03T16:12:51.169950+00:00",
+    "explanation": "Calculated as revenue minus operating cost.",
+    "formula_code": "gross_profit",
+    "formula_version": "1.0.0",
+    "input_fact_ids": [
+      "fact_product_byd_2024h1_revenue",
+      "fact_product_byd_2024h1_operating_cost"
+    ],
+    "measurement_unit": "CURRENCY",
+    "run_id": "run_7289a27ddd714a4e9468578a617f8da4",
+    "schema_version": "1.4.0",
+    "status": "calculated",
+    "value": "60266731000"
+  },
+  {
+    "calculation_id": "calc_run_7289a27ddd714a4e9468578a617f8da4_cn_002594_gross_margin",
+    "created_at": "2026-09-03T16:12:51.169950+00:00",
+    "explanation": "Calculated as gross profit / revenue.",
+    "formula_code": "gross_margin",
+    "formula_version": "1.0.0",
+    "input_fact_ids": [
+      "fact_product_byd_2024h1_revenue",
+      "fact_product_byd_2024h1_operating_cost"
+    ],
+    "measurement_unit": "RATIO",
+    "run_id": "run_7289a27ddd714a4e9468578a617f8da4",
+    "schema_version": "1.4.0",
+    "status": "calculated",
+    "value": "0.2001374451292868195323475005"
+  },
+  {
+    "calculation_id": "calc_run_7289a27ddd714a4e9468578a617f8da4_cn_002594_cash_conversion",
+    "created_at": "2026-09-03T16:12:51.169950+00:00",
+    "explanation": "Calculated as operating cash flow / net income.",
+    "formula_code": "cash_conversion",
+    "formula_version": "1.0.0",
+    "input_fact_ids": [
+      "fact_product_byd_2024h1_operating_cash_flow",
+      "fact_product_byd_2024h1_net_income"
+    ],
+    "measurement_unit": "RATIO",
+    "run_id": "run_7289a27ddd714a4e9468578a617f8da4",
+    "schema_version": "1.4.0",
+    "status": "calculated",
+    "value": "1.040132248992150907286099881"
+  },
+  {
+    "calculation_id": "calc_run_7289a27ddd714a4e9468578a617f8da4_cn_002594_profit_cash_divergence",
+    "created_at": "2026-09-03T16:12:51.169950+00:00",
+    "explanation": "No frozen profit/cash divergence rule was triggered.",
+    "formula_code": "profit_cash_divergence",
+    "formula_version": "1.0.0",
+    "input_fact_ids": [
+      "fact_product_byd_2024h1_net_income",
+      "fact_product_byd_2024h1_operating_cash_flow"
+    ],
+    "measurement_unit": "COUNT",
+    "run_id": "run_7289a27ddd714a4e9468578a617f8da4",
+    "schema_version": "1.4.0",
+    "status": "calculated",
+    "value": "0"
+  }
+]

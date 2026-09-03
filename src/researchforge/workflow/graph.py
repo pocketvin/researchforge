@@ -403,24 +403,38 @@ class ResearchWorkflow:
             if str(chunk.get("section", "")).startswith("Counter evidence:")
         ]
         if counter_chunks:
+            topics = []
+            if any(
+                chunk["section"] == "Counter evidence: non-recurring profit contribution"
+                for chunk in counter_chunks
+            ):
+                topics.append("扣除非经常性损益后的净利润披露")
+            if any(
+                chunk["section"] == "Counter evidence: audit status" for chunk in counter_chunks
+            ):
+                topics.append("财务报告未经审计")
             counter = {
                 "performed": True,
                 "queries": ["利润质量反证: 非经常性损益、审计状态与口径限制"],
                 "result": "found",
                 "evidence_ids": sorted(chunk["chunk_id"] for chunk in counter_chunks),
-                "summary": (
-                    "官方半年度报告披露了扣除非经常性损益后的净利润, 且该中期财务报告"
-                    "未经审计; 两项均限制对单期现金转化的外推。"
-                ),
+                "summary": "该官方披露中已定位: "
+                + "、".join(topics or ["来源限制"])
+                + "; 不应仅凭单期现金转化外推长期收益质量。",
             }
-            event_summary = "Counter-evidence search found two filing-based limitations."
+            event_summary = (
+                f"Counter-evidence search found {len(counter_chunks)} filing-based evidence chunks."
+            )
         else:
             counter = {
                 "performed": True,
                 "queries": ["利润质量反证: 经营现金流、应收账款、存货及口径限制"],
                 "result": "not_found",
                 "evidence_ids": [],
-                "summary": "在当前冻结事实与来源定位包中未发现额外反证; 未检索公告全文。",
+                "summary": (
+                    "在当前证据包的有界反证规则中未找到唯一可引用的额外反证; "
+                    "不代表完整公告不存在反证或风险。"
+                ),
             }
             event_summary = "Counter-evidence search completed with an honest not_found outcome."
         return {
@@ -720,7 +734,7 @@ class ResearchWorkflow:
                         "经营现金流与净利润存在背离时, 应同时跟踪应收账款和存货, "
                         "避免把营运资本时点影响误判为长期盈利质量变化。"
                     ),
-                    "trigger": "经营现金流继续为负, 或现金转化比仍低于1.00倍。",
+                    "trigger": "经营现金流为负, 或现金转化比低于1.00倍。",
                     "next_review": "下一同口径财务报告发布后",
                     "fact_ids": monitoring_fact_ids,
                     "evidence_ids": evidence_for_facts(monitoring_fact_ids),

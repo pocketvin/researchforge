@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.5.0",
+  "package_id": "product_generalization_001",
+  "package_hash": "ee092773a1e19f1a3d4e5cff3bfa69abf20407e0446746371dce122ea8efcad7",
+  "data_namespace": "product",
+  "status": "ready",
+  "packages": [
+    {
+      "path": "catl-2024h1",
+      "package_id": "product_catl_2024h1_001",
+      "package_hash": "2207187bd5d466d8c79a09863703bb373ec1890829f84505fc994c5e071669de"
+    },
+    {
+      "path": "catl-2024fy",
+      "package_id": "product_catl_2024fy_001",
+      "package_hash": "254730983464b0a5206d025b1b1f4d19f918af7ca9e0e3f1549d9fc2a7ae676b"
+    },
+    {
+      "path": "byd-2024h1",
+      "package_id": "product_byd_2024h1_001",
+      "package_hash": "bc6ef857e8170ecc52abd4bcbb730bef6bf0702d796c62f0f17a4d49fa4201aa"
+    }
+  ]
+}

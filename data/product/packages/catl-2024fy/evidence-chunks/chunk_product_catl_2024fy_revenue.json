@@ -1,0 +1,44 @@
+{
+  "chunk_id": "chunk_product_catl_2024fy_revenue",
+  "company": {
+    "company_id": "cn_300750",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750"
+  },
+  "content_role": "untrusted_source",
+  "document_id": "doc_product_catl_2024fy",
+  "document_type": "annual_report",
+  "language": "zh-CN",
+  "locator": {
+    "char_end": null,
+    "char_start": null,
+    "page_end": 119,
+    "page_start": 119,
+    "paragraph_end": null,
+    "paragraph_start": null
+  },
+  "parser_version": "pypdf-6.10.0",
+  "published_at": "2025-03-15T23:59:59+08:00",
+  "quality_flags": [
+    "text_native",
+    "table_linearized"
+  ],
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-12-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "retrieved_at": "2026-09-03T22:42:00+08:00",
+  "schema_version": "1.4.0",
+  "section": "Financial statement fact: 营业收入",
+  "source_uri": "https://static.cninfo.com.cn/finalpage/2025-03-15/1222806982.PDF",
+  "text": "其中：营业收入                362,012,554                 400,917,045",
+  "text_hash": "efa1a0d919738dbcd07c4ab1ab386332704a79b62f0e5bf1c9e3c070fed9ffc5"
+}

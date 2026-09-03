@@ -2,6 +2,18 @@
 
 ## [Unreleased] — Final Delivery Phases
 
+### Phase 3: generalization evidence
+
+- Added exactly CATL 2024FY and BYD 2024H1 as official identity-only records, preserving the
+  original CATL H1 package hash and all frozen Quality Lab evidence.
+- The same six-metric extractor handles report-wide units, wrapped period headers, note columns,
+  reversed column order and parent-company/equity-table boundaries; ambiguity abstains.
+- Added a bounded hash-checked three-package catalog, three real Research Result evidence bundles,
+  live-backend Web E2E, and three-case Docker/migration smoke.
+- Removed unsupported interim/audit assumptions from generic result and monitoring text.
+- Phases 2–6 are engineering checkpoints only. Independent read-only acceptance occurs once at
+  final Phase 7 after implementation, n8n, UX, real-human evaluation and release evidence.
+
 ### Phase 2: reusable Financial Fact extraction
 
 - Replaced registry-provided fact values, pages and evidence text with deterministic native-PDF

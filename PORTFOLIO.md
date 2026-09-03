@@ -42,12 +42,12 @@ problem: every important result must be traceable and every missing input must r
 | Capability | Inspectable evidence | Current status |
 |---|---|---|
 | Deterministic finance | `src/researchforge/domain`, formula and period tests | implemented |
-| Evidence provenance | Source/Fact/Evidence schemas, official CATL package, API resources | implemented for first real slice |
+| Evidence provenance | Source/Fact/Evidence schemas, three official filing packages, API resources | implemented for three real filings |
 | Bounded AI workflow | ten-stage LangGraph and Workflow Trace | implemented |
 | Verification | calculation, citation, cutoff and coverage Verifier | implemented |
 | Product API | async lifecycle, facts, evidence, calculations, trace, cancel | implemented |
 | Product UI | product-first Research page and secondary read-only Quality Lab | implemented; unit, E2E, accessibility and live-browser checks pass |
-| Real disclosure ingestion | discovery/acquisition/parsing with strict product namespace | implemented for CATL 2024H1 |
+| Real disclosure ingestion | same deterministic six-metric extractor; strict product namespace | CATL 2024H1, CATL 2024FY, BYD 2024H1 |
 | Human usability | real participant sessions | not run |
 | Quality research | two frozen formal experiments and stopping rule | complete negative result |
 
@@ -77,8 +77,8 @@ problem: every important result must be traceable and every missing input must r
 
 Human-usability claims unlock only after the final dual-surface evaluation uses real participants.
 That evaluation is deliberately deferred until reusable extraction, generalization, n8n, Web UX
-and demo hardening are frozen. The current real-ingestion claim is bounded to the one allowlisted
-CATL 2024H1 filing.
+and demo hardening are frozen. Real-ingestion claims are bounded to the three allowlisted filings
+in the [generalization evidence](docs/evidence/v1.5-generalization/README.md), not broad coverage.
 
 ## Resume Bullets: Current Evidence
 

@@ -1,0 +1,54 @@
+{
+  "availability": "available",
+  "canonical_scale": 1,
+  "company": {
+    "company_id": "cn_300750",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "宁德时代新能源科技股份有限公司",
+    "ticker": "300750"
+  },
+  "created_at": "2026-09-03T22:42:00+08:00",
+  "currency": "CNY",
+  "derivation": null,
+  "fact_id": "fact_product_catl_2024fy_accounts_receivable",
+  "fact_kind": "reported",
+  "formula_version": null,
+  "measurement_unit": "CURRENCY",
+  "metric_code": "accounts_receivable",
+  "period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "FY",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-12-31",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "quality_flags": [
+    "unit_normalized"
+  ],
+  "schema_version": "1.4.0",
+  "sign_convention": "natural_statement_value",
+  "source": {
+    "content_hash": "b4f1713d7b821eb076c102711d177fe942ccc2bc8dd171ae5d7a95799a65b0ad",
+    "document_id": "doc_product_catl_2024fy",
+    "license_id": null,
+    "published_at": "2025-03-15T23:59:59+08:00",
+    "redistribution_allowed": false,
+    "retrieved_at": "2026-09-03T22:42:00+08:00",
+    "source_id": "source_cninfo",
+    "source_type": "official_filing",
+    "uri": "https://static.cninfo.com.cn/finalpage/2025-03-15/1222806982.PDF"
+  },
+  "source_fact_ids": [],
+  "source_locator": {
+    "column_label": "期末余额",
+    "page": 114,
+    "row_label": "应收账款",
+    "section": "财务报表",
+    "table": "合并资产负债表"
+  },
+  "value": "64135510000"
+}

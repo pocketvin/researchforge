@@ -25,13 +25,25 @@ MetricCode = Literal[
 StatementName = Literal["合并资产负债表", "合并利润表", "合并现金流量表"]
 
 EXTRACTOR_NAME = "researchforge_deterministic_financial_statement"
-EXTRACTOR_VERSION = "1.0.0"
+EXTRACTOR_VERSION = "1.1.0"
 
 _NUMBER_PATTERN = re.compile(
-    r"(?<![\d,])(?:[（(]\s*)?[+\-−－]?\s*(?:\d{1,3}(?:,\d{3})+|\d+)"
+    r"(?<![\d,])(?:[（(]\s*)?[+\-−－]?(?:\d{1,3}(?:,\d{3})+|\d+)"
     r"(?:\.\d+)?(?:\s*[）)])?(?![\d,])"
 )
 _UNIT_PATTERN = re.compile(r"单位[：:]?(?:人民币)?(百万元|万元|千元|元)")
+_GLOBAL_UNIT_PATTERN = re.compile(
+    r"(?:本)?公司财务报表及附注的单位为[：:](?:人民币)?(百万元|万元|千元|元)"
+)
+_HEADER_LABEL_PATTERN = re.compile(
+    r"截至\d{4}年\d{1,2}月\d{1,2}日止\d{1,2}个月期间"
+    r"|\d{4}年\d{1,2}月\d{1,2}日"
+    r"|\d{4}年(?:半年度|1[—\-至][369]月|第一季度|前三季度)"
+    r"|\d{4}年度|\d{4}年"
+    r"|期末余额|期初余额|本报告期末|上年度末|本期发生额|上期发生额"
+    r"|本报告期|上年同期|本期金额|上期金额|本年累计数|上年累计数"
+)
+_CELL_PATTERN = re.compile(_NUMBER_PATTERN.pattern + r"|(?<!\S)[—–-](?!\S)")
 _ENUMERATION_PATTERN = re.compile(
     r"^(?:(?:[（(]?[一二三四五六七八九十]+[）)、.．])|(?:[（(]?\d+[）)、.．]))\s*"
 )
@@ -43,6 +55,12 @@ _STATEMENT_TITLES = (
     "母公司利润表",
     "合并现金流量表",
     "母公司现金流量表",
+    "公司资产负债表",
+    "公司利润表",
+    "公司现金流量表",
+    "合并所有者权益变动表",
+    "母公司所有者权益变动表",
+    "公司所有者权益变动表",
 )
 _TARGET_STATEMENTS = frozenset({"合并资产负债表", "合并利润表", "合并现金流量表"})
 _UNIT_SCALES: dict[str, int] = {"元": 1, "千元": 1_000, "万元": 10_000, "百万元": 1_000_000}
@@ -108,6 +126,8 @@ class StatementLine:
     unit_label: str | None
     scale: int | None
     column_label: str | None
+    column_index: int = 0
+    has_note_column: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -220,14 +240,29 @@ class DeterministicFinancialFactExtractor:
         active_unit: str | None = None
         active_scale: int | None = None
         active_column: str | None = None
+        column_index = 0
+        has_note_column = False
+        global_unit: str | None = None
         output: list[StatementLine] = []
 
         for page_number, page_text in enumerate(pages, start=1):
-            for line_number, raw_line in enumerate(page_text.splitlines(), start=1):
+            page_lines = page_text.splitlines()
+            for line_number, raw_line in enumerate(page_lines, start=1):
                 text = raw_line.strip()
                 if not text:
                     continue
                 compact = _compact(text)
+                global_match = _GLOBAL_UNIT_PATTERN.fullmatch(compact)
+                if global_match is not None:
+                    unit = global_match.group(1)
+                    if global_unit is not None and global_unit != unit:
+                        raise IngestionAbstention(
+                            "STATEMENT_UNIT_AMBIGUOUS",
+                            "normalization",
+                            "Conflicting financial-report-wide unit declarations.",
+                        )
+                    global_unit = unit
+                    continue
                 statement_title = self._statement_title(compact)
                 if statement_title is not None:
                     active_statement = (
@@ -235,9 +270,11 @@ class DeterministicFinancialFactExtractor:
                         if statement_title in _TARGET_STATEMENTS
                         else None
                     )
-                    active_unit = None
-                    active_scale = None
+                    active_unit = global_unit
+                    active_scale = _UNIT_SCALES[global_unit] if global_unit else None
                     active_column = None
+                    column_index = 0
+                    has_note_column = False
                     continue
                 if active_statement is None:
                     continue
@@ -254,9 +291,10 @@ class DeterministicFinancialFactExtractor:
                     active_scale = _UNIT_SCALES[unit]
                     continue
 
-                column = self._current_column(compact, active_statement, reporting_period)
-                if compact.startswith("项目"):
-                    if column is None:
+                if re.match(r"^(?:项目|(?:资产|负债|股东权益)?附注)", compact):
+                    header = self._header_text(page_lines, line_number - 1)
+                    columns = self._current_columns(header, active_statement, reporting_period)
+                    if columns is None:
                         raise IngestionAbstention(
                             "REPORTING_COLUMN_UNRESOLVED",
                             "normalization",
@@ -265,7 +303,7 @@ class DeterministicFinancialFactExtractor:
                                 f"{active_statement} on physical page {page_number}."
                             ),
                         )
-                    active_column = column
+                    active_column, column_index, has_note_column = columns
                     continue
 
                 output.append(
@@ -277,6 +315,8 @@ class DeterministicFinancialFactExtractor:
                         unit_label=active_unit,
                         scale=active_scale,
                         column_label=active_column,
+                        column_index=column_index,
+                        has_note_column=has_note_column,
                     )
                 )
         return tuple(output)
@@ -294,13 +334,25 @@ class DeterministicFinancialFactExtractor:
         return match.group(1) if match is not None else None
 
     @staticmethod
-    def _current_column(
+    def _header_text(lines: list[str], start: int) -> str:
+        """Join only adjacent header fragments, never a financial data row."""
+        parts = [lines[start]]
+        for line in lines[start + 1 : start + 20]:
+            compact = _compact(line)
+            if not compact:
+                continue
+            if re.match(r"^(?:截至|\d{1,4}(?:年|月|个月)|[（(](?:未经审计|经审计))", compact):
+                parts.append(line)
+            else:
+                break
+        return _compact(" ".join(parts))
+
+    @staticmethod
+    def _current_columns(
         compact: str,
         statement: StatementName,
         reporting_period: JsonObject,
-    ) -> str | None:
-        if not compact.startswith("项目"):
-            return None
+    ) -> tuple[str, int, bool] | None:
         year = int(reporting_period["fiscal_year"])
         if statement == "合并资产负债表":
             end = str(reporting_period["period_end"])
@@ -315,6 +367,7 @@ class DeterministicFinancialFactExtractor:
             specific: tuple[str, ...]
             if period == "H1":
                 specific = (
+                    f"截至{year}年6月30日止6个月期间",
                     f"{year}年半年度",
                     f"{year}年1—6月",
                     f"{year}年1-6月",
@@ -329,10 +382,12 @@ class DeterministicFinancialFactExtractor:
             else:
                 specific = ()
             aliases = (*specific, "本期发生额", "本报告期", "本期金额", "本年累计数")
-        matches = [alias for alias in aliases if alias in compact]
-        if not matches:
+        labels = _HEADER_LABEL_PATTERN.findall(compact)
+        matches = [index for index, label in enumerate(labels) if label in aliases]
+        if len(labels) != 2 or len(matches) != 1:
             return None
-        return matches[0]
+        index = matches[0]
+        return labels[index], index, "附注" in compact
 
     def _extract_metric(
         self,
@@ -343,6 +398,13 @@ class DeterministicFinancialFactExtractor:
         statement_lines = [line for line in lines if line.statement == definition.statement]
         candidates: list[ExtractedFinancialCell] = []
         for index, first in enumerate(statement_lines):
+            first_text = self._strip_enumeration(first.text)
+            first_token = _CELL_PATTERN.search(first_text)
+            prefix = self._normalize_row_label(
+                first_text[: first_token.start()] if first_token else first_text
+            )
+            if not prefix or not any(alias.startswith(prefix) for alias in definition.row_aliases):
+                continue
             combined_lines: list[StatementLine] = []
             for current in statement_lines[index : index + 5]:
                 if current.page != first.page:
@@ -350,20 +412,50 @@ class DeterministicFinancialFactExtractor:
                 combined_lines.append(current)
                 combined_text = " ".join(item.text for item in combined_lines)
                 stripped = self._strip_enumeration(combined_text)
-                number_matches = list(_NUMBER_PATTERN.finditer(stripped))
+                number_matches = list(_CELL_PATTERN.finditer(stripped))
                 if len(number_matches) < 2:
                     continue
                 first_number = number_matches[0]
                 row_label = self._normalize_row_label(stripped[: first_number.start()])
                 if row_label not in definition.row_aliases:
                     break
+                tokens = [match.group(0).strip() for match in number_matches]
+                if (
+                    first.has_note_column
+                    and len(tokens) == 3
+                    and re.fullmatch(r"\d{1,3}", tokens[0])
+                ):
+                    tokens = tokens[1:]
+                elif (
+                    first.has_note_column
+                    and len(tokens) == 2
+                    and re.fullmatch(r"\d{1,3}", tokens[0])
+                ):
+                    raise IngestionAbstention(
+                        "VALUE_COLUMN_AMBIGUOUS",
+                        "normalization",
+                        "A small integer may be a note reference rather than a value.",
+                    )
+                if len(tokens) != 2:
+                    raise IngestionAbstention(
+                        "VALUE_COLUMN_AMBIGUOUS",
+                        "normalization",
+                        f"{definition.metric_code} does not have two resolved value columns.",
+                    )
+                raw_value = tokens[first.column_index]
+                if raw_value in {"-", "—", "–"}:
+                    raise IngestionAbstention(
+                        "METRIC_VALUE_MISSING",
+                        "normalization",
+                        f"{definition.metric_code} has no reported current-period value.",
+                    )
                 candidates.append(
                     self._promote_candidate(
                         definition=definition,
                         first=first,
                         last=combined_lines[-1],
                         row_label=row_label,
-                        raw_value=first_number.group(0),
+                        raw_value=raw_value,
                         evidence_text=combined_text,
                         page_text=pages[first.page - 1],
                     )
@@ -402,7 +494,7 @@ class DeterministicFinancialFactExtractor:
     def _normalize_row_label(cls, label: str) -> str:
         compact = _compact(label)
         compact = cls._strip_enumeration(compact)
-        compact = re.sub(r"^其中[：:]", "", compact)
+        compact = re.sub(r"^(?:其中|减|加)[：:]", "", compact)
         compact = _PARENTHETICAL_PATTERN.sub("", compact)
         return compact.strip("：:")
 
@@ -433,6 +525,8 @@ class DeterministicFinancialFactExtractor:
             line.unit_label != first.unit_label
             or line.scale != first.scale
             or line.column_label != first.column_label
+            or line.column_index != first.column_index
+            or line.has_note_column != first.has_note_column
             for line in (first, last)
         ):
             raise IngestionAbstention(

@@ -1,0 +1,285 @@
+{
+  "abstentions": [],
+  "acquisition": {
+    "byte_count": 5750855,
+    "content_hash": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+    "media_type": "application/pdf",
+    "raw_payload_committed": false,
+    "retrieved_at": "2026-09-03T22:42:00+08:00"
+  },
+  "company": {
+    "company_id": "cn_002594",
+    "country_code": "CN",
+    "exchange": "SZSE",
+    "legal_name": "比亚迪股份有限公司",
+    "ticker": "002594"
+  },
+  "created_at": "2026-09-03T15:58:37.094398+00:00",
+  "data_namespace": "product",
+  "discovery": {
+    "announcement_id": "cninfo-1221030552",
+    "discovered_at": "2026-09-03T15:58:32.759560+00:00",
+    "document_title": "比亚迪股份有限公司2024年半年度报告",
+    "publication_time": "2024-08-29T23:59:59+08:00",
+    "registry": "CNINFO",
+    "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF"
+  },
+  "extraction": {
+    "ambiguity_policy": "abstain_entire_package",
+    "extractor_name": "researchforge_deterministic_financial_statement",
+    "extractor_version": "1.1.0",
+    "llm_used": false,
+    "method": "deterministic_pdf_text_recovery",
+    "numerical_truth_source": "verified_pdf",
+    "parser_text_hash": "5b3d5ec853d8a7a6caf9499ea7cc232fa463daa878c425151516c7277916ed24",
+    "promoted_metric_count": 6,
+    "recoveries": [
+      {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "evidence_text": "一、 营业收入 45   301,126,713    260,124,143",
+        "evidence_text_hash": "98c224718b07d9251c60f5776a4624adc7ce7b4ab44d0efcf799b239528a5cc6",
+        "line_end": 14,
+        "line_start": 14,
+        "metric_code": "revenue",
+        "normalized_value": "301126713000",
+        "page": 84,
+        "page_text_hash": "272a25b2d9ff1ba44311cddf6c25b91f4d4ecf62e0baed7d86b8e9a916390a47",
+        "raw_value": "301,126,713",
+        "recovery_hash": "301c40ed52be53a4ecb4cb13d2d08e6a796118146222d970bec24430be24be67",
+        "reported_value": "301126713",
+        "row_label": "营业收入",
+        "scale": 1000,
+        "statement": "合并利润表",
+        "unit_label": "千元"
+      },
+      {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "evidence_text": "减：营业成本 45  240,859,982    212,451,556",
+        "evidence_text_hash": "a63928da41e6355dc6987a9d995b6772ce753d863697a4670e1ec391eebd1535",
+        "line_end": 15,
+        "line_start": 15,
+        "metric_code": "operating_cost",
+        "normalized_value": "240859982000",
+        "page": 84,
+        "page_text_hash": "272a25b2d9ff1ba44311cddf6c25b91f4d4ecf62e0baed7d86b8e9a916390a47",
+        "raw_value": "240,859,982",
+        "recovery_hash": "48372b57ca0c8d49cf13224770889aa9ef29c60e47836b6656a4c71d305ea8e2",
+        "reported_value": "240859982",
+        "row_label": "营业成本",
+        "scale": 1000,
+        "statement": "合并利润表",
+        "unit_label": "千元"
+      },
+      {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "evidence_text": "归属于母公司所有者的净利润   13,631,257   10,954,145",
+        "evidence_text_hash": "de7c09b4fd2dedcec36ce40263b0bfb69c3a59ab3bdce1acf18c0c666d49d2c0",
+        "line_end": 48,
+        "line_start": 48,
+        "metric_code": "net_income",
+        "normalized_value": "13631257000",
+        "page": 84,
+        "page_text_hash": "272a25b2d9ff1ba44311cddf6c25b91f4d4ecf62e0baed7d86b8e9a916390a47",
+        "raw_value": "13,631,257",
+        "recovery_hash": "8ca2c5aee97a1657a5c2f287ea1813194422b59310a8612a3208d72a8aaf9ef2",
+        "reported_value": "13631257",
+        "row_label": "归属于母公司所有者的净利润",
+        "scale": 1000,
+        "statement": "合并利润表",
+        "unit_label": "千元"
+      },
+      {
+        "column_label": "截至2024年6月30日止6个月期间",
+        "evidence_text": "经营活动产生的现金流量净额 62    14,178,310    81,971,177",
+        "evidence_text_hash": "12387ad2b3baa1f1b6c28da74298d97bbe29d39bb0593b12f6cca577a9bd23a5",
+        "line_end": 38,
+        "line_start": 38,
+        "metric_code": "operating_cash_flow",
+        "normalized_value": "14178310000",
+        "page": 88,
+        "page_text_hash": "98063c3722708c4fd6c3a89f1e50f58009006f5deb1c48e1047ff6ae0b0b2072",
+        "raw_value": "14,178,310",
+        "recovery_hash": "f1f0957e5aa24af876e1de04e52a62f2cd6139980f959f0e3462df566cbb39ba",
+        "reported_value": "14178310",
+        "row_label": "经营活动产生的现金流量净额",
+        "scale": 1000,
+        "statement": "合并现金流量表",
+        "unit_label": "千元"
+      },
+      {
+        "column_label": "2024年6月30日",
+        "evidence_text": "应收账款 4  71,814,516   61,866,019",
+        "evidence_text_hash": "b3f4adabca8b98cdfb25fa7e66e483de0408960cbd9e7aeeb9d3511088c9ac06",
+        "line_end": 19,
+        "line_start": 19,
+        "metric_code": "accounts_receivable",
+        "normalized_value": "71814516000",
+        "page": 81,
+        "page_text_hash": "cfb1fa4f833819b13c5362864f544fc78ad5f8f20baf1ce706048918e70da265",
+        "raw_value": "71,814,516",
+        "recovery_hash": "901a29dd16ea2aee29c74d65510a3975a918e9879db866a68ba5131fc20e1e03",
+        "reported_value": "71814516",
+        "row_label": "应收账款",
+        "scale": 1000,
+        "statement": "合并资产负债表",
+        "unit_label": "千元"
+      },
+      {
+        "column_label": "2024年6月30日",
+        "evidence_text": "存货 8   112,753,013    87,676,748",
+        "evidence_text_hash": "ce3b26d144b6e47276b3a2043c53450617d22c46adf400f93843c814a4ebadc2",
+        "line_end": 23,
+        "line_start": 23,
+        "metric_code": "inventory",
+        "normalized_value": "112753013000",
+        "page": 81,
+        "page_text_hash": "cfb1fa4f833819b13c5362864f544fc78ad5f8f20baf1ce706048918e70da265",
+        "raw_value": "112,753,013",
+        "recovery_hash": "d6bf082a765c0862082d842c7574374a7f77fa895a310ec862ddd53273bec0b5",
+        "reported_value": "112753013",
+        "row_label": "存货",
+        "scale": 1000,
+        "statement": "合并资产负债表",
+        "unit_label": "千元"
+      }
+    ],
+    "schema_version": "1.5.0",
+    "target_metrics": [
+      "revenue",
+      "operating_cost",
+      "net_income",
+      "operating_cash_flow",
+      "accounts_receivable",
+      "inventory"
+    ]
+  },
+  "ingestion_id": "ingestion_byd_2024h1_001",
+  "outputs": [
+    {
+      "artifact_id": "chunk_product_byd_2024h1_accounts_receivable",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "32e08bc0e0af7c2f2aaa063e25701968b53e32fb4490649784bf417989996b20",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_accounts_receivable.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_byd_2024h1_inventory",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "bddfb5b10a6b74a82c1f9c3d7f8bb9eb828f5a4a849384bbab27e5336a40dd6c",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_inventory.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_byd_2024h1_net_income",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "7cc6f6e86fa541cac9c2b536ceb023281a6b58c86f803b5744e1ceb3d9ebd12d",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_net_income.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_byd_2024h1_non_recurring_profit",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "ff1b1de9b3327f8561025bb16279795e1a14914407f61ea0cb585529ef016320",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_non_recurring_profit.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_byd_2024h1_operating_cash_flow",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "eeb8c333262b9dea9301f709f04827639becc7b91c7e0e67390f252be67bc742",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_operating_cash_flow.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_byd_2024h1_operating_cost",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "d036c865b1d21d8c764cde9ac36db8577d7385b9fee5bd5264908390549c0057",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_operating_cost.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_byd_2024h1_revenue",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "a0fef4f92f44ddb1b8e8680b1d293a6f34f809850b1db33d987ea686cfd1cd3e",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_revenue.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "chunk_product_byd_2024h1_unaudited_interim_report",
+      "artifact_kind": "evidence_chunk",
+      "content_hash": "76d0ab4f786b365e07041d4900873550a9c078f1e221ccc413bb0c6d5d4faa3b",
+      "path": "evidence-chunks/chunk_product_byd_2024h1_unaudited_interim_report.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_byd_2024h1_accounts_receivable",
+      "artifact_kind": "financial_fact",
+      "content_hash": "1fc9e0cd34e3ec98f361b6260a2cce80d56932c7858a0f47480e870a50486e24",
+      "path": "financial-facts/fact_product_byd_2024h1_accounts_receivable.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_byd_2024h1_inventory",
+      "artifact_kind": "financial_fact",
+      "content_hash": "3f7d8a8d4f4b89187de21864cd839d28c10d2b8d308982773ef722808bc73938",
+      "path": "financial-facts/fact_product_byd_2024h1_inventory.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_byd_2024h1_net_income",
+      "artifact_kind": "financial_fact",
+      "content_hash": "7197ec73e44c9b0d869f84dd4e74e8f8a6b5148b0df44aae85d5abe7ba9545a9",
+      "path": "financial-facts/fact_product_byd_2024h1_net_income.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_byd_2024h1_operating_cash_flow",
+      "artifact_kind": "financial_fact",
+      "content_hash": "87f0da93a54f628be6c26601d53fe3bf56d706ef1cf65919a4e68805c583d69d",
+      "path": "financial-facts/fact_product_byd_2024h1_operating_cash_flow.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_byd_2024h1_operating_cost",
+      "artifact_kind": "financial_fact",
+      "content_hash": "7b370e4b3842612272594bb4de166958db91b9ae5057ce79a6b84e9f2b01b216",
+      "path": "financial-facts/fact_product_byd_2024h1_operating_cost.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "fact_product_byd_2024h1_revenue",
+      "artifact_kind": "financial_fact",
+      "content_hash": "a42760c96a0be2f343912182bdd4b7c2f0edf11cc014163387dc3ca4f5f4b4a3",
+      "path": "financial-facts/fact_product_byd_2024h1_revenue.json",
+      "schema_version": "1.4.0"
+    },
+    {
+      "artifact_id": "doc_product_byd_2024h1",
+      "artifact_kind": "source_document",
+      "content_hash": "b4f5a966e5d7c7b4bea2ab980b0157d7f17edd40c97fefa4744f423cc39f515e",
+      "path": "source-documents/doc_product_byd_2024h1.json",
+      "schema_version": "1.4.0"
+    }
+  ],
+  "package_hash": "bc6ef857e8170ecc52abd4bcbb730bef6bf0702d796c62f0f17a4d49fa4201aa",
+  "package_id": "product_byd_2024h1_001",
+  "parser": {
+    "page_boundaries_preserved": true,
+    "page_count": 222,
+    "parser_name": "pypdf",
+    "parser_version": "6.10.0",
+    "text_hash": "5b3d5ec853d8a7a6caf9499ea7cc232fa463daa878c425151516c7277916ed24"
+  },
+  "reporting_period": {
+    "accounting_standard": "CAS",
+    "fiscal_period": "H1",
+    "fiscal_year": 2024,
+    "period_basis": "ytd",
+    "period_end": "2024-06-30",
+    "period_start": "2024-01-01",
+    "restatement_status": "as_reported",
+    "statement_scope": "consolidated"
+  },
+  "schema_version": "1.5.0",
+  "status": "ready"
+}

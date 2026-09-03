@@ -36,6 +36,76 @@
         "statement_scope": "consolidated",
         "restatement_status": "as_reported"
       }
+    },
+    {
+      "record_id": "catl-2024fy",
+      "package_id": "product_catl_2024fy_001",
+      "ingestion_id": "ingestion_catl_2024fy_001",
+      "registry": "CNINFO",
+      "source_id": "source_cninfo",
+      "announcement_id": "cninfo-1222806982",
+      "document_id": "doc_product_catl_2024fy",
+      "document_title": "宁德时代新能源科技股份有限公司2024年年度报告",
+      "document_type": "annual_report",
+      "evidence_document_type": "annual_report",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2025-03-15/1222806982.PDF",
+      "published_at": "2025-03-15T23:59:59+08:00",
+      "reviewed_retrieved_at": "2026-09-03T22:42:00+08:00",
+      "expected_sha256": "b4f1713d7b821eb076c102711d177fe942ccc2bc8dd171ae5d7a95799a65b0ad",
+      "expected_byte_count": 2070073,
+      "expected_page_count": 229,
+      "company": {
+        "company_id": "cn_300750",
+        "legal_name": "宁德时代新能源科技股份有限公司",
+        "ticker": "300750",
+        "exchange": "SZSE",
+        "country_code": "CN"
+      },
+      "reporting_period": {
+        "period_start": "2024-01-01",
+        "period_end": "2024-12-31",
+        "fiscal_year": 2024,
+        "fiscal_period": "FY",
+        "period_basis": "ytd",
+        "accounting_standard": "CAS",
+        "statement_scope": "consolidated",
+        "restatement_status": "as_reported"
+      }
+    },
+    {
+      "record_id": "byd-2024h1",
+      "package_id": "product_byd_2024h1_001",
+      "ingestion_id": "ingestion_byd_2024h1_001",
+      "registry": "CNINFO",
+      "source_id": "source_cninfo",
+      "announcement_id": "cninfo-1221030552",
+      "document_id": "doc_product_byd_2024h1",
+      "document_title": "比亚迪股份有限公司2024年半年度报告",
+      "document_type": "semiannual_report",
+      "evidence_document_type": "interim_report",
+      "source_uri": "https://static.cninfo.com.cn/finalpage/2024-08-29/1221030552.PDF",
+      "published_at": "2024-08-29T23:59:59+08:00",
+      "reviewed_retrieved_at": "2026-09-03T22:42:00+08:00",
+      "expected_sha256": "769e9fc195141e7f525d65f0daa308d441c7e39408f0dd584a3722cfc8a306ba",
+      "expected_byte_count": 5750855,
+      "expected_page_count": 222,
+      "company": {
+        "company_id": "cn_002594",
+        "legal_name": "比亚迪股份有限公司",
+        "ticker": "002594",
+        "exchange": "SZSE",
+        "country_code": "CN"
+      },
+      "reporting_period": {
+        "period_start": "2024-01-01",
+        "period_end": "2024-06-30",
+        "fiscal_year": 2024,
+        "fiscal_period": "H1",
+        "period_basis": "ytd",
+        "accounting_standard": "CAS",
+        "statement_scope": "consolidated",
+        "restatement_status": "as_reported"
+      }
     }
   ]
 }

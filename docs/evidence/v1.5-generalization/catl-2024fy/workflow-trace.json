@@ -1,0 +1,221 @@
+{
+  "checkpoint_schema_version": "1.0.0",
+  "engine": "langgraph",
+  "finished_at": "2026-09-03T16:12:46.371412+00:00",
+  "graph_version": "1.0.0",
+  "repair_attempts": 0,
+  "run_id": "run_8789d29485e3484e94358009445d0c46",
+  "schema_version": "1.4.0",
+  "stages": [
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.324147+00:00",
+      "input_artifact_ids": [
+        "request_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "task_spec_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "sanitized_summary": "Validated one bounded filing-analysis earnings-quality request.",
+      "sequence": 1,
+      "stage": "understanding_question",
+      "started_at": "2026-09-03T16:12:46.324147+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.324834+00:00",
+      "input_artifact_ids": [
+        "task_spec_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "plan_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "sanitized_summary": "Persistable four-step research plan prepared.",
+      "sequence": 2,
+      "stage": "planning",
+      "started_at": "2026-09-03T16:12:46.324834+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.325984+00:00",
+      "input_artifact_ids": [
+        "plan_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "fact_product_catl_2024fy_accounts_receivable",
+        "fact_product_catl_2024fy_inventory",
+        "fact_product_catl_2024fy_net_income",
+        "fact_product_catl_2024fy_operating_cash_flow",
+        "fact_product_catl_2024fy_operating_cost",
+        "fact_product_catl_2024fy_revenue"
+      ],
+      "sanitized_summary": "Loaded 6 eligible normalized financial facts.",
+      "sequence": 3,
+      "stage": "loading_financial_data",
+      "started_at": "2026-09-03T16:12:46.325984+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.326590+00:00",
+      "input_artifact_ids": [
+        "fact_product_catl_2024fy_accounts_receivable",
+        "fact_product_catl_2024fy_inventory",
+        "fact_product_catl_2024fy_net_income",
+        "fact_product_catl_2024fy_operating_cash_flow",
+        "fact_product_catl_2024fy_operating_cost",
+        "fact_product_catl_2024fy_revenue"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "chunk_product_catl_2024fy_accounts_receivable",
+        "chunk_product_catl_2024fy_inventory",
+        "chunk_product_catl_2024fy_net_income",
+        "chunk_product_catl_2024fy_operating_cash_flow",
+        "chunk_product_catl_2024fy_operating_cost",
+        "chunk_product_catl_2024fy_revenue"
+      ],
+      "sanitized_summary": "Resolved 6 bounded evidence chunks across 1 official source documents.",
+      "sequence": 4,
+      "stage": "retrieving_evidence",
+      "started_at": "2026-09-03T16:12:46.326590+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.327153+00:00",
+      "input_artifact_ids": [
+        "fact_product_catl_2024fy_accounts_receivable",
+        "fact_product_catl_2024fy_inventory",
+        "fact_product_catl_2024fy_net_income",
+        "fact_product_catl_2024fy_operating_cash_flow",
+        "fact_product_catl_2024fy_operating_cost",
+        "fact_product_catl_2024fy_revenue"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_gross_profit",
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_gross_margin",
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_cash_conversion",
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_profit_cash_divergence"
+      ],
+      "sanitized_summary": "Calculated gross profit, gross margin, cash conversion and divergence signal.",
+      "sequence": 5,
+      "stage": "calculating",
+      "started_at": "2026-09-03T16:12:46.327153+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.327725+00:00",
+      "input_artifact_ids": [
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_gross_profit",
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_gross_margin",
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_cash_conversion",
+        "calc_run_8789d29485e3484e94358009445d0c46_cn_300750_profit_cash_divergence"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "checks_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "sanitized_summary": "Completed 9 deterministic checks.",
+      "sequence": 6,
+      "stage": "cross_checking",
+      "started_at": "2026-09-03T16:12:46.327725+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.329216+00:00",
+      "input_artifact_ids": [
+        "checks_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "counter_search_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "sanitized_summary": "Counter-evidence search completed with an honest not_found outcome.",
+      "sequence": 7,
+      "stage": "searching_counter_evidence",
+      "started_at": "2026-09-03T16:12:46.329216+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.329514+00:00",
+      "input_artifact_ids": [
+        "checks_run_8789d29485e3484e94358009445d0c46",
+        "counter_search_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "conclusion_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "sanitized_summary": "Formed bounded language from precomputed facts and calculations.",
+      "sequence": 8,
+      "stage": "forming_conclusion",
+      "started_at": "2026-09-03T16:12:46.329514+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.330105+00:00",
+      "input_artifact_ids": [
+        "conclusion_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "result_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "sanitized_summary": "Assembled the canonical Research Result with fact-linked material claims.",
+      "sequence": 9,
+      "stage": "validating_output",
+      "started_at": "2026-09-03T16:12:46.330105+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    },
+    {
+      "failure_code": null,
+      "finished_at": "2026-09-03T16:12:46.330813+00:00",
+      "input_artifact_ids": [
+        "result_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "node_version": "1.0.0",
+      "output_artifact_ids": [
+        "manifest_run_8789d29485e3484e94358009445d0c46"
+      ],
+      "sanitized_summary": "Completed the bounded workflow; immutable artifacts are ready to persist.",
+      "sequence": 10,
+      "stage": "completed",
+      "started_at": "2026-09-03T16:12:46.330813+00:00",
+      "status": "succeeded",
+      "tool_record_ids": []
+    }
+  ],
+  "started_at": "2026-09-03T16:12:46.323495+00:00",
+  "terminal_state": "succeeded",
+  "trace_hash": "5946f2ec1cd683e4bea0f05537b8afa018b22a55d20b160483a0f0a8cae4775e",
+  "trace_id": "trace_run_8789d29485e3484e94358009445d0c46",
+  "usage": {
+    "cost_currency": "USD",
+    "estimated_cost": 0,
+    "input_tokens": 0,
+    "latency_ms": 0,
+    "output_tokens": 0,
+    "tool_calls": 0,
+    "total_tokens": 0
+  }
+}
