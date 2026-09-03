@@ -95,6 +95,9 @@ uv run python -m scripts.n8n_smoke
 和 [契约](../../docs/contracts/v1.5/n8n-integration.md)。正式 Web+n8n 真人评价仍在最终 Phase 6；
 **当前 human usefulness = UNVALIDATED**。
 
+Compose 健康检查使用 `/healthz/readiness`，只有数据库迁移、服务初始化和发布工作流启动完成后
+才允许 smoke；通用 `/healthz` 只表示进程存活，不足以作为 webhook 就绪信号。
+
 ## 官方版本/节点依据
 
 已用实际 `2.37.9` 镜像的 CLI help 和节点实现校对 import/publish、HTTP full response/neverError、

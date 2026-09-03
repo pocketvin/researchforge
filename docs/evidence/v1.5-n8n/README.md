@@ -49,6 +49,9 @@ The full backend regression initially expected seven V1.5 schemas; updated it fo
 integration schema. The local Playwright default browser was missing; all five journeys passed
 using the existing Chrome executable. n8n ESLint reuses the installed frontend toolchain without
 adding dependencies and now understands the Code-node function body context.
+首次公共 CI 的 n8n 容器检查失败：`/healthz` 在 n8n 发布工作流激活前已返回 200，smoke 收到
+非 JSON 启动响应。已依据实际 2.37.9 服务实现改为 `/healthz/readiness`；该端点同时要求数据库
+连接、迁移和 `fullyReady`，修复后必须重跑全部 CI，不能把首次运行记为通过。
 
 ## Reproduction
 
