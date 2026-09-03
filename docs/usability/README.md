@@ -5,9 +5,10 @@ Web-only kit as history. Neither is proof that a participant study happened.
 
 Current status: **PREPARATION_ONLY · 0 completed real-human sessions · HUMAN_UNVALIDATED**.
 
-Do not run a formal Pilot until Phase 5 is green and frozen. The final protocol evaluates both
-surfaces over the same backend with at least six real target users; criteria and denominators are
-now frozen before testing.
+Phase 5 is green and frozen. The final protocol is ready for owner-coordinated recruitment and
+evaluates both surfaces over the same backend with at least six real target users; criteria and
+denominators were frozen before testing. No session exists yet, so this remains preparation rather
+than human evidence.
 
 Final kit:
 

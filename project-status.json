@@ -12,15 +12,16 @@
     "V15_PRODUCT",
     "FACT_EXTRACTION",
     "GENERALIZATION",
-    "N8N_INTEGRATION"
+    "N8N_INTEGRATION",
+    "PRODUCT_HARDENING"
   ],
-  "current_gate": "PRODUCT_HARDENING",
-  "gate_status": "in_progress",
+  "current_gate": "HUMAN_EVALUATION",
+  "gate_status": "not_started",
   "current_milestone": {
-    "id": "product_hardening",
-    "title": "Final Web and n8n UX, demo and evaluation-protocol hardening",
-    "outcome": "Phase 5 Web+n8n UX, demo launcher, screenshots and frozen evaluation protocol pass locally. Public candidate CI is pending; zero human sessions have occurred.",
-    "status": "in_progress"
+    "id": "final_real_human_evaluation",
+    "title": "Final real-human Web and n8n evaluation",
+    "outcome": "Phase 5 passed locally and in public branch CI. The dual-surface protocol is frozen; zero real-human sessions exist and participant consent and coordination are required before execution.",
+    "status": "not_started"
   },
   "frozen_v1_4": {
     "outcome": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
@@ -30,8 +31,13 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-04T05:39:18+08:00",
+    "at": "2026-09-04T06:02:38+08:00",
     "commands": [
+      {
+        "command": "GitHub Actions branch run 33809641523 on 5062370",
+        "exit_code": 0,
+        "summary": "The exact Phase 5 candidate passed backend, frontend and container jobs, including the actual n8n form/webhook and bounded failure fixture."
+      },
       {
         "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
         "exit_code": 0,
@@ -56,26 +62,31 @@
         "command": "node workflow generation/check; 10 Node groups; integration ESLint",
         "exit_code": 0,
         "summary": "Portable dual-trigger workflow is generated from reviewable Code nodes; routing, escaping, bounds and unchanged webhook output pass."
-      },
-      {
-        "command": "GitHub Actions main run 33781903537 on 0f9c275",
-        "exit_code": 0,
-        "summary": "Latest published main baseline passed all Phase 4 backend, frontend and container jobs. Phase 5 candidate CI remains pending."
       }
     ]
   },
   "next_action": {
-    "title": "Publish and verify the Phase 5 candidate",
-    "why": "Implementation and local gates pass; public CI must be green before the frozen human evaluation may begin.",
-    "first_step": "Push a Phase 5 candidate branch, wait for all GitHub Actions jobs, then advance to HUMAN_EVALUATION only if green.",
+    "title": "Coordinate six real participants and run the frozen dual-surface protocol",
+    "why": "Real-human evidence is the only remaining product prerequisite before Release Freeze; AI simulation cannot substitute for it.",
+    "first_step": "The owner arranges at least six consenting target users and schedules balanced Web+n8n sessions without storing identities or private contact details in Git.",
     "acceptance_evidence": [
-      "All backend, frontend and container GitHub Actions jobs pass on the exact candidate commit.",
-      "The candidate retains actual Web+n8n success and failure evidence over one backend.",
-      "Only after CI passes is PRODUCT_HARDENING added to completed_gates.",
-      "Human evaluation starts with the already frozen protocol and still reports zero sessions until real participants consent."
+      "At least six eligible consenting real target users remain in the frozen denominator.",
+      "Groups are counterbalanced and both Web and n8n use the same ResearchForge backend.",
+      "Independent, assisted, failed and not-attempted outcomes are recorded without hiding failures.",
+      "The deterministic summary meets the thresholds frozen before recruitment."
     ]
   },
-  "blockers": [],
+  "blockers": [
+    {
+      "id": "real_human_participants_required",
+      "description": "Phase 6 requires at least six consenting real target users; zero sessions exist and Codex cannot fabricate or substitute them.",
+      "blocks": [
+        "HUMAN_EVALUATION",
+        "RELEASE_FREEZE"
+      ],
+      "owner_action": "Arrange at least six consenting individual researchers, finance learners or junior researchers and schedule the frozen Web+n8n sessions; do not send identities or private contact details into the repository."
+    }
+  ],
   "pending_decisions": [],
   "resumption": {
     "working_directory": ".",
@@ -95,8 +106,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-04T05:39:18+08:00",
-    "summary": "Implemented and locally verified final Web+n8n UX, reproducible demo, screenshots and frozen dual-surface human-evaluation contract. Candidate public CI is pending; human sessions remain zero.",
+    "ended_at": "2026-09-04T06:02:38+08:00",
+    "summary": "Closed Phase 5 after the exact candidate passed local gates and all public GitHub Actions jobs. Phase 6 is ready but not started because human sessions remain zero.",
     "files_changed": [
       "CHANGELOG.md",
       "DECISIONS.md",
@@ -126,5 +137,5 @@
       "tests/test_start_demo.py"
     ]
   },
-  "updated_at": "2026-09-04T05:39:18+08:00"
+  "updated_at": "2026-09-04T06:02:38+08:00"
 }

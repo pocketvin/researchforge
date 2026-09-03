@@ -1,6 +1,6 @@
 # Phase 5 Product-Hardening Evidence
 
-Status: **LOCAL ENGINEERING CHECKPOINT PASSED · PUBLIC CI PENDING**
+Status: **ENGINEERING CHECKPOINT PASSED LOCALLY AND IN PUBLIC CI**
 
 This directory binds new Phase 5 UX evidence without rewriting the preserved Phase 4 n8n output
 artifacts in `docs/evidence/v1.5-n8n/`.
@@ -30,5 +30,7 @@ Actual screenshots:
 
 Local full gate passed with 197 Python tests, strict typing of 92 source files, four frontend unit
 tests, three mocked and three live E2E journeys, fresh Docker builds, Docker/n8n smoke, ten n8n
-Node groups, nine active V1.5 schemas and 11 validated PNGs. Public candidate CI is not yet
-available; this status must not be upgraded until all GitHub Actions jobs pass.
+Node groups, nine active V1.5 schemas and 11 validated PNGs. The exact candidate commit `5062370`
+then passed the backend, frontend and container jobs in public GitHub Actions run
+[33809641523](https://github.com/pocketvin/researchforge/actions/runs/33809641523). This remains
+automated engineering evidence, not real-human evidence or final independent acceptance.

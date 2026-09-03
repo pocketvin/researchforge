@@ -198,17 +198,18 @@ a list of unresolved work. Remaining delivery work is governed by
 - The frozen outcome `RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS` is honest and must
   remain immutable.
 - No human Pilot has been run and no human-usefulness claim is allowed. The final dual-surface
-  tasks, A/B allocation, outcome fields, thresholds and denominator are frozen before recruitment;
-  execution remains deferred until the Phase 5 candidate passes its engineering gate.
+  tasks, A/B allocation, outcome fields, thresholds and denominator are frozen before recruitment.
+  Phase 5 has passed local and public engineering gates; execution now requires real participant
+  consent and coordination.
 
-### 8.6 Demo and career value — first real demo closed; final hardening remains
+### 8.6 Demo and career value — final hardening engineering checkpoint passed
 
 - The current product-first demo uses the official CATL 2024H1 disclosure, verified values,
   deterministic arithmetic, source citations, counter evidence, monitoring and a complete trace.
 - Generalized extraction and same-backend n8n engineering have passed their checkpoints. The
   native n8n form, bounded failure page, dual-surface screenshots and reproducible launcher are
-  implemented for Phase 5; public CI and real-human evaluation are still required before release
-  freeze.
+  implemented for Phase 5 and passed public CI. Real-human evaluation and the final project-wide
+  acceptance are still required before release freeze.
 
 ## 9. V1.5 Scope
 
