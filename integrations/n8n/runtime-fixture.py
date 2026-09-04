@@ -29,7 +29,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         global polls
-        if self.path == "/v1/catalog":
+        if self.path == "/healthz":
+            self.reply(200, {"status": "ok", "version": "1.7.0"})
+        elif self.path == "/v1/catalog":
             self.reply(
                 200,
                 {

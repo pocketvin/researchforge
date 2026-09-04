@@ -15,17 +15,17 @@ Company name / ticker + optional market + optional period + research question
 For example:
 
 ```text
-贵州茅台 + Auto + Latest + “最新报告期利润是否真正转化成了经营现金流？”
-NVDA + US + Latest + “How well does profit convert into operating cash flow?”
-腾讯 + HK + 2025FY + “利润和经营现金流的质量如何？”
+贵州茅台 + Auto + Latest + “当前最值得关注的三个经营风险是什么？”
+NVDA + US + Latest + “Where is recent growth coming from, and which drivers matter most?”
+腾讯 + HK + 2025FY + “主要业务和分部结构发生了哪些重要变化？”
 ```
 
 ResearchForge then performs:
 
 ```text
 Entity Resolution → Official Filing Discovery → Verified Extraction
-→ Evidence → Financial Facts → Deterministic Calculations
-→ Research Reasoning → Counter Evidence → Claims → Trace
+→ Question Routing → Research Plan → Full-filing Evidence Retrieval
+→ Deterministic Calculations → Counter Evidence → Claims / Deep Analysis → Trace
 ```
 
 ## Why it is different
@@ -40,7 +40,7 @@ ResearchForge is not primarily a filing summarizer. Its core promise is that suc
 - The same authoritative backend serves Web and n8n.
 - Historical evaluation/Quality Lab evidence remains preserved but is not the normal user journey.
 
-## V1.6 market boundary
+## V1.7 market boundary
 
 | Market | Company resolution | Official source | Numerical truth path |
 |---|---|---|---|
@@ -48,16 +48,16 @@ ResearchForge is not primarily a filing summarizer. Its core promise is that suc
 | US | ticker / issuer name | SEC EDGAR | SEC Company Facts/XBRL tied to filing accession |
 | HK | ticker / English / traditional / simplified Chinese name | HKEXnews | verified native-text IFRS annual-report PDF |
 
-The first V1.6 analysis contract still requires six comparable financial facts: revenue, operating cost, net income, operating cash flow, accounts receivable and inventory. Unsupported document layouts fail closed.
+V1.7 keeps six comparable financial facts—revenue, operating cost, net income, operating cash flow, accounts receivable and inventory—as the deterministic numerical backbone, while General Research also retrieves full-filing narrative Evidence. Unsupported document layouts fail closed.
 
 ## Current status
 
-- Active direction: **V1.6 Autonomous Research**.
-- Golden Regression: **PASS** — trusted live success exists in CN, US and HK; the extended nine-company set either succeeds with complete evidence or abstains explicitly.
-- Local engineering gate: **PASS** — 199 backend tests, strict typing, contracts, frontend unit/build, mocked/live E2E, Docker/PostgreSQL and actual n8n runtime checks are green.
-- Web and n8n both use the same company-first autonomous backend; reviewed V1.5 packages remain immutable cache/regression baselines.
-- Current gate: **RELEASE_FREEZE — engineering candidate ready, owner acceptance pending**.
-- V1.6 public GitHub Actions has not yet been claimed for this uncommitted candidate.
+- Active direction: **V1.7 General Company Research**.
+- Golden Regression: **PASS** — quick CN/US/HK success; extended nine-company set produced **6 trusted successes + 3 explicit safe abstentions**.
+- Local engineering gate: **PASS** — 207 backend tests, strict mypy over 101 source files, V1.7 contracts, frontend unit/build, mocked/live E2E, fresh Docker build and actual n8n 2.37.9 runtime are green.
+- Real NVIDIA growth research now yields 6 Findings, 4 Deep Analysis sections and 5 Follow-ups after SEC retrieval hardening.
+- Web and n8n V1.7 use the same company-first backend; historical V1.4/V1.5/V1.6 evidence remains preserved.
+- Current gate: **RELEASE_FREEZE — engineering complete, owner manual acceptance pending**.
 - Six-person Human Pilot: **removed from the active release criteria by RF-032**.
 - Investment advice, order execution and price prediction: not provided.
 
@@ -103,7 +103,7 @@ uv run python scripts/start_demo.py
 ```
 
 Web: `http://127.0.0.1:4173/`
-n8n V1.6 form: `http://127.0.0.1:5678/form/researchforge-v16-form`
+n8n V1.7 form: `http://127.0.0.1:5678/form/researchforge-v17-form`
 
 ## Autonomous API
 
@@ -156,11 +156,11 @@ A successful case must contain exactly the six required facts, valid Claim→Fac
 
 Product data comes from public official disclosures. Raw downloaded filing bytes remain ignored by Git. Derived artifacts retain provenance and hashes. `fixture` and `benchmark` namespaces never silently substitute for missing product data.
 
-When an explicit company+period matches a reviewed V1.5 product package, V1.6 may reuse that immutable package as a cache. Latest/arbitrary companies otherwise go through live official discovery.
+When an explicit company+period matches a reviewed V1.5 product package, compatibility `financial_snapshot` runs may reuse that immutable cache. V1.7 General Research uses separate versioned full-text Evidence packages so stale six-fact-only packages cannot satisfy a deep-research run.
 
 ## Historical evidence
 
-V1.4 and V1.5 contracts, experiments, reviewed filing packages, screenshots and old Human Pilot templates remain in the repository for auditability. They are not silently rewritten to claim V1.6 results.
+V1.4 and V1.5 contracts, experiments, reviewed filing packages, screenshots and old Human Pilot templates remain in the repository for auditability. They are not silently rewritten to claim V1.7 results.
 
 The V1.4 formal evolution hypothesis ended honestly at:
 
@@ -168,14 +168,14 @@ The V1.4 formal evolution hypothesis ended honestly at:
 RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
 ```
 
-The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032 and the active roadmap define the V1.6 direction.
+The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032, RF-033 and the active roadmap define the V1.7 direction.
 
 ## Start here
 
 1. [PROJECT_STATUS.md](PROJECT_STATUS.md) — current milestone and release gate.
-2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.6 completion sequence.
-3. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032.
-4. [n8n integration](integrations/n8n/README.md) — V1.6 external workflow entry.
+2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.7 completion and acceptance sequence.
+3. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032/RF-033.
+4. [n8n integration](integrations/n8n/README.md) — V1.7 external workflow entry.
 5. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
 
 ## Non-goals

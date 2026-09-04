@@ -742,3 +742,19 @@ V1.7 首批 Skill 固定为：Company Overview、Earnings Change、Growth Analys
 ### V1.7 非目标
 
 本轮不加入实时新闻、券商研报、目标价/买卖建议、组合管理、宏观 Agent、多 Agent debate、全市场无限覆盖或开放式自修改。同行比较继续后置，先把单公司官方披露研究做深。
+
+
+## RF-034 — V1.7 工程完成以全链路证据为准，Owner Acceptance 不由自动化代签
+
+**日期：** 2026-09-05
+**状态：** Accepted
+
+### 决策
+
+V1.7 工程完成必须同时满足：三市场 Golden Regression、全仓静态检查与测试、Web mocked/live E2E、fresh Docker build、实际 n8n V1.7 runtime，以及 transport-only bounded-failure fixture。只有这些检查全部通过，才可将施工状态标记为 Engineering Complete。
+
+`RELEASE_FREEZE` 仍保留 owner manual acceptance 这一个人工动作。自动化不能把“测试通过”改写为“owner 已认可产品体验”，也不能把安全 abstention 计作成功研究。
+
+### 结果
+
+最终工程门禁为 207 pytest tests、101-source strict mypy、4 frontend unit tests、3 mocked E2E、3 live-backend E2E、10 n8n Node tests、3 actual n8n success cases 和 5/5 transport-only failure routes。Extended Golden Regression 为 6 trusted successes + 3 safe abstentions。

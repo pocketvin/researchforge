@@ -1,75 +1,55 @@
-# ResearchForge V1.6 Final Delivery Roadmap
+# ResearchForge V1.7 Final Delivery Roadmap
 
 **Updated:** 2026-09-05
-**Status:** Active delivery authority
+**Status:** Engineering delivery complete; owner acceptance remains
 
 ## Final product definition
 
-ResearchForge V1.6 is an auditable Financial Research Agent:
+ResearchForge V1.7 is an auditable, question-driven Financial Research Agent:
 
-> Input a public company name or ticker; ResearchForge resolves the issuer, finds an official filing, acquires and normalizes evidence, runs bounded research, and returns conclusions whose facts, calculations and trace can be inspected.
+> Input a public company name/ticker and a natural-language research question; ResearchForge resolves the issuer, finds an official filing, builds a verified numerical backbone plus full-filing Evidence, plans research around the question, and returns inspectable conclusions, Claims, Deep Analysis and Trace.
 
-The product is not differentiated by “AI can summarize a filing”. Its differentiator is autonomous official-source acquisition plus a fail-closed, inspectable research process.
+The product differentiates on **autonomous official-source acquisition + evidence-first reasoning + fail-closed auditability**, not on generic filing summarization.
 
-## V1.6 scope
+## V1.7 implemented scope
 
-Supported first-class markets:
+- Markets: CN / US / HK through CNINFO, SEC EDGAR and HKEXnews.
+- Skills: Company Overview, Earnings Change, Growth Analysis, Financial Health, Risk Analysis and Business Analysis.
+- Numerical backbone: six deterministic facts and versioned calculations.
+- Research evidence: native PDF/SEC HTML full-text chunks with source identity, locator and hash.
+- Result: Intent, Plan, Claims, Deep Analysis, Overall Judgment, Evidence Coverage and Follow-ups.
+- Surfaces: Web and separate n8n V1.7 workflow over the same authoritative backend.
+- Compatibility: `financial_snapshot` preserves the narrow V1.6-style filing-analysis path; General Research uses versioned evidence packages.
 
-- CN listed companies through CNINFO / official exchange disclosure sources.
-- US listed companies through SEC EDGAR and official XBRL Company Facts.
-- HK listed companies through HKEXnews and native-text IFRS reports.
+## Phase A — Question-driven research layer
 
-The current deterministic research contract requires six core financial facts. Unsupported layouts must abstain.
+**Status: completed.**
 
-## Phase A — Autonomous acquisition and company resolution
+Question Router, Research Planner, evidence retrieval, counter-evidence, evidence-constrained drafting and validation are implemented in the existing bounded ten-stage LangGraph. No second research engine or multi-agent debate was introduced.
 
-**Status: completed for the V1.6 release candidate.**
+## Phase B — Retrieval quality hardening
 
-Deliverables:
+**Status: completed.**
 
-1. Company/ticker input with optional market hint.
-2. Entity resolution for CN, US and HK.
-3. Official filing discovery with point-in-time cutoff.
-4. Download/cache/identity verification.
-5. CN PDF, SEC XBRL and HK IFRS extraction paths.
-6. Immutable run-level Facts/Evidence snapshots.
-7. Reviewed-package reuse for exact company+period cache hits.
-8. Explicit abstention for ambiguous company, missing filing or unreliable extraction.
+SEC HTML no longer collapses all chunks into a two-item same-page cap. Retrieval now preserves HTML diversity and ranks direct answer signals above accidental section labels. Real NVIDIA growth research produces 6 Claims, 4 Deep Analysis sections and 5 follow-ups with Blackwell / hyperscale / segment evidence represented.
 
-Acceptance evidence includes successful live runs for 贵州茅台, NVIDIA and Tencent plus the completed quick/extended Golden Regression.
-
-## Phase B — Product surfaces
+## Phase C — Web + n8n V1.7 surfaces
 
 **Status: completed and runtime-verified.**
 
-Web must expose company/ticker, Auto/CN/US/HK, optional period and research question. n8n must expose the same intent through a separate V1.6 workflow and use the same backend. Neither surface may calculate finance or invent a report on failure.
+Web exposes General Research fields and progressive audit details. n8n V1.7 returns the same backend artifacts plus Intent, Plan, Deep Analysis, Judgment, Follow-ups and Evidence Coverage. Historical V1.5/V1.6 workflow artifacts are preserved rather than overwritten.
 
-## Phase C — Golden Company Regression
+## Phase D — Golden Company Regression
 
 **Status: PASS.**
 
-Quick release set:
+Quick set: 贵州茅台 / NVIDIA / 腾讯 — trusted success in all three supported markets.
 
-- CN: 贵州茅台
-- US: NVIDIA
-- HK: Tencent
+Extended set: 贵州茅台, NVIDIA, 腾讯, 宁德时代, 比亚迪, Apple, Microsoft, Xiaomi, Alibaba. Outcome: **6 trusted successes + 3 safe abstentions**. A legal outcome is either a fully auditable success or an explicit code/stage/reason with no Research Result.
 
-Extended set adds 宁德时代, 比亚迪, Apple, Microsoft, Xiaomi and Alibaba.
+## Phase E — Full engineering gate
 
-For each case, a legal outcome is either:
-
-- **Trusted success:** exactly six required facts, official-source provenance, valid Claim→Fact/Evidence references and completed Trace; or
-- **Safe abstention:** explicit code/stage/reason and no research report.
-
-Quick mode must contain at least one trusted success in each of CN, US and HK. Extended mode is used to expose parser/provider edge cases, not to force 100% success.
-
-The release candidate passed this gate: the quick set succeeded in all three markets, and the extended nine-company set returned six trusted successes plus three explicit parser/normalization abstentions.
-
-## Phase D — Full engineering gate
-
-**Status: PASS locally for the V1.6 release candidate.**
-
-Before Release Freeze, run the applicable repository gates:
+**Status: PASS.**
 
 ```text
 uv lock --check
@@ -80,41 +60,25 @@ pytest
 contract validation
 frontend typecheck/lint/unit/build
 mocked and live-backend Playwright E2E
-n8n generation/unit/lint/runtime smoke
-container build/start/smoke
+n8n generation/unit/runtime + failure fixture
+fresh Docker build/start/smoke
 git diff review
 ```
 
-Historical V1.5 hashes and reviewed evidence must remain intact while V1.6 receives separate workflow/contracts where needed.
+Final verified counts: 207 pytest tests, 101 mypy source files, 4 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 10 n8n Node tests, 3 actual n8n success cases and 5 transport-only failure scenarios.
 
-## Phase E — Owner acceptance and Release Freeze
+## Phase F — Owner acceptance / Release Freeze
 
-**Status: pending owner acceptance.**
+**Status: pending owner action; not an engineering blocker.**
 
-The owner manually tests representative arbitrary-company research, opens supporting evidence and Trace, records any final product/prompt/UI issues, and confirms the V1.6 promise is met. There is no six-person Human Pilot prerequisite.
+The owner manually checks representative arbitrary-company research, Evidence/Trace readability and one bounded failure. Automation must not invent this human acceptance. There is no six-person Human Pilot prerequisite.
 
-Release Freeze is complete only after Golden Regression and the full engineering gate pass and remaining issues are either fixed or explicitly documented as non-blocking limitations.
+## Explicit non-goals
 
-## After V1.6 — V1.7 research intelligence
+- Trading, order execution, price targets or buy/sell recommendations.
+- Real-time market/news infrastructure or Bloomberg/AlphaSense-scale proprietary coverage.
+- Unlimited global exchange/layout support.
+- Multi-agent debate or unrestricted self-modification.
+- Claims of validated human usefulness, analyst productivity improvement or investment performance.
 
-Only after V1.6 is frozen, continue with the differentiating research layer:
-
-1. Evidence-first planning and collection before narrative generation.
-2. Explicit Claim and Evidence objects across broader research questions.
-3. Claim-level confidence from coverage, source quality, freshness and inference risk.
-4. Stronger evaluator categories: retrieval, parsing, evidence, reasoning, citation, temporal and planning failures.
-5. Bounded revision loop with maximum retry count.
-6. Failure-attribution dashboard and regression metrics.
-7. Reusable Research Skills such as FinancialHealth, RiskAnalysis and EarningsChange.
-
-## Explicit non-goals for V1.6
-
-- Trading or order execution.
-- Price targets or buy/sell recommendations.
-- Real-time market-data or high-frequency infrastructure.
-- Bloomberg/AlphaSense-scale proprietary data coverage.
-- Unrestricted support for every global exchange.
-- Large multi-agent debate systems.
-- Human Pilot as a release gate.
-
-Historical V1.4/V1.5 experiment and usability materials remain immutable context, not active roadmap requirements.
+Historical V1.4/V1.5 experiments, negative results and usability materials remain immutable audit context.

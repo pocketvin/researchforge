@@ -635,7 +635,7 @@ def validate_project_checkpoint(checkpoint: dict[str, Any]) -> int:
     required_mirror_text = (
         f"Contract package: {CONTRACT_PACKAGE_VERSION}",
         f"Current gate: {current_gate}",
-        "Scope: V1.6 autonomous productization",
+        "Scope: V1.7 general company research",
     )
     for expected in required_mirror_text:
         if expected not in status_text:
@@ -927,7 +927,7 @@ def validate_v15_product_semantics(
         ROOT / "README.md": (
             "Auditable autonomous financial research for public companies",
             "Company name / ticker + optional market + optional period + research question",
-            "V1.6 Autonomous Research",
+            "V1.7 General Company Research",
             "Quality Lab",
         ),
         ROOT / "docs" / "product" / "researchforge-v1.5-product-thesis.md": (

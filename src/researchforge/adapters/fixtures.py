@@ -143,7 +143,7 @@ class G0FixtureCatalog:
             data_namespace=self.data_namespace,
             companies=sorted(companies.values(), key=lambda item: item.company_id),
             supported_task_types=(
-                ["company_research", "filing_analysis"]
+                ["filing_analysis"]
                 if is_product
                 else [
                     "company_research",

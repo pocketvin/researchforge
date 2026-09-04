@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased] — V1.7 General Company Research
+
+### Research intelligence
+
+- Added Question Router + six Research Skills, question-specific Research Plans, full-filing Evidence retrieval, counter-evidence and evidence-constrained Deep Analysis.
+- Added V1.7 Research Result fields for Intent, Plan, Analysis Sections, Overall Judgment, Suggested Follow-ups and Evidence Coverage while preserving deterministic financial truth.
+- Hardened SEC HTML retrieval so all chunks are not treated as one PDF page; real NVIDIA growth research now produces 6 Findings and 4 Deep Analysis sections instead of a two-item short answer.
+
+### Surfaces and verification
+
+- Added a separate V1.7 n8n workflow/schema and migrated the active launcher, form and Web entry without overwriting historical workflow artifacts.
+- Verified quick and extended live regression: three-market quick success and 6 trusted successes + 3 safe abstentions across the nine-company suite.
+- Completed the V1.7 engineering gate: 207 pytest tests, strict mypy over 101 source files, frontend unit/build plus 3 mocked and 3 live E2E, fresh Docker build, actual n8n 2.37.9 success runtime and 5/5 failure-fixture routes.
+
 ## [Unreleased] — V1.6 Autonomous Research
 
 ### Autonomous company research

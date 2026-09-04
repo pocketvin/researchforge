@@ -194,8 +194,25 @@ describe('ResearchForge UI', () => {
           return Promise.resolve(
             json({
               result_id: 'result_frontend_test',
-              task_type: 'filing_analysis',
+              schema_version: '1.7.0',
+              task_type: 'company_research',
               executive_summary: '经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。',
+              research_intent: {
+                skill: 'growth_analysis', label: '增长来源', search_terms: ['growth'],
+                preferred_sections: ['Management discussion'],
+              },
+              analysis_sections: [
+                { title: '增长驱动', text: 'Blackwell 产品爬坡和客户需求共同推动增长。', evidence_ids: ['chunk_catl_ocf'] },
+                { title: '持续性', text: '仍需跟踪客户需求和现金流转化。', evidence_ids: ['chunk_catl_profit'] },
+              ],
+              overall_judgment: { label: 'Supported', rationale: '关键判断由官方披露和已核验事实支持。' },
+              suggested_follow_ups: ['增长来自哪个业务？', '毛利率为何变化？', '客户集中度如何？', '主要风险是什么？'],
+              evidence_coverage: {
+                available_chunk_count: 12, selected_chunk_count: 4,
+                selected_evidence_ids: ['chunk_catl_ocf', 'chunk_catl_profit'],
+                cited_evidence_ids: ['chunk_catl_ocf', 'chunk_catl_profit'],
+                sections: ['Management discussion'],
+              },
               claims: [
                 {
                   claim_id: 'claim_frontend_test',
@@ -373,6 +390,10 @@ describe('ResearchForge UI', () => {
     expect(await screen.findByText('经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。')).toBeInTheDocument()
     expect(screen.getByText('447.09 亿元')).toBeInTheDocument()
     expect(screen.getByText(/现金转化比为1.95倍/)).toBeInTheDocument()
+    expect(screen.getAllByText('增长来源').length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText('Supported')).toBeInTheDocument()
+    expect(screen.getByText('Blackwell 产品爬坡和客户需求共同推动增长。')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '增长来自哪个业务？' })).toBeInTheDocument()
     fireEvent.click(screen.getByText(/Supporting Evidence/))
     expect(screen.getByText(/经营活动产生的现金流量净额/)).toBeInTheDocument()
     expect(screen.queryByText(/SYNTHETIC/)).not.toBeInTheDocument()

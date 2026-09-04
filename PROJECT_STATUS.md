@@ -2,92 +2,67 @@
 
 **Updated:** 2026-09-05
 **Contract package:** 1.5.0
-**Product scope:** V1.6
-**Scope: V1.6 autonomous productization**
+**Product scope:** V1.7
+**Scope: V1.7 general company research**
 
 Contract package: 1.5.0
 Current gate: RELEASE_FREEZE
-Scope: V1.6 autonomous productization
+Scope: V1.7 general company research
 
 ## Current milestone
 
-**V1.6 Engineering Release Candidate — READY FOR OWNER ACCEPTANCE**
+**V1.7 Engineering Complete — READY FOR OWNER ACCEPTANCE**
 
-ResearchForge now supports a company-first autonomous research flow:
+ResearchForge now executes a question-driven, evidence-first company research flow:
 
-`Company / Ticker → Entity Resolution → Official Filing Discovery → Deterministic Extraction → Evidence / Claims / Trace → Research Result`
+`Company / Ticker → Official Filing → Full-text Evidence → Skill Routing → Research Plan → Claims / Deep Analysis → Verification → Trace`
 
-CN, US and HK are first-class live markets. Reviewed V1.5 filing packages remain immutable cache and regression evidence, not the product input boundary.
+The deterministic six-fact layer remains the numerical backbone. General Research adds full-filing Evidence retrieval, question-specific Skills, counter-evidence, deeper analysis sections, overall judgment and follow-up questions without allowing model memory to invent financial truth.
 
-## Implemented in V1.6
+## V1.7 acceptance evidence
 
-- `POST /v1/autonomous-research-runs` accepts company/ticker, optional market/period and a research question.
-- CNINFO, SEC EDGAR and HKEXnews own official company/filing discovery.
-- CN native-PDF, SEC XBRL and HK IFRS paths recover the same six financial facts or fail closed.
-- Simplified/traditional Chinese HK issuer resolution uses OpenCC and generic normalization, not company aliases.
-- Dynamic Facts and Evidence are snapshotted per run so historical runs cannot drift after later acquisition.
-- Exact reviewed company+period requests reuse immutable V1.5 packages before live acquisition.
-- Web and the separate V1.6 n8n workflow call the same autonomous backend.
-- Provider/network failures become explicit discovery/acquisition abstentions instead of uncaught exceptions.
+- Quick live regression: 贵州茅台 / NVIDIA / 腾讯 all succeeded from CNINFO / SEC / HKEX official sources.
+- Extended nine-company regression: **6 trusted successes + 3 explicit safe abstentions; overall PASS**.
+- NVIDIA retrieval hardening increased the real growth-analysis result from 2 Findings to **6 Findings / 4 Deep Analysis sections / 5 Follow-ups**.
+- V1.7 n8n workflow is separate from preserved historical V1.6/V1.5 artifacts and returns Intent, Plan, Deep Analysis, Judgment, Follow-ups and Evidence Coverage from the same backend.
+- Package versions, API health, Web and n8n active entry points are aligned to **1.7.0**.
 
-## Golden Company Regression — PASS
+## Full engineering gate — PASS
 
-Quick live set produced trusted success in every market:
+Verified on the final working tree:
 
-- CN: 贵州茅台 → CNINFO → 2025FY → 6 Facts → completed Trace.
-- US: NVIDIA → SEC → fiscal 2027Q2 → 6 Facts → completed Trace.
-- HK: Tencent → HKEX → 2025FY → 6 Facts → completed Trace.
+- `uv lock --check`, Ruff format/check and strict mypy: PASS; mypy checked **101 source files**.
+- `pytest -q`: **207 passed**.
+- Contract validation: PASS; V1.7 schemas active while preserved V1.4/V1.5 historical contracts still validate.
+- Frontend: typecheck/lint/build + **4 unit tests + 3 mocked E2E + 3 live-backend E2E**: PASS.
+- n8n source: generated V1.7 workflow check + **10 Node tests**: PASS.
+- Fresh Docker API/frontend build, PostgreSQL/API/Web health and 3 reviewed-cache Docker runs: PASS.
+- Actual n8n 2.37.9 V1.7 runtime: 3 autonomous cases, five identical backend artifact families, native form, idempotent replay and 5 HTTP failure checks: PASS.
+- Actual n8n transport-only fixture: **5/5 bounded failure scenarios PASS** and no research truth supplied.
+- `git diff --check`: PASS before final documentation closeout.
 
-Extended nine-company regression also passed its fail-closed contract:
+## Release boundary
 
-- Trusted success: 贵州茅台, NVIDIA, Tencent, 宁德时代, Apple and Microsoft.
-- Explicit safe abstention: latest 比亚迪 (`STATEMENT_UNIT_UNRESOLVED`), Xiaomi and Alibaba (`HK_STATEMENT_UNRESOLVED`).
-- No abstained case generated a Research Result.
+Engineering construction is complete. `RELEASE_FREEZE` remains **in progress only because owner manual acceptance is a human action** and is not fabricated by automation. There is no six-person Human Pilot requirement.
 
-## Full engineering gate — PASS locally
-Verified on the current working tree:
+Owner acceptance should confirm:
 
-- `uv lock --check`, Ruff and strict mypy: PASS; mypy checked 98 source files.
-- `pytest -q`: **199 passed**.
-- Contract validation: PASS; preserved V1.4/V1.5 hashes and historical evidence remain valid.
-- Frontend: typecheck/lint/build + 4 unit tests + 3 mocked E2E + 3 live-backend E2E: PASS.
-- n8n source: generated workflow check + 10 Node tests + ESLint: PASS.
-- Fresh Docker API/frontend build and PostgreSQL/API/Web health checks: PASS.
-- V1.6 Docker autonomous smoke: 3 reviewed-cache cases, each with 6 Facts and 10 Trace stages: PASS.
-- Actual n8n 2.37.9 V1.6 runtime: 3 autonomous cases, identical five backend artifact families, native form, retry and 5 HTTP failure checks: PASS.
-- Actual n8n transport-only fixture: 5/5 bounded failure scenarios: PASS.
-
-The V1.6 public GitHub Actions run has **not** been claimed for this uncommitted release candidate.
-
-## Release policy
-
-RF-032 removed the six-person Web+n8n Human Pilot from the active release criteria. Existing Pilot protocols/templates remain historical evidence only.
-
-Active release validation is:
-
-`Golden Company Regression → Full Engineering Gate → Owner Acceptance → Release Freeze`
-
-The first two stages are complete. There are no human-participant or engineering blockers currently known.
-
-## Remaining acceptance
-Only owner acceptance remains before marking `RELEASE_FREEZE` complete:
-
-1. Manually submit representative arbitrary-company research through the Web surface.
-2. Open at least one Fact/Evidence locator and the Research Trace.
-3. Confirm an unsupported/failed case is understandable and does not look like a successful report.
-4. Record any final product/prompt/UI issue; fix blockers or explicitly accept non-blocking limitations.
+1. A representative arbitrary-company Web request feels useful and sufficiently deep.
+2. Supporting Evidence and Trace are understandable.
+3. At least one unsupported case is clearly presented as a bounded failure, not a plausible report.
+4. Any remaining UI/prompt limitations are either fixed or explicitly accepted as non-blocking.
 
 ## Known bounded limitations
 
-- V1.6 does not claim universal listed-company or filing-layout coverage.
-- The current analysis contract requires exactly six comparable financial facts.
-- Latest BYD, Xiaomi and Alibaba examples currently expose parser/normalization boundaries and safely abstain.
-- Human usefulness, market demand, analyst productivity improvement and investment performance are not validated claims.
-- No investment advice, price prediction or trade execution is provided.
+- CN/US/HK are supported source adapters; universal listed-company/layout coverage is not claimed.
+- Six deterministic financial facts remain required for the current numerical backbone.
+- Latest BYD, Xiaomi and Alibaba examples currently expose parser/layout boundaries and safely abstain.
+- V1.7 does not include real-time news, broker research, price targets, trading, portfolio management or unrestricted multi-agent debate.
+- Human usefulness, analyst productivity improvement and investment performance are not validated claims.
 
 ## Resume here
 
-Read first: [README.md](README.md), [DECISIONS.md](DECISIONS.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), and [PORTFOLIO.md](PORTFOLIO.md).
+Read first: [README.md](README.md), [DECISIONS.md](DECISIONS.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), [V1.7 change note](docs/product/v1.6-to-v1.7-general-research-change-note.md), and [PORTFOLIO.md](PORTFOLIO.md).
 
 Primary checks:
 

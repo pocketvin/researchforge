@@ -1,6 +1,6 @@
 // Test-only clone: change transport configuration, never the routing or result mapping code.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-const workflow = JSON.parse(readFileSync(new URL('./researchforge.workflow.json', import.meta.url)));
+const workflow = JSON.parse(readFileSync(new URL('./researchforge-v1.7.workflow.json', import.meta.url)));
 workflow.id = 'rfTransportTest';
 workflow.name = '[TEST ONLY] ResearchForge transport failure checks';
 const webhook = workflow.nodes.find((node) => node.name === 'Research webhook');

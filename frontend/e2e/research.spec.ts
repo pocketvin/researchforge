@@ -29,7 +29,7 @@ test('research and secondary Quality Lab are navigable', async ({ page }) => {
   await expect(page.getByText(/官方披露自动发现/)).toBeVisible()
   await expect(page.getByRole('link', { name: '使用 n8n 表单入口' })).toHaveAttribute(
     'href',
-    'http://127.0.0.1:5678/form/researchforge-v16-form',
+    'http://127.0.0.1:5678/form/researchforge-v17-form',
   )
   const researchAccessibility = await new AxeBuilder({ page }).analyze()
   expect(

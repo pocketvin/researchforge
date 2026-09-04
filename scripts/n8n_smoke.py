@@ -264,8 +264,9 @@ def run_failure_fixture(webhook: str) -> dict[str, Any]:
         code, output = request(
             webhook,
             {
-                "company_id": "cn_300750",
-                "period": "2024H1",
+                "company_query": "宁德时代",
+                "market_hint": "CN",
+                "requested_period_label": "2024H1",
                 "research_question": scenario,
             },
         )

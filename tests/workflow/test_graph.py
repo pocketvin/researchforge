@@ -6,8 +6,8 @@ from typing import Any
 
 from researchforge.application.contracts import ResearchRunRequest
 from researchforge.application.research import (
-    ConclusionDraft,
     DeterministicConclusionGenerator,
+    ResearchLanguageDraft,
     StructuredOutputError,
 )
 from tests.runtime_helpers import assert_v14_schema, build_service, catl_request
@@ -81,7 +81,7 @@ class RepairSequenceGenerator:
         self.calls = 0
         self.fallback = DeterministicConclusionGenerator()
 
-    def generate(self, context: dict[str, Any]) -> ConclusionDraft:
+    def generate(self, context: dict[str, Any]) -> ResearchLanguageDraft:
         self.calls += 1
         if self.calls <= self.failures:
             raise StructuredOutputError("invalid test output")

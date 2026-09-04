@@ -13,7 +13,7 @@ from typing import Any, Protocol
 from researchforge.adapters.evolution_storage import EvolutionArtifactRepository
 from researchforge.application.budget import BudgetLedger
 from researchforge.application.evolution import MODEL_CONFIG
-from researchforge.application.research import ConclusionDraft
+from researchforge.application.research import ConclusionDraft, ResearchLanguageDraft
 
 CALIBRATION_ID = "calibration_v1_4_001"
 CALIBRATION_CAP = Decimal("1.00")
@@ -85,7 +85,7 @@ class CalibrationGenerator(Protocol):
 
     def begin_run(self) -> None: ...
 
-    def generate(self, context: dict[str, Any]) -> ConclusionDraft: ...
+    def generate(self, context: dict[str, Any]) -> ResearchLanguageDraft: ...
 
 
 GeneratorFactory = Callable[[BudgetLedger], CalibrationGenerator]
@@ -176,6 +176,8 @@ class OpenAICalibrationRunner:
             raise CalibrationBlocked("calibration generator cost boundary changed")
         generator.begin_run()
         draft = generator.generate(CALIBRATION_CONTEXT)
+        if not isinstance(draft, ConclusionDraft):
+            raise RuntimeError("calibration requires the legacy bounded conclusion contract")
         reported = set(draft.reported_check_codes or [])
         if reported != REQUIRED_CHECK_CODES:
             raise RuntimeError("calibration output did not explicitly cover every required check")

@@ -9,7 +9,7 @@ import pytest
 
 from researchforge.application.contracts import ResearchRunRequest, TaskType
 from researchforge.application.service import UnsupportedCapabilityError
-from tests.runtime_helpers import assert_v14_schema, build_service
+from tests.runtime_helpers import assert_v14_schema, assert_v17_schema, build_service
 
 
 def _request(
@@ -118,7 +118,10 @@ def test_each_mode_runs_the_same_ten_stage_workflow(
     else:
         assert len(result["requested_periods"]) == 2
     assert_v14_schema(manifest, "run-manifest.schema.json")
-    assert_v14_schema(result, "research-result.schema.json")
+    if run_request.task_type == "company_research":
+        assert_v17_schema(result, "research-result.schema.json")
+    else:
+        assert_v14_schema(result, "research-result.schema.json")
     assert_v14_schema(trace, "workflow-trace.schema.json")
 
 
