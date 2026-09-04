@@ -4,7 +4,7 @@ const fromWebhook = Object.prototype.hasOwnProperty.call(incoming, 'body');
 const surface = fromWebhook ? 'webhook' : 'form';
 const body = fromWebhook ? incoming.body : incoming;
 const fail = (message) => [{ json: {
-  ok: false, http_status: 422, schema_version: '1.6.0', status: 'error',
+  ok: false, http_status: 422, schema_version: '1.7.0', status: 'error',
   code: 'INVALID_INPUT', message, run_id: null, links: null, surface,
 } }];
 if (!body || typeof body !== 'object' || Array.isArray(body)) {

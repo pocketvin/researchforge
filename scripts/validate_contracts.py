@@ -94,7 +94,7 @@ REQUIRED_SCHEMAS = {
     "simulated-usability-evaluation.schema.json",
 }
 
-V17_REQUIRED_SCHEMAS = {"research-result.schema.json"}
+V17_REQUIRED_SCHEMAS = {"research-result.schema.json", "n8n-research-output.schema.json"}
 
 ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "common.schema.json",

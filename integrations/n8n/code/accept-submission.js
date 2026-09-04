@@ -6,7 +6,7 @@ if (response.statusCode !== 202 || typeof id !== 'string' ||
   const conflict = response.statusCode === 409;
   const invalid = response.statusCode === 422;
   return [{ json: { ok: false, http_status: conflict ? 409 : invalid ? 422 : 502,
-    schema_version: '1.6.0', status: 'error', run_id: null, links: null,
+    schema_version: '1.7.0', status: 'error', run_id: null, links: null,
     code: conflict ? 'IDEMPOTENCY_CONFLICT' : invalid ? 'UNSUPPORTED_OR_INVALID_INPUT' : 'SUBMISSION_UNCONFIRMED',
     message: conflict ? '该幂等键已用于不同输入；请还原原请求或使用新键。' :
       invalid ? (response.body?.detail?.message || '后端拒绝了公司、市场、期间或研究输入。') :

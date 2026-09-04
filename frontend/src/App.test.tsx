@@ -353,7 +353,7 @@ describe('ResearchForge UI', () => {
     expect(await screen.findByText('开始公司研究')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '使用 n8n 表单入口' })).toHaveAttribute(
       'href',
-      'http://127.0.0.1:5678/form/researchforge-v16-form',
+      'http://127.0.0.1:5678/form/researchforge-v17-form',
     )
 
     fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))

@@ -60,6 +60,8 @@ def validate_output(output: dict[str, Any]) -> None:
         schema = ROOT / "schemas/v1.5/n8n-research-output.schema.json"
     elif version == "1.6.0":
         schema = ROOT / "schemas/v1.6/n8n-research-output.schema.json"
+    elif version == "1.7.0":
+        schema = ROOT / "schemas/v1.7/n8n-research-output.schema.json"
     else:
         raise ValueError(f"unsupported n8n output schema_version: {version}")
     validate_instance(output, schemas[schema], schema, schemas)
@@ -183,7 +185,7 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
 
     form_status, form_page = form_request(form)
     expected_form_fields = [
-        "ResearchForge · 自主可核验公司研究",
+        "ResearchForge V1.7 · 通用公司研究",
         "Company / 公司或股票代码",
         "Market / 市场",
         "Period / 报告期（可选）",
@@ -203,6 +205,9 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
     expected_result_sections = [
         "ResearchForge 研究完成",
         "Executive Conclusion",
+        "Research Plan",
+        "Deep Analysis",
+        "Suggested Follow-ups",
         "Financial Facts",
         "Research Trace",
     ]
@@ -228,11 +233,11 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
         raise RuntimeError("native n8n form did not render the bounded failure state")
     summary = {
         "status": "PASS",
-        "evidence_kind": "V1_6_AUTONOMOUS_ORCHESTRATION_ENGINEERING",
+        "evidence_kind": "V1_7_GENERAL_RESEARCH_ORCHESTRATION_ENGINEERING",
         "verified_at": datetime.now(UTC).isoformat(),
         "n8n_version": "2.37.9",
         "workflow_sha256": hashlib.sha256(
-            (ROOT / "integrations/n8n/researchforge-v1.6.workflow.json").read_bytes()
+            (ROOT / "integrations/n8n/researchforge-v1.7.workflow.json").read_bytes()
         ).hexdigest(),
         "cases": records,
         "idempotent_retry": "PASS",
@@ -279,9 +284,9 @@ def run_failure_fixture(webhook: str) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--webhook", default="http://127.0.0.1:5678/webhook/researchforge-v16")
+    parser.add_argument("--webhook", default="http://127.0.0.1:5678/webhook/researchforge-v17")
     parser.add_argument("--backend", default="http://127.0.0.1:8000")
-    parser.add_argument("--form", default="http://127.0.0.1:5678/form/researchforge-v16-form")
+    parser.add_argument("--form", default="http://127.0.0.1:5678/form/researchforge-v17-form")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--failure-fixture", action="store_true")
     args = parser.parse_args()

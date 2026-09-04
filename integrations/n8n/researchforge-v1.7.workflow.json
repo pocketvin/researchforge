@@ -1,0 +1,993 @@
+{
+  "id": "researchforgeV17",
+  "name": "ResearchForge — General Company Research V1.7",
+  "active": false,
+  "nodes": [
+    {
+      "id": "research-webhook",
+      "name": "Research webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "researchforge-v17",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "researchforge-v17"
+    },
+    {
+      "id": "research-form",
+      "name": "Research form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        180
+      ],
+      "parameters": {
+        "path": "researchforge-v17-form",
+        "formTitle": "ResearchForge V1.7 · 通用公司研究",
+        "formDescription": "输入上市公司名称或股票代码。系统会自主识别 A 股/美股/港股并定位官方披露，再走与 Web 相同的证据、计算与研究链路。",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Company / 公司或股票代码",
+              "fieldType": "text",
+              "requiredField": true,
+              "placeholder": "贵州茅台 / 600519 / NVDA / 00700"
+            },
+            {
+              "fieldLabel": "Market / 市场",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Auto / 自动识别"
+                  },
+                  {
+                    "option": "A 股"
+                  },
+                  {
+                    "option": "美股"
+                  },
+                  {
+                    "option": "港股"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Period / 报告期（可选）",
+              "fieldType": "text",
+              "requiredField": false,
+              "placeholder": "留空 = Latest；也可填 2025FY"
+            },
+            {
+              "fieldLabel": "Research Question / 研究问题",
+              "fieldType": "textarea",
+              "requiredField": true,
+              "placeholder": "例如：最近增长主要来自哪里？当前最值得关注的风险是什么？"
+            }
+          ]
+        },
+        "responseMode": "responseNode",
+        "options": {
+          "buttonLabel": "Research Company / 开始自主研究",
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "researchforge-v17-form"
+    },
+    {
+      "id": "prepare-request",
+      "name": "Prepare request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Transport validation only. Backend configuration is never taken from user input.\nconst incoming = $input.first().json;\nconst fromWebhook = Object.prototype.hasOwnProperty.call(incoming, 'body');\nconst surface = fromWebhook ? 'webhook' : 'form';\nconst body = fromWebhook ? incoming.body : incoming;\nconst fail = (message) => [{ json: {\n  ok: false, http_status: 422, schema_version: '1.7.0', status: 'error',\n  code: 'INVALID_INPUT', message, run_id: null, links: null, surface,\n} }];\nif (!body || typeof body !== 'object' || Array.isArray(body)) {\n  return fail('请提交公司名称/股票代码和研究问题。');\n}\nconst allowed = [\n  'company_query', 'market_hint', 'requested_period_label', 'research_question',\n  'research_time', 'idempotency_key',\n];\nconst formMetadata = ['submittedAt', 'formMode'];\nconst rawSupplied = Object.fromEntries(Object.entries(body)\n  .filter(([key]) => !formMetadata.includes(key)));\nconst formFields = [\n  'Company / 公司或股票代码', 'Market / 市场', 'Period / 报告期（可选）',\n  'Research Question / 研究问题',\n];\nif (Object.keys(rawSupplied).some((key) => !(fromWebhook ? allowed : formFields).includes(key))) {\n  return fail('包含不支持的字段；后端地址和运行模式不可由请求覆盖。');\n}\nconst formMarket = rawSupplied['Market / 市场'];\nconst marketAliases = {\n  'Auto / 自动识别': null,\n  'A 股': 'CN',\n  '美股': 'US',\n  '港股': 'HK',\n};\nconst supplied = fromWebhook ? rawSupplied : {\n  company_query: rawSupplied['Company / 公司或股票代码'],\n  market_hint: marketAliases[formMarket] ?? null,\n  requested_period_label: rawSupplied['Period / 报告期（可选）'] || null,\n  research_question: rawSupplied['Research Question / 研究问题'],\n};\nif (typeof supplied.company_query !== 'string' ||\n    supplied.company_query.trim().length < 1 || supplied.company_query.length > 200 ||\n    ![undefined, null, 'CN', 'US', 'HK'].includes(supplied.market_hint) ||\n    typeof supplied.research_question !== 'string' ||\n    supplied.research_question.trim().length < 1 || supplied.research_question.length > 4000) {\n  return fail('请检查公司名称/股票代码、市场和研究问题。');\n}\nconst normalizedPeriod = typeof supplied.requested_period_label === 'string'\n  ? supplied.requested_period_label.trim() : supplied.requested_period_label;\nif (normalizedPeriod && !/^20[0-9]{2}(Q[1-4]|H1|FY)$/.test(normalizedPeriod)) {\n  return fail('报告期请使用 2025FY / 2025H1 / 2025Q1 等格式，留空表示 Latest。');\n}\nif (supplied.idempotency_key !== undefined &&\n    (typeof supplied.idempotency_key !== 'string' || supplied.idempotency_key.length < 8 ||\n     supplied.idempotency_key.length > 256 || !supplied.research_time)) {\n  return fail('重试时必须同时提供原 idempotency_key 和 research_time。');\n}\nif (supplied.research_time !== undefined &&\n    (typeof supplied.research_time !== 'string' ||\n     !/T.*(Z|[+-][0-9]{2}:[0-9]{2})$/.test(supplied.research_time) ||\n     !Number.isFinite(Date.parse(supplied.research_time)))) {\n  return fail('research_time 必须是含时区的 ISO 日期时间。');\n}\nreturn [{ json: {\n  ok: true,\n  surface,\n  backend_url: 'http://api:8000',\n  public_api_url: 'http://127.0.0.1:8000',\n  started_at_ms: Date.now(),\n  max_polls: 60,\n  max_wait_ms: 150000,\n  request: {\n    company_query: supplied.company_query.trim(),\n    market_hint: supplied.market_hint || null,\n    requested_period_label: normalizedPeriod || null,\n    research_question: supplied.research_question.trim(),\n    research_time: supplied.research_time || new Date().toISOString(),\n    idempotency_key: supplied.idempotency_key || `n8n-run-${$execution.id}`,\n  },\n} }];\n"
+      }
+    },
+    {
+      "id": "input-valid",
+      "name": "Input valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ String($json.ok) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "check-product-backend",
+      "name": "Check product backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + '/healthz' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "check-backend",
+      "name": "Check backend",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst ready = response.statusCode === 200 && response.body?.status === 'ok' && response.body?.version === '1.7.0';\nif (!ready) {\n  return [{ json: {\n    ok: false,\n    http_status: 502,\n    schema_version: '1.7.0',\n    status: 'error',\n    code: 'BACKEND_UNAVAILABLE_OR_UNSAFE',\n    run_id: null,\n    links: null,\n    message: 'ResearchForge 后端未就绪；未创建研究任务。',\n  } }];\n}\nreturn [{ json: { ok: true } }];\n"
+      }
+    },
+    {
+      "id": "backend-ready",
+      "name": "Backend ready",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ String($json.ok) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "create-run",
+      "name": "Create run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + '/v1/autonomous-research-runs' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Prepare request').first().json.request }}"
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "accept-submission",
+      "name": "Accept submission",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst config = $('Prepare request').first().json;\nconst id = response.body?.run_id;\nif (response.statusCode !== 202 || typeof id !== 'string' ||\n    !/^run_[a-f0-9]{32}$/.test(id)) {\n  const conflict = response.statusCode === 409;\n  const invalid = response.statusCode === 422;\n  return [{ json: { ok: false, http_status: conflict ? 409 : invalid ? 422 : 502,\n    schema_version: '1.7.0', status: 'error', run_id: null, links: null,\n    code: conflict ? 'IDEMPOTENCY_CONFLICT' : invalid ? 'UNSUPPORTED_OR_INVALID_INPUT' : 'SUBMISSION_UNCONFIRMED',\n    message: conflict ? '该幂等键已用于不同输入；请还原原请求或使用新键。' :\n      invalid ? (response.body?.detail?.message || '后端拒绝了公司、市场、期间或研究输入。') :\n        '提交未获确认；请求可能已被接收。请使用下方原请求重试，不要生成新幂等键。',\n    retry_request: config.request,\n  } }];\n}\nconst path = `/v1/research-runs/${id}`;\nreturn [{ json: { ok: true, run_id: id, path,\n  links: {\n    status: config.public_api_url + path,\n    result: config.public_api_url + path + '/result',\n    trace: config.public_api_url + path + '/trace',\n    cancel: config.public_api_url + path + '/cancel',\n  },\n} }];\n"
+      }
+    },
+    {
+      "id": "submission-accepted",
+      "name": "Submission accepted",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ String($json.ok) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "wait-before-polling",
+      "name": "Wait before polling",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1980,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 2,
+        "unit": "seconds"
+      }
+    },
+    {
+      "id": "poll-status",
+      "name": "Poll status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "classify-status",
+      "name": "Classify status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2420,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst config = $('Prepare request').first().json;\nconst run = $('Accept submission').first().json;\nconst state = response.body?.lifecycle_state;\nconst polls = $runIndex + 1;\nconst base = { schema_version: '1.7.0', run_id: run.run_id, links: run.links, polls };\nif (response.statusCode !== 200 || response.body?.run_id !== run.run_id) {\n  return [{ json: { ...base, route: 'error', status: 'error', http_status: 502,\n    code: 'STATUS_UNAVAILABLE',\n    message: '无法确认后端任务状态；任务可能仍在运行。请检查状态链接，不要重复创建任务。',\n  } }];\n}\nif (state === 'succeeded') return [{ json: { ...base, route: 'completed' } }];\nif (state === 'queued' || state === 'running') {\n  if (polls < config.max_polls && Date.now() - config.started_at_ms < config.max_wait_ms) {\n    return [{ json: { ...base, route: 'waiting', lifecycle_state: state } }];\n  }\n  return [{ json: { ...base, route: 'error', status: 'error', http_status: 504,\n    code: 'POLL_LIMIT_EXCEEDED',\n    message: 'n8n 已达到等待上限；后端未被自动取消，可能仍在运行。请使用状态或取消链接。',\n  } }];\n}\nconst terminal = ['insufficient_data', 'failed', 'timed_out', 'cancelled'];\nreturn [{ json: { ...base, route: 'error', status: 'error', http_status: 409,\n  code: terminal.includes(state) ? `RUN_${state.toUpperCase()}` : 'UNKNOWN_BACKEND_STATE',\n  message: state === 'insufficient_data' ? '可验证数据不足；没有生成研究报告。请检查来源和支持范围。' :\n    state === 'cancelled' ? '后端任务已取消；没有可用研究报告。' :\n      '后端任务没有可用研究结果。请检查状态和 Trace；n8n 不会编造报告或自动重跑研究。',\n} }];\n"
+      }
+    },
+    {
+      "id": "run-completed",
+      "name": "Run completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "keep-waiting",
+      "name": "Keep waiting",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "waiting",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "fetch-result",
+      "name": "Fetch result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2860,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/result' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-facts",
+      "name": "Fetch facts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3080,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/facts' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-calculations",
+      "name": "Fetch calculations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3300,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/calculations' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-evidence",
+      "name": "Fetch evidence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3520,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/evidence' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "fetch-trace",
+      "name": "Fetch trace",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3740,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Prepare request').first().json.backend_url + $('Accept submission').first().json.path + '/trace' }}",
+        "options": {
+          "timeout": 5000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "map-verified-output",
+      "name": "Map verified output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3960,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Presentation aliases only: never calculate finance or generate a conclusion here.\nconst run = $('Accept submission').first().json;\nconst config = $('Prepare request').first().json;\nconst responses = ['Fetch result', 'Fetch facts', 'Fetch calculations', 'Fetch evidence', 'Fetch trace']\n  .map((name) => $(name).first().json);\nconst [result, facts, calculations, evidence, trace] = responses.map((response) => response.body);\nif (responses.some((response) => response.statusCode !== 200) ||\n    result?.run_id !== run.run_id || result?.status !== 'completed' ||\n    trace?.run_id !== run.run_id || !Array.isArray(trace?.stages) ||\n    result?.schema_version !== '1.7.0' || result?.task_type !== 'company_research' ||\n    typeof result?.executive_summary !== 'string' ||\n    !Array.isArray(result?.claims) || !Array.isArray(result?.limitations) ||\n    !Array.isArray(result?.monitoring_items) || !result?.research_intent ||\n    !Array.isArray(result?.research_plan) || !Array.isArray(result?.analysis_sections) ||\n    !result?.overall_judgment || !Array.isArray(result?.suggested_follow_ups) ||\n    !result?.evidence_coverage ||\n    !Array.isArray(facts) || !Array.isArray(calculations) || !Array.isArray(evidence)) {\n  return [{ json: { schema_version: '1.7.0', status: 'error', http_status: 502,\n    run_id: run.run_id, links: run.links, code: 'RESULT_ARTIFACTS_UNAVAILABLE',\n    message: '后端报告或审计产物不可用/不匹配；未把缺失内容呈现为成功。请检查结果和 Trace 链接。',\n  } }];\n}\nreturn [{ json: {\n  schema_version: '1.7.0', status: 'succeeded', http_status: 200, data_namespace: 'product',\n  run_id: run.run_id, links: run.links, request: config.request,\n  conclusion: result.executive_summary,\n  findings: result.claims,\n  research_intent: result.research_intent,\n  research_plan: result.research_plan,\n  analysis_sections: result.analysis_sections,\n  overall_judgment: result.overall_judgment,\n  suggested_follow_ups: result.suggested_follow_ups,\n  evidence_coverage: result.evidence_coverage,\n  financial_facts: facts,\n  calculations,\n  supporting_evidence: evidence,\n  counter_evidence: result.claims.map((claim) => ({\n    claim_id: claim.claim_id, search: claim.counter_evidence_search,\n  })),\n  limitations: result.limitations,\n  monitoring: result.monitoring_items,\n  research_result: result,\n  research_trace: trace,\n  trust_boundary: 'n8n 只编排并转交 ResearchForge 产物，不生成结论或计算财务数字。失败时不生成伪结论。',\n} }];\n"
+      }
+    },
+    {
+      "id": "render-surface-response",
+      "name": "Render surface response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4180,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Render backend-owned artifacts for the native form without creating research content.\nconst incoming = $input.first().json;\n// `surface` is internal routing metadata and is never part of the public webhook contract.\nconst transport = { ...incoming };\ndelete transport.surface;\nconst escape = (value) => String(value ?? '')\n  .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')\n  .replaceAll('\"', '&quot;').replaceAll(\"'\", '&#39;');\nconst safeUrl = (value) => /^https?:\\/\\//.test(String(value ?? '')) ? escape(value) : '#';\nconst list = (items) => items.length > 0 ? `<ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul>` : '<p>无可呈现项目。</p>';\n\nlet content;\nif (transport.status !== 'succeeded') {\n  content = `\n    <header><p class=\"eyebrow\">BOUNDED FAILURE</p><h1>研究未生成</h1></header>\n    <section class=\"failure\">\n    <p><strong>${escape(transport.code)}</strong> — ${escape(transport.message)}</p>\n    <p>ResearchForge 在输入、数据、状态或产物无法确认时会停止，不会补写结论或数字。</p>\n    ${transport.links?.status ? `<p><a href=\"${safeUrl(transport.links.status)}\">检查后端运行状态</a></p>` : ''}\n    </section>`;\n} else {\n  const facts = transport.financial_facts.map((fact) => `<strong>${escape(fact.metric_code)}</strong>: ${escape(fact.value ?? 'ABSTAINED')} ${escape(fact.currency ?? fact.measurement_unit ?? '')} · P${escape(fact.source_locator?.page ?? '—')}`);\n  const calculations = transport.calculations.map((calculation) => `<strong>${escape(calculation.formula_code)}</strong>: ${escape(calculation.value ?? '不适用')} · ${escape(calculation.explanation)}`);\n  const findings = transport.findings.map((finding) => escape(finding.text));\n  const plan = transport.research_plan.map((step) => `<strong>${escape(step.description)}</strong> · ${escape(step.status)}`);\n  const analysis = transport.analysis_sections.map((section) => `<strong>${escape(section.title)}</strong><br>${escape(section.text)}`);\n  const followUps = transport.suggested_follow_ups.map(escape);\n  const evidence = transport.supporting_evidence.map((chunk) => `<strong>${escape(chunk.section)} · P${escape(chunk.locator?.page_start ?? '—')}</strong><br>${escape(chunk.text)}<br><a href=\"${safeUrl(chunk.source_uri)}\">打开官方披露</a>`);\n  const counters = transport.counter_evidence.map((entry) => `<strong>${escape(entry.search?.result)}</strong>: ${escape(entry.search?.summary)}`);\n  const monitoring = transport.monitoring.map((item) => `<strong>${escape(item.title)}</strong>: ${escape(item.rationale)} · 触发条件 ${escape(item.trigger)} · ${escape(item.next_review)}`);\n  content = `\n    <header><p class=\"eyebrow\">SAME BACKEND · VERIFIED PIPELINE</p><h1>ResearchForge 研究完成</h1><span class=\"status\">SUCCEEDED</span></header>\n    <section class=\"conclusion\"><h2>Executive Conclusion / 核心结论</h2><p>${escape(transport.conclusion)}</p></section>\n    <section class=\"judgment\"><h2>Research Intent / 研究意图</h2><p><strong>${escape(transport.research_intent.label)}</strong> · ${escape(transport.research_intent.skill)}</p><p>${escape(transport.overall_judgment.label)} — ${escape(transport.overall_judgment.rationale)}</p></section>\n    <details open><summary>Research Plan / 研究计划</summary>${list(plan)}</details>\n    <details open><summary>Key Findings / 关键发现</summary>${list(findings)}</details>\n    <details open><summary>Deep Analysis / 深入分析</summary>${list(analysis)}</details>\n    <details><summary>Financial Facts / 财务事实</summary>${list(facts)}</details>\n    <details><summary>Calculations / 确定性计算</summary>${list(calculations)}</details>\n    <details><summary>Supporting Evidence / 支持证据</summary>${list(evidence)}</details>\n    <details open><summary>Counter Evidence & Limitations / 反证与限制</summary>${list([...counters, ...transport.limitations.map(escape)])}</details>\n    <details open><summary>Monitoring Plan / 后续监控</summary>${list(monitoring)}</details>\n    <details open><summary>Suggested Follow-ups / 继续追问</summary>${list(followUps)}</details>\n    <p class=\"coverage\">Evidence coverage: ${escape(transport.evidence_coverage.selected_chunk_count)} selected / ${escape(transport.evidence_coverage.available_chunk_count)} available · sections ${escape((transport.evidence_coverage.sections || []).join(', '))}</p>\n    <nav><a href=\"${safeUrl(transport.links.result)}\">完整 Research Result</a><a href=\"${safeUrl(transport.links.trace)}\">完整 Research Trace</a></nav>\n    <footer>${escape(transport.trust_boundary)}</footer>`;\n}\nconst formPage = `<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>ResearchForge 研究结果</title><style>\n:root{font-family:Inter,system-ui,sans-serif;color:#dce4eb;background:#071015}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% -10%,#173d33 0,transparent 35%),#071015}main{max-width:920px;margin:auto;padding:44px 22px 70px}header{position:relative;margin-bottom:22px}.eyebrow{color:#43d6a3;font:11px ui-monospace,monospace;letter-spacing:.14em}h1{margin:8px 0;color:#fff;font-size:30px}.status{position:absolute;right:0;top:15px;padding:5px 9px;border:1px solid #2c8064;border-radius:99px;color:#72e7bd;font:10px ui-monospace,monospace}.conclusion,.judgment,details,.failure{margin:12px 0;padding:18px;border:1px solid #23343e;border-radius:12px;background:#0d1921}.conclusion{border-left:3px solid #43d6a3}.judgment{border-left:3px solid #d4a85f}.judgment h2{margin:0 0 10px;color:#d4a85f;font-size:12px}.judgment p,.coverage{color:#9eb0b9;line-height:1.7}.conclusion h2{margin:0 0 10px;color:#8fa5b1;font-size:12px}.conclusion p{margin:0;color:#e3eaed;font:17px/1.85 Georgia,serif}summary{cursor:pointer;color:#c9d5da;font-weight:650}ul{margin:14px 0 0;padding-left:20px}li{margin:9px 0;color:#9eb0b9;line-height:1.65}a{color:#71d7b2}nav{display:flex;gap:12px;margin-top:18px}nav a{padding:10px 12px;border:1px solid #285846;border-radius:8px;text-decoration:none}footer{margin-top:20px;color:#657d88;font:10px/1.7 ui-monospace,monospace}.failure{border-color:#663b3b;color:#ffaaa4}@media(max-width:600px){main{padding:28px 14px}.status{position:static;display:inline-block}nav{flex-direction:column}}\n</style></head><body><main>${content}</main></body></html>`;\nreturn [{ json: { transport, formPage } }];\n"
+      }
+    },
+    {
+      "id": "form-surface",
+      "name": "Form surface",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4400,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "route",
+              "leftValue": "={{ $('Prepare request').first().json.surface }}",
+              "rightValue": "form",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "respond-form",
+      "name": "Respond form",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4620,
+        -100
+      ],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.formPage }}",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    },
+    {
+      "id": "respond-webhook",
+      "name": "Respond webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4620,
+        100
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.transport }}",
+        "options": {
+          "responseCode": "={{ $json.transport.http_status }}"
+        }
+      }
+    },
+    {
+      "id": "read-me",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -380
+      ],
+      "parameters": {
+        "width": 640,
+        "height": 280,
+        "content": "## ResearchForge × n8n\nCompany/Ticker → official filing discovery → verified research.\n\n**Local-only.** Configure trusted backend/public URLs in Prepare request, never in user input.\n\nWait: 2s; ≤60 polls / 150s. Failure output never invents research. n8n timeout does not cancel backend.\n\nAll facts, calculations, evidence and conclusions come from the SAME backend as Web. No LLM, finance formula or verifier lives here.\n\nSee integrations/n8n/README.md for import, demo, retries and failures. Failure/ambiguity → explicit abstention; no invented research."
+      }
+    }
+  ],
+  "connections": {
+    "Research webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare request": {
+      "main": [
+        [
+          {
+            "node": "Input valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input valid": {
+      "main": [
+        [
+          {
+            "node": "Check product backend",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Render surface response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check product backend": {
+      "main": [
+        [
+          {
+            "node": "Check backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check backend": {
+      "main": [
+        [
+          {
+            "node": "Backend ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Backend ready": {
+      "main": [
+        [
+          {
+            "node": "Create run",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Render surface response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create run": {
+      "main": [
+        [
+          {
+            "node": "Accept submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Accept submission": {
+      "main": [
+        [
+          {
+            "node": "Submission accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submission accepted": {
+      "main": [
+        [
+          {
+            "node": "Wait before polling",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Render surface response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait before polling": {
+      "main": [
+        [
+          {
+            "node": "Poll status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll status": {
+      "main": [
+        [
+          {
+            "node": "Classify status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify status": {
+      "main": [
+        [
+          {
+            "node": "Run completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run completed": {
+      "main": [
+        [
+          {
+            "node": "Fetch result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Keep waiting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch result": {
+      "main": [
+        [
+          {
+            "node": "Fetch facts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch facts": {
+      "main": [
+        [
+          {
+            "node": "Fetch calculations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch calculations": {
+      "main": [
+        [
+          {
+            "node": "Fetch evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch evidence": {
+      "main": [
+        [
+          {
+            "node": "Fetch trace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch trace": {
+      "main": [
+        [
+          {
+            "node": "Map verified output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map verified output": {
+      "main": [
+        [
+          {
+            "node": "Render surface response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render surface response": {
+      "main": [
+        [
+          {
+            "node": "Form surface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research form": {
+      "main": [
+        [
+          {
+            "node": "Prepare request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep waiting": {
+      "main": [
+        [
+          {
+            "node": "Wait before polling",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Render surface response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form surface": {
+      "main": [
+        [
+          {
+            "node": "Respond form",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 300,
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "tags": []
+}

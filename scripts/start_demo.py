@@ -37,7 +37,7 @@ def build_commands(*, build: bool, smoke: bool) -> list[list[str]]:
             "--no-deps",
             "n8n",
             "import:workflow",
-            "--input=/files/researchforge-v1.6.workflow.json",
+            "--input=/files/researchforge-v1.7.workflow.json",
         ],
         [
             *N8N_COMPOSE,
@@ -46,7 +46,7 @@ def build_commands(*, build: bool, smoke: bool) -> list[list[str]]:
             "--no-deps",
             "n8n",
             "publish:workflow",
-            "--id=researchforgeV16",
+            "--id=researchforgeV17",
         ],
         [*N8N_COMPOSE, "up", "-d", "--no-deps", "--wait", "n8n"],
     ]
@@ -77,7 +77,7 @@ def main() -> None:
             subprocess.run(command, cwd=ROOT, env=environment, check=True)
     if not args.dry_run:
         print("Web: http://127.0.0.1:4173/", flush=True)
-        print("n8n form: http://127.0.0.1:5678/form/researchforge-v16-form", flush=True)
+        print("n8n form: http://127.0.0.1:5678/form/researchforge-v17-form", flush=True)
 
 
 if __name__ == "__main__":

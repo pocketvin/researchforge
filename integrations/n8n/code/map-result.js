@@ -7,20 +7,30 @@ const [result, facts, calculations, evidence, trace] = responses.map((response) 
 if (responses.some((response) => response.statusCode !== 200) ||
     result?.run_id !== run.run_id || result?.status !== 'completed' ||
     trace?.run_id !== run.run_id || !Array.isArray(trace?.stages) ||
+    result?.schema_version !== '1.7.0' || result?.task_type !== 'company_research' ||
     typeof result?.executive_summary !== 'string' ||
     !Array.isArray(result?.claims) || !Array.isArray(result?.limitations) ||
-    !Array.isArray(result?.monitoring_items) ||
+    !Array.isArray(result?.monitoring_items) || !result?.research_intent ||
+    !Array.isArray(result?.research_plan) || !Array.isArray(result?.analysis_sections) ||
+    !result?.overall_judgment || !Array.isArray(result?.suggested_follow_ups) ||
+    !result?.evidence_coverage ||
     !Array.isArray(facts) || !Array.isArray(calculations) || !Array.isArray(evidence)) {
-  return [{ json: { schema_version: '1.6.0', status: 'error', http_status: 502,
+  return [{ json: { schema_version: '1.7.0', status: 'error', http_status: 502,
     run_id: run.run_id, links: run.links, code: 'RESULT_ARTIFACTS_UNAVAILABLE',
     message: '后端报告或审计产物不可用/不匹配；未把缺失内容呈现为成功。请检查结果和 Trace 链接。',
   } }];
 }
 return [{ json: {
-  schema_version: '1.6.0', status: 'succeeded', http_status: 200, data_namespace: 'product',
+  schema_version: '1.7.0', status: 'succeeded', http_status: 200, data_namespace: 'product',
   run_id: run.run_id, links: run.links, request: config.request,
   conclusion: result.executive_summary,
   findings: result.claims,
+  research_intent: result.research_intent,
+  research_plan: result.research_plan,
+  analysis_sections: result.analysis_sections,
+  overall_judgment: result.overall_judgment,
+  suggested_follow_ups: result.suggested_follow_ups,
+  evidence_coverage: result.evidence_coverage,
   financial_facts: facts,
   calculations,
   supporting_evidence: evidence,

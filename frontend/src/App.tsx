@@ -353,7 +353,7 @@ function ResearchPage() {
             <a
               aria-label="使用 n8n 表单入口"
               className="automation-entry"
-              href="http://127.0.0.1:5678/form/researchforge-v16-form"
+              href="http://127.0.0.1:5678/form/researchforge-v17-form"
               rel="noreferrer"
               target="_blank"
             >

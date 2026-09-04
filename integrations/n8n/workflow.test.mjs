@@ -3,9 +3,9 @@ import vm from 'node:vm';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const workflow = JSON.parse(readFileSync(new URL('./researchforge-v1.6.workflow.json', import.meta.url)));
+const workflow = JSON.parse(readFileSync(new URL('./researchforge-v1.7.workflow.json', import.meta.url)));
 const runId = 'run_' + 'a'.repeat(32);
-const request = { company_query: 'NVDA', market_hint: 'US', requested_period_label: null, research_question: '最新报告期利润是否转化成经营现金流？' };
+const request = { company_query: 'NVDA', market_hint: 'US', requested_period_label: null, research_question: '最近增长主要来自哪里？哪些业务贡献最大？' };
 function execute(name, input, references = {}, runIndex = 0) {
   const node = workflow.nodes.find((item) => item.name === name);
   const output = vm.runInNewContext(`(function(){${node.parameters.jsCode}\n})()`, {
@@ -81,13 +81,13 @@ test('cross-execution retry preserves all immutable input including cutoff', () 
 });
 test('backend readiness is checked before autonomous submission', () => {
   for (const response of [{ error: 'secret exception' }, { statusCode: 500 },
-    { statusCode: 200, body: { status: 'starting', version: '1.6.0' } },
+    { statusCode: 200, body: { status: 'starting', version: '1.7.0' } },
     { statusCode: 200, body: { status: 'ok', version: '1.5.0' } }]) {
     const result = execute('Check backend', response, refs);
     assert.equal(result.code, 'BACKEND_UNAVAILABLE_OR_UNSAFE');
     assert(!JSON.stringify(result).includes('secret exception'));
   }
-  assert.equal(execute('Check backend', { statusCode: 200, body: { status: 'ok', version: '1.6.0' } }, refs).ok, true);
+  assert.equal(execute('Check backend', { statusCode: 200, body: { status: 'ok', version: '1.7.0' } }, refs).ok, true);
 });
 test('submission accepts only safe IDs and does not follow response-supplied URLs', () => {
   const response = execute('Accept submission', { statusCode: 202,
@@ -118,7 +118,20 @@ test('poll count, elapsed time, mismatched ID and network error stop safely', ()
   assert.equal(execute('Classify status', { statusCode: 200, body: { run_id: 'wrong' } }, refs).code, 'STATUS_UNAVAILABLE');
 });
 test('mapped fields equal backend artifacts without numerical or prose generation', () => {
-  const result = JSON.parse(readFileSync(new URL('../../docs/evidence/v1.5-generalization/byd-2024h1/research-result.json', import.meta.url)));
+  const legacy = JSON.parse(readFileSync(new URL('../../docs/evidence/v1.5-generalization/byd-2024h1/research-result.json', import.meta.url)));
+  const result = { ...legacy, schema_version: '1.7.0', task_type: 'company_research',
+    research_intent: { skill: 'growth_analysis', label: '增长来源', search_terms: ['growth'], preferred_sections: ['Management discussion'] },
+    research_plan: [{ step_id: 'step_test_1', description: '定位增长来源', status: 'completed' }],
+    analysis_sections: [
+      { title: '增长驱动', text: '官方披露支持增长驱动判断。', evidence_ids: legacy.claims[0].support_evidence_ids },
+      { title: '持续性', text: '继续核对现金流和风险。', evidence_ids: legacy.claims[0].support_evidence_ids },
+    ],
+    overall_judgment: { label: 'Supported', rationale: '结论仅基于已引用官方证据。' },
+    suggested_follow_ups: ['增长来自哪个分部？', '增长是否改善毛利率？', '客户集中度如何？', '主要风险是什么？'],
+    evidence_coverage: { available_chunk_count: 8, selected_chunk_count: 4,
+      selected_evidence_ids: legacy.claims[0].support_evidence_ids,
+      cited_evidence_ids: legacy.claims[0].support_evidence_ids, sections: ['Management discussion'] },
+  };
   const caseRefs = { ...refs, 'Accept submission': { ...refs['Accept submission'], run_id: result.run_id } };
   const values = [result, [{ value: '123.4500' }], [{ value: '1.04012' }], [{ evidence_id: 'evidence' }],
     { run_id: result.run_id, stages: [] }];
@@ -134,6 +147,12 @@ test('mapped fields equal backend artifacts without numerical or prose generatio
   assert.deepEqual(output.calculations, values[2]);
   assert.deepEqual(output.monitoring, result.monitoring_items);
   assert.deepEqual(output.limitations, result.limitations);
+  assert.deepEqual(output.research_intent, result.research_intent);
+  assert.deepEqual(output.research_plan, result.research_plan);
+  assert.deepEqual(output.analysis_sections, result.analysis_sections);
+  assert.deepEqual(output.overall_judgment, result.overall_judgment);
+  assert.deepEqual(output.suggested_follow_ups, result.suggested_follow_ups);
+  assert.deepEqual(output.evidence_coverage, result.evidence_coverage);
   for (const kind of ['result', 'facts', 'calculations', 'evidence', 'trace']) {
     assert.equal(execute('Map verified output', {}, { ...caseRefs,
       [`Fetch ${kind}`]: { statusCode: 500 } }).code, 'RESULT_ARTIFACTS_UNAVAILABLE');
@@ -142,6 +161,12 @@ test('mapped fields equal backend artifacts without numerical or prose generatio
 test('form response escapes backend text and transport response remains unchanged', () => {
   const success = {
     status: 'succeeded', conclusion: '<script>alert(1)</script>', findings: [],
+    research_intent: { skill: 'growth_analysis', label: '<b>增长来源</b>' },
+    research_plan: [{ description: '<img src=x>', status: 'completed' }],
+    analysis_sections: [{ title: '<analysis>', text: '<script>deep</script>' }],
+    overall_judgment: { label: 'Supported', rationale: '<judgment>' },
+    suggested_follow_ups: ['<follow-up>'],
+    evidence_coverage: { selected_chunk_count: 4, available_chunk_count: 12, sections: ['Management discussion'] },
     financial_facts: [], calculations: [], supporting_evidence: [], counter_evidence: [],
     limitations: ['<b>limit</b>'], monitoring: [], links: { result: 'http://example/result', trace: 'http://example/trace' },
     trust_boundary: 'same backend',
@@ -151,6 +176,9 @@ test('form response escapes backend text and transport response remains unchange
   assert(!rendered.formPage.includes('<script>alert'));
   assert(rendered.formPage.includes('&lt;script&gt;'));
   assert(rendered.formPage.includes('完整 Research Trace'));
+  assert(rendered.formPage.includes('Deep Analysis / 深入分析'));
+  assert(rendered.formPage.includes('Suggested Follow-ups / 继续追问'));
+  assert(!rendered.formPage.includes('<script>deep</script>'));
   const failure = execute('Render surface response', { status: 'error', code: 'RUN_FAILED', message: '<failure>', links: null }, { 'Prepare request': config });
   assert(failure.formPage.includes('研究未生成'));
   assert(!failure.formPage.includes('<failure>'));

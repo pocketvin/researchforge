@@ -1,10 +1,10 @@
 const response = $input.first().json;
-const ready = response.statusCode === 200 && response.body?.status === 'ok' && response.body?.version === '1.6.0';
+const ready = response.statusCode === 200 && response.body?.status === 'ok' && response.body?.version === '1.7.0';
 if (!ready) {
   return [{ json: {
     ok: false,
     http_status: 502,
-    schema_version: '1.6.0',
+    schema_version: '1.7.0',
     status: 'error',
     code: 'BACKEND_UNAVAILABLE_OR_UNSAFE',
     run_id: null,

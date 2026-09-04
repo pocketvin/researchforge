@@ -2,21 +2,21 @@
 
 n8n is an optional external workflow surface for the same ResearchForge autonomous backend. It does not calculate finance, discover filings independently or generate a second research answer.
 
-## V1.6 workflow
+## V1.7 workflow
 
 Portable artifact:
 
 ```text
-integrations/n8n/researchforge-v1.6.workflow.json
+integrations/n8n/researchforge-v1.7.workflow.json
 ```
 
 Workflow ID:
 
 ```text
-researchforgeV16
+researchforgeV17
 ```
 
-The historical `researchforge.workflow.json` is the immutable V1.5 artifact retained for old acceptance hashes. Do not overwrite it with V1.6.
+The historical `researchforge.workflow.json` is the immutable V1.5 artifact retained for old acceptance hashes. Do not overwrite it. The V1.6 workflow is also retained as a historical autonomous-research artifact.
 
 ## User inputs
 
@@ -25,7 +25,7 @@ The historical `researchforge.workflow.json` is the immutable V1.5 artifact reta
 - Period / 报告期（可选）: blank = Latest, or e.g. `2025FY`
 - Research Question / 研究问题
 
-The workflow maps these fields to `POST /v1/autonomous-research-runs`, polls the created immutable ResearchRun, then returns the backend Result, Facts, Calculations, Evidence and Trace unchanged.
+The workflow maps these fields to `POST /v1/autonomous-research-runs`, polls the immutable ResearchRun, then returns the V1.7 Result, Facts, Calculations, Evidence and Trace unchanged. Presentation aliases also expose Research Intent, Research Plan, Deep Analysis, Overall Judgment, Follow-ups and Evidence Coverage.
 
 ## Generate and review
 
@@ -35,7 +35,7 @@ node integrations/n8n/build-workflow.mjs --check
 node --test integrations/n8n/workflow.test.mjs
 ```
 
-The generator builds V1.6 from reviewable Code-node source files under `integrations/n8n/code/`.
+The generator builds V1.7 from reviewable Code-node source files under `integrations/n8n/code/`.
 
 ## Import and publish
 
@@ -48,7 +48,7 @@ docker compose -f docker-compose.yml -f integrations/n8n/compose.yml \
 
 docker compose -f docker-compose.yml -f integrations/n8n/compose.yml \
   --profile n8n run --rm --no-deps n8n \
-  publish:workflow --id=researchforgeV16
+  publish:workflow --id=researchforgeV17
 ```
 
 ## Entry points
@@ -56,13 +56,13 @@ docker compose -f docker-compose.yml -f integrations/n8n/compose.yml \
 Native form:
 
 ```text
-http://127.0.0.1:5678/form/researchforge-v16-form
+http://127.0.0.1:5678/form/researchforge-v17-form
 ```
 
 Webhook:
 
 ```text
-http://127.0.0.1:5678/webhook/researchforge-v16
+http://127.0.0.1:5678/webhook/researchforge-v17
 ```
 
 Example webhook body:
@@ -72,7 +72,7 @@ Example webhook body:
   "company_query": "NVDA",
   "market_hint": "US",
   "requested_period_label": null,
-  "research_question": "最新报告期利润是否真正转化为经营现金流？"
+  "research_question": "最近增长主要来自哪里？哪些业务或因素贡献最大？"
 }
 ```
 
@@ -82,8 +82,8 @@ Example webhook body:
 
 The workflow checks backend readiness, validates transport input and applies bounded polling. Backend-supplied URLs are never followed as control data. Unsupported input, idempotency conflict, backend failure, timeout or terminal insufficient-data state returns an explicit error envelope without a `research_result`.
 
-V1.6 output is validated by `schemas/v1.6/n8n-research-output.schema.json`. Historical V1.5 n8n evidence continues to validate against its original schema.
+V1.7 output is validated by `schemas/v1.7/n8n-research-output.schema.json`. V1.6 and V1.5 n8n artifacts keep their original schemas and remain historical evidence.
 
-For deterministic runtime smoke, `scripts/n8n_smoke.py` uses exact reviewed company+period cache hits so CI tests the real V1.6 autonomous API and n8n orchestration without depending on external disclosure-site availability. Live CN/US/HK discovery is covered separately by `scripts/autonomous_regression.py`.
+The workflow source is covered by deterministic Node contract tests. Live CN/US/HK research quality is covered separately by `scripts/autonomous_regression.py`; runtime smoke must not be treated as a second research-quality oracle.
 
 The old Human Pilot responsibility has been removed. n8n is now purely an External Workflow Integration surface.
