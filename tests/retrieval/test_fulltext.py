@@ -48,3 +48,13 @@ def test_html_index_ignores_script_and_keeps_visible_management_text() -> None:
     assert "secret instruction" not in joined
     assert "Demand increased" in joined
     assert chunks[0]["section"] == "Management discussion"
+
+
+def test_html_index_classifies_generic_growth_and_segment_language() -> None:
+    payload = (
+        b"<html><p>Revenue by market platform increased year over year and was driven by "
+        b"strong customer demand. Compute segment revenue expanded sequentially.</p></html>"
+    )
+    chunks = index_html(_source(), payload, id_prefix="chunk_growth")
+    assert chunks
+    assert chunks[0]["section"] in {"Business and segments", "Growth drivers"}

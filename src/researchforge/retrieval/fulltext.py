@@ -30,7 +30,12 @@ _SECTION_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
             "our business",
             "segment information",
             "reportable segments",
+            "reportable segment",
             "business segments",
+            "operating segments",
+            "segment revenue",
+            "revenue by market platform",
+            "revenue by geographic",
             "业务概述",
             "业务分部",
             "分部信息",
@@ -39,7 +44,19 @@ _SECTION_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ),
     (
         "Growth drivers",
-        ("growth strategy", "growth drivers", "drivers of growth", "增长战略", "增长驱动"),
+        (
+            "growth strategy",
+            "growth drivers",
+            "drivers of growth",
+            "driven by",
+            "year-over-year",
+            "year over year",
+            "sequentially",
+            "增长战略",
+            "增长驱动",
+            "同比增长",
+            "主要驱动",
+        ),
     ),
     (
         "Research and development",
@@ -126,9 +143,9 @@ def _normalize_text(value: str) -> str:
 
 
 def _section(text: str) -> str:
-    prefix = text.casefold()[:600]
+    probe = text.casefold()[:2000]
     for label, markers in _SECTION_RULES:
-        if any(marker.casefold() in prefix for marker in markers):
+        if any(marker.casefold() in probe for marker in markers):
             return label
     return "Filing narrative"
 

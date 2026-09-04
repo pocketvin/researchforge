@@ -333,6 +333,102 @@ def _terms(text: str) -> set[str]:
     return output
 
 
+_RETRIEVAL_SIGNALS: dict[ResearchSkill, tuple[str, ...]] = {
+    "company_overview": (
+        "segment",
+        "revenue",
+        "driven by",
+        "risk",
+        "outlook",
+        "业务",
+        "收入",
+        "风险",
+    ),
+    "earnings_change": (
+        "driven by",
+        "increased",
+        "decreased",
+        "year over year",
+        "year-over-year",
+        "margin",
+        "expense",
+        "变动",
+        "增长",
+        "下降",
+    ),
+    "growth_analysis": (
+        "driven by",
+        "year over year",
+        "year-over-year",
+        "sequentially",
+        "revenue by",
+        "segment",
+        "demand",
+        "increased",
+        "grew",
+        "ramp",
+        "增长",
+        "需求",
+        "分部",
+    ),
+    "financial_health": (
+        "cash flow",
+        "liquidity",
+        "debt",
+        "inventory",
+        "receivable",
+        "capital expenditure",
+        "现金流",
+        "流动性",
+        "债务",
+        "存货",
+        "应收",
+    ),
+    "risk_analysis": (
+        "risk",
+        "uncertainty",
+        "competition",
+        "regulation",
+        "restriction",
+        "concentration",
+        "风险",
+        "不确定",
+        "竞争",
+        "监管",
+    ),
+    "business_analysis": (
+        "segment",
+        "revenue by",
+        "business",
+        "product",
+        "service",
+        "geographic",
+        "customer",
+        "market platform",
+        "业务",
+        "分部",
+        "产品",
+        "地区",
+        "客户",
+    ),
+}
+
+_RISK_LANGUAGE = (
+    "risk",
+    "uncertainty",
+    "restriction",
+    "export control",
+    "regulation",
+    "could negatively",
+    "material adverse",
+    "风险",
+    "不确定",
+    "限制",
+    "监管",
+    "负面影响",
+)
+
+
 class EvidenceRetriever:
     """Small deterministic lexical retriever over already verified filing chunks."""
 
@@ -356,10 +452,23 @@ class EvidenceRetriever:
             if overlap == 0 and section not in intent.preferred_sections:
                 continue
             score = float(overlap * 3)
+            lowered_text = text.casefold()
+            signal_hits = sum(
+                1
+                for marker in _RETRIEVAL_SIGNALS[intent.skill]
+                if marker.casefold() in lowered_text
+            )
+            score += min(signal_hits, 4) * 2.0
             if section in intent.preferred_sections:
-                score += 8.0 - intent.preferred_sections.index(section)
+                score += 5.0 - intent.preferred_sections.index(section)
             if section == "Filing narrative":
                 score -= 1.0
+            if intent.skill != "risk_analysis" and any(
+                marker.casefold() in lowered_text for marker in _RISK_LANGUAGE
+            ):
+                score -= 4.0
+            if signal_hits == 0 and overlap <= 1:
+                score -= 3.0
             if text.count(".") + text.count("。") >= 2:
                 score += 0.5
             ranked.append((score, chunk))
@@ -373,14 +482,27 @@ class EvidenceRetriever:
         selected: list[JsonObject] = []
         section_counts: dict[str, int] = {}
         page_counts: dict[int, int] = {}
+        window_counts: dict[int, int] = {}
         for _, chunk in ranked:
             section = str(chunk.get("section", "Filing narrative"))
-            page = int(chunk.get("locator", {}).get("page_start", 1))
-            if section_counts.get(section, 0) >= 5 or page_counts.get(page, 0) >= 2:
+            locator = chunk.get("locator", {})
+            page = int(locator.get("page_start", 1))
+            source_uri = str(chunk.get("source_uri", "")).casefold()
+            is_pdf = source_uri.split("?", 1)[0].endswith(".pdf")
+            char_start = locator.get("char_start")
+            window = int(char_start or 0) // 6000
+            if section_counts.get(section, 0) >= 5:
+                continue
+            if is_pdf and page_counts.get(page, 0) >= 2:
+                continue
+            if not is_pdf and window_counts.get(window, 0) >= 3:
                 continue
             selected.append(chunk)
             section_counts[section] = section_counts.get(section, 0) + 1
-            page_counts[page] = page_counts.get(page, 0) + 1
+            if is_pdf:
+                page_counts[page] = page_counts.get(page, 0) + 1
+            else:
+                window_counts[window] = window_counts.get(window, 0) + 1
             if len(selected) >= limit:
                 break
         if len(selected) < min(2, limit):

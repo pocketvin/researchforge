@@ -76,3 +76,25 @@ def test_retriever_prefers_question_relevant_sections_and_adds_counter_candidate
     assert selected[0]["chunk_id"] in {"business", "mgmt"}
     counters = EvidenceRetriever().counter_candidates(chunks, selected, limit=2)
     assert any(item["chunk_id"] == "risk" for item in counters)
+
+
+def test_sec_html_retrieval_is_not_limited_to_two_page_one_chunks() -> None:
+    router = QuestionRouter()
+    intent = router.route("增长主要来自哪里？")
+    chunks = tuple(
+        {
+            "chunk_id": f"sec_{index}",
+            "section": "Filing narrative",
+            "text": (
+                "Revenue growth was driven by demand from cloud customers and segment expansion. "
+                f"Evidence window {index}."
+            ),
+            "source_uri": "https://www.sec.gov/Archives/demo.htm",
+            "locator": {"page_start": 1, "char_start": index * 7000},
+        }
+        for index in range(8)
+    )
+    selected = EvidenceRetriever().retrieve(
+        chunks, question="增长主要来自哪里？", intent=intent, limit=8
+    )
+    assert len(selected) >= 5

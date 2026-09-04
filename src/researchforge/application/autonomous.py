@@ -30,7 +30,7 @@ from researchforge.ingestion.sec_xbrl import SecXbrlProductIngestion
 
 JsonObject = dict[str, Any]
 ServiceFactory = Callable[[Path], ResearchRunService]
-V17_EVIDENCE_INDEX_VERSION = "1.0.0"
+V17_EVIDENCE_INDEX_VERSION = "1.1.0"
 
 
 def _entity_key(value: str) -> str:
