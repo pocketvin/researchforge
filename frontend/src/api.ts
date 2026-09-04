@@ -14,13 +14,33 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, init)
   if (!response.ok) {
     const body = (await response.json().catch(() => ({}))) as Record<string, unknown>
-    throw new Error(String(body.detail ?? body.code ?? `HTTP ${response.status}`))
+    const detail = body.detail
+    if (detail && typeof detail === 'object') {
+      const item = detail as Record<string, unknown>
+      const parts = [item.code, item.stage, item.message].filter(Boolean).map(String)
+      throw new Error(parts.join(' · ') || `HTTP ${response.status}`)
+    }
+    throw new Error(String(detail ?? body.code ?? `HTTP ${response.status}`))
   }
   return (await response.json()) as T
 }
 
 export const api = {
   catalog: () => request<Catalog>('/v1/catalog'),
+  createAutonomousRun: (payload: {
+    company_query: string
+    market_hint: 'CN' | 'US' | 'HK' | null
+    requested_period_label: string | null
+    research_mode?: 'general' | 'financial_snapshot'
+    research_question: string
+    research_time: string
+    idempotency_key: string
+  }) =>
+    request<{ run_id: string }>('/v1/autonomous-research-runs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }),
   createRun: (payload: {
     task_type: TaskType
     research_question: string

@@ -20,18 +20,16 @@ const productCatalog = {
 }
 
 test('research and secondary Quality Lab are navigable', async ({ page }) => {
-  await page.route('**/v1/catalog', (route) =>
-    route.fulfill({ json: productCatalog }),
-  )
   await page.goto('/')
 
   await expect(page.getByRole('heading', { name: '开始公司研究' })).toBeVisible()
-  await expect(page.getByLabel('Company selector')).toHaveValue('cn_300750')
-  await expect(page.getByLabel('Period selector')).toHaveValue('2024H1')
-  await expect(page.getByText(/真实披露数据/)).toBeVisible()
+  await expect(page.getByLabel('Company search')).toHaveValue('贵州茅台')
+  await expect(page.getByLabel('Market selector')).toHaveValue('AUTO')
+  await expect(page.getByLabel('Period input')).toHaveValue('')
+  await expect(page.getByText(/官方披露自动发现/)).toBeVisible()
   await expect(page.getByRole('link', { name: '使用 n8n 表单入口' })).toHaveAttribute(
     'href',
-    'http://127.0.0.1:5678/form/researchforge-v15-form',
+    'http://127.0.0.1:5678/form/researchforge-v16-form',
   )
   const researchAccessibility = await new AxeBuilder({ page }).analyze()
   expect(
@@ -52,7 +50,7 @@ test('real-data research journey exposes a progressively auditable result', asyn
     const url = new URL(route.request().url())
     const path = url.pathname
     if (path === '/v1/catalog') return route.fulfill({ json: productCatalog })
-    if (path === '/v1/research-runs' && route.request().method() === 'POST') {
+    if (path === '/v1/autonomous-research-runs' && route.request().method() === 'POST') {
       return route.fulfill({ status: 202, json: { run_id: runId } })
     }
     if (path === `/v1/research-runs/${runId}`) {
@@ -231,7 +229,7 @@ test('real-data research journey exposes a progressively auditable result', asyn
   })
 
   await page.goto('/')
-  await page.getByRole('button', { name: 'Start Research / 开始研究' }).click()
+  await page.getByRole('button', { name: 'Research Company / 开始自主研究' }).click()
   await expect(page.getByText('经营现金流覆盖净利润；现金转化比为1.96倍。')).toBeVisible()
   await expect(page.getByText('中期财务报告未经审计，限制单期结论外推。')).toBeVisible()
   await expect(page.getByText('下一同口径报告期复核现金转化与营运资本')).toBeVisible()
@@ -267,7 +265,7 @@ test('terminal abstention is explicit and never renders a research report', asyn
   await page.route('**/v1/**', (route) => {
     const path = new URL(route.request().url()).pathname
     if (path === '/v1/catalog') return route.fulfill({ json: productCatalog })
-    if (path === '/v1/research-runs' && route.request().method() === 'POST') {
+    if (path === '/v1/autonomous-research-runs' && route.request().method() === 'POST') {
       return route.fulfill({ status: 202, json: { run_id: runId } })
     }
     if (path === `/v1/research-runs/${runId}`) {
@@ -284,9 +282,9 @@ test('terminal abstention is explicit and never renders a research report', asyn
   })
 
   await page.goto('/')
-  await page.getByRole('button', { name: 'Start Research / 开始研究' }).click()
+  await page.getByRole('button', { name: 'Research Company / 开始自主研究' }).click()
   await expect(page.getByRole('heading', { name: '资料不足，ResearchForge 已弃权' })).toBeVisible()
-  await expect(page.getByText(/不会被包装成结论|只有后端目录支持/)).toBeVisible()
+  await expect(page.getByText(/不会被包装成结论|官方来源可定位/)).toBeVisible()
   await expect(page.getByText('Executive Conclusion / 核心结论')).toHaveCount(0)
   await expect(page.getByRole('link', { name: /查看 Research Trace/ })).toBeVisible()
 })

@@ -15,10 +15,9 @@ import {
   Square,
   Workflow,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { api } from './api'
 import type {
-  Catalog,
   CalculationRecord,
   Claim,
   EvidenceChunk,
@@ -69,10 +68,22 @@ const metricLabels: Record<string, string> = {
   inventory: '存货',
 }
 
+const researchTemplates = [
+  ['完整分析', '帮我完整分析一下这家公司，覆盖业绩、增长、业务结构、财务质量、主要风险和管理层展望。'],
+  ['业绩变化', '最近一个报告期的业绩发生了什么重要变化？主要原因是什么？'],
+  ['增长来源', '这家公司最近的增长主要来自哪里？哪些业务或因素贡献最大？'],
+  ['盈利能力', '这家公司的盈利能力怎么样？毛利率和利润变化主要受什么影响？'],
+  ['现金流', '利润有没有真正转化成经营现金流？现金流质量有哪些值得注意的地方？'],
+  ['财务风险', '当前最值得关注的三个财务或经营风险是什么？请按证据强弱排序。'],
+  ['业务结构', '公司的主要业务和分部结构是什么？最近发生了哪些重要变化？'],
+  ['管理层展望', '管理层如何描述未来增长、经营重点和主要不确定性？'],
+  ['异常扫描', '这份官方报告里有哪些异常信号、矛盾或值得进一步验证的地方？'],
+] as const
+
 const terminalStateGuidance: Record<string, { title: string; action: string }> = {
   insufficient_data: {
     title: '资料不足，ResearchForge 已弃权',
-    action: '检查公司、报告期和研究截止时间；只有后端目录支持且来源可核验时才会生成报告。',
+    action: '检查公司、市场、报告期和研究截止时间；只有官方来源可定位且可可靠解析时才会生成报告。',
   },
   cancelled: { title: '研究已取消', action: '本次没有生成研究结果；如需继续，请重新发起一次新研究。' },
   failed: { title: '研究执行失败', action: '保留 Run ID 并检查 Research Trace；失败状态不会被包装成结论。' },
@@ -144,11 +155,10 @@ function EvidenceLink({
 }
 
 function ResearchPage() {
-  const [catalog, setCatalog] = useState<Catalog | null>(null)
-  const taskType: TaskType = 'filing_analysis'
-  const [companies, setCompanies] = useState<string[]>([])
-  const [periods, setPeriods] = useState<string[]>([])
-  const [question, setQuestion] = useState('2024 年上半年利润是否真正转化成了经营现金流？')
+  const [companyQuery, setCompanyQuery] = useState('贵州茅台')
+  const [marketHint, setMarketHint] = useState<'AUTO' | 'CN' | 'US' | 'HK'>('AUTO')
+  const [periodLabel, setPeriodLabel] = useState('')
+  const [question, setQuestion] = useState('帮我完整分析一下这家公司，覆盖业绩、增长、业务结构、财务质量、主要风险和管理层展望。')
   const [manifest, setManifest] = useState<RunManifest | null>(null)
   const [result, setResult] = useState<ResearchResult | null>(null)
   const [trace, setTrace] = useState<Trace | null>(null)
@@ -158,32 +168,6 @@ function ResearchPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [cancelling, setCancelling] = useState(false)
-
-  useEffect(() => {
-    void api
-      .catalog()
-      .then((value) => {
-        setCatalog(value)
-        const first = value.companies[0]
-        if (first) {
-          setCompanies([first.company_id])
-          setPeriods(first.period_labels.slice(-1))
-        }
-      })
-      .catch((caught: unknown) => setError(String(caught)))
-  }, [])
-
-  const availablePeriods = useMemo(() => {
-    if (!catalog || companies.length === 0) return []
-    const selected = catalog.companies.filter((company) => companies.includes(company.company_id))
-    return selected.reduce<string[]>(
-      (shared, company, index) =>
-        index === 0
-          ? [...company.period_labels]
-          : shared.filter((period) => company.period_labels.includes(period)),
-      [],
-    )
-  }, [catalog, companies])
 
   const latestFacts = useMemo(() => {
     const byMetric = new Map<string, FinancialFact>()
@@ -242,11 +226,14 @@ function ResearchPage() {
     setCalculations([])
     setSubmitting(true)
     try {
-      const created = await api.createRun({
-        task_type: taskType,
+      const created = await api.createAutonomousRun({
+        company_query: companyQuery.trim(),
+        market_hint: marketHint === 'AUTO' ? null : marketHint,
+        requested_period_label: ['latest', '最新'].includes(periodLabel.trim().toLowerCase())
+          ? null
+          : periodLabel.trim() || null,
+        research_mode: 'general',
         research_question: question,
-        company_ids: companies,
-        requested_period_labels: periods,
         research_time: new Date().toISOString(),
         idempotency_key: crypto.randomUUID(),
       })
@@ -271,8 +258,7 @@ function ResearchPage() {
     }
   }
 
-  const invalidCompanyCount = companies.length !== 1
-  const invalidPeriodCount = periods.length !== 1
+  const invalidCompany = !companyQuery.trim()
 
   return (
     <main className="page-shell">
@@ -288,37 +274,42 @@ function ResearchPage() {
 
           <form className="mt-7 space-y-6" onSubmit={(event) => void submit(event)}>
             <label className="block">
-              <span className="field-label">Company / 公司</span>
-              <select
-                aria-label="Company selector"
+              <span className="field-label">Company / 公司或股票代码</span>
+              <input
+                aria-label="Company search"
                 className="product-select"
-                onChange={(event) => {
-                  setCompanies(event.target.value ? [event.target.value] : [])
-                  setPeriods([])
-                }}
-                value={companies[0] ?? ''}
-              >
-                <option value="">请选择公司</option>
-                {catalog?.companies.map((company) => (
-                  <option key={company.company_id} value={company.company_id}>
-                    {company.legal_name} · {company.ticker}.{company.exchange}
-                  </option>
-                ))}
-              </select>
+                onChange={(event) => setCompanyQuery(event.target.value)}
+                placeholder="贵州茅台 / 600519 / NVDA / 00700"
+                value={companyQuery}
+              />
             </label>
 
-            <label className="block">
-              <span className="field-label">Period / 报告期</span>
-              <select
-                aria-label="Period selector"
-                className="product-select"
-                onChange={(event) => setPeriods(event.target.value ? [event.target.value] : [])}
-                value={periods[0] ?? ''}
-              >
-                <option value="">请选择报告期</option>
-                {availablePeriods.map((period) => <option key={period}>{period}</option>)}
-              </select>
-            </label>
+            <div className="two-field-grid">
+              <label className="block">
+                <span className="field-label">Market / 市场</span>
+                <select
+                  aria-label="Market selector"
+                  className="product-select"
+                  onChange={(event) => setMarketHint(event.target.value as typeof marketHint)}
+                  value={marketHint}
+                >
+                  <option value="AUTO">Auto / 自动识别</option>
+                  <option value="CN">A 股</option>
+                  <option value="US">美股</option>
+                  <option value="HK">港股</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className="field-label">Period / 报告期</span>
+                <input
+                  aria-label="Period input"
+                  className="product-select"
+                  onChange={(event) => setPeriodLabel(event.target.value)}
+                  placeholder="Latest（默认）/ 2025FY"
+                  value={periodLabel}
+                />
+              </label>
+            </div>
 
             <label className="block">
               <span className="field-label">研究问题</span>
@@ -326,32 +317,43 @@ function ResearchPage() {
                 className="question-input"
                 maxLength={4000}
                 onChange={(event) => setQuestion(event.target.value)}
-                rows={4}
+                rows={5}
                 value={question}
               />
+              <div className="research-template-grid" aria-label="研究问题模板">
+                {researchTemplates.map(([label, prompt]) => (
+                  <button
+                    className={question === prompt ? 'active' : ''}
+                    key={label}
+                    onClick={() => setQuestion(prompt)}
+                    type="button"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </label>
 
             <button
               className="primary-button"
-              disabled={submitting || invalidCompanyCount || invalidPeriodCount || !question.trim()}
+              disabled={submitting || invalidCompany || !question.trim()}
               type="submit"
             >
               {submitting ? <LoaderCircle className="animate-spin" size={17} /> : <Sparkles size={17} />}
-              {submitting ? '正在执行研究链路' : 'Start Research / 开始研究'}
+              {submitting ? '正在发现并核验官方披露' : 'Research Company / 开始自主研究'}
             </button>
 
             <div className="data-boundary-note">
               <ShieldCheck size={15} />
               <span>
-                {catalog?.data_namespace === 'product' ? '真实披露数据' : '非产品数据'} ·
-                官方来源、确定性公式、Claim-level evidence
+                官方披露自动发现 · 不确定即弃权 · 确定性公式 · Claim-level evidence
               </span>
             </div>
 
             <a
               aria-label="使用 n8n 表单入口"
               className="automation-entry"
-              href="http://127.0.0.1:5678/form/researchforge-v15-form"
+              href="http://127.0.0.1:5678/form/researchforge-v16-form"
               rel="noreferrer"
               target="_blank"
             >
@@ -397,7 +399,7 @@ function ResearchPage() {
             <div className="empty-state">
               <div className="empty-orbit"><BarChart3 size={32} /></div>
               <h3>把问题变成证据链</h3>
-              <p>选择公司和报告期，提出一个具体问题。ResearchForge 会给出结论，并允许你逐层核对数字、公式、证据、反证和后续监控项。</p>
+              <p>输入任意支持市场的上市公司名称或股票代码。ResearchForge 会自主定位官方披露，再逐层给出数字、公式、证据、反证和结论。</p>
               <div className="empty-features">
                 <span><ShieldCheck size={15} /> 截止时间控制</span>
                 <span><GitBranch size={15} /> LangGraph Trace</span>
@@ -443,9 +445,15 @@ function ResearchPage() {
                   <section className="summary-card">
                     <div className="section-heading">
                       <span><Sparkles size={16} /> Executive Conclusion / 核心结论</span>
-                      <span className="micro-label">{taskLabels[result.task_type]}</span>
+                      <span className="micro-label">{result.research_intent?.label ?? taskLabels[result.task_type]}</span>
                     </div>
                     <p>{result.executive_summary}</p>
+                    {result.overall_judgment && (
+                      <div className="judgment-row">
+                        <strong>{result.overall_judgment.label}</strong>
+                        <span>{result.overall_judgment.rationale}</span>
+                      </div>
+                    )}
                   </section>
 
                   <section>
@@ -460,6 +468,24 @@ function ResearchPage() {
                       ))}
                     </div>
                   </section>
+
+                  {result.analysis_sections && result.analysis_sections.length > 0 && (
+                    <section className="report-panel deep-analysis-panel">
+                      <div className="section-heading">
+                        <span><BookOpenCheck size={16} /> Deep Analysis / 深入分析</span>
+                        <span className="micro-label">{result.analysis_sections.length} SECTIONS</span>
+                      </div>
+                      <div className="deep-analysis-list">
+                        {result.analysis_sections.map((section) => (
+                          <article key={section.title}>
+                            <h3>{section.title}</h3>
+                            <p>{section.text}</p>
+                            <small>{section.evidence_ids.length} 条官方证据</small>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
                   <details className="audit-section">
                     <summary><span><BarChart3 size={16} /> Financial Facts / 财务事实</span><small>{latestFacts.length} VERIFIED FACTS</small></summary>
@@ -545,6 +571,19 @@ function ResearchPage() {
                       ))}
                     </div>
                   </section>
+
+                  {result.suggested_follow_ups && result.suggested_follow_ups.length > 0 && (
+                    <section className="report-panel follow-up-panel">
+                      <div className="section-heading"><span><Sparkles size={16} /> Suggested Follow-ups / 继续研究</span></div>
+                      <div className="follow-up-grid">
+                        {result.suggested_follow_ups.map((followUp) => (
+                          <button key={followUp} onClick={() => setQuestion(followUp)} type="button">
+                            <span>{followUp}</span><ChevronRight size={14} />
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
                   <details className="audit-section">
                     <summary><span><GitBranch size={16} /> Research Trace / 研究轨迹</span><small>{trace?.stages.length ?? 0} LANGGRAPH STAGES</small></summary>
@@ -872,7 +911,7 @@ export default function App() {
           <button className={page === 'research' ? 'active' : ''} onClick={() => setPage('research')}><BarChart3 size={16} />Research</button>
           <button className={`secondary ${page === 'lab' ? 'active' : ''}`} onClick={() => setPage('lab')}><FlaskConical size={16} />Quality Lab</button>
         </nav>
-        <div className="header-badge"><span /> REAL DATA · V1.5</div>
+        <div className="header-badge"><span /> REAL DATA · V1.7</div>
       </header>
       {page === 'research' ? <ResearchPage /> : <QualityLabPage />}
       <footer>ResearchForge · 研究辅助工具，不构成投资建议 · 真实用户价值尚未验证</footer>

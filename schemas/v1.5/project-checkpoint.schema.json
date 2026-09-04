@@ -1,15 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://researchforge.local/schemas/v1.5/project-checkpoint.schema.json",
-  "title": "ResearchForge V1.5 Productization Checkpoint",
-  "description": "Machine-readable V1.5 product gate, frozen V1.4 evidence, verification and resumption state.",
+  "title": "ResearchForge Active Productization Checkpoint",
+  "description": "Machine-readable active product gate with preserved V1.4/V1.5 evidence and V1.6 autonomous-product state.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "project_id", "product_scope_version", "contract_package_version", "completed_gates", "current_gate", "gate_status", "current_milestone", "frozen_v1_4", "last_verified", "next_action", "blockers", "pending_decisions", "resumption", "last_session", "updated_at"],
   "properties": {
     "schema_version": {"$ref": "common.schema.json#/$defs/schemaVersion"},
     "project_id": {"type": "string", "const": "researchforge"},
-    "product_scope_version": {"type": "string", "const": "1.5"},
+    "product_scope_version": {"type": "string", "enum": ["1.5", "1.6"]},
     "contract_package_version": {"type": "string", "const": "1.5.0"},
     "completed_gates": {"type": "array", "items": {"$ref": "#/$defs/gate"}, "uniqueItems": true},
     "current_gate": {"$ref": "#/$defs/gate"},

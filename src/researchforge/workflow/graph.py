@@ -16,11 +16,18 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 
+from researchforge.application.general_research import (
+    EvidenceRetriever,
+    QuestionRouter,
+    ResearchPlanner,
+    follow_up_templates,
+)
 from researchforge.application.research import (
     ConclusionDraft,
     ConclusionGenerator,
     EarningsQualityAnalysis,
     EarningsQualityAnalyzer,
+    GeneralResearchDraft,
     InsufficientDataError,
     LoadedResearchData,
     StructuredOutputError,
@@ -75,6 +82,8 @@ class ResearchGraphState(TypedDict, total=False):
     conclusion: ConclusionDraft
     conclusions: tuple[ConclusionDraft, ...]
     counter_evidence: dict[str, Any]
+    research_intent: dict[str, Any]
+    selected_evidence: tuple[dict[str, Any], ...]
     result: dict[str, Any]
     stages: list[dict[str, Any]]
     terminal_state: str
@@ -129,6 +138,9 @@ class ResearchWorkflow:
         self.load_data = load_data
         self.analyzer = analyzer
         self.conclusion_generator = conclusion_generator
+        self.question_router = QuestionRouter()
+        self.research_planner = ResearchPlanner()
+        self.evidence_retriever = EvidenceRetriever()
         self.skill_version = skill_version
         self.skill_hash = skill_hash
         self.checkpointer = checkpointer
@@ -229,6 +241,19 @@ class ResearchWorkflow:
         return events
 
     def _understand(self, state: ResearchGraphState) -> dict[str, Any]:
+        request = state["request"]
+        if request["task_type"] == "company_research":
+            intent = self.question_router.route(str(request["research_question"]))
+            return {
+                "research_intent": intent.artifact_value(),
+                "stages": self._event(
+                    state,
+                    "understanding_question",
+                    f"Routed general company question to {intent.skill}.",
+                    input_ids=[f"request_{state['run_id']}"],
+                    output_ids=[f"intent_{state['run_id']}"],
+                ),
+            }
         return {
             "stages": self._event(
                 state,
@@ -241,35 +266,45 @@ class ResearchWorkflow:
 
     def _plan(self, state: ResearchGraphState) -> dict[str, Any]:
         run_id = state["run_id"]
-        plan = [
-            {
-                "step_id": f"step_{run_id}_load",
-                "description": "加载截止时点可用财务事实",
-                "status": "completed",
-            },
-            {
-                "step_id": f"step_{run_id}_calculate",
-                "description": "执行冻结收益质量公式",
-                "status": "completed",
-            },
-            {
-                "step_id": f"step_{run_id}_counter",
-                "description": "搜索当前证据包中的反证",
-                "status": "completed",
-            },
-            {
-                "step_id": f"step_{run_id}_validate",
-                "description": "组装并验证结构化结果",
-                "status": "completed",
-            },
-        ]
+        if state["request"]["task_type"] == "company_research":
+            intent = self.question_router.route(str(state["request"]["research_question"]))
+            plan = self.research_planner.plan(run_id, intent)
+            summary = f"Prepared {len(plan)} question-specific steps for {intent.skill}."
+        else:
+            plan = [
+                {
+                    "step_id": f"step_{run_id}_load",
+                    "description": "加载截止时点可用财务事实",
+                    "status": "completed",
+                },
+                {
+                    "step_id": f"step_{run_id}_calculate",
+                    "description": "执行冻结收益质量公式",
+                    "status": "completed",
+                },
+                {
+                    "step_id": f"step_{run_id}_counter",
+                    "description": "搜索当前证据包中的反证",
+                    "status": "completed",
+                },
+                {
+                    "step_id": f"step_{run_id}_validate",
+                    "description": "组装并验证结构化结果",
+                    "status": "completed",
+                },
+            ]
+            summary = "Persistable four-step research plan prepared."
         return {
             "plan": plan,
             "stages": self._event(
                 state,
                 "planning",
-                "Persistable four-step research plan prepared.",
-                input_ids=[f"task_spec_{run_id}"],
+                summary,
+                input_ids=[
+                    f"intent_{run_id}"
+                    if state["request"]["task_type"] == "company_research"
+                    else f"task_spec_{run_id}"
+                ],
                 output_ids=[f"plan_{run_id}"],
             ),
         }
@@ -314,8 +349,31 @@ class ResearchWorkflow:
 
     def _retrieve(self, state: ResearchGraphState) -> dict[str, Any]:
         documents = [source["document_id"] for source in state["loaded"].source_documents]
+        if state["request"]["task_type"] == "company_research":
+            intent = self.question_router.route(str(state["request"]["research_question"]))
+            selected = self.evidence_retriever.retrieve(
+                state["loaded"].evidence_chunks,
+                question=str(state["request"]["research_question"]),
+                intent=intent,
+                limit=12,
+            )
+            evidence_ids = [str(chunk["chunk_id"]) for chunk in selected]
+            return {
+                "selected_evidence": selected,
+                "stages": self._event(
+                    state,
+                    "retrieving_evidence",
+                    (
+                        f"Selected {len(selected)} relevant chunks from "
+                        f"{len(state['loaded'].evidence_chunks)} indexed filing chunks."
+                    ),
+                    input_ids=[fact["fact_id"] for fact in state["loaded"].facts],
+                    output_ids=evidence_ids,
+                ),
+            }
         evidence_ids = [chunk["chunk_id"] for chunk in state["loaded"].evidence_chunks]
         return {
+            "selected_evidence": state["loaded"].evidence_chunks,
             "stages": self._event(
                 state,
                 "retrieving_evidence",
@@ -325,7 +383,7 @@ class ResearchWorkflow:
                 ),
                 input_ids=[fact["fact_id"] for fact in state["loaded"].facts],
                 output_ids=evidence_ids,
-            )
+            ),
         }
 
     def _calculate(self, state: ResearchGraphState) -> dict[str, Any]:
@@ -397,6 +455,43 @@ class ResearchWorkflow:
         }
 
     def _counter_evidence(self, state: ResearchGraphState) -> dict[str, Any]:
+        if state["request"]["task_type"] == "company_research":
+            selected = state.get("selected_evidence", ())
+            candidates = self.evidence_retriever.counter_candidates(
+                state["loaded"].evidence_chunks, selected
+            )
+            counter: dict[str, Any] = {
+                "performed": True,
+                "queries": [
+                    "risk, uncertainty, competition, regulation and contrary filing signals"
+                ],
+                "result": "found" if candidates else "not_found",
+                "evidence_ids": [str(item["chunk_id"]) for item in candidates],
+                "summary": (
+                    (
+                        f"Located {len(candidates)} additional risk-oriented filing chunks "
+                        "for counter-checking."
+                    )
+                    if candidates
+                    else (
+                        "No additional risk-oriented chunk passed the bounded lexical "
+                        "counter-evidence rule."
+                    )
+                ),
+            }
+            return {
+                "counter_evidence": counter,
+                "stages": self._event(
+                    state,
+                    "searching_counter_evidence",
+                    counter["summary"],
+                    input_ids=[f"checks_{state['run_id']}"],
+                    output_ids=[
+                        f"counter_search_{state['run_id']}",
+                        *list(counter["evidence_ids"]),
+                    ],
+                ),
+            }
         counter_chunks = [
             chunk
             for chunk in state["loaded"].evidence_chunks
@@ -450,6 +545,63 @@ class ResearchWorkflow:
 
     def _form_conclusion(self, state: ResearchGraphState) -> dict[str, Any]:
         repairs = 0
+        if state["request"]["task_type"] == "company_research":
+            analysis = state["analysis"]
+            intent = self.question_router.route(str(state["request"]["research_question"]))
+            selected = state.get("selected_evidence", ())
+            context = {
+                "response_contract": "general_research_v1_7",
+                "research_question": state["request"]["research_question"],
+                "research_intent": intent.artifact_value(),
+                "research_plan": state["plan"],
+                "company": analysis.current_facts[0]["company"],
+                "period_label": analysis.context["period_label"],
+                "financial_facts": list(analysis.current_facts),
+                "calculations": list(analysis.calculation_records),
+                "selected_evidence": [
+                    {
+                        "chunk_id": item["chunk_id"],
+                        "section": item["section"],
+                        "text": str(item["text"])[:1400],
+                        "locator": item["locator"],
+                    }
+                    for item in selected
+                ],
+                "counter_evidence": state["counter_evidence"],
+                "suggested_follow_ups": follow_up_templates(intent.skill),
+                "source_document_ids": [
+                    source["document_id"] for source in state["loaded"].source_documents
+                ],
+            }
+            for attempt in range(2):
+                try:
+                    draft = self.conclusion_generator.generate(context)
+                    if not isinstance(draft, GeneralResearchDraft):
+                        raise StructuredOutputError(
+                            "General research returned the legacy draft contract"
+                        )
+                    self._validate_general_draft(state, draft)
+                    return {
+                        "conclusion": draft,
+                        "conclusions": (draft,),
+                        "repair_attempts": repairs,
+                        "stages": self._event(
+                            state,
+                            "forming_conclusion",
+                            "Formed a question-aware evidence-linked V1.7 research draft.",
+                            input_ids=[
+                                f"checks_{state['run_id']}",
+                                f"counter_search_{state['run_id']}",
+                            ],
+                            output_ids=[f"conclusion_{state['run_id']}"],
+                        ),
+                    }
+                except StructuredOutputError:
+                    if attempt == 1:
+                        return self._invalid_conclusion(state, repairs)
+                    repairs += 1
+            raise AssertionError("unreachable general-research repair state")
+
         conclusions: list[ConclusionDraft] = []
         for analysis in state.get("analyses", (state["analysis"],)):
             conclusion_context = {
@@ -471,13 +623,21 @@ class ResearchWorkflow:
                     }
                 )
             try:
-                conclusion = self.conclusion_generator.generate(conclusion_context)
+                generated = self.conclusion_generator.generate(conclusion_context)
+                if not isinstance(generated, ConclusionDraft):
+                    raise StructuredOutputError("Legacy research returned the V1.7 draft contract")
+                conclusion = generated
             except StructuredOutputError:
                 if repairs >= 1:
                     return self._invalid_conclusion(state, repairs)
                 repairs += 1
                 try:
-                    conclusion = self.conclusion_generator.generate(conclusion_context)
+                    generated = self.conclusion_generator.generate(conclusion_context)
+                    if not isinstance(generated, ConclusionDraft):
+                        raise StructuredOutputError(
+                            "Legacy research returned the V1.7 draft contract"
+                        )
+                    conclusion = generated
                 except StructuredOutputError:
                     return self._invalid_conclusion(state, repairs)
             conclusions.append(conclusion)
@@ -497,6 +657,24 @@ class ResearchWorkflow:
                 output_ids=[f"conclusion_{state['run_id']}"],
             ),
         }
+
+    @staticmethod
+    def _validate_general_draft(state: ResearchGraphState, draft: GeneralResearchDraft) -> None:
+        allowed_evidence = {str(item["chunk_id"]) for item in state.get("selected_evidence", ())}
+        allowed_evidence.update(str(item) for item in state["counter_evidence"]["evidence_ids"])
+        allowed_facts = {str(item["fact_id"]) for item in state["loaded"].facts}
+        for finding in draft.findings:
+            if not set(finding.evidence_ids) <= allowed_evidence:
+                raise StructuredOutputError(
+                    "General finding cited evidence outside retrieved context"
+                )
+            if not set(finding.fact_ids) <= allowed_facts:
+                raise StructuredOutputError("General finding cited facts outside verified context")
+        for section in draft.deep_analysis:
+            if not set(section.evidence_ids) <= allowed_evidence:
+                raise StructuredOutputError(
+                    "General analysis cited evidence outside retrieved context"
+                )
 
     def _invalid_conclusion(self, state: ResearchGraphState, repairs: int) -> dict[str, Any]:
         failure = {
@@ -553,6 +731,8 @@ class ResearchWorkflow:
 
     def _assemble_result(self, state: ResearchGraphState) -> dict[str, Any]:
         request = state["request"]
+        if request["task_type"] == "company_research":
+            return self._assemble_general_result(state)
         loaded = state["loaded"]
         analyses = state.get("analyses", (state["analysis"],))
         conclusions = state.get("conclusions", (state["conclusion"],))
@@ -805,6 +985,136 @@ class ResearchWorkflow:
             "monitoring_items": monitoring_items,
             "source_document_ids": [source["document_id"] for source in loaded.source_documents],
             "limitations": list(dict.fromkeys(limitations)),
+            "skill_version": self.skill_version,
+            "skill_hash": self.skill_hash,
+            "formula_version": FORMULA_VERSION,
+            "generated_at": generated_at,
+        }
+
+    def _assemble_general_result(self, state: ResearchGraphState) -> dict[str, Any]:
+        loaded = state["loaded"]
+        analysis = state["analysis"]
+        draft = state["conclusion"]
+        if not isinstance(draft, GeneralResearchDraft):
+            raise StructuredOutputError("V1.7 result assembly requires GeneralResearchDraft")
+        intent = self.question_router.route(str(state["request"]["research_question"]))
+        counter = state["counter_evidence"]
+        selected = state.get("selected_evidence", ())
+        claim_type_by_skill = {
+            "company_overview": "observation",
+            "earnings_change": "driver",
+            "growth_analysis": "driver",
+            "financial_health": "earnings_quality",
+            "risk_analysis": "risk",
+            "business_analysis": "observation",
+        }
+        claims: list[dict[str, Any]] = []
+        for index, finding in enumerate(draft.findings, start=1):
+            claim_id = f"claim_{state['run_id']}_general_{index}"
+            claims.append(
+                {
+                    "schema_version": "1.4.0",
+                    "claim_id": claim_id,
+                    "claim_type": claim_type_by_skill[intent.skill],
+                    "epistemic_status": "supported_inference",
+                    "materiality": "material" if index <= 4 else "supporting",
+                    "direction": finding.direction,
+                    "text": f"{finding.title}: {finding.text}",
+                    "fact_ids": list(finding.fact_ids),
+                    "support_evidence_ids": list(finding.evidence_ids),
+                    "counter_evidence_search": counter,
+                    "alternative_explanations": [],
+                    "confidence": {
+                        "level": finding.confidence,
+                        "basis": (
+                            f"V1.7 {intent.skill} finding cites {len(finding.evidence_ids)} "
+                            "retrieved official-filing evidence chunk(s)."
+                        ),
+                    },
+                }
+            )
+        checks = [dict(item) for item in analysis.mandatory_checks]
+        metric_chunks = {
+            str(chunk["chunk_id"]): chunk
+            for chunk in loaded.evidence_chunks
+            if str(chunk.get("section", "")).startswith("Financial statement fact:")
+            or str(chunk.get("section", "")).startswith("SEC XBRL concept:")
+        }
+        for check in checks:
+            if check["evidence_ids"]:
+                continue
+            metric_ids: list[str] = []
+            for fact_id in check["fact_ids"]:
+                fact = next((item for item in loaded.facts if item["fact_id"] == fact_id), None)
+                if fact is None:
+                    continue
+                suffix = f"_{fact['metric_code']}"
+                metric_ids.extend(
+                    chunk_id for chunk_id in metric_chunks if chunk_id.endswith(suffix)
+                )
+            check["evidence_ids"] = sorted(set(metric_ids))
+        selected_ids = [str(item["chunk_id"]) for item in selected]
+        all_used_evidence = sorted(
+            {evidence_id for claim in claims for evidence_id in claim["support_evidence_ids"]}
+            | set(counter["evidence_ids"])
+        )
+        generated_at = self.clock().isoformat()
+        company_id = str(analysis.current_facts[0]["company"]["company_id"])
+        monitoring_fact_ids = [
+            fact["fact_id"]
+            for fact in analysis.current_facts
+            if fact["metric_code"]
+            in {"operating_cash_flow", "net_income", "accounts_receivable", "inventory"}
+        ]
+        return {
+            "schema_version": "1.7.0",
+            "result_id": f"result_{state['run_id']}",
+            "run_id": state["run_id"],
+            "task_type": "company_research",
+            "research_question": state["request"]["research_question"],
+            "companies": list(loaded.companies),
+            "requested_periods": list(loaded.requested_periods),
+            "research_time": state["request"]["research_time"],
+            "evidence_cutoff": state["request"]["research_time"],
+            "status": "completed",
+            "research_intent": intent.artifact_value(),
+            "research_plan": state["plan"],
+            "executive_summary": draft.executive_summary,
+            "financial_snapshot_fact_ids": [fact["fact_id"] for fact in analysis.current_facts],
+            "mandatory_checks": checks,
+            "claims": claims,
+            "risk_claim_ids": (
+                [claim["claim_id"] for claim in claims] if intent.skill == "risk_analysis" else []
+            ),
+            "analysis_sections": [item.model_dump(mode="json") for item in draft.deep_analysis],
+            "overall_judgment": {
+                "label": draft.overall_judgment,
+                "rationale": (
+                    f"Judgment is bounded to {len(all_used_evidence)} cited filing chunks "
+                    "and verified facts."
+                ),
+            },
+            "suggested_follow_ups": list(draft.suggested_follow_ups),
+            "evidence_coverage": {
+                "available_chunk_count": len(loaded.evidence_chunks),
+                "selected_chunk_count": len(selected),
+                "selected_evidence_ids": selected_ids,
+                "cited_evidence_ids": all_used_evidence,
+                "sections": sorted({str(item["section"]) for item in selected}),
+            },
+            "monitoring_items": [
+                {
+                    "monitor_code": f"v17_next_filing_{company_id}",
+                    "title": "下一份同口径官方披露发布后复核本次研究结论",
+                    "rationale": "关键业务驱动、风险和财务质量可能随下一报告期变化。",
+                    "trigger": "下一份同口径财务报告或重大官方披露发布。",
+                    "next_review": "下一份同口径官方披露发布后",
+                    "fact_ids": monitoring_fact_ids,
+                    "evidence_ids": all_used_evidence[:8],
+                }
+            ],
+            "source_document_ids": [source["document_id"] for source in loaded.source_documents],
+            "limitations": list(dict.fromkeys(draft.limitations)),
             "skill_version": self.skill_version,
             "skill_hash": self.skill_hash,
             "formula_version": FORMULA_VERSION,

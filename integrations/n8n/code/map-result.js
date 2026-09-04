@@ -11,13 +11,13 @@ if (responses.some((response) => response.statusCode !== 200) ||
     !Array.isArray(result?.claims) || !Array.isArray(result?.limitations) ||
     !Array.isArray(result?.monitoring_items) ||
     !Array.isArray(facts) || !Array.isArray(calculations) || !Array.isArray(evidence)) {
-  return [{ json: { schema_version: '1.5.0', status: 'error', http_status: 502,
+  return [{ json: { schema_version: '1.6.0', status: 'error', http_status: 502,
     run_id: run.run_id, links: run.links, code: 'RESULT_ARTIFACTS_UNAVAILABLE',
     message: '后端报告或审计产物不可用/不匹配；未把缺失内容呈现为成功。请检查结果和 Trace 链接。',
   } }];
 }
 return [{ json: {
-  schema_version: '1.5.0', status: 'succeeded', http_status: 200, data_namespace: 'product',
+  schema_version: '1.6.0', status: 'succeeded', http_status: 200, data_namespace: 'product',
   run_id: run.run_id, links: run.links, request: config.request,
   conclusion: result.executive_summary,
   findings: result.claims,
@@ -31,5 +31,5 @@ return [{ json: {
   monitoring: result.monitoring_items,
   research_result: result,
   research_trace: trace,
-  trust_boundary: 'n8n 只编排并转交 ResearchForge 产物，不生成结论或计算财务数字。真实用户价值尚未验证。',
+  trust_boundary: 'n8n 只编排并转交 ResearchForge 产物，不生成结论或计算财务数字。失败时不生成伪结论。',
 } }];

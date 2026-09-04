@@ -152,6 +152,8 @@ class FileRunRepository:
                 "result_digest": None,
                 "trace_digest": None,
                 "calculation_digests": [],
+                "fact_digests": [],
+                "evidence_digests": [],
                 "plan_digest": None,
                 "evaluation_digest": None,
                 "cancel_requested": False,
@@ -218,6 +220,22 @@ class FileRunRepository:
             pointer["evaluation_digest"] = artifact.digest
             self._save_pointer(pointer)
 
+    def save_input_data(
+        self,
+        run_id: str,
+        *,
+        facts: list[dict[str, Any]],
+        evidence: list[dict[str, Any]],
+    ) -> None:
+        """Snapshot the exact facts and evidence consumed by one run."""
+        fact_digests = [self.store.put(fact).digest for fact in facts]
+        evidence_digests = [self.store.put(chunk).digest for chunk in evidence]
+        with self._lock:
+            pointer = self._pointer(run_id)
+            pointer["fact_digests"] = fact_digests
+            pointer["evidence_digests"] = evidence_digests
+            self._save_pointer(pointer)
+
     def _get_linked(self, run_id: str, field: str) -> Any:
         digest = self._pointer(run_id)[field]
         if digest is None:
@@ -239,6 +257,20 @@ class FileRunRepository:
 
     def get_evaluation(self, run_id: str) -> dict[str, Any]:
         return cast(dict[str, Any], self._get_linked(run_id, "evaluation_digest"))
+
+    def get_input_facts(self, run_id: str) -> list[dict[str, Any]]:
+        pointer = self._pointer(run_id)
+        return [
+            cast(dict[str, Any], self.store.get(digest))
+            for digest in pointer.get("fact_digests", [])
+        ]
+
+    def get_input_evidence(self, run_id: str) -> list[dict[str, Any]]:
+        pointer = self._pointer(run_id)
+        return [
+            cast(dict[str, Any], self.store.get(digest))
+            for digest in pointer.get("evidence_digests", [])
+        ]
 
     def artifact_references(self, run_id: str) -> dict[str, str]:
         pointer = self._pointer(run_id)

@@ -1,171 +1,120 @@
-# ResearchForge Final Delivery Roadmap
+# ResearchForge V1.6 Final Delivery Roadmap
 
-Status: **FROZEN**
+**Updated:** 2026-09-05
+**Status:** Active delivery authority
 
-Frozen on: 2026-09-03
+## Final product definition
 
-Product direction: [`researchforge-v1.5-product-thesis.md`](researchforge-v1.5-product-thesis.md)
+ResearchForge V1.6 is an auditable Financial Research Agent:
 
-This roadmap fixes the remaining delivery order after the V1.5 productization slice. It does not
-change the Product Thesis, reopen the frozen Evolution experiments or reinterpret historical
-evidence.
+> Input a public company name or ticker; ResearchForge resolves the issuer, finds an official filing, acquires and normalizes evidence, runs bounded research, and returns conclusions whose facts, calculations and trace can be inspected.
 
-## Governing outcome
+The product is not differentiated by “AI can summarize a filing”. Its differentiator is autonomous official-source acquisition plus a fail-closed, inspectable research process.
 
-ResearchForge is complete only when a real target user can use either the Web Research page or
-the ResearchForge n8n workflow to submit Company + Period + Research Question to the same backend
-and verified research pipeline, then independently inspect the conclusion, facts, calculations,
-evidence, counter evidence or limitations, and monitoring plan.
+## V1.6 scope
 
-Formal real-human evaluation happens only after the engineering, data, Web, n8n and demo surfaces
-are stable and frozen. Until then, `human_user_value_validated` remains `false`.
+Supported first-class markets:
 
-## Final acceptance policy
+- CN listed companies through CNINFO / official exchange disclosure sources.
+- US listed companies through SEC EDGAR and official XBRL Company Facts.
+- HK listed companies through HKEXnews and native-text IFRS reports.
 
-Phase 1's historical independent acceptance remains valid. Phases 2–6 use normal engineering
-quality gates and honest status updates, but they are not independent completion reviews. No
-intermediate reviewer verdict is required or permitted between these phases.
+The current deterministic research contract requires six core financial facts. Unsupported layouts must abstain.
 
-One project-wide independent read-only acceptance runs at Phase 7 only, after reusable extraction,
-all three real-filing paths, n8n, both final UX surfaces, real-human evaluation and final CI,
-Docker and E2E evidence are complete. An interrupted or quota-limited intermediate review that
-returned no verdict is not an acceptance result.
+## Phase A — Autonomous acquisition and company resolution
 
-## Phase 1 — Close V1.5
+**Status: completed for the V1.6 release candidate.**
 
-No new product feature is permitted in this phase.
+Deliverables:
 
-- Correct stale local/CI status in `PROJECT_STATUS.md` and `project-status.json`.
-- Reconcile the Product Thesis audit with capabilities already delivered in V1.5.
-- Run the complete repository gate.
-- Obtain `VERDICT: PASS` from the final independent read-only reviewer.
+1. Company/ticker input with optional market hint.
+2. Entity resolution for CN, US and HK.
+3. Official filing discovery with point-in-time cutoff.
+4. Download/cache/identity verification.
+5. CN PDF, SEC XBRL and HK IFRS extraction paths.
+6. Immutable run-level Facts/Evidence snapshots.
+7. Reviewed-package reuse for exact company+period cache hits.
+8. Explicit abstention for ambiguous company, missing filing or unreliable extraction.
 
-Exit: the V1.5 productization slice is independently accepted, while broad-data and human-value
-claims remain explicitly unvalidated.
+Acceptance evidence includes successful live runs for 贵州茅台, NVIDIA and Tencent plus the completed quick/extended Golden Regression.
 
-## Phase 2 — Reusable Financial Fact Extraction
+## Phase B — Product surfaces
 
-Implement one bounded, reusable extraction path for exactly these metrics:
+**Status: completed and runtime-verified.**
 
-- `revenue`
-- `operating_cost`
-- `net_income`
-- `operating_cash_flow`
-- `accounts_receivable`
-- `inventory`
+Web must expose company/ticker, Auto/CN/US/HK, optional period and research question. n8n must expose the same intent through a separate V1.6 workflow and use the same backend. Neither surface may calculate finance or invent a report on failure.
 
-Required path:
+## Phase C — Golden Company Regression
 
-```text
-Verified PDF
-→ page-preserving parser
-→ financial statement/table detection
-→ metric row matching
-→ reporting-period/column resolution
-→ scale/unit detection
-→ candidate numerical extraction
-→ deterministic normalization
-→ provenance verification
-→ Financial Fact
-```
+**Status: PASS.**
 
-The LLM is never the numerical truth source. Every promoted number must be deterministically
-recoverable from the verified PDF. Ambiguous period, table, row, column or unit causes
-abstention. Document hash, source locator, Evidence Chunk and provenance remain first-class.
-Company-specific result code, a general OCR platform and additional metrics are out of scope.
+Quick release set:
 
-## Phase 3 — Generalization Evidence
+- CN: 贵州茅台
+- US: NVIDIA
+- HK: Tencent
 
-Use the same extraction implementation for:
+Extended set adds 宁德时代, 比亚迪, Apple, Microsoft, Xiaomi and Alibaba.
 
-1. CATL 2024H1;
-2. CATL 2024FY;
-3. BYD 2024H1.
+For each case, a legal outcome is either:
 
-Each path must reach facts, deterministic calculations, evidence, counter evidence or an honest
-limitation, monitoring and a verified Research Result. No company-specific result generator is
-permitted.
+- **Trusted success:** exactly six required facts, official-source provenance, valid Claim→Fact/Evidence references and completed Trace; or
+- **Safe abstention:** explicit code/stage/reason and no research report.
 
-## Phase 4 — n8n Integration
+Quick mode must contain at least one trusted success in each of CN, US and HK. Extended mode is used to expose parser/provider edge cases, not to force 100% success.
 
-Add `integrations/n8n/` containing an importable workflow JSON, README, demo instructions,
-necessary examples or screenshots, and failure-behavior documentation.
+The release candidate passed this gate: the quick set succeeded in all three markets, and the extended nine-company set returned six trusted successes plus three explicit parser/normalization abstentions.
+
+## Phase D — Full engineering gate
+
+**Status: PASS locally for the V1.6 release candidate.**
+
+Before Release Freeze, run the applicable repository gates:
 
 ```text
-Form/Webhook
-→ POST ResearchForge run
-→ run_id
-→ wait and poll status
-→ IF/Switch
-→ retry while running
-→ explicit failure branch
-→ fetch Research Result
-→ map conclusion/findings/evidence/limitations/monitoring
-→ final workflow output
+uv lock --check
+ruff format --check
+ruff check
+mypy --strict
+pytest
+contract validation
+frontend typecheck/lint/unit/build
+mocked and live-backend Playwright E2E
+n8n generation/unit/lint/runtime smoke
+container build/start/smoke
+git diff review
 ```
 
-n8n owns external and business orchestration only. ResearchForge remains the owner of financial
-arithmetic, evidence truth, verifier policy, research conclusions and the LangGraph workflow.
-The integration must not require a core rewrite.
+Historical V1.5 hashes and reviewed evidence must remain intact while V1.6 receives separate workflow/contracts where needed.
 
-## Phase 5 — Final Product and Demo Hardening
+## Phase E — Owner acceptance and Release Freeze
 
-Freeze a coherent Web and n8n product over the same backend capability:
+**Status: pending owner acceptance.**
 
-- Web Research UX and n8n workflow UX;
-- README, Portfolio, interview narrative and end-to-end demo;
-- screenshots and failure/abstention experience;
-- reproducible startup, CI, Docker and E2E evidence;
-- final human-evaluation tasks, cases, fields, thresholds and denominator rules.
+The owner manually tests representative arbitrary-company research, opens supporting evidence and Trace, records any final product/prompt/UI issues, and confirms the V1.6 promise is met. There is no six-person Human Pilot prerequisite.
 
-Exit: Phases 1–5 are stable and the evaluation protocol is frozen before recruiting or testing
-participants.
+Release Freeze is complete only after Golden Regression and the full engineering gate pass and remaining issues are either fixed or explicitly documented as non-blocking limitations.
 
-## Phase 6 — Final Real-Human Evaluation
+## After V1.6 — V1.7 research intelligence
 
-Evaluate both surfaces with at least six real target users:
+Only after V1.6 is frozen, continue with the differentiating research layer:
 
-- Surface A: ResearchForge Web;
-- Surface B: ResearchForge n8n workflow.
+1. Evidence-first planning and collection before narrative generation.
+2. Explicit Claim and Evidence objects across broader research questions.
+3. Claim-level confidence from coverage, source quality, freshness and inference risk.
+4. Stronger evaluator categories: retrieval, parsing, evidence, reasoning, citation, temporal and planning failures.
+5. Bounded revision loop with maximum retry count.
+6. Failure-attribution dashboard and regression metrics.
+7. Reusable Research Skills such as FinancialHealth, RiskAnalysis and EarningsChange.
 
-Use counterbalanced order: Group A completes Web then n8n; Group B completes n8n then Web.
-Equivalent but different company/period cases may be balanced across surfaces.
+## Explicit non-goals for V1.6
 
-Shared observations cover task initiation, conclusion understanding, financial-fact discovery,
-calculation understanding, evidence discovery, limitation/counter-evidence discovery, monitoring
-discovery and trust-boundary understanding. Web adds navigation, hierarchy, progressive
-disclosure and readability. n8n adds workflow-entry usability, status comprehension,
-asynchronous waiting, failure-path comprehension and perceived automation value.
+- Trading or order execution.
+- Price targets or buy/sell recommendations.
+- Real-time market-data or high-frequency infrastructure.
+- Bloomberg/AlphaSense-scale proprietary data coverage.
+- Unrestricted support for every global exchange.
+- Large multi-agent debate systems.
+- Human Pilot as a release gate.
 
-Simulated personas are not participants. Post-test threshold changes are prohibited. Failed
-participants remain in the frozen denominator, and facilitator-assisted completion is not an
-independent pass.
-
-## Phase 7 — Release Freeze
-
-Prepare the final ResearchForge freeze only after all of the following exist:
-
-- reusable six-metric extraction;
-- CATL 2024H1, an additional CATL period and an additional company;
-- complete n8n integration;
-- complete Web and n8n UX;
-- final real-human evaluation;
-- green CI, Docker and E2E gates.
-
-After those prerequisites are frozen, run the one final project-wide independent acceptance.
-Release freeze requires its `VERDICT: PASS`.
-
-After release freeze, do not add multi-agent systems, Evolution experiments, new benchmark
-systems, trading, price prediction, portfolio optimization, real-time news, complex vector
-infrastructure, broad new research modes or architecture for its own sake. Work shifts to Resume,
-Portfolio, Demo, interview preparation and job applications.
-
-## Authority and change control
-
-The Product Thesis remains the highest statement of product purpose. This roadmap is the highest
-authority for delivery sequence and phase exits. Existing V1.2–V1.4 schemas, packages, hashes,
-formal experiment outcomes and audit artifacts remain immutable.
-
-Changing this roadmap requires a new owner-approved decision record. Implementation convenience,
-simulated feedback or a desired success claim is not sufficient reason to reorder phases or alter
-frozen evaluation evidence.
+Historical V1.4/V1.5 experiment and usability materials remain immutable context, not active roadmap requirements.

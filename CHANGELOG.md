@@ -1,6 +1,32 @@
 # Changelog
 
-## [Unreleased] — Final Delivery Phases
+## [Unreleased] — V1.6 Autonomous Research
+
+### Autonomous company research
+
+- Replaced the fixed catalog-first entry with company name/ticker input plus optional CN/US/HK
+  market and reporting-period hints.
+- Added official company and filing discovery for CNINFO, SEC EDGAR and HKEXnews, with ambiguous
+  entity resolution and provider/network failures converted into explicit abstentions.
+- Added deterministic SEC XBRL and HK IFRS ingestion paths while preserving the existing verified
+  Chinese native-PDF extractor; all successful runs still require the same six financial facts.
+- Added run-scoped Fact/Evidence snapshots and reviewed-package cache reuse so historical research
+  does not drift after a later acquisition.
+- Added simplified/traditional Chinese HK issuer normalization with OpenCC without company-specific
+  aliases.
+
+### Product and release
+
+- Rebuilt the Web Research entry around autonomous company discovery and added a separate V1.6 n8n
+  form/webhook over the same autonomous backend. The immutable V1.5 n8n artifact remains preserved.
+- Added quick and extended Golden Company Regression. Live CN/US/HK successes must contain six
+  Facts, resolvable Claim/Evidence links and a completed Trace; unsupported layouts may only pass
+  as explicit safe abstentions.
+- Removed the six-person Human Pilot from the active release gate under RF-032. Historical Pilot
+  contracts/templates remain audit history and do not become V1.6 validation evidence.
+- Moved active release validation to Golden Regression, full engineering gates and owner acceptance.
+
+## [Unreleased] — Final Delivery Phases (V1.5 history)
 
 ### Phase 5: final product and demo hardening
 

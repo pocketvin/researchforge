@@ -1,4 +1,4 @@
-"""Start the deterministic Web + API + PostgreSQL + n8n product demo."""
+"""Start the Web + API + PostgreSQL + n8n product demo with auto reasoning."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ def build_commands(*, build: bool, smoke: bool) -> list[list[str]]:
             "--no-deps",
             "n8n",
             "import:workflow",
-            "--input=/files/researchforge.workflow.json",
+            "--input=/files/researchforge-v1.6.workflow.json",
         ],
         [
             *N8N_COMPOSE,
@@ -46,7 +46,7 @@ def build_commands(*, build: bool, smoke: bool) -> list[list[str]]:
             "--no-deps",
             "n8n",
             "publish:workflow",
-            "--id=researchforgeV15",
+            "--id=researchforgeV16",
         ],
         [*N8N_COMPOSE, "up", "-d", "--no-deps", "--wait", "n8n"],
     ]
@@ -70,14 +70,14 @@ def main() -> None:
     args = parser.parse_args()
     commands = build_commands(build=not args.no_build, smoke=not args.skip_smoke)
     environment = os.environ.copy()
-    environment.setdefault("RESEARCHFORGE_REASONING_MODE", "deterministic")
+    environment.setdefault("RESEARCHFORGE_REASONING_MODE", "auto")
     for command in commands:
         print(shlex.join(command), flush=True)
         if not args.dry_run:
             subprocess.run(command, cwd=ROOT, env=environment, check=True)
     if not args.dry_run:
         print("Web: http://127.0.0.1:4173/", flush=True)
-        print("n8n form: http://127.0.0.1:5678/form/researchforge-v15-form", flush=True)
+        print("n8n form: http://127.0.0.1:5678/form/researchforge-v16-form", flush=True)
 
 
 if __name__ == "__main__":

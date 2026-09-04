@@ -1,5 +1,7 @@
 """Exercise an imported, published n8n workflow against the real ResearchForge backend."""
 
+# ruff: noqa: RUF001 -- n8n form labels intentionally contain CJK punctuation.
+
 from __future__ import annotations
 
 import argparse
@@ -53,30 +55,40 @@ def form_request(url: str, fields: dict[str, str] | None = None) -> tuple[int, s
 
 def validate_output(output: dict[str, Any]) -> None:
     schemas = {path.resolve(): load_json(path) for path in (ROOT / "schemas").glob("*/*.json")}
-    schema = ROOT / "schemas/v1.5/n8n-research-output.schema.json"
+    version = str(output.get("schema_version", ""))
+    if version == "1.5.0":
+        schema = ROOT / "schemas/v1.5/n8n-research-output.schema.json"
+    elif version == "1.6.0":
+        schema = ROOT / "schemas/v1.6/n8n-research-output.schema.json"
+    else:
+        raise ValueError(f"unsupported n8n output schema_version: {version}")
     validate_instance(output, schemas[schema], schema, schemas)
 
 
 def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) -> dict[str, Any]:
     records: list[dict[str, Any]] = []
-    cutoff = "2026-09-03T00:00:00+08:00"
+    cutoff = "2026-09-05T00:00:00+08:00"
     last_input: dict[str, Any] = {}
     last_output: dict[str, Any] = {}
-    for company, period in [
-        ("cn_300750", "2024H1"),
-        ("cn_300750", "2024FY"),
-        ("cn_002594", "2024H1"),
-    ]:
+    cases = [
+        ("宁德时代", "CN", "2024H1"),
+        ("宁德时代", "CN", "2024FY"),
+        ("比亚迪", "CN", "2024H1"),
+    ]
+    for company_query, market_hint, period in cases:
         payload = {
-            "company_id": company,
-            "period": period,
+            "company_query": company_query,
+            "market_hint": market_hint,
+            "requested_period_label": period,
             "research_question": f"{period}利润是否真正转化成了经营现金流?",
             "research_time": cutoff,
             "idempotency_key": f"n8n-smoke-{uuid4().hex}",
         }
         status, output = request(webhook, payload)
         if status != 200 or output.get("status") != "succeeded":
-            raise RuntimeError(f"n8n case {company}/{period}: HTTP {status}, {output.get('code')}")
+            raise RuntimeError(
+                f"n8n case {company_query}/{period}: HTTP {status}, {output.get('code')}"
+            )
         validate_output(output)
         run_id = output["run_id"]
         pairs = {
@@ -102,25 +114,29 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
         manifest_code, manifest = request(f"{backend}/v1/research-runs/{run_id}")
         if manifest_code != 200 or manifest["lifecycle_state"] != "succeeded":
             raise RuntimeError("same-backend run did not succeed")
-        record = {
-            "company_id": company,
-            "period": period,
-            "run_id": run_id,
-            "status": "PASS",
-            "fact_count": len(output["financial_facts"]),
-            "calculation_count": len(output["calculations"]),
-            "evidence_count": len(output["supporting_evidence"]),
-            "trace_stage_count": len(output["research_trace"]["stages"]),
-            "all_five_backend_artifacts_identical": True,
-        }
-        records.append(record)
+        records.append(
+            {
+                "company_query": company_query,
+                "market_hint": market_hint,
+                "period": period,
+                "run_id": run_id,
+                "status": "PASS",
+                "fact_count": len(output["financial_facts"]),
+                "calculation_count": len(output["calculations"]),
+                "evidence_count": len(output["supporting_evidence"]),
+                "trace_stage_count": len(output["research_trace"]["stages"]),
+                "all_five_backend_artifacts_identical": True,
+            }
+        )
         if output_dir:
             output_dir.mkdir(parents=True, exist_ok=True)
-            (output_dir / f"{company}-{period}.json").write_text(
+            safe_name = f"{market_hint.lower()}-{period.lower()}-{len(records)}.json"
+            (output_dir / safe_name).write_text(
                 json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
             )
         last_input, last_output = payload, output
-        print(f"PASS real n8n → {company}/{period} → {run_id}", flush=True)
+        print(f"PASS autonomous n8n → {company_query}/{period} → {run_id}", flush=True)
+
     status, retry = request(webhook, last_input)
     if status != 200 or retry["run_id"] != last_output["run_id"]:
         raise RuntimeError("identical webhook retry did not return the original run")
@@ -133,22 +149,18 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
             "IDEMPOTENCY_CONFLICT",
         ),
         (
-            {
-                **last_input,
-                "company_id": "cn_000001",
-                "idempotency_key": f"n8n-refuse-{uuid4().hex}",
-            },
+            {**last_input, "market_hint": "CRYPTO", "idempotency_key": f"bad-{uuid4().hex}"},
             422,
-            "UNSUPPORTED_OR_INVALID_INPUT",
+            "INVALID_INPUT",
         ),
         (
             {
                 **last_input,
-                "research_time": "2020-01-01T00:00:00Z",
-                "idempotency_key": f"n8n-cutoff-{uuid4().hex}",
+                "requested_period_label": "2025Q5",
+                "idempotency_key": f"bad-{uuid4().hex}",
             },
-            409,
-            "RUN_INSUFFICIENT_DATA",
+            422,
+            "INVALID_INPUT",
         ),
     ]
     for payload, expected_status, expected_code in failures:
@@ -158,28 +170,34 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
             raise RuntimeError(f"unexpected failure response {status}/{failure.get('code')}")
         if "research_result" in failure or "conclusion" in failure:
             raise RuntimeError("failure output invented a report")
-    # Also exercise minimum three-field submission (including a short fresh n8n execution ID).
-    status, minimal = request(
-        webhook, {k: last_input[k] for k in ("company_id", "period", "research_question")}
-    )
+
+    minimal_input = {
+        "company_query": last_input["company_query"],
+        "requested_period_label": last_input["requested_period_label"],
+        "research_question": last_input["research_question"],
+    }
+    status, minimal = request(webhook, minimal_input)
     if status != 200 or minimal.get("status") != "succeeded":
-        raise RuntimeError("minimal Company + Period + Question input failed")
+        raise RuntimeError("minimal autonomous cached input failed")
     validate_output(minimal)
+
     form_status, form_page = form_request(form)
     expected_form_fields = [
-        "ResearchForge · 可核验 A 股基本面研究",
-        "Company / 公司",
-        "Period / 报告期",
+        "ResearchForge · 自主可核验公司研究",
+        "Company / 公司或股票代码",
+        "Market / 市场",
+        "Period / 报告期（可选）",
         "Research Question / 研究问题",
     ]
     if form_status != 200 or any(field not in form_page for field in expected_form_fields):
-        raise RuntimeError("native n8n research form is unavailable or incomplete")
+        raise RuntimeError("native n8n autonomous research form is unavailable or incomplete")
     form_status, completed_page = form_request(
         form,
         {
-            "field-0": "宁德时代 · 300750.SZSE",
-            "field-1": "2024H1",
-            "field-2": "2024年上半年利润是否真正转化成了经营现金流?",
+            "field-0": "宁德时代",
+            "field-1": "A 股",
+            "field-2": "2024H1",
+            "field-3": "2024年上半年利润是否真正转化成了经营现金流?",
         },
     )
     expected_result_sections = [
@@ -195,30 +213,30 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
     form_status, refused_page = form_request(
         form,
         {
-            "field-0": "比亚迪 · 002594.SZSE",
-            "field-1": "2024FY",
-            "field-2": "该不支持期间应当明确拒绝且不生成研究结论。",
+            "field-0": "比亚迪",
+            "field-1": "A 股",
+            "field-2": "2025Q5",
+            "field-3": "错误报告期必须明确拒绝且不生成研究结论。",
         },
     )
     if (
         form_status != 200
         or "研究未生成" not in refused_page
-        or "UNSUPPORTED_OR_INVALID_INPUT" not in refused_page
+        or "INVALID_INPUT" not in refused_page
         or "Executive Conclusion" in refused_page
     ):
         raise RuntimeError("native n8n form did not render the bounded failure state")
     summary = {
         "status": "PASS",
-        "evidence_kind": "ENGINEERING_RUNTIME_NOT_HUMAN_EVALUATION",
-        "human_user_value_validated": False,
+        "evidence_kind": "V1_6_AUTONOMOUS_ORCHESTRATION_ENGINEERING",
         "verified_at": datetime.now(UTC).isoformat(),
         "n8n_version": "2.37.9",
         "workflow_sha256": hashlib.sha256(
-            (ROOT / "integrations/n8n/researchforge.workflow.json").read_bytes()
+            (ROOT / "integrations/n8n/researchforge-v1.6.workflow.json").read_bytes()
         ).hexdigest(),
         "cases": records,
         "idempotent_retry": "PASS",
-        "minimum_input": "PASS",
+        "minimum_cached_input": "PASS",
         "native_form_success": "PASS",
         "native_form_failure": "PASS",
         "real_http_failure_checks": len(failures),
@@ -261,9 +279,9 @@ def run_failure_fixture(webhook: str) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--webhook", default="http://127.0.0.1:5678/webhook/researchforge-v15")
+    parser.add_argument("--webhook", default="http://127.0.0.1:5678/webhook/researchforge-v16")
     parser.add_argument("--backend", default="http://127.0.0.1:8000")
-    parser.add_argument("--form", default="http://127.0.0.1:5678/form/researchforge-v15-form")
+    parser.add_argument("--form", default="http://127.0.0.1:5678/form/researchforge-v16-form")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--failure-fixture", action="store_true")
     args = parser.parse_args()

@@ -5,11 +5,12 @@ the frozen Evolution study is an optional quality-engineering deep dive.
 
 ## 30-Second Pitch
 
-ResearchForge is an evidence-grounded AI workspace for A-share fundamental research. A user
-selects a company and period, asks a question, and receives a structured conclusion whose facts,
-formulas, official-source locators, counter evidence, limitations and monitoring actions can be
-inspected independently. The model owns bounded reasoning; deterministic Python owns financial
-math; LangGraph owns the auditable workflow.
+ResearchForge is an auditable autonomous financial-research agent for public companies. A user
+enters a company name or ticker, optionally narrows the market or report period, and the system
+resolves the issuer, finds an official disclosure, extracts financial facts deterministically,
+then produces a conclusion whose facts, formulas, source evidence, counter evidence and execution
+Trace can be inspected independently. CN, US and HK use different official-source adapters while
+sharing one research and verification pipeline.
 
 ## The User Problem
 
@@ -42,82 +43,80 @@ problem: every important result must be traceable and every missing input must r
 | Capability | Inspectable evidence | Current status |
 |---|---|---|
 | Deterministic finance | `src/researchforge/domain`, formula and period tests | implemented |
-| Evidence provenance | Source/Fact/Evidence schemas, three official filing packages, API resources | implemented for three real filings |
+| Autonomous entity/source discovery | CNINFO, SEC and HKEX discovery adapters + Golden Regression | live CN/US/HK success |
+| Evidence provenance | Source/Fact/Evidence artifacts, official URLs, hashes and run snapshots | implemented |
 | Bounded AI workflow | ten-stage LangGraph and Workflow Trace | implemented |
 | Verification | calculation, citation, cutoff and coverage Verifier | implemented |
-| Product API | async lifecycle, facts, evidence, calculations, trace, cancel | implemented |
-| Product UI | product-first Research page and secondary read-only Quality Lab | implemented; unit, E2E, accessibility and live-browser checks pass |
-| Real disclosure ingestion | same deterministic six-metric extractor; strict product namespace | CATL 2024H1, CATL 2024FY, BYD 2024H1 |
-| n8n integration | [same-backend webhook + native-form evidence](docs/evidence/v1.5-product-hardening/README.md) | native input, readable result and bounded failure implemented; human validation pending |
-| Human usability | real participant sessions | not run |
-| Quality research | two frozen formal experiments and stopping rule | complete negative result |
+| Product API | autonomous submission plus lifecycle, facts, evidence, calculations, trace and cancel | implemented |
+| Product UI | company-first Web Research + secondary read-only Quality Lab | unit, mocked E2E and live-backend E2E pass |
+| Cross-market regression | quick + extended Golden Company suites | PASS; unsupported layouts abstain |
+| n8n integration | separate V1.6 form/webhook over the same autonomous backend | implemented and contract-tested |
+| Quality research | two frozen formal experiments and stopping rule | complete negative historical result |
 
 ## Claims Allowed Today
 
-- “Built a versioned, evidence-grounded financial research system with deterministic finance,
-  point-in-time provenance and a bounded LangGraph workflow.”
-- “Implemented asynchronous research-run APIs and a React audit interface over immutable facts,
-  calculations, evidence and traces.”
-- “Used content-addressed JSON plus PostgreSQL/Alembic to separate immutable research artifacts
-  from queryable lifecycle records.”
-- “Implemented `Decimal` formulas and explicit behavior for YTD derivation, incompatible periods,
-  restatements, zero, negative and missing inputs.”
-- “Preserved two preregistered negative experiments and applied the stopping rule rather than
-  changing thresholds to manufacture a result.”
-- “Kept simulated usability evidence explicitly separate from real-user validation.”
-- “Exposed the same verified pipeline through Web and an importable n8n form/webhook without
-  moving financial arithmetic, evidence truth or verifier policy into the automation layer.”
+- “Built an autonomous financial-research agent that resolves public companies and discovers
+  official filings across CNINFO, SEC and HKEX.”
+- “Separated numerical truth from model reasoning: PDF/XBRL extraction and `Decimal` calculations
+  are deterministic, while material claims must resolve stored Facts and Evidence.”
+- “Implemented run-scoped evidence snapshots so a historical research result cannot drift after
+  a later disclosure fetch.”
+- “Built a bounded ten-stage LangGraph with lifecycle persistence, cancellation, failure routing
+  and sanitized Trace rather than hidden chain-of-thought.”
+- “Exposed the same authoritative ResearchForge pipeline through React and n8n without duplicating
+  financial arithmetic or research logic in the automation layer.”
+- “Ran live Golden Regression across CN/US/HK; unsupported current report layouts fail closed
+  instead of being converted into plausible-looking reports.”
+- “Preserved earlier negative experiments and historical usability material instead of rewriting
+  old evidence after the product direction changed.”
 
 ## Claims Not Yet Allowed
 
-- “ResearchForge supports broad or full-market A-share research.”
-- “The product has been validated by real users.”
+- “ResearchForge supports every listed company or every filing layout.”
+- “The product has been validated by a representative sample of real users.”
 - “ResearchForge improves analyst accuracy or speed by X%.”
-- “Built a production financial research platform.”
-- “Built a self-evolving agent.”
-- “The Evolution hypothesis is supported.”
+- “Built an enterprise production financial-research platform.”
+- “Built a self-evolving or unrestricted multi-agent system.”
+- “The historical Evolution hypothesis is supported.”
 - “The system provides investment recommendations or predicts returns.”
 
-Human-usability claims unlock only after the final dual-surface evaluation uses real participants.
-That evaluation is deliberately deferred until reusable extraction, generalization, n8n, Web UX
-and demo hardening are frozen. Real-ingestion claims are bounded to the three allowlisted filings
-in the [generalization evidence](docs/evidence/v1.5-generalization/README.md), not broad coverage.
+The V1.6 release criterion is engineering reliability plus owner acceptance, not a six-person
+Human Pilot. Therefore no human-usability or market-demand claim is made. Coverage claims must be
+phrased around the implemented CN/US/HK official-source adapters, the six-fact analysis contract,
+and explicit abstention on unsupported layouts.
 
 ## Resume Bullets: Current Evidence
 
-- Built an auditable financial-research workspace using Python, FastAPI, Pydantic, LangGraph,
-  React, PostgreSQL, n8n and content-addressed artifacts, with claim-level provenance and a
-  reproducible dual-surface Docker demo.
-- Implemented deterministic `Decimal` finance, A-share reporting-period controls, YTD-to-quarter
-  derivation, source cutoffs and verifier-backed abstention across 165 backend tests plus
-  frontend E2E/accessibility gates.
-- Designed a single-agent ten-stage workflow with checkpoint recovery, cancellation, timeouts,
-  idempotent runs, structured-output repair and sanitized trace replay.
-- Designed and executed a company-disjoint controlled quality study, retained two
-  `NO_ELIGIBLE_CLUSTER` outcomes and enforced a two-experiment stop rule with total provider
-  spend of USD 0.1523062.
-
-- Built an allowlisted A-share disclosure-ingestion pipeline that acquires and hashes an official
-  filing, preserves page-level provenance, normalizes reviewed financial facts, abstains on
-  mapping/hash mismatches and produces an independently auditable research result.
+- Built an auditable autonomous financial-research agent with Python, FastAPI, Pydantic, LangGraph,
+  React, PostgreSQL and n8n, supporting company-first official-disclosure research across CNINFO,
+  SEC and HKEX.
+- Designed deterministic six-metric extraction and `Decimal` calculations with Claim–Fact–Evidence
+  provenance, point-in-time source controls and fail-closed abstention for ambiguous entities or
+  unsupported report layouts.
+- Implemented run-scoped immutable evidence snapshots, asynchronous lifecycle APIs, idempotency,
+  cancellation and a ten-stage sanitized Trace so each completed research run is reproducible and
+  diagnosable.
+- Built cross-market Golden Regression that verifies real official-source successes in CN, US and
+  HK while treating unsupported layouts as explicit safe failures rather than fabricated results.
+- Preserved two preregistered negative quality experiments and their stop rule as historical
+  evidence instead of changing thresholds after seeing the result.
 
 ## Three-to-Five-Minute Product Demo
 
-1. **Problem — 30 seconds:** show why fluent financial chat is difficult to trust.
-2. **Input — 20 seconds:** select a real company and period, then ask one bounded question.
-3. **Conclusion — 40 seconds:** show the direct answer and key findings.
-4. **Audit — 90 seconds:** expand one fact, one deterministic calculation and one official
-   evidence locator.
-5. **Challenge — 40 seconds:** show counter evidence or `not_found`, a limitation and an
-   alternative explanation.
-6. **Next action — 25 seconds:** show the monitoring trigger and next review period.
-7. **Engineering — 35 seconds:** expand the ten-stage trace and explain the ownership boundary.
+1. **Problem — 25 seconds:** explain why a fluent financial answer is difficult to trust.
+2. **Autonomous input — 25 seconds:** type a company name/ticker, choose Auto/CN/US/HK and ask one
+   concrete research question; do not pre-upload a filing.
+3. **Source discovery — 30 seconds:** show the resolved company/report period and official source.
+4. **Conclusion — 35 seconds:** show the bounded answer and key findings.
+5. **Audit — 80 seconds:** expand one Fact, deterministic Calculation, Evidence locator and Claim
+   linkage.
+6. **Failure integrity — 35 seconds:** use an unsupported period/layout and show explicit abstention
+   rather than a generated report.
+7. **Engineering — 35 seconds:** open the ten-stage Trace and explain the Python/LLM/n8n ownership
+   boundary.
 
-Then use the optional n8n form for the same input, show the readable result and submit BYD 2024FY
-to demonstrate that unsupported automation fails without manufacturing a report.
-
-Quality Lab is optional after the main story. If time remains, use it to explain why honest
-negative results are a feature of the engineering culture, not the product's core value.
+Then use the optional n8n form to submit the same company-first request and show that it returns
+the same backend artifacts. Quality Lab is optional historical depth, not the product entry point.
 
 ## Technical Deep-Dive Topics
 
@@ -131,16 +130,16 @@ negative results are a feature of the engineering culture, not the product's cor
 - how product, fixture and benchmark namespaces prevent evaluation data becoming a product
   fallback;
 - why the negative Evolution result remains frozen;
-- what evidence is required before claiming human usefulness.
+- why unsupported provider/layout states are explicit abstentions and how Golden Regression tests that boundary.
 
 ## Public Repository Checklist
 
 - no API keys, raw filing PDFs, private benchmark truth or local absolute paths;
 - one clear README first screen with user, problem, input, output and differentiation;
-- exact supported-company and period boundary;
+- explicit CN/US/HK provider and six-metric analysis boundary;
 - one-command fixture demo and a documented real-data acquisition path;
 - source identity, license/redistribution boundary and provenance;
 - deterministic calculation and abstention examples;
 - full verification and CI evidence;
-- human and simulated evidence labeled separately;
+- historical human/simulated evidence clearly separated from current V1.6 release evidence;
 - Quality Lab explicitly secondary and read-only.

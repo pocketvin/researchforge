@@ -3,9 +3,9 @@ import vm from 'node:vm';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const workflow = JSON.parse(readFileSync(new URL('./researchforge.workflow.json', import.meta.url)));
+const workflow = JSON.parse(readFileSync(new URL('./researchforge-v1.6.workflow.json', import.meta.url)));
 const runId = 'run_' + 'a'.repeat(32);
-const request = { company_id: 'cn_300750', period: '2024H1', research_question: '本报告期利润是否转化成经营现金流？' };
+const request = { company_query: 'NVDA', market_hint: 'US', requested_period_label: null, research_question: '最新报告期利润是否转化成经营现金流？' };
 function execute(name, input, references = {}, runIndex = 0) {
   const node = workflow.nodes.find((item) => item.name === name);
   const output = vm.runInNewContext(`(function(){${node.parameters.jsCode}\n})()`, {
@@ -44,30 +44,34 @@ test('workflow is portable, unpinned, bounded and all IF outputs are wired', () 
 });
 test('native form and webhook enter the same bounded backend request path', () => {
   const form = execute('Prepare request', {
-    'Company / 公司': '宁德时代 · 300750.SZSE',
-    'Period / 报告期': request.period,
+    'Company / 公司或股票代码': 'NVDA',
+    'Market / 市场': '美股',
+    'Period / 报告期（可选）': '',
     'Research Question / 研究问题': request.research_question,
     submittedAt: '2026-09-04T00:00:00Z', formMode: 'production',
   });
   assert.equal(config.surface, 'webhook');
   assert.equal(form.surface, 'form');
   assert.equal(form.ok, true);
-  assert.deepEqual(form.request.company_ids, config.request.company_ids);
-  assert.deepEqual(form.request.requested_period_labels, config.request.requested_period_labels);
+  assert.equal(form.request.company_query, config.request.company_query);
+  assert.equal(form.request.market_hint, config.request.market_hint);
+  assert.equal(form.request.requested_period_label, config.request.requested_period_label);
   assert.equal(form.request.research_question, config.request.research_question);
   assert.deepEqual(workflow.connections['Research webhook'].main[0], [{ node: 'Prepare request', type: 'main', index: 0 }]);
   assert.deepEqual(workflow.connections['Research form'].main[0], [{ node: 'Prepare request', type: 'main', index: 0 }]);
 });
 test('minimum input maps to the same backend request, no namespace override', () => {
   assert.equal(config.ok, true);
-  assert.equal(config.request.task_type, 'filing_analysis');
-  assert.deepEqual(config.request.company_ids, ['cn_300750']);
+  assert.equal(config.request.company_query, 'NVDA');
+  assert.equal(config.request.market_hint, 'US');
+  assert.equal(config.request.requested_period_label, null);
   assert.equal(config.request.idempotency_key, 'n8n-run-test-12345');
   assert.equal(config.backend_url, 'http://api:8000');
   for (const body of [null, [], {}, { ...request, backend_url: 'http://evil' },
-    { ...request, data_namespace: 'fixture' }, { ...request, research_question: '短' },
+    { ...request, data_namespace: 'fixture' }, { ...request, research_question: '' },
     { ...request, idempotency_key: 'retry-123' }, { ...request, research_time: 'yesterday' },
-    { ...request, company_id: 'cn_300750/../secrets' }]) {
+    { ...request, company_query: '' }, { ...request, market_hint: 'CRYPTO' },
+    { ...request, requested_period_label: '2025Q5' }]) {
     assert.equal(execute('Prepare request', { body }).code, 'INVALID_INPUT');
   }
 });
@@ -75,19 +79,15 @@ test('cross-execution retry preserves all immutable input including cutoff', () 
   const body = { ...request, idempotency_key: 'retry-123', research_time: '2026-09-03T00:00:00Z' };
   assert.deepEqual(execute('Prepare request', { body }).request, execute('Prepare request', { body }).request);
 });
-test('fixture/benchmark catalog and unavailable backend refuse before submission', () => {
+test('backend readiness is checked before autonomous submission', () => {
   for (const response of [{ error: 'secret exception' }, { statusCode: 500 },
-    { statusCode: 200, body: { data_namespace: 'fixture' } },
-    { statusCode: 200, body: { data_namespace: 'benchmark' } }]) {
-    const result = execute('Check catalog', response, refs);
+    { statusCode: 200, body: { status: 'starting', version: '1.6.0' } },
+    { statusCode: 200, body: { status: 'ok', version: '1.5.0' } }]) {
+    const result = execute('Check backend', response, refs);
     assert.equal(result.code, 'BACKEND_UNAVAILABLE_OR_UNSAFE');
     assert(!JSON.stringify(result).includes('secret exception'));
   }
-  assert.equal(execute('Check catalog', { statusCode: 200, body: { data_namespace: 'product',
-    companies: [{ company_id: 'cn_300750', period_labels: ['2024H1'] }],
-    supported_task_types: ['filing_analysis'] } }, refs).ok, true);
-  assert.equal(execute('Check catalog', { statusCode: 200, body: { data_namespace: 'product',
-    companies: [], supported_task_types: ['filing_analysis'] } }, refs).code, 'UNSUPPORTED_OR_INVALID_INPUT');
+  assert.equal(execute('Check backend', { statusCode: 200, body: { status: 'ok', version: '1.6.0' } }, refs).ok, true);
 });
 test('submission accepts only safe IDs and does not follow response-supplied URLs', () => {
   const response = execute('Accept submission', { statusCode: 202,

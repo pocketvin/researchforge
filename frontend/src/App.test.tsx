@@ -189,7 +189,7 @@ describe('ResearchForge UI', () => {
             }),
           )
         }
-        if (path === '/v1/research-runs') return Promise.resolve(json({ run_id: manifest.run_id }))
+        if (path === '/v1/autonomous-research-runs') return Promise.resolve(json({ run_id: manifest.run_id }))
         if (path.endsWith('/result')) {
           return Promise.resolve(
             json({
@@ -353,7 +353,7 @@ describe('ResearchForge UI', () => {
     expect(await screen.findByText('开始公司研究')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '使用 n8n 表单入口' })).toHaveAttribute(
       'href',
-      'http://127.0.0.1:5678/form/researchforge-v15-form',
+      'http://127.0.0.1:5678/form/researchforge-v16-form',
     )
 
     fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
@@ -365,7 +365,7 @@ describe('ResearchForge UI', () => {
 
   it('renders a report only after loading API artifacts', async () => {
     render(<App />)
-    const submit = await screen.findByRole('button', { name: 'Start Research / 开始研究' })
+    const submit = await screen.findByRole('button', { name: 'Research Company / 开始自主研究' })
     await waitFor(() => expect(submit).toBeEnabled())
 
     fireEvent.click(submit)

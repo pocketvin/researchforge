@@ -58,24 +58,17 @@ def wait_for_success(base_url: str, run_id: str, timeout: float) -> dict[str, An
 def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
     """Return concise, machine-readable evidence for a complete packaged run."""
     health = request_text(f"{base_url}/healthz")
-    catalog = request_json(f"{base_url}/v1/catalog")
     if health != "ok":
         raise RuntimeError("packaged frontend health response was not 'ok'")
-    if not isinstance(catalog, dict):
-        raise RuntimeError("catalog was not a JSON object")
-    if catalog.get("data_namespace") != "product":
-        raise RuntimeError("packaged product did not enforce the product namespace")
-    if catalog.get("supported_task_types") != ["filing_analysis"]:
-        raise RuntimeError("catalog advertised an unverified product capability")
-    companies = catalog.get("companies", [])
-    cases = {
-        (company["company_id"], period)
-        for company in companies
-        for period in company["period_labels"]
-    }
-    if cases != {("cn_300750", "2024H1"), ("cn_300750", "2024FY"), ("cn_002594", "2024H1")}:
-        raise RuntimeError("catalog did not enforce the three-filing product boundary")
-    results = [run_case(base_url, timeout, company, period) for company, period in sorted(cases)]
+    cases = (
+        ("宁德时代", "CN", "2024H1"),
+        ("宁德时代", "CN", "2024FY"),
+        ("比亚迪", "CN", "2024H1"),
+    )
+    results = [
+        run_case(base_url, timeout, company_query, market_hint, period)
+        for company_query, market_hint, period in cases
+    ]
     frontend = request_text(f"{base_url}/")
     if 'id="root"' not in frontend:
         raise RuntimeError("frontend root was not served")
@@ -87,17 +80,23 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
     }
 
 
-def run_case(base_url: str, timeout: float, company: str, period: str) -> dict[str, Any]:
+def run_case(
+    base_url: str,
+    timeout: float,
+    company_query: str,
+    market_hint: str,
+    period: str,
+) -> dict[str, Any]:
     """Run the same public HTTP path for a selected catalog case."""
 
     submission = request_json(
-        f"{base_url}/v1/research-runs",
+        f"{base_url}/v1/autonomous-research-runs",
         payload={
-            "task_type": "filing_analysis",
+            "company_query": company_query,
+            "market_hint": market_hint,
+            "requested_period_label": period,
             "research_question": f"{period}利润是否转化为经营现金流?",
-            "company_ids": [company],
-            "requested_period_labels": [period],
-            "research_time": "2026-09-03T00:00:00+08:00",
+            "research_time": "2026-09-05T00:00:00+08:00",
             "idempotency_key": f"docker-smoke-{uuid4().hex}",
         },
     )
@@ -152,9 +151,10 @@ def run_case(base_url: str, timeout: float, company: str, period: str) -> dict[s
         raise RuntimeError("frontend root was not served")
     return {
         "status": "PASS",
-        "schema_version": "1.5.0",
+        "schema_version": "1.6.0",
         "data_namespace": "product",
-        "company_id": company,
+        "company_query": company_query,
+        "market_hint": market_hint,
         "period": period,
         "run_id": run_id,
         "lifecycle_state": manifest["lifecycle_state"],

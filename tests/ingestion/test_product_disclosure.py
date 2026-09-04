@@ -183,7 +183,8 @@ def test_builds_ready_real_product_package_and_reloads_it(tmp_path: Path) -> Non
     values = {fact["metric_code"]: fact["value"] for fact in loaded.facts}
     assert values["net_income"] == "22864987400.00"
     assert values["operating_cash_flow"] == "44708954600.00"
-    assert len(loaded.evidence_chunks) == 8
+    assert len(loaded.evidence_chunks) >= 8
+    assert any("_fulltext_" in chunk["chunk_id"] for chunk in loaded.evidence_chunks)
     assert any(
         chunk["section"] == "Counter evidence: audit status" for chunk in loaded.evidence_chunks
     )

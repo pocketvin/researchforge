@@ -22,6 +22,7 @@ from researchforge.ingestion.extraction import (
     ExtractedFinancialCell,
     ExtractionBatch,
 )
+from researchforge.retrieval.fulltext import index_pdf_pages
 
 JsonObject = dict[str, Any]
 Clock = Callable[[], datetime]
@@ -190,10 +191,10 @@ class OfficialDocumentAcquirer:
         retrieved_at: str
         if source_file is not None:
             payload = source_file.resolve().read_bytes()
-            retrieved_at = str(record["reviewed_retrieved_at"])
+            retrieved_at = str(record.get("reviewed_retrieved_at") or self.clock().isoformat())
         elif destination.is_file():
             payload = destination.read_bytes()
-            retrieved_at = str(record["reviewed_retrieved_at"])
+            retrieved_at = str(record.get("reviewed_retrieved_at") or self.clock().isoformat())
         else:
             request = Request(uri, headers={"User-Agent": "ResearchForge/1.5"})
             with self._opener.open(request, timeout=30) as response:
@@ -216,13 +217,16 @@ class OfficialDocumentAcquirer:
                 "acquisition",
                 "Official disclosure payload does not have PDF magic bytes.",
             )
-        elif actual_hash != record["expected_sha256"]:
+        elif record.get("expected_sha256") is not None and actual_hash != record["expected_sha256"]:
             abstention = IngestionAbstention(
                 "DISCLOSURE_HASH_MISMATCH",
                 "acquisition",
                 "Official disclosure SHA-256 differs from the reviewed registry identity.",
             )
-        elif actual_size != record["expected_byte_count"]:
+        elif (
+            record.get("expected_byte_count") is not None
+            and actual_size != record["expected_byte_count"]
+        ):
             abstention = IngestionAbstention(
                 "DISCLOSURE_SIZE_MISMATCH",
                 "acquisition",
@@ -303,7 +307,10 @@ class ProductDisclosureIngestion:
             acquisition = acquired.manifest_value()
             parsed = self.parser.parse(acquired)
             parser_value = parsed.manifest_value()
-            if len(parsed.pages) != record["expected_page_count"]:
+            if (
+                record.get("expected_page_count") is not None
+                and len(parsed.pages) != record["expected_page_count"]
+            ):
                 raise IngestionAbstention(
                     "DISCLOSURE_PAGE_COUNT_MISMATCH",
                     "parsing",
@@ -391,6 +398,15 @@ class ProductDisclosureIngestion:
                 section=str(spec["section"]),
                 text=str(spec["evidence_text"]),
             )
+            artifacts[f"evidence-chunks/{chunk['chunk_id']}.json"] = chunk
+        record_slug = str(record["record_id"]).replace("-", "_")
+        for chunk in index_pdf_pages(
+            source,
+            parsed.pages,
+            id_prefix=f"chunk_product_{record_slug}_fulltext",
+            language="zh-CN",
+            parser_version=f"pypdf-{pypdf_version}",
+        ):
             artifacts[f"evidence-chunks/{chunk['chunk_id']}.json"] = chunk
         return artifacts, extraction
 

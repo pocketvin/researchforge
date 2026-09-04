@@ -2,190 +2,130 @@
 
 [![CI](https://github.com/pocketvin/researchforge/actions/workflows/ci.yml/badge.svg)](https://github.com/pocketvin/researchforge/actions/workflows/ci.yml)
 
-> **An evidence-grounded AI fundamental research workspace for A-share company research.**
+> **Auditable autonomous financial research for public companies.**
 
-ResearchForge is for individual researchers, finance learners and junior analysts who want a
-fast first-pass company study but do not want to trust a financial chatbot's black box.
+ResearchForge is an AI Research Agent for users who want a fast first-pass company study without trusting a financial chatbot's black box.
 
 Give it:
 
 ```text
-Company + Period + Research Question
+Company name / ticker + optional market + optional period + research question
 ```
 
 For example:
 
 ```text
-宁德时代 + 2024H1 + “2024 年上半年利润是否真正转化成了经营现金流？”
+贵州茅台 + Auto + Latest + “最新报告期利润是否真正转化成了经营现金流？”
+NVDA + US + Latest + “How well does profit convert into operating cash flow?”
+腾讯 + HK + 2025FY + “利润和经营现金流的质量如何？”
 ```
 
-ResearchForge turns official public disclosures into a result you can audit:
+ResearchForge then performs:
 
 ```text
-Official Disclosure → Evidence → Financial Facts → Deterministic Calculations
-→ Research Reasoning → Counter Evidence → Verification → Monitoring Plan
+Entity Resolution → Official Filing Discovery → Verified Extraction
+→ Evidence → Financial Facts → Deterministic Calculations
+→ Research Reasoning → Counter Evidence → Claims → Trace
 ```
 
-Unlike a general financial chatbot, ResearchForge does not ask the model to remember filings or
-perform important arithmetic. Every material conclusion links back to facts and source locators;
-every important number has a deterministic formula record; missing or incompatible evidence
-causes an explicit limitation or abstention.
+## Why it is different
 
-## What the user gets
+ResearchForge is not primarily a filing summarizer. Its core promise is that successful research is inspectable and failed research is explicit.
 
-A completed research report answers:
+- Important arithmetic is deterministic Python, not model memory.
+- Material claims reference stored Facts and Evidence.
+- Dynamic run inputs are snapshotted so historical runs do not drift after later downloads.
+- Official-source identity, publication time, retrieval time, hashes and locators are retained.
+- Ambiguous company resolution or unreliable extraction causes an explicit abstention instead of invented data.
+- The same authoritative backend serves Web and n8n.
+- Historical evaluation/Quality Lab evidence remains preserved but is not the normal user journey.
 
-1. What is the conclusion?
-2. Which financial facts matter?
-3. How were the numbers calculated?
-4. Where does each important fact come from?
-5. Was conflicting evidence found?
-6. What are the current limitations?
-7. What should be monitored in the next filing?
+## V1.6 market boundary
 
-The primary product is the **Research** workspace. The historical Skill Evolution system is
-preserved as an experimental, read-only **Quality Lab** and is not required for normal research.
+| Market | Company resolution | Official source | Numerical truth path |
+|---|---|---|---|
+| CN | ticker / Chinese name | CNINFO / official exchange disclosure | verified native-text PDF |
+| US | ticker / issuer name | SEC EDGAR | SEC Company Facts/XBRL tied to filing accession |
+| HK | ticker / English / traditional / simplified Chinese name | HKEXnews | verified native-text IFRS annual-report PDF |
+
+The first V1.6 analysis contract still requires six comparable financial facts: revenue, operating cost, net income, operating cash flow, accounts receivable and inventory. Unsupported document layouts fail closed.
 
 ## Current status
 
-- Active direction: **V1.5 Productization**
-- V1.5 productization: **independently accepted — VERDICT: PASS**
-- Current milestone: Phase 6 final real-human Web+n8n evaluation — protocol frozen, not started
-- Phase 5 engineering checkpoint: local and public GitHub Actions gates passed
-- Preserved baseline: V1.4 contracts, fixtures, experiments, hashes and negative result
-- Default runtime: strict `product` namespace with CATL 2024H1, CATL 2024FY and BYD 2024H1
-- Human usefulness: **not yet validated; formal Web+n8n evaluation is deferred to final Phase 6**
-- Investment advice, trading and price prediction: **not provided**
+- Active direction: **V1.6 Autonomous Research**.
+- Golden Regression: **PASS** — trusted live success exists in CN, US and HK; the extended nine-company set either succeeds with complete evidence or abstains explicitly.
+- Local engineering gate: **PASS** — 199 backend tests, strict typing, contracts, frontend unit/build, mocked/live E2E, Docker/PostgreSQL and actual n8n runtime checks are green.
+- Web and n8n both use the same company-first autonomous backend; reviewed V1.5 packages remain immutable cache/regression baselines.
+- Current gate: **RELEASE_FREEZE — engineering candidate ready, owner acceptance pending**.
+- V1.6 public GitHub Actions has not yet been claimed for this uncommitted candidate.
+- Six-person Human Pilot: **removed from the active release criteria by RF-032**.
+- Investment advice, order execution and price prediction: not provided.
 
-The authoritative V1.5 direction is
-[`docs/product/researchforge-v1.5-product-thesis.md`](docs/product/researchforge-v1.5-product-thesis.md).
-It defines the target user, product promise, real-data boundary, acceptance criteria and migration
-from V1.4.
-The remaining delivery sequence is frozen in
-[`docs/product/researchforge-final-delivery-roadmap.md`](docs/product/researchforge-final-delivery-roadmap.md).
+See [PROJECT_STATUS.md](PROJECT_STATUS.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) and [DECISIONS.md](DECISIONS.md) for current authority.
 
 ## Product architecture
 
 | Layer | Owns |
 |---|---|
-| LLM | question understanding and bounded research reasoning over supplied evidence |
-| Deterministic Python | `Decimal` formulas, period semantics, calculations and policy decisions |
-| Evidence System | document identity, provenance, page/section locators and claim traceability |
-| Verifier | consistency, citation resolution, required coverage and counter-evidence checks |
-| LangGraph | one bounded ten-stage workflow, routing, checkpoint/recovery, cancellation and trace |
-| n8n (optional) | external input, bounded wait/poll, explicit failures and unchanged backend output |
-| Quality Lab | frozen experimental quality evidence, separate from the user journey |
+| Discovery | company resolution and official filing discovery |
+| Ingestion | acquisition, immutable identity, parsing and normalized facts/evidence |
+| Deterministic Python | Decimal formulas, period semantics and financial calculations |
+| Evidence System | source identity, locators and claim traceability |
+| LangGraph | bounded research workflow, checkpoint/recovery, cancellation and sanitized trace |
+| Model adapter | bounded language synthesis over supplied evidence/calculations |
+| n8n | optional external workflow entry; no finance calculation or second research engine |
+| Quality Lab | preserved historical evaluation evidence, separate from product use |
 
-ResearchForge uses Python 3.12, FastAPI, Pydantic 2, LangGraph, SQLAlchemy/Alembic,
-PostgreSQL, React, TypeScript and Vite. Immutable JSON artifacts use content-addressed storage.
+ResearchForge uses Python 3.12, FastAPI, Pydantic 2, LangGraph, SQLAlchemy/Alembic, PostgreSQL, React, TypeScript and Vite. Immutable JSON artifacts use content-addressed storage.
 
-## Product preview
+## Run locally
 
-![ResearchForge V1.5 final Web result](docs/assets/research-page-v1.5-final-result.png)
-
-Facts, formulas, evidence and trace stay collapsed until the user chooses to inspect them.
-The optional n8n form reaches the same backend and shows the same verified artifacts:
-
-![ResearchForge V1.5 n8n result](docs/assets/n8n-result-v1.5.png)
-
-Quality Lab has a separate secondary surface and is not part of the normal research journey.
-
-## Run the real-data demo
-
-The same extractor and backend serve CATL 2024H1, CATL 2024FY and BYD 2024H1. See the
-[three-filing recovery and Research Result evidence](docs/evidence/v1.5-generalization/README.md)
-for every metric, source locator, calculation, counter-evidence boundary and monitoring item.
-
-The repository includes a reviewed, public-safe derived package for the official CATL 2024H1
-filing. Its six facts are deterministically recovered from the verified PDF rather than copied
-from registry-provided values. This zero-cost command forces deterministic wording, makes no
-provider call and never falls back to fixtures:
+Install/sync:
 
 ```bash
-RESEARCHFORGE_REASONING_MODE=deterministic \
-uv run researchforge catalog
-
-RESEARCHFORGE_REASONING_MODE=deterministic \
-uv run researchforge run \
-  --task-type filing_analysis \
-  --company cn_300750 \
-  --period 2024H1 \
-  --question '2024年上半年利润是否转化为经营现金流?' \
-  --research-time '2026-09-03T00:00:00+08:00' \
-  --idempotency-key 'v1.5-catl-2024h1-demo'
-```
-
-To rebuild the derived package, acquire the same allowlisted official PDF and verify its expected
-hash before parsing:
-
-```bash
-uv run researchforge ingest-disclosure --company cn_300750 --period 2024H1
-```
-
-If a confirmed rotated `OPENAI_API_KEY` is present in ignored `.env`, `auto` mode uses the
-Responses API for bounded wording over supplied facts and calculations. It does not enable web
-search or model-side arithmetic, and `store` remains false.
-
-Start the API:
-
-```bash
-uv run uvicorn researchforge.api.app:create_app --factory --reload
-```
-
-Start the frontend:
-
-```bash
+uv sync --frozen --all-groups
 npm ci --prefix frontend
+```
+
+Start API and Web separately:
+
+```bash
+RESEARCHFORGE_REASONING_MODE=deterministic \
+uv run uvicorn researchforge.api.app:create_app --factory --reload
+
 npm run dev --prefix frontend
 ```
 
-Or run the packaged stack:
+Or start the packaged stack:
 
 ```bash
 uv run python scripts/start_demo.py
 ```
 
-This starts and verifies PostgreSQL, FastAPI, Nginx/React and the imported/published n8n workflow
-in deterministic zero-provider-cost mode. Web is at `http://127.0.0.1:4173/`; the n8n form is at
-`http://127.0.0.1:5678/form/researchforge-v15-form`. Use `--dry-run` to inspect every command or
-`--no-build` to reuse already-built images. See [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) for the reproducible V1.5
-walkthrough and [`docs/demo/v1.5-demo-evidence.md`](docs/demo/v1.5-demo-evidence.md) for exact
-source, run and verification evidence.
+Web: `http://127.0.0.1:4173/`
+n8n V1.6 form: `http://127.0.0.1:5678/form/researchforge-v16-form`
 
-### Optional n8n entry
+## Autonomous API
 
-Use the [importable ResearchForge n8n workflow](integrations/n8n/README.md) through its ordinary-user
-form or automation webhook. Both return the same backend facts, calculations, evidence, report and
-Trace; n8n does not calculate finance or generate conclusions. Unsupported input renders an
-explicit no-report state. See the preserved [Phase 4 webhook evidence](docs/evidence/v1.5-n8n/README.md)
-and current [native-form runtime evidence](docs/evidence/v1.5-product-hardening/README.md).
-This remains engineering evidence, not a Human Validated label.
-
-## Research workflow
-
-All supported research tasks reuse one LangGraph:
+Primary creation resource:
 
 ```text
-understanding_question
-→ planning
-→ loading_financial_data
-→ retrieving_evidence
-→ calculating
-→ cross_checking
-→ searching_counter_evidence
-→ forming_conclusion
-→ validating_output
-→ completed
+POST /v1/autonomous-research-runs
 ```
 
-LangGraph orchestrates. Plain Python owns finance, retrieval, verification and persistence.
-The graph stores sanitized trace events and artifact IDs, not hidden chain-of-thought.
+Input fields:
 
-## API surface
+```text
+company_query
+market_hint: CN | US | HK | null
+requested_period_label: 2025FY / 2025H1 / 2025Q1 ... | null
+research_question
+research_time
+idempotency_key
+```
 
-Research resources:
+The created run then uses the ordinary immutable resources:
 
-- `POST /v1/research-runs`
 - `GET /v1/research-runs/{run_id}`
 - `GET /v1/research-runs/{run_id}/result`
 - `GET /v1/research-runs/{run_id}/facts`
@@ -193,99 +133,51 @@ Research resources:
 - `GET /v1/research-runs/{run_id}/calculations`
 - `GET /v1/research-runs/{run_id}/trace`
 - `POST /v1/research-runs/{run_id}/cancel`
-- `GET /v1/catalog`
 
-Quality Lab resources remain read-only. They are documented in the preserved V1.4 scope and are
-not part of the normal research flow.
+## Golden Company Regression
 
-## Data safety and provenance
+The release regression deliberately distinguishes trusted success from safe abstention. Quick mode requires at least one real successful run in each supported market:
 
-V1.5 separates three namespaces:
+```bash
+RESEARCHFORGE_REASONING_MODE=deterministic \
+uv run python scripts/autonomous_regression.py
+```
 
-| Namespace | Purpose | Product fallback? |
-|---|---|---:|
-| `product` | acquired real public disclosures and derived research artifacts | primary |
-| `fixture` | deterministic tests and reproducible local examples | explicit fixture mode only |
-| `benchmark` | frozen evaluation and Quality Lab evidence | never |
+Extended mode adds more unfamiliar companies:
 
-Real acquisitions must retain official URL, document identity, publication and retrieval times,
-content hash, page/section locator, parser/mapping version and provenance. Raw filing PDFs remain
-ignored and are not committed. Unverified values are never filled from model memory.
+```bash
+RESEARCHFORGE_REASONING_MODE=deterministic \
+uv run python scripts/autonomous_regression.py --all
+```
 
-## Quality Lab: preserved, not the product thesis
+A successful case must contain exactly the six required facts, valid Claim→Fact/Evidence references, a completed Trace and an allowlisted official source. An unsupported filing may abstain; it may not produce a partial fabricated report.
 
-V1.4 executed two controlled formal experiments. Both ended at `NO_ELIGIBLE_CLUSTER`; no
-Candidate was created, Validation was not opened and Final Test was not consumed. The immutable
-terminal result is:
+## Data safety
+
+Product data comes from public official disclosures. Raw downloaded filing bytes remain ignored by Git. Derived artifacts retain provenance and hashes. `fixture` and `benchmark` namespaces never silently substitute for missing product data.
+
+When an explicit company+period matches a reviewed V1.5 product package, V1.6 may reuse that immutable package as a cache. Latest/arbitrary companies otherwise go through live official discovery.
+
+## Historical evidence
+
+V1.4 and V1.5 contracts, experiments, reviewed filing packages, screenshots and old Human Pilot templates remain in the repository for auditability. They are not silently rewritten to claim V1.6 results.
+
+The V1.4 formal evolution hypothesis ended honestly at:
 
 ```text
 RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
 ```
 
-That negative result, its thresholds, benchmark packages, hashes and audit evidence are frozen.
-No third experiment is authorized. The result demonstrates honest experimentation but does not
-define V1.5 product success.
-
-Historical simulated usability records are also preserved and always labeled `SIMULATED` with
-`human_user_value_validated: false`.
+The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032 and the active roadmap define the V1.6 direction.
 
 ## Start here
 
-1. [`docs/product/researchforge-v1.5-product-thesis.md`](docs/product/researchforge-v1.5-product-thesis.md) — active product authority.
-2. [`docs/product/researchforge-final-delivery-roadmap.md`](docs/product/researchforge-final-delivery-roadmap.md) — frozen phase order and final release gate.
-3. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — current milestone, completed evidence and next action.
-4. [`docs/demo/walkthrough.md`](docs/demo/walkthrough.md) — reproducible demo and V1.5 target.
-5. [`PORTFOLIO.md`](PORTFOLIO.md) — evidence-backed interview positioning.
-6. [`DECISIONS.md`](DECISIONS.md) — architecture and scope decisions.
-
-## Authority order
-
-For V1.5 Productization:
-
-1. `docs/product/researchforge-v1.5-product-thesis.md`;
-2. `docs/product/researchforge-final-delivery-roadmap.md` for delivery order;
-3. V1.5 contracts and schemas added through its migration plan;
-4. unchanged V1.4 finance, evidence, workflow and safety contracts;
-5. code and UI.
-
-V1.2, V1.3 and V1.4 historical schemas, scope documents and frozen research evidence are not
-silently reinterpreted or rewritten.
+1. [PROJECT_STATUS.md](PROJECT_STATUS.md) — current milestone and release gate.
+2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.6 completion sequence.
+3. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032.
+4. [n8n integration](integrations/n8n/README.md) — V1.6 external workflow entry.
+5. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
 
 ## Non-goals
 
-ResearchForge does not add multi-agent debate, full-market ingestion, complex vector
-infrastructure, real-time行情, news trading, price prediction, portfolio optimization, order
-execution, investment recommendations, open-ended self-modification, mobile apps, Kubernetes or
-enterprise multi-tenancy.
-
-## Verification
-
-V1.5 Phase 1 passed local gates, GitHub Actions
-[run 33727245101](https://github.com/pocketvin/researchforge/actions/runs/33727245101) and final
-independent read-only acceptance.
-
-```bash
-uv lock --check
-uv run ruff format --check .
-uv run ruff check .
-uv run mypy --strict src scripts tests migrations
-uv run pytest -q
-uv run python scripts/validate_contracts.py
-npm run typecheck --prefix frontend
-npm run lint --prefix frontend
-npm test --prefix frontend -- --run
-npm run build --prefix frontend
-node integrations/n8n/build-workflow.mjs --check
-node --test integrations/n8n/workflow.test.mjs
-```
-
-The public repository is [pocketvin/researchforge](https://github.com/pocketvin/researchforge).
-
-Phases 2–6 use these engineering gates without intermediate independent acceptance. One
-project-wide independent read-only review runs only at the Phase 7 release freeze, after n8n,
-both final UX surfaces, real-human evaluation and release evidence are complete.
-
-## Disclaimer
-
-ResearchForge is research-assistance software, not investment advice. Source availability,
-parsing and normalized values must still be verified by the user before any financial decision.
+V1.6 does not provide trading, order execution, price targets, portfolio optimization, real-time market-data infrastructure, Bloomberg-scale proprietary coverage, unrestricted global-market support, open-ended self-modification or investment recommendations.

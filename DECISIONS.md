@@ -705,3 +705,40 @@ At least six real users must attempt both surfaces with counterbalanced order. O
 completion counts; assisted, failed and not-attempted outcomes remain in the denominator. Current
 records remain `TEMPLATE_ONLY`, completed session count is zero and human usefulness is
 unvalidated until Phase 6 actually runs.
+
+## RF-032 — V1.6 以自主官方来源研究为产品主线，真人 Pilot 不再是发布门槛
+
+**日期：** 2026-09-05
+**状态：** Accepted
+
+### 决策
+
+ResearchForge V1.6 的主产品入口改为“公司名称或股票代码 → 官方披露自动发现 → 确定性数据提取 → Evidence/Claim/Trace → 研究结论”。首批正式市场边界为 A 股、美国上市公司和港股，分别优先使用 CNINFO、SEC、HKEX 等官方披露源。
+
+V1.5 已审核的三份固定财报不删除，也不继续作为产品输入边界；它们转为不可变 reviewed cache、回归基线和历史验收证据。实时发现失败、实体歧义或六指标无法可靠恢复时必须显式 abstain，不得为了完成率生成推测数据。
+
+原“至少六名真人、Web+n8n 双端 Pilot”从 active release gate 中移除。相关协议、模板和历史验收文件保留用于追溯，但不再阻塞发布。最终验证改为跨市场 Golden Company Regression、完整工程门禁和 owner 自测优化。
+
+n8n 保留为 External Workflow Integration，与 Web 共用同一个 Autonomous Research Backend；它不再承担真人测评职责，也不得成为第二套研究逻辑。
+
+## RF-033 — V1.7 将“自主找财报”升级为问题驱动的 General Company Research
+
+**日期：** 2026-09-05
+**状态：** Accepted
+
+### 决策
+
+V1.6 的工程实现通过，但 owner acceptance 因“答案过短、可研究问题过窄”未通过，因此不执行 Release Freeze。V1.7 成为 active product scope。
+
+V1.7 默认 Autonomous Research 不再把任意问题强制映射为 `filing_analysis` / Earnings Quality。默认模式改为 `company_research`：Question Router 选择研究 Skill，Research Planner 生成问题相关步骤，再从完整官方披露全文索引中检索 Evidence，最后形成更完整的 Claim-level Research Result。
+V1.7 首批 Skill 固定为：Company Overview、Earnings Change、Growth Analysis、Financial Health、Risk Analysis、Business Analysis。管理层展望作为业务/增长研究的 Evidence 维度，不在本轮新增独立 Agent。
+
+六项已验证财务事实继续作为确定性数值骨架，但不再等同于全部研究素材。CN/HK 原生 PDF 与 SEC filing HTML 都生成 page/section/hash 可追溯的全文 Evidence Chunks。重要文本结论只能引用本次检索到的 Evidence；确定性公式仍不得交给模型重新计算。
+
+单一 LangGraph Research Agent 保持不变，不新增多 Agent 辩论或第二套研究引擎。`financial_snapshot` 作为 V1.6 兼容/回归模式保留；V1.7 General Research 使用独立动态 Evidence package cache，避免误复用只有六指标证据的旧包。
+
+默认报告扩展为 Executive Answer、4–8 Key Findings（证据允许时）、Deep Analysis、Financial Snapshot、Counter Evidence、Overall Judgment 和 Suggested Follow-ups。真实证据不足时允许减少 Finding 或明确 abstain，禁止为“报告够长”补充模型记忆事实。
+
+### V1.7 非目标
+
+本轮不加入实时新闻、券商研报、目标价/买卖建议、组合管理、宏观 Agent、多 Agent debate、全市场无限覆盖或开放式自修改。同行比较继续后置，先把单公司官方披露研究做深。

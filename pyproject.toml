@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "researchforge"
-version = "1.5.0"
-description = "Evidence-grounded AI fundamental research workspace for A-share companies"
+version = "1.6.0"
+description = "Auditable autonomous financial research agent for CN, US and HK public companies"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = { file = "LICENSE" }
@@ -21,6 +21,7 @@ dependencies = [
   "pydantic-settings>=2.10,<3",
   "sqlalchemy>=2.0,<3",
   "uvicorn[standard]>=0.35,<1",
+  "opencc-python-reimplemented>=0.1.7,<1",
 ]
 
 [dependency-groups]

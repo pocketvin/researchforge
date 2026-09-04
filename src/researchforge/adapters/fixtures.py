@@ -143,7 +143,7 @@ class G0FixtureCatalog:
             data_namespace=self.data_namespace,
             companies=sorted(companies.values(), key=lambda item: item.company_id),
             supported_task_types=(
-                ["filing_analysis"]
+                ["company_research", "filing_analysis"]
                 if is_product
                 else [
                     "company_research",
@@ -158,7 +158,8 @@ class G0FixtureCatalog:
                 [
                     f"Real-data coverage: {len(self._sources)} reviewed filings in this catalog.",
                     "Research results are auditable analysis, not investment advice.",
-                    "Human usefulness remains unvalidated until real pilot sessions are completed.",
+                    "Live company-first research is exposed through the autonomous research API; "
+                    "this catalog is only the preserved reviewed baseline.",
                 ]
                 if is_product
                 else [

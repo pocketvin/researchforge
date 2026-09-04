@@ -19,9 +19,12 @@ CURRENT_SCHEMA_VERSION = "v1.4"
 CURRENT_ARTIFACT_VERSION = "1.4.0"
 ACTIVE_PRODUCT_SCHEMA_VERSION = "v1.5"
 ACTIVE_PRODUCT_ARTIFACT_VERSION = "1.5.0"
+V17_SCHEMA_VERSION = "v1.7"
+V17_ARTIFACT_VERSION = "1.7.0"
 HISTORICAL_SCHEMA_VERSIONS = ("v1.3", "v1.2")
 SCHEMA_DIR = ROOT / "schemas" / CURRENT_SCHEMA_VERSION
 ACTIVE_PRODUCT_SCHEMA_DIR = ROOT / "schemas" / ACTIVE_PRODUCT_SCHEMA_VERSION
+V17_SCHEMA_DIR = ROOT / "schemas" / V17_SCHEMA_VERSION
 HISTORICAL_SCHEMA_DIRS = {
     version: ROOT / "schemas" / version for version in HISTORICAL_SCHEMA_VERSIONS
 }
@@ -90,6 +93,8 @@ REQUIRED_SCHEMAS = {
     "retrieval-evaluation.schema.json",
     "simulated-usability-evaluation.schema.json",
 }
+
+V17_REQUIRED_SCHEMAS = {"research-result.schema.json"}
 
 ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "common.schema.json",
@@ -373,6 +378,7 @@ def validate_schema_shape(path: Path, schema: dict[str, Any]) -> None:
     version_directory = path.parent.name
     recognized_versions = {
         ACTIVE_PRODUCT_SCHEMA_VERSION,
+        V17_SCHEMA_VERSION,
         CURRENT_SCHEMA_VERSION,
         *HISTORICAL_SCHEMA_VERSIONS,
     }
@@ -629,7 +635,7 @@ def validate_project_checkpoint(checkpoint: dict[str, Any]) -> int:
     required_mirror_text = (
         f"Contract package: {CONTRACT_PACKAGE_VERSION}",
         f"Current gate: {current_gate}",
-        "Scope: V1.5 active productization",
+        "Scope: V1.6 autonomous productization",
     )
     for expected in required_mirror_text:
         if expected not in status_text:
@@ -667,7 +673,7 @@ def require_text(path: Path, expected_fragments: tuple[str, ...]) -> None:
     for fragment in expected_fragments:
         if fragment not in text:
             raise ContractError(
-                f"{path.relative_to(ROOT)}: missing required V1.4 text {fragment!r}"
+                f"{path.relative_to(ROOT)}: missing required contract text {fragment!r}"
             )
 
 
@@ -919,8 +925,9 @@ def validate_v15_product_semantics(
 
     active_requirements = {
         ROOT / "README.md": (
-            "evidence-grounded AI fundamental research workspace",
-            "Company + Period + Research Question",
+            "Auditable autonomous financial research for public companies",
+            "Company name / ticker + optional market + optional period + research question",
+            "V1.6 Autonomous Research",
             "Quality Lab",
         ),
         ROOT / "docs" / "product" / "researchforge-v1.5-product-thesis.md": (
@@ -2005,8 +2012,9 @@ def main() -> int:
         validate_schema_catalog(
             ACTIVE_PRODUCT_SCHEMA_DIR,
             ACTIVE_PRODUCT_REQUIRED_SCHEMAS,
-            "active V1.5 productization",
+            "preserved V1.5 productization",
         )
+        validate_schema_catalog(V17_SCHEMA_DIR, V17_REQUIRED_SCHEMAS, "active V1.7 product")
         for version, directory in HISTORICAL_SCHEMA_DIRS.items():
             validate_schema_catalog(
                 directory,
@@ -2017,6 +2025,7 @@ def main() -> int:
         schemas: dict[Path, dict[str, Any]] = {}
         schema_paths = sorted(SCHEMA_DIR.glob("*.schema.json"))
         schema_paths.extend(sorted(ACTIVE_PRODUCT_SCHEMA_DIR.glob("*.schema.json")))
+        schema_paths.extend(sorted(V17_SCHEMA_DIR.glob("*.schema.json")))
         for version in HISTORICAL_SCHEMA_VERSIONS:
             schema_paths.extend(sorted(HISTORICAL_SCHEMA_DIRS[version].glob("*.schema.json")))
         for path in schema_paths:
@@ -2049,6 +2058,12 @@ def main() -> int:
             ]
             if historical_common["$defs"]["schemaVersion"]["const"] != artifact_version:
                 raise ContractError(f"historical {version.upper()} common schema changed")
+
+        v17_result_schema = schemas[(V17_SCHEMA_DIR / "research-result.schema.json").resolve()]
+        if v17_result_schema["properties"]["schema_version"].get("const") != V17_ARTIFACT_VERSION:
+            raise ContractError("V1.7 general Research Result schema version is not frozen")
+        if v17_result_schema["properties"]["task_type"].get("const") != "company_research":
+            raise ContractError("V1.7 general Research Result must be company_research")
 
         reference_count = validate_all_refs(schemas)
 
@@ -2152,7 +2167,8 @@ def main() -> int:
         markdown_link_count = validate_markdown_links()
 
         print(
-            f"PASS: {len(ACTIVE_PRODUCT_REQUIRED_SCHEMAS)} active V1.5 productization, "
+            f"PASS: {len(V17_REQUIRED_SCHEMAS)} active V1.7, "
+            f"{len(ACTIVE_PRODUCT_REQUIRED_SCHEMAS)} preserved V1.5 productization, "
             f"{len(REQUIRED_SCHEMAS)} preserved V1.4, "
             f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.3'])} historical V1.3, and "
             f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.2'])} historical V1.2 schemas parsed"

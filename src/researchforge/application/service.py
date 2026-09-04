@@ -247,6 +247,10 @@ class ResearchRunService:
         if (
             request.task_type in {"company_research", "risk_detection"}
             and len(request.requested_period_labels) < 2
+            and not (
+                request.task_type == "company_research"
+                and self.fixture_catalog.data_namespace == "product"
+            )
         ):
             raise UnsupportedCapabilityError(
                 f"{request.task_type} requires at least two comparable periods"
@@ -320,6 +324,27 @@ class ResearchRunService:
         except Exception as exc:
             outcome = self.workflow.failed_outcome(run_id, trace_id, manifest["input"], exc)
 
+        if outcome.result is not None:
+            loaded_input = self.fixture_catalog.load(
+                manifest["input"]["company_ids"],
+                manifest["input"]["requested_period_labels"],
+                datetime.fromisoformat(manifest["input"]["research_time"]),
+            )
+            evidence = list(loaded_input.evidence_chunks)
+            if outcome.result.get("schema_version") == "1.7.0":
+                selected_ids = set(
+                    outcome.result.get("evidence_coverage", {}).get("selected_evidence_ids", [])
+                )
+                selected_ids.update(
+                    outcome.result.get("evidence_coverage", {}).get("cited_evidence_ids", [])
+                )
+                evidence = [chunk for chunk in evidence if chunk.get("chunk_id") in selected_ids]
+            self.repository.save_input_data(
+                run_id,
+                facts=list(loaded_input.facts),
+                evidence=evidence,
+            )
+
         self.repository.save_trace(run_id, outcome.trace)
         self.repository.save_plan(
             run_id,
@@ -369,7 +394,10 @@ class ResearchRunService:
         return self.repository.get_evaluation(run_id)
 
     def get_facts(self, run_id: str) -> list[dict[str, Any]]:
-        """Resolve the point-in-time facts used by a persisted research run."""
+        """Return the immutable facts used by a persisted research run."""
+        snapshot = self.repository.get_input_facts(run_id)
+        if snapshot:
+            return snapshot
         manifest = self.repository.get_manifest(run_id)
         loaded = self.fixture_catalog.load(
             manifest["input"]["company_ids"],
@@ -379,7 +407,10 @@ class ResearchRunService:
         return list(loaded.facts)
 
     def get_evidence(self, run_id: str) -> list[dict[str, Any]]:
-        """Resolve the bounded evidence chunks used by a persisted research run."""
+        """Return the immutable evidence used by a persisted research run."""
+        snapshot = self.repository.get_input_evidence(run_id)
+        if snapshot:
+            return snapshot
         manifest = self.repository.get_manifest(run_id)
         loaded = self.fixture_catalog.load(
             manifest["input"]["company_ids"],

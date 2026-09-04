@@ -3,7 +3,7 @@ const config = $('Prepare request').first().json;
 const run = $('Accept submission').first().json;
 const state = response.body?.lifecycle_state;
 const polls = $runIndex + 1;
-const base = { schema_version: '1.5.0', run_id: run.run_id, links: run.links, polls };
+const base = { schema_version: '1.6.0', run_id: run.run_id, links: run.links, polls };
 if (response.statusCode !== 200 || response.body?.run_id !== run.run_id) {
   return [{ json: { ...base, route: 'error', status: 'error', http_status: 502,
     code: 'STATUS_UNAVAILABLE',

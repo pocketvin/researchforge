@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 const here = dirname(fileURLToPath(import.meta.url))
 const assets = resolve(here, '../../docs/assets')
 const webUrl = process.env.RESEARCHFORGE_WEB_URL ?? 'http://127.0.0.1:4173'
-const n8nUrl = process.env.RESEARCHFORGE_N8N_FORM_URL ?? 'http://127.0.0.1:5678/form/researchforge-v15-form'
+const n8nUrl = process.env.RESEARCHFORGE_N8N_FORM_URL ?? 'http://127.0.0.1:5678/form/researchforge-v16-form'
 const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH
 await mkdir(assets, { recursive: true })
 

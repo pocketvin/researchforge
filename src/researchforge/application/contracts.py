@@ -46,6 +46,26 @@ class ResearchRunRequest(BaseModel):
         return self
 
 
+class AutonomousResearchRequest(BaseModel):
+    """Public input for company-first live disclosure research."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    company_query: Annotated[str, Field(min_length=1, max_length=200)]
+    research_question: Annotated[str, Field(min_length=1, max_length=4000)]
+    requested_period_label: Annotated[str | None, Field(max_length=16)] = None
+    market_hint: Literal["CN", "US", "HK"] | None = None
+    research_mode: Literal["general", "financial_snapshot"] = "general"
+    research_time: datetime
+    idempotency_key: Annotated[str, Field(min_length=8, max_length=256)]
+
+    @model_validator(mode="after")
+    def validate_time(self) -> AutonomousResearchRequest:
+        if self.research_time.tzinfo is None:
+            raise ValueError("research_time must include a timezone")
+        return self
+
+
 class RunLinks(BaseModel):
     """Stable links returned by run creation."""
 

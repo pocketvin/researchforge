@@ -62,9 +62,26 @@ export interface Claim {
 }
 
 export interface ResearchResult {
+  schema_version?: string
   result_id: string
   task_type: TaskType
   executive_summary: string
+  research_intent?: {
+    skill: string
+    label: string
+    search_terms: string[]
+    preferred_sections: string[]
+  }
+  analysis_sections?: Array<{ title: string; text: string; evidence_ids: string[] }>
+  overall_judgment?: { label: string; rationale: string }
+  suggested_follow_ups?: string[]
+  evidence_coverage?: {
+    available_chunk_count: number
+    selected_chunk_count: number
+    selected_evidence_ids: string[]
+    cited_evidence_ids: string[]
+    sections: string[]
+  }
   claims: Claim[]
   mandatory_checks: Array<{
     check_code: string

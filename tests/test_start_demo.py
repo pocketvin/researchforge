@@ -6,9 +6,10 @@ def test_demo_start_is_bounded_to_project_services_and_verifies_both_surfaces() 
     serialized = [" ".join(command) for command in commands]
     assert serialized[0] == "docker compose up -d --build --wait"
     assert any(
-        "import:workflow --input=/files/researchforge.workflow.json" in line for line in serialized
+        "import:workflow --input=/files/researchforge-v1.6.workflow.json" in line
+        for line in serialized
     )
-    assert any("publish:workflow --id=researchforgeV15" in line for line in serialized)
+    assert any("publish:workflow --id=researchforgeV16" in line for line in serialized)
     assert any("scripts/docker_smoke.py" in line for line in serialized)
     assert any("scripts.n8n_smoke" in line for line in serialized)
     assert all("down" not in command for command in serialized)

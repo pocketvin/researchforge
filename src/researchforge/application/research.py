@@ -1,5 +1,7 @@
 """Plain earnings-quality services used by the LangGraph thin slice."""
 
+# ruff: noqa: RUF001 -- persisted/user-facing Chinese prose uses Chinese punctuation.
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -64,11 +66,50 @@ class ConclusionDraft(BaseModel):
     ) = Field(max_length=7)
 
 
+class GeneralFindingDraft(BaseModel):
+    """One evidence-linked finding proposed by the V1.7 language layer."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    title: str = Field(min_length=1, max_length=300)
+    text: str = Field(min_length=1, max_length=3000)
+    evidence_ids: list[str] = Field(min_length=1, max_length=5)
+    fact_ids: list[str] = Field(max_length=6)
+    confidence: Literal["high", "medium", "low"]
+    direction: Literal["positive", "negative", "mixed", "neutral"]
+
+
+class GeneralAnalysisSectionDraft(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    title: str = Field(min_length=1, max_length=300)
+    text: str = Field(min_length=1, max_length=5000)
+    evidence_ids: list[str] = Field(min_length=1, max_length=8)
+
+
+class GeneralResearchDraft(BaseModel):
+    """Question-aware research language over selected official filing evidence."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    executive_summary: str = Field(min_length=1, max_length=8000)
+    findings: list[GeneralFindingDraft] = Field(min_length=2, max_length=8)
+    deep_analysis: list[GeneralAnalysisSectionDraft] = Field(min_length=2, max_length=6)
+    limitations: list[str] = Field(max_length=12)
+    suggested_follow_ups: list[str] = Field(min_length=4, max_length=6)
+    overall_judgment: Literal[
+        "Strongly Supported", "Supported", "Mixed", "Weak Evidence", "Insufficient Evidence"
+    ]
+
+
+ResearchLanguageDraft = ConclusionDraft | GeneralResearchDraft
+
+
 class ConclusionGenerator(Protocol):
     """Port implemented by deterministic tests or the OpenAI Responses adapter."""
 
-    def generate(self, context: dict[str, Any]) -> ConclusionDraft:
-        """Generate bounded language from supplied, precomputed values only."""
+    def generate(self, context: dict[str, Any]) -> ResearchLanguageDraft:
+        """Generate bounded language from supplied, precomputed evidence only."""
 
         ...
 
@@ -76,7 +117,9 @@ class ConclusionGenerator(Protocol):
 class DeterministicConclusionGenerator:
     """Offline adapter used for tests, demos, and zero-cost development."""
 
-    def generate(self, context: dict[str, Any]) -> ConclusionDraft:
+    def generate(self, context: dict[str, Any]) -> ResearchLanguageDraft:
+        if context.get("response_contract") == "general_research_v1_7":
+            return self._generate_general(context)
         company = context["company"]["legal_name"]
         period = context["period_label"]
         conversion = context.get("cash_conversion_display", f"{context['cash_conversion']}倍")
@@ -116,6 +159,79 @@ class DeterministicConclusionGenerator:
             gross_margin_text=f"按营业收入减营业成本计算, {period}毛利率为{margin}。",
             limitations=limitations,
             reported_check_codes=None,
+        )
+
+    @staticmethod
+    def _generate_general(context: dict[str, Any]) -> GeneralResearchDraft:
+        evidence = list(context.get("selected_evidence", []))
+        intent = context.get("research_intent", {})
+        company = context.get("company", {}).get("legal_name", "该公司")
+        question = str(context.get("research_question", "公司基本面如何？"))
+        facts = list(context.get("financial_facts", []))
+        fact_ids = [str(item.get("fact_id")) for item in facts if item.get("fact_id")]
+        if len(evidence) < 2:
+            raise InsufficientDataError(
+                "General research requires at least two filing evidence chunks."
+            )
+        findings = []
+        for item in evidence[: min(6, len(evidence))]:
+            text = str(item.get("text", "")).replace("\n", " ").strip()
+            if len(text) > 360:
+                text = text[:357].rstrip() + "…"
+            findings.append(
+                GeneralFindingDraft(
+                    title=str(item.get("section", "官方披露证据")),
+                    text=f"官方披露在该部分记录：{text}",
+                    evidence_ids=[str(item["chunk_id"])],
+                    fact_ids=fact_ids[:2],
+                    confidence="high" if item.get("section") != "Filing narrative" else "medium",
+                    direction="neutral",
+                )
+            )
+        sections = []
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for item in evidence:
+            grouped.setdefault(str(item.get("section", "Filing narrative")), []).append(item)
+        for title, items in list(grouped.items())[:4]:
+            excerpts = [
+                str(item.get("text", "")).replace("\n", " ").strip()[:260] for item in items[:2]
+            ]
+            sections.append(
+                GeneralAnalysisSectionDraft(
+                    title=title,
+                    text="；".join(excerpts),
+                    evidence_ids=[str(item["chunk_id"]) for item in items[:4]],
+                )
+            )
+        while len(sections) < 2:
+            item = evidence[len(sections)]
+            sections.append(
+                GeneralAnalysisSectionDraft(
+                    title=f"证据观察 {len(sections) + 1}",
+                    text=str(item.get("text", ""))[:520],
+                    evidence_ids=[str(item["chunk_id"])],
+                )
+            )
+        follow_ups = list(context.get("suggested_follow_ups", []))[:6]
+        while len(follow_ups) < 4:
+            follow_ups.append(f"围绕“{question}”还需要补充哪些官方证据？")
+        label = str(intent.get("label", "公司研究"))
+        return GeneralResearchDraft(
+            executive_summary=(
+                f"针对“{question}”，ResearchForge 将问题路由为“{label}”，"
+                f"并从 {company} 的官方披露中"
+                f"选取 {len(evidence)} 条相关证据。以下判断只基于这些可追溯证据和已核验财务事实；"
+                "确定性模式不会额外补充模型记忆中的公司事实。"
+            ),
+            findings=findings,
+            deep_analysis=sections,
+            limitations=[
+                "确定性降级模式主要做证据组织，不把文本相关性自动升级成因果结论。",
+                "当前研究只覆盖本次自动发现的官方报告；跨期问题可能需要追加历史报告后再确认。",
+                str(context.get("counter_evidence", {}).get("summary", "反向证据状态未提供。")),
+            ],
+            suggested_follow_ups=follow_ups,
+            overall_judgment="Supported" if len(evidence) >= 6 else "Weak Evidence",
         )
 
 
