@@ -41,7 +41,7 @@ node('Research webhook', 'webhook', 2.1, { httpMethod: 'POST', path: 'researchfo
   responseMode: 'responseNode', options: {} }, [0, 0], { webhookId: 'researchforge-v17' });
 node('Research form', 'formTrigger', 2.1, {
   path: 'researchforge-v17-form',
-  formTitle: 'ResearchForge V1.7 · 通用公司研究',
+  formTitle: 'ResearchForge V1.7.1 · 通用公司研究',
   formDescription: '输入上市公司名称或股票代码。系统会自主识别 A 股/美股/港股并定位官方披露，再走与 Web 相同的证据、计算与研究链路。',
   formFields: { values: [
     { fieldLabel: 'Company / 公司或股票代码', fieldType: 'text', requiredField: true,
@@ -95,7 +95,7 @@ connect('Form surface', 'Respond webhook', 1);
 node('Read me', 'stickyNote', 1, { width: 640, height: 280,
   content: '## ResearchForge × n8n\nCompany/Ticker → official filing discovery → verified research.\n\n**Local-only.** Configure trusted backend/public URLs in Prepare request, never in user input.\n\nWait: 2s; ≤60 polls / 150s. Failure output never invents research. n8n timeout does not cancel backend.\n\nAll facts, calculations, evidence and conclusions come from the SAME backend as Web. No LLM, finance formula or verifier lives here.\n\nSee integrations/n8n/README.md for import, demo, retries and failures. Failure/ambiguity → explicit abstention; no invented research.',
 }, [0, -380]);
-const workflow = { id: 'researchforgeV17', name: 'ResearchForge — General Company Research V1.7',
+const workflow = { id: 'researchforgeV17', name: 'ResearchForge — General Company Research V1.7.1',
   active: false, nodes, connections, pinData: {},
   settings: { executionOrder: 'v1', executionTimeout: 300,
     saveDataSuccessExecution: 'all', saveDataErrorExecution: 'all' }, tags: [] };

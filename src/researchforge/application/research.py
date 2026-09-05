@@ -67,14 +67,30 @@ class ConclusionDraft(BaseModel):
 
 
 class GeneralFindingDraft(BaseModel):
-    """One evidence-linked finding proposed by the V1.7 language layer."""
+    """One evidence-linked analytical finding proposed by the V1.7 language layer."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    title: str = Field(min_length=1, max_length=300)
-    text: str = Field(min_length=1, max_length=3000)
+    title: str = Field(min_length=1, max_length=220)
+    text: str = Field(min_length=1, max_length=2200)
     evidence_ids: list[str] = Field(min_length=1, max_length=5)
     fact_ids: list[str] = Field(max_length=6)
+    claim_type: Literal[
+        "observation",
+        "comparison",
+        "driver",
+        "earnings_quality",
+        "risk",
+        "outlook",
+        "limitation",
+    ]
+    epistemic_status: Literal[
+        "verified_fact",
+        "supported_inference",
+        "causal_hypothesis",
+        "uncertain",
+        "limitation",
+    ]
     confidence: Literal["high", "medium", "low"]
     direction: Literal["positive", "negative", "mixed", "neutral"]
 
@@ -100,6 +116,7 @@ class GeneralResearchDraft(BaseModel):
     overall_judgment: Literal[
         "Strongly Supported", "Supported", "Mixed", "Weak Evidence", "Insufficient Evidence"
     ]
+    overall_judgment_rationale: str = Field(min_length=1, max_length=2200)
 
 
 ResearchLanguageDraft = ConclusionDraft | GeneralResearchDraft
@@ -163,75 +180,93 @@ class DeterministicConclusionGenerator:
 
     @staticmethod
     def _generate_general(context: dict[str, Any]) -> GeneralResearchDraft:
+        """Return an explicit evidence-summary fallback, never a faux research report."""
         evidence = list(context.get("selected_evidence", []))
-        intent = context.get("research_intent", {})
-        company = context.get("company", {}).get("legal_name", "该公司")
         question = str(context.get("research_question", "公司基本面如何？"))
-        facts = list(context.get("financial_facts", []))
-        fact_ids = [str(item.get("fact_id")) for item in facts if item.get("fact_id")]
         if len(evidence) < 2:
             raise InsufficientDataError(
                 "General research requires at least two filing evidence chunks."
             )
-        findings = []
-        for item in evidence[: min(6, len(evidence))]:
-            text = str(item.get("text", "")).replace("\n", " ").strip()
-            if len(text) > 360:
-                text = text[:357].rstrip() + "…"
+
+        section_items: dict[str, dict[str, Any]] = {}
+        for item in evidence:
+            section_items.setdefault(str(item.get("section", "官方披露")), item)
+        findings: list[GeneralFindingDraft] = []
+        for section, item in list(section_items.items())[:4]:
+            page = item.get("locator", {}).get("page_start")
+            page_text = f"P{page}" if page is not None else "已定位位置"
             findings.append(
                 GeneralFindingDraft(
-                    title=str(item.get("section", "官方披露证据")),
-                    text=f"官方披露在该部分记录：{text}",
+                    title=f"已定位 {section} 的官方证据",
+                    text=(
+                        f"ResearchForge 已核验与当前问题相关的官方披露（{page_text}）。"
+                        "当前运行未执行模型综合，因此不会把该片段自动升级为经营判断；"
+                        "请在 Supporting Evidence 中查看原始证据。"
+                    ),
                     evidence_ids=[str(item["chunk_id"])],
-                    fact_ids=fact_ids[:2],
-                    confidence="high" if item.get("section") != "Filing narrative" else "medium",
+                    fact_ids=[],
+                    claim_type="limitation",
+                    epistemic_status="limitation",
+                    confidence="medium",
                     direction="neutral",
                 )
             )
-        sections = []
-        grouped: dict[str, list[dict[str, Any]]] = {}
-        for item in evidence:
-            grouped.setdefault(str(item.get("section", "Filing narrative")), []).append(item)
-        for title, items in list(grouped.items())[:4]:
-            excerpts = [
-                str(item.get("text", "")).replace("\n", " ").strip()[:260] for item in items[:2]
-            ]
-            sections.append(
-                GeneralAnalysisSectionDraft(
-                    title=title,
-                    text="；".join(excerpts),
-                    evidence_ids=[str(item["chunk_id"]) for item in items[:4]],
-                )
-            )
-        while len(sections) < 2:
-            item = evidence[len(sections)]
-            sections.append(
-                GeneralAnalysisSectionDraft(
-                    title=f"证据观察 {len(sections) + 1}",
-                    text=str(item.get("text", ""))[:520],
+        while len(findings) < 2:
+            item = evidence[len(findings)]
+            findings.append(
+                GeneralFindingDraft(
+                    title="已定位额外官方证据",
+                    text="该证据已通过来源与哈希链路核验，但当前未执行 AI 综合分析。",
                     evidence_ids=[str(item["chunk_id"])],
+                    fact_ids=[],
+                    claim_type="limitation",
+                    epistemic_status="limitation",
+                    confidence="medium",
+                    direction="neutral",
                 )
             )
+
+        coverage_ids = [str(item["chunk_id"]) for item in evidence[:8]]
+        sections = [
+            GeneralAnalysisSectionDraft(
+                title="当前可验证的证据范围",
+                text=(
+                    "已定位的官方披露覆盖："
+                    + "、".join(list(section_items)[:8])
+                    + "。这些内容可以审计，但在没有模型综合时不自动等同于研究结论。"
+                ),
+                evidence_ids=coverage_ids[:4],
+            ),
+            GeneralAnalysisSectionDraft(
+                title="为什么没有生成完整研究判断",
+                text=(
+                    "当前运行处于 Verified Evidence Summary fallback。系统宁可明确降级，"
+                    "也不会把财报原文摘录伪装成业绩归因、风险排序或管理层展望判断。"
+                ),
+                evidence_ids=coverage_ids[4:8] or coverage_ids[:2],
+            ),
+        ]
         follow_ups = list(context.get("suggested_follow_ups", []))[:6]
         while len(follow_ups) < 4:
             follow_ups.append(f"围绕“{question}”还需要补充哪些官方证据？")
-        label = str(intent.get("label", "公司研究"))
         return GeneralResearchDraft(
             executive_summary=(
-                f"针对“{question}”，ResearchForge 将问题路由为“{label}”，"
-                f"并从 {company} 的官方披露中"
-                f"选取 {len(evidence)} 条相关证据。以下判断只基于这些可追溯证据和已核验财务事实；"
-                "确定性模式不会额外补充模型记忆中的公司事实。"
+                "当前仅生成 Verified Evidence Summary，未执行 AI Research Synthesis。"
+                f"系统已定位 {len(evidence)} 条与问题相关的官方证据，但不会把原始披露摘录"
+                "冒充完整公司分析。请在模型综合可用后重新运行，或展开 Evidence/Trace 审计当前证据。"
             ),
             findings=findings,
             deep_analysis=sections,
             limitations=[
-                "确定性降级模式主要做证据组织，不把文本相关性自动升级成因果结论。",
-                "当前研究只覆盖本次自动发现的官方报告；跨期问题可能需要追加历史报告后再确认。",
+                "当前运行未执行 AI Research Synthesis；主报告仅为已核验证据摘要。",
+                "证据相关性不自动等于因果关系、增长归因或风险重要性判断。",
                 str(context.get("counter_evidence", {}).get("summary", "反向证据状态未提供。")),
             ],
             suggested_follow_ups=follow_ups,
-            overall_judgment="Supported" if len(evidence) >= 6 else "Weak Evidence",
+            overall_judgment="Insufficient Evidence",
+            overall_judgment_rationale=(
+                "官方证据本身可追溯，但当前没有执行模型综合；因此不能把证据集合包装成完整研究判断。"
+            ),
         )
 
 

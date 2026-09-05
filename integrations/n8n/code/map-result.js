@@ -15,6 +15,7 @@ const baseValid = responses.every((response) => response.statusCode === 200) &&
 const contractValid = snapshotMode
   ? result?.schema_version === '1.4.0' && result?.task_type === 'filing_analysis'
   : result?.schema_version === '1.7.0' && result?.task_type === 'company_research' &&
+    ['model', 'evidence_summary_fallback'].includes(result?.synthesis_mode) &&
     !!result?.research_intent && Array.isArray(result?.analysis_sections) &&
     !!result?.overall_judgment && Array.isArray(result?.suggested_follow_ups) &&
     !!result?.evidence_coverage;
@@ -38,6 +39,7 @@ const output = {
   trust_boundary: 'n8n 只编排并转交 ResearchForge 产物，不生成结论或计算财务数字。失败时不生成伪结论。',
 };
 if (!snapshotMode) Object.assign(output, {
+  synthesis_mode: result.synthesis_mode,
   research_intent: result.research_intent,
   analysis_sections: result.analysis_sections,
   overall_judgment: result.overall_judgment,

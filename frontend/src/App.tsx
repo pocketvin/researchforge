@@ -123,13 +123,21 @@ function failureEventCount(batch: EvaluationBatch | null): number {
 function EvidenceLink({
   claim,
   facts,
+  evidence,
 }: {
   claim: Claim
   facts: FinancialFact[]
+  evidence: EvidenceChunk[]
 }) {
   const linked = claim.fact_ids
     .map((id) => facts.find((fact) => fact.fact_id === id))
     .filter((fact): fact is FinancialFact => Boolean(fact))
+  const citations = claim.support_evidence_ids
+    .map((id) => evidence.find((chunk) => chunk.chunk_id === id))
+    .filter((chunk): chunk is EvidenceChunk => Boolean(chunk))
+  const separator = claim.text.indexOf(': ')
+  const headline = separator > 0 ? claim.text.slice(0, separator) : claim.text
+  const analysis = separator > 0 ? claim.text.slice(separator + 2) : ''
   return (
     <article className="claim-card">
       <div className="flex flex-wrap items-center gap-2">
@@ -139,17 +147,36 @@ function EvidenceLink({
         <span className="micro-label">{claim.claim_type}</span>
         <span className="micro-label">置信度 {claim.confidence.level}</span>
       </div>
-      <p className="mt-4 text-[15px] leading-7 text-slate-100">{claim.text}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {linked.map((fact) => (
-          <span className="fact-chip" key={fact.fact_id} title={fact.fact_id}>
-            {metricLabels[fact.metric_code] ?? fact.metric_code} · {formatFact(fact)}
-          </span>
-        ))}
-      </div>
+      <h3 className="finding-headline">{headline}</h3>
+      {analysis && <p className="finding-analysis">{analysis}</p>}
+      {linked.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {linked.map((fact) => (
+            <span className="fact-chip" key={fact.fact_id} title={fact.fact_id}>
+              {metricLabels[fact.metric_code] ?? fact.metric_code} · {formatFact(fact)}
+            </span>
+          ))}
+        </div>
+      )}
       <small className="finding-provenance">
-        {claim.fact_ids.length} 项事实 · {claim.support_evidence_ids.length} 条支持证据
+        {linked.length} 项相关事实 · {claim.support_evidence_ids.length} 条支持证据
       </small>
+      {citations.length > 0 && (
+        <details className="claim-evidence">
+          <summary>查看支持证据 ({citations.length})</summary>
+          <div className="claim-evidence-list">
+            {citations.map((chunk) => (
+              <article key={chunk.chunk_id}>
+                <strong>{chunk.section} · P{chunk.locator.page_start}</strong>
+                <p>{chunk.text}</p>
+                <a href={chunk.source_uri} rel="noreferrer" target="_blank">
+                  打开官方披露 <ArrowUpRight size={12} />
+                </a>
+              </article>
+            ))}
+          </div>
+        </details>
+      )}
     </article>
   )
 }
@@ -442,10 +469,24 @@ function ResearchPage() {
 
               {result && (
                 <div className="report-stack">
+                  {result.synthesis_mode === 'evidence_summary_fallback' && (
+                    <section className="synthesis-warning" role="status">
+                      <CircleAlert size={18} />
+                      <div>
+                        <strong>EVIDENCE SUMMARY FALLBACK · 未执行 AI 综合分析</strong>
+                        <p>当前只展示已核验的证据与确定性财务事实，不把财报摘录包装成完整研究结论。请在模型综合可用后重新运行。</p>
+                      </div>
+                    </section>
+                  )}
                   <section className="summary-card">
                     <div className="section-heading">
                       <span><Sparkles size={16} /> Executive Conclusion / 核心结论</span>
-                      <span className="micro-label">{result.research_intent?.label ?? taskLabels[result.task_type]}</span>
+                      <span className="summary-meta">
+                        <span className={`synthesis-badge ${result.synthesis_mode === 'model' ? 'model' : 'fallback'}`}>
+                          {result.synthesis_mode === 'model' ? 'MODEL SYNTHESIS' : 'EVIDENCE SUMMARY'}
+                        </span>
+                        <span className="micro-label">{result.research_intent?.label ?? taskLabels[result.task_type]}</span>
+                      </span>
                     </div>
                     <p>{result.executive_summary}</p>
                     {result.overall_judgment && (
@@ -457,12 +498,13 @@ function ResearchPage() {
                   </section>
 
                   <section>
-                    <div className="section-heading"><span><BarChart3 size={16} /> Key Findings / 关键发现</span><span className="micro-label">{result.claims.length} FINDINGS</span></div>
+                    <div className="section-heading"><span><BarChart3 size={16} /> {result.synthesis_mode === 'model' ? 'Key Findings / 关键发现' : 'Verified Evidence Summary / 已核验证据摘要'}</span><span className="micro-label">{result.claims.length} ITEMS</span></div>
                     <div className="space-y-3">
                       {result.claims.map((claim) => (
                         <EvidenceLink
                           claim={claim}
                           facts={facts}
+                          evidence={evidence}
                           key={claim.claim_id}
                         />
                       ))}
@@ -911,7 +953,7 @@ export default function App() {
           <button className={page === 'research' ? 'active' : ''} onClick={() => setPage('research')}><BarChart3 size={16} />Research</button>
           <button className={`secondary ${page === 'lab' ? 'active' : ''}`} onClick={() => setPage('lab')}><FlaskConical size={16} />Quality Lab</button>
         </nav>
-        <div className="header-badge"><span /> REAL DATA · V1.7</div>
+        <div className="header-badge"><span /> REAL DATA · V1.7.1</div>
       </header>
       {page === 'research' ? <ResearchPage /> : <QualityLabPage />}
       <footer>ResearchForge · 研究辅助工具，不构成投资建议 · 真实用户价值尚未验证</footer>

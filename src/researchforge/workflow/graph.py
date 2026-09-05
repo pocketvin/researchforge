@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from collections.abc import Callable
 from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any, TypedDict, cast
+from typing import Any, Literal, TypedDict, cast
 
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -132,6 +133,7 @@ class ResearchWorkflow:
         *,
         skill_version: str,
         skill_hash: str,
+        synthesis_mode: Literal["model", "evidence_summary_fallback"] = "model",
         checkpointer: BaseCheckpointSaver[Any] | None = None,
         clock: Callable[[], datetime] = _default_clock,
     ) -> None:
@@ -143,6 +145,7 @@ class ResearchWorkflow:
         self.evidence_retriever = EvidenceRetriever()
         self.skill_version = skill_version
         self.skill_hash = skill_hash
+        self.synthesis_mode = synthesis_mode
         self.checkpointer = checkpointer
         self.clock = clock
         self._compiled = self._build_graph()
@@ -562,10 +565,10 @@ class ResearchWorkflow:
                     {
                         "chunk_id": item["chunk_id"],
                         "section": item["section"],
-                        "text": str(item["text"])[:1400],
+                        "text": self._clean_evidence_for_synthesis(str(item["text"]))[:800],
                         "locator": item["locator"],
                     }
-                    for item in selected
+                    for item in selected[:14]
                 ],
                 "counter_evidence": state["counter_evidence"],
                 "suggested_follow_ups": follow_up_templates(intent.skill),
@@ -659,7 +662,15 @@ class ResearchWorkflow:
         }
 
     @staticmethod
-    def _validate_general_draft(state: ResearchGraphState, draft: GeneralResearchDraft) -> None:
+    def _clean_evidence_for_synthesis(text: str) -> str:
+        """Remove common PDF form/table noise before text reaches the synthesis model."""
+        cleaned = re.sub(r"[√□]\s*(?:适用|不适用)", " ", text)
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        return cleaned
+
+    def _validate_general_draft(
+        self, state: ResearchGraphState, draft: GeneralResearchDraft
+    ) -> None:
         allowed_evidence = {str(item["chunk_id"]) for item in state.get("selected_evidence", ())}
         allowed_evidence.update(str(item) for item in state["counter_evidence"]["evidence_ids"])
         allowed_facts = {str(item["fact_id"]) for item in state["loaded"].facts}
@@ -670,11 +681,64 @@ class ResearchWorkflow:
                 )
             if not set(finding.fact_ids) <= allowed_facts:
                 raise StructuredOutputError("General finding cited facts outside verified context")
+            if "官方披露在该部分记录" in finding.text or "√适用" in finding.text:
+                raise StructuredOutputError(
+                    "General finding copied filing boilerplate instead of synthesis"
+                )
+        source_section_titles = {
+            "Business and segments",
+            "Management discussion",
+            "Customers and suppliers",
+            "Financial statements",
+            "Filing narrative",
+            "Growth drivers",
+            "Risk factors",
+            "Outlook",
+        }
         for section in draft.deep_analysis:
             if not set(section.evidence_ids) <= allowed_evidence:
                 raise StructuredOutputError(
                     "General analysis cited evidence outside retrieved context"
                 )
+            if self.synthesis_mode == "model" and section.title in source_section_titles:
+                raise StructuredOutputError(
+                    "General analysis used a source-section heading instead of an "
+                    "analytical heading"
+                )
+        if self.synthesis_mode == "model":
+            intent = self.question_router.route(str(state["request"]["research_question"]))
+            if intent.skill == "company_overview" and (
+                len(draft.findings) < 5 or len(draft.deep_analysis) < 5
+            ):
+                raise StructuredOutputError(
+                    "Comprehensive company research requires at least five findings "
+                    "and five analytical sections"
+                )
+
+    @staticmethod
+    def _relevant_fact_ids(
+        text: str, requested_ids: list[str], facts: tuple[dict[str, Any], ...]
+    ) -> list[str]:
+        """Keep only facts whose metric is explicitly discussed by the finding text."""
+        aliases = {
+            "revenue": ("revenue", "营业收入", "营收", "收入"),
+            "operating_cost": ("operating cost", "营业成本", "成本"),
+            "net_income": ("net income", "净利润", "利润"),
+            "operating_cash_flow": ("operating cash", "经营现金流", "现金流"),
+            "accounts_receivable": ("receivable", "应收"),
+            "inventory": ("inventory", "存货"),
+        }
+        lowered = text.casefold()
+        fact_by_id = {str(item["fact_id"]): item for item in facts}
+        kept: list[str] = []
+        for fact_id in requested_ids:
+            fact = fact_by_id.get(fact_id)
+            if fact is None:
+                continue
+            metric = str(fact.get("metric_code", ""))
+            if any(alias.casefold() in lowered for alias in aliases.get(metric, (metric,))):
+                kept.append(fact_id)
+        return kept
 
     def _invalid_conclusion(self, state: ResearchGraphState, repairs: int) -> dict[str, Any]:
         failure = {
@@ -1000,27 +1064,22 @@ class ResearchWorkflow:
         intent = self.question_router.route(str(state["request"]["research_question"]))
         counter = state["counter_evidence"]
         selected = state.get("selected_evidence", ())
-        claim_type_by_skill = {
-            "company_overview": "observation",
-            "earnings_change": "driver",
-            "growth_analysis": "driver",
-            "financial_health": "earnings_quality",
-            "risk_analysis": "risk",
-            "business_analysis": "observation",
-        }
         claims: list[dict[str, Any]] = []
         for index, finding in enumerate(draft.findings, start=1):
             claim_id = f"claim_{state['run_id']}_general_{index}"
+            finding_text = f"{finding.title}: {finding.text}"
             claims.append(
                 {
                     "schema_version": "1.4.0",
                     "claim_id": claim_id,
-                    "claim_type": claim_type_by_skill[intent.skill],
-                    "epistemic_status": "supported_inference",
+                    "claim_type": finding.claim_type,
+                    "epistemic_status": finding.epistemic_status,
                     "materiality": "material" if index <= 4 else "supporting",
                     "direction": finding.direction,
-                    "text": f"{finding.title}: {finding.text}",
-                    "fact_ids": list(finding.fact_ids),
+                    "text": finding_text,
+                    "fact_ids": self._relevant_fact_ids(
+                        finding_text, list(finding.fact_ids), analysis.current_facts
+                    ),
                     "support_evidence_ids": list(finding.evidence_ids),
                     "counter_evidence_search": counter,
                     "alternative_explanations": [],
@@ -1077,22 +1136,20 @@ class ResearchWorkflow:
             "research_time": state["request"]["research_time"],
             "evidence_cutoff": state["request"]["research_time"],
             "status": "completed",
+            "synthesis_mode": self.synthesis_mode,
             "research_intent": intent.artifact_value(),
             "research_plan": state["plan"],
             "executive_summary": draft.executive_summary,
             "financial_snapshot_fact_ids": [fact["fact_id"] for fact in analysis.current_facts],
             "mandatory_checks": checks,
             "claims": claims,
-            "risk_claim_ids": (
-                [claim["claim_id"] for claim in claims] if intent.skill == "risk_analysis" else []
-            ),
+            "risk_claim_ids": [
+                claim["claim_id"] for claim in claims if claim["claim_type"] == "risk"
+            ],
             "analysis_sections": [item.model_dump(mode="json") for item in draft.deep_analysis],
             "overall_judgment": {
                 "label": draft.overall_judgment,
-                "rationale": (
-                    f"Judgment is bounded to {len(all_used_evidence)} cited filing chunks "
-                    "and verified facts."
-                ),
+                "rationale": draft.overall_judgment_rationale,
             },
             "suggested_follow_ups": list(draft.suggested_follow_ups),
             "evidence_coverage": {

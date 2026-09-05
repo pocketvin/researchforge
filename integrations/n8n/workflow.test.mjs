@@ -88,13 +88,13 @@ test('cross-execution retry preserves all immutable input including cutoff', () 
 });
 test('backend readiness is checked before autonomous submission', () => {
   for (const response of [{ error: 'secret exception' }, { statusCode: 500 },
-    { statusCode: 200, body: { status: 'starting', version: '1.7.0' } },
+    { statusCode: 200, body: { status: 'starting', version: '1.7.1' } },
     { statusCode: 200, body: { status: 'ok', version: '1.5.0' } }]) {
     const result = execute('Check backend', response, refs);
     assert.equal(result.code, 'BACKEND_UNAVAILABLE_OR_UNSAFE');
     assert(!JSON.stringify(result).includes('secret exception'));
   }
-  assert.equal(execute('Check backend', { statusCode: 200, body: { status: 'ok', version: '1.7.0' } }, refs).ok, true);
+  assert.equal(execute('Check backend', { statusCode: 200, body: { status: 'ok', version: '1.7.1' } }, refs).ok, true);
 });
 test('submission accepts only safe IDs and does not follow response-supplied URLs', () => {
   const response = execute('Accept submission', { statusCode: 202,
@@ -127,6 +127,7 @@ test('poll count, elapsed time, mismatched ID and network error stop safely', ()
 test('mapped fields equal backend artifacts without numerical or prose generation', () => {
   const legacy = JSON.parse(readFileSync(new URL('../../docs/evidence/v1.5-generalization/byd-2024h1/research-result.json', import.meta.url)));
   const result = { ...legacy, schema_version: '1.7.0', task_type: 'company_research',
+    synthesis_mode: 'model',
     research_intent: { skill: 'growth_analysis', label: '增长来源', search_terms: ['growth'], preferred_sections: ['Management discussion'] },
     research_plan: [{ step_id: 'step_test_1', description: '定位增长来源', status: 'completed' }],
     analysis_sections: [
@@ -154,6 +155,7 @@ test('mapped fields equal backend artifacts without numerical or prose generatio
   assert.deepEqual(output.calculations, values[2]);
   assert.deepEqual(output.monitoring, result.monitoring_items);
   assert.deepEqual(output.limitations, result.limitations);
+  assert.equal(output.synthesis_mode, 'model');
   assert.deepEqual(output.research_intent, result.research_intent);
   assert.deepEqual(output.research_plan, result.research_plan);
   assert.deepEqual(output.analysis_sections, result.analysis_sections);
@@ -165,7 +167,7 @@ test('mapped fields equal backend artifacts without numerical or prose generatio
     'Prepare request': snapshotConfig, 'Fetch result': { statusCode: 200, body: legacy } });
   assert.equal(snapshotOutput.status, 'succeeded');
   assert.deepEqual(snapshotOutput.research_result, legacy);
-  for (const field of ['research_intent', 'analysis_sections', 'overall_judgment', 'suggested_follow_ups', 'evidence_coverage']) {
+  for (const field of ['synthesis_mode', 'research_intent', 'analysis_sections', 'overall_judgment', 'suggested_follow_ups', 'evidence_coverage']) {
     assert.equal(snapshotOutput[field], undefined);
   }
   for (const kind of ['result', 'facts', 'calculations', 'evidence', 'trace']) {

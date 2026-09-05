@@ -112,6 +112,9 @@ class ResearchRunService:
             generator,
             skill_version=skill_version,
             skill_hash=skill_hash,
+            synthesis_mode=(
+                "model" if conclusion_generator is not None else "evidence_summary_fallback"
+            ),
             checkpointer=checkpointer,
         )
         database_index = (

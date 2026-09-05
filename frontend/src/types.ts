@@ -66,6 +66,7 @@ export interface ResearchResult {
   result_id: string
   task_type: TaskType
   executive_summary: string
+  synthesis_mode: 'model' | 'evidence_summary_fallback'
   research_intent?: {
     skill: string
     label: string

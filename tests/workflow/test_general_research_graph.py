@@ -86,6 +86,10 @@ def test_company_research_graph_builds_question_aware_v17_result(tmp_path: Path)
     assert outcome.result["schema_version"] == "1.7.0"
     assert_v17_schema(outcome.result, "research-result.schema.json")
     assert outcome.result["task_type"] == "company_research"
+    assert outcome.result["synthesis_mode"] == "evidence_summary_fallback"
+    assert "Verified Evidence Summary" in outcome.result["executive_summary"]
+    assert all("官方披露在该部分记录" not in item["text"] for item in outcome.result["claims"])
+    assert all(item["fact_ids"] == [] for item in outcome.result["claims"])
     assert outcome.result["research_intent"]["skill"] in {"growth_analysis", "risk_analysis"}
     assert len(outcome.result["research_plan"]) >= 5
     assert 2 <= len(outcome.result["claims"]) <= 8

@@ -21,6 +21,12 @@ def _chunk(chunk_id: str, section: str, text: str, page: int) -> dict[str, objec
 def test_router_maps_broad_questions_to_distinct_skills() -> None:
     router = QuestionRouter()
     assert router.route("帮我完整分析一下这家公司").skill == "company_overview"
+    assert (
+        router.route(
+            "帮我完整分析一下这家公司，覆盖业绩、增长、业务结构、财务质量、主要风险和管理层展望。"
+        ).skill
+        == "company_overview"
+    )
     assert router.route("最近增长主要来自哪里？").skill == "growth_analysis"
     assert router.route("当前最大的风险是什么？").skill == "risk_analysis"
     assert router.route("现金流和债务压力怎么样？").skill == "financial_health"

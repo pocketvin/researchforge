@@ -16,6 +16,7 @@
     "research_time",
     "evidence_cutoff",
     "status",
+    "synthesis_mode",
     "research_intent",
     "research_plan",
     "executive_summary",
@@ -83,6 +84,14 @@
     "status": {
       "type": "string",
       "const": "completed"
+    },
+    "synthesis_mode": {
+      "type": "string",
+      "enum": [
+        "model",
+        "evidence_summary_fallback"
+      ],
+      "description": "Whether the report used model synthesis or the explicit evidence-only fallback."
     },
     "research_plan": {
       "type": "array",

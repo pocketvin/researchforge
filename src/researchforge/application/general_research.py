@@ -55,7 +55,16 @@ _SKILLS: dict[ResearchSkill, ResearchIntent] = {
             "风险",
             "展望",
         ),
-        ("Business and segments", "Management discussion", "Risk factors", "Outlook"),
+        (
+            "Business and segments",
+            "Growth drivers",
+            "Management discussion",
+            "Financial statements",
+            "Liquidity and capital",
+            "Customers and suppliers",
+            "Risk factors",
+            "Outlook",
+        ),
     ),
     "earnings_change": ResearchIntent(
         "earnings_change",
@@ -211,6 +220,26 @@ class QuestionRouter:
 
     def route(self, question: str) -> ResearchIntent:
         lowered = question.casefold()
+        # Broad/comprehensive requests must win before any single-dimension marker.
+        # A prompt such as "覆盖业绩、增长、业务结构、风险和管理层展望" contains
+        # many narrower keywords, but the product intent is still a full company review.
+        if any(
+            term in lowered
+            for term in (
+                "完整分析",
+                "全面分析",
+                "整体分析",
+                "完整研究",
+                "综合分析",
+                "系统分析",
+                "覆盖业绩",
+                "analyze the company",
+                "company overview",
+                "full analysis",
+                "comprehensive analysis",
+            )
+        ):
+            return _SKILLS["company_overview"]
         if any(
             marker in lowered
             for marker in (
@@ -239,19 +268,6 @@ class QuestionRouter:
             marker in lowered for marker in ("管理层", "展望", "未来增长", "outlook", "guidance")
         ):
             return _SKILLS["business_analysis"]
-        if any(
-            term in lowered
-            for term in (
-                "完整分析",
-                "全面分析",
-                "整体分析",
-                "完整研究",
-                "analyze the company",
-                "company overview",
-                "full analysis",
-            )
-        ):
-            return _SKILLS["company_overview"]
         scores: dict[ResearchSkill, int] = {skill: 0 for skill in _SKILLS}
         for skill, markers in self._rules:
             scores[skill] += sum(3 for marker in markers if marker.casefold() in lowered)

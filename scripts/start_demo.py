@@ -67,10 +67,19 @@ def main() -> None:
     parser.add_argument(
         "--dry-run", action="store_true", help="Print commands without running them."
     )
+    parser.add_argument(
+        "--reasoning-mode",
+        choices=("auto", "openai", "deterministic"),
+        default="auto",
+        help=(
+            "Reasoning mode for the product stack. Defaults to auto and deliberately overrides "
+            "an inherited CI/test value; use deterministic only when explicitly requested."
+        ),
+    )
     args = parser.parse_args()
     commands = build_commands(build=not args.no_build, smoke=not args.skip_smoke)
     environment = os.environ.copy()
-    environment.setdefault("RESEARCHFORGE_REASONING_MODE", "auto")
+    environment["RESEARCHFORGE_REASONING_MODE"] = args.reasoning_mode
     for command in commands:
         print(shlex.join(command), flush=True)
         if not args.dry_run:

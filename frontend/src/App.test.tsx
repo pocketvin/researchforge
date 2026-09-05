@@ -20,6 +20,8 @@ const catalog = {
   ],
 }
 
+let synthesisMode: 'model' | 'evidence_summary_fallback' = 'model'
+
 const manifest = {
   run_id: 'run_frontend_test',
   lifecycle_state: 'succeeded',
@@ -47,6 +49,7 @@ function json(payload: unknown): Response {
 
 describe('ResearchForge UI', () => {
   beforeEach(() => {
+    synthesisMode = 'model'
     vi.stubGlobal('crypto', { randomUUID: () => 'frontend-idempotency-key' })
     vi.stubGlobal(
       'fetch',
@@ -196,7 +199,10 @@ describe('ResearchForge UI', () => {
               result_id: 'result_frontend_test',
               schema_version: '1.7.0',
               task_type: 'company_research',
-              executive_summary: '经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。',
+              executive_summary: synthesisMode === 'model'
+                ? '经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。'
+                : '当前仅生成 Verified Evidence Summary，未执行 AI Research Synthesis。',
+              synthesis_mode: synthesisMode,
               research_intent: {
                 skill: 'growth_analysis', label: '增长来源', search_terms: ['growth'],
                 preferred_sections: ['Management discussion'],
@@ -388,6 +394,8 @@ describe('ResearchForge UI', () => {
     fireEvent.click(submit)
 
     expect(await screen.findByText('经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。')).toBeInTheDocument()
+    expect(screen.getByText('MODEL SYNTHESIS')).toBeInTheDocument()
+    expect(screen.queryByText(/未执行 AI 综合分析/)).not.toBeInTheDocument()
     expect(screen.getByText('447.09 亿元')).toBeInTheDocument()
     expect(screen.getByText(/现金转化比为1.95倍/)).toBeInTheDocument()
     expect(screen.getAllByText('增长来源').length).toBeGreaterThanOrEqual(2)
@@ -395,7 +403,7 @@ describe('ResearchForge UI', () => {
     expect(screen.getByText('Blackwell 产品爬坡和客户需求共同推动增长。')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '增长来自哪个业务？' })).toBeInTheDocument()
     fireEvent.click(screen.getByText(/Supporting Evidence/))
-    expect(screen.getByText(/经营活动产生的现金流量净额/)).toBeInTheDocument()
+    expect(screen.getAllByText(/经营活动产生的现金流量净额/).length).toBeGreaterThanOrEqual(1)
     expect(screen.queryByText(/SYNTHETIC/)).not.toBeInTheDocument()
     expect(screen.getByText('下一同口径报告期复核现金转化与营运资本')).toBeInTheDocument()
     fireEvent.click(screen.getByText(/Calculations/))
@@ -407,6 +415,18 @@ describe('ResearchForge UI', () => {
     expect(screen.getByText('本半年度报告未经审计。')).toBeInTheDocument()
     expect(screen.getAllByText(/真实用户价值尚未验证/)).toHaveLength(2)
     expect(screen.getByRole('navigation', { name: '后端原始产物' })).toBeInTheDocument()
+  })
+
+  it('clearly labels evidence-summary fallback instead of presenting it as model research', async () => {
+    synthesisMode = 'evidence_summary_fallback'
+    render(<App />)
+    const submit = await screen.findByRole('button', { name: 'Research Company / 开始自主研究' })
+    await waitFor(() => expect(submit).toBeEnabled())
+    fireEvent.click(submit)
+
+    expect(await screen.findByText('当前仅生成 Verified Evidence Summary，未执行 AI Research Synthesis。')).toBeInTheDocument()
+    expect(screen.getByText('EVIDENCE SUMMARY FALLBACK · 未执行 AI 综合分析')).toBeInTheDocument()
+    expect(screen.getByText('EVIDENCE SUMMARY')).toBeInTheDocument()
   })
 
   it('renders persisted Evolution state without inventing a supported result', async () => {

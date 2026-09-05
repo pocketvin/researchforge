@@ -1,5 +1,5 @@
 const response = $input.first().json;
-const ready = response.statusCode === 200 && response.body?.status === 'ok' && response.body?.version === '1.7.0';
+const ready = response.statusCode === 200 && response.body?.status === 'ok' && response.body?.version === '1.7.1';
 if (!ready) {
   return [{ json: {
     ok: false,
