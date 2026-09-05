@@ -23,6 +23,22 @@ export interface Catalog {
   limitations: string[]
 }
 
+export interface RunHistoryItem {
+  run_id: string
+  lifecycle_state: string
+  created_at: string
+  finished_at: string | null
+  company_id: string
+  company_name: string
+  ticker: string | null
+  market: string
+  period_label: string | null
+  research_question: string
+  research_intent_label: string | null
+  synthesis_mode: 'model' | 'evidence_summary_fallback' | null
+  failure: { code: string; message: string } | null
+}
+
 export interface RunManifest {
   run_id: string
   lifecycle_state: string

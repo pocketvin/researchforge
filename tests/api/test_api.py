@@ -17,7 +17,7 @@ def test_healthcheck_does_not_require_a_run(tmp_path: Path) -> None:
     response = client.get("/healthz")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "version": "1.7.1"}
+    assert response.json() == {"status": "ok", "version": "1.7.2"}
 
 
 def test_api_runs_one_complete_background_case(tmp_path: Path) -> None:
@@ -50,6 +50,28 @@ def test_api_runs_one_complete_background_case(tmp_path: Path) -> None:
     trace = client.get(f"/v1/research-runs/{run_id}/trace")
     assert trace.status_code == 200
     assert len(trace.json()["stages"]) == 10
+
+
+def test_api_lists_recent_product_runs_for_workspace_restore(tmp_path: Path) -> None:
+    client = TestClient(create_app(build_service(tmp_path)))
+    payload = {
+        **catl_request(key="api-history").model_dump(mode="json"),
+        "task_type": "company_research",
+        "requested_period_labels": ["2024Q1", "2024H1"],
+    }
+
+    created = client.post("/v1/research-runs", json=payload)
+    response = client.get("/v1/research-runs?limit=5")
+
+    assert created.status_code == 202
+    assert response.status_code == 200
+    items = response.json()
+    assert items[0]["run_id"] == created.json()["run_id"]
+    assert items[0]["lifecycle_state"] == "succeeded"
+    assert items[0]["company_id"] == "cn_300750"
+    assert items[0]["company_name"] == "宁德时代新能源科技股份有限公司"
+    assert items[0]["period_label"] == "2024Q1"
+    assert items[0]["research_question"] == payload["research_question"]
 
 
 def test_api_idempotency_and_conflict(tmp_path: Path) -> None:

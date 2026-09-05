@@ -8,6 +8,7 @@ import {
   CircleAlert,
   FlaskConical,
   GitBranch,
+  History,
   LoaderCircle,
   Search,
   ShieldCheck,
@@ -15,7 +16,7 @@ import {
   Square,
   Workflow,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from './api'
 import type {
   CalculationRecord,
@@ -26,6 +27,7 @@ import type {
   EvolutionExperiment,
   FinancialFact,
   ResearchResult,
+  RunHistoryItem,
   RunManifest,
   TaskType,
   Trace,
@@ -68,6 +70,25 @@ const metricLabels: Record<string, string> = {
   inventory: '存货',
 }
 
+const epistemicLabels: Record<string, string> = {
+  verified_fact: '已验证事实',
+  observation: '已验证观察',
+  supported_inference: '有证据支持的推断',
+  uncertain: '证据有限',
+}
+
+const claimTypeLabels: Record<string, string> = {
+  observation: '经营观察',
+  outlook: '管理层展望',
+  risk: '风险判断',
+  explanation: '原因分析',
+  comparison: '变化比较',
+}
+
+function readableLabel(value: string, labels: Record<string, string>): string {
+  return labels[value.toLowerCase()] ?? value.replaceAll('_', ' ')
+}
+
 const researchTemplates = [
   ['完整分析', '帮我完整分析一下这家公司，覆盖业绩、增长、业务结构、财务质量、主要风险和管理层展望。'],
   ['业绩变化', '最近一个报告期的业绩发生了什么重要变化？主要原因是什么？'],
@@ -99,11 +120,27 @@ function formatFact(fact: FinancialFact): string {
   return fact.value
 }
 
+function formatHistoryTime(value: string): string {
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+  }).format(new Date(value))
+}
+
 function statusTone(status: string): string {
   if (['succeeded', 'performed', 'PASS', 'completed'].includes(status)) return 'good'
   if (['failed', 'FAIL', 'timed_out'].includes(status)) return 'bad'
   if (['running', 'queued', 'uncertain'].includes(status)) return 'active'
   return 'muted'
+}
+
+const lifecycleLabels: Record<string, string> = {
+  succeeded: '已完成',
+  queued: '排队中',
+  running: '研究中',
+  failed: '失败',
+  insufficient_data: '资料不足',
+  timed_out: '超时',
+  cancelled: '已取消',
 }
 
 function averageScore(batch: EvaluationBatch | null): string {
@@ -142,9 +179,9 @@ function EvidenceLink({
     <article className="claim-card">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`status-pill ${statusTone(claim.epistemic_status)}`}>
-          {claim.epistemic_status}
+          {readableLabel(claim.epistemic_status, epistemicLabels)}
         </span>
-        <span className="micro-label">{claim.claim_type}</span>
+        <span className="micro-label" title={claim.claim_type}>{readableLabel(claim.claim_type, claimTypeLabels)}</span>
         <span className="micro-label">置信度 {claim.confidence.level}</span>
       </div>
       <h3 className="finding-headline">{headline}</h3>
@@ -196,6 +233,36 @@ function ResearchPage() {
   const [submitting, setSubmitting] = useState(false)
   const [cancelling, setCancelling] = useState(false)
 
+  const [history, setHistory] = useState<RunHistoryItem[]>([])
+  const [historyLoading, setHistoryLoading] = useState(true)
+  const workspaceRef = useRef<HTMLElement | null>(null)
+
+  async function refreshHistory() {
+    try {
+      setHistory(await api.history(20))
+    } catch {
+      // History is a convenience surface; a temporary listing failure must not block research.
+    } finally {
+      setHistoryLoading(false)
+    }
+  }
+
+  function scrollWorkspace() {
+    const node = workspaceRef.current
+    if (node && typeof node.scrollIntoView === 'function') {
+      node.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  useEffect(() => {
+    let active = true
+    void api.history(20)
+      .then((items) => { if (active) setHistory(items) })
+      .catch(() => undefined)
+      .finally(() => { if (active) setHistoryLoading(false) })
+    return () => { active = false }
+  }, [])
+
   const latestFacts = useMemo(() => {
     const byMetric = new Map<string, FinancialFact>()
     for (const fact of facts) {
@@ -214,6 +281,56 @@ function ResearchPage() {
     () => evidence.filter((chunk) => !chunk.section.startsWith('Counter evidence:')),
     [evidence],
   )
+
+  const meaningfulMonitoring = useMemo(() => {
+    if (!result) return []
+    return result.monitoring_items.filter((item) => {
+      const text = `${item.title} ${item.rationale} ${item.trigger}`
+      const generic = /复核本次研究结论|重新核验本次研究|下一份财报发布后复核/.test(text)
+      return !generic
+    })
+  }, [result])
+
+  const currentCompanyLabel = facts[0]?.company.legal_name
+    ?? history.find((item) => item.run_id === manifest?.run_id)?.company_name
+    ?? companyQuery.trim()
+  const currentStudyLabel = result?.research_intent?.label
+    ?? history.find((item) => item.run_id === manifest?.run_id)?.research_intent_label
+    ?? (manifest ? '研究中' : '')
+
+  function historyMarket(item: RunHistoryItem): 'AUTO' | 'CN' | 'US' | 'HK' {
+    return ['CN', 'US', 'HK'].includes(item.market) ? item.market as 'CN' | 'US' | 'HK' : 'AUTO'
+  }
+
+  async function loadExistingRun(item: RunHistoryItem) {
+    setError(null)
+    setSubmitting(false)
+    setCompanyQuery(item.company_name || item.ticker || item.company_id)
+    setMarketHint(historyMarket(item))
+    setPeriodLabel(item.period_label ?? '')
+    setQuestion(item.research_question)
+    const next = await api.manifest(item.run_id)
+    setManifest(next)
+    setResult(null)
+    setTrace(null)
+    setFacts([])
+    setEvidence([])
+    setCalculations([])
+    if (next.lifecycle_state === 'succeeded') {
+      const [nextResult, nextTrace, nextFacts, nextEvidence, nextCalculations] = await Promise.all([
+        api.result(item.run_id), api.trace(item.run_id), api.facts(item.run_id),
+        api.evidence(item.run_id), api.calculations(item.run_id),
+      ])
+      setResult(nextResult)
+      setTrace(nextTrace)
+      setFacts(nextFacts)
+      setEvidence(nextEvidence)
+      setCalculations(nextCalculations)
+    } else if (next.artifacts.workflow_trace_id) {
+      setTrace(await api.trace(item.run_id))
+    }
+    scrollWorkspace()
+  }
 
   async function poll(runId: string) {
     for (let attempt = 0; attempt < 60; attempt += 1) {
@@ -236,6 +353,7 @@ function ResearchPage() {
         } else if (next.artifacts.workflow_trace_id) {
           setTrace(await api.trace(runId))
         }
+        await refreshHistory()
         return
       }
       await new Promise((resolve) => window.setTimeout(resolve, 500))
@@ -243,8 +361,7 @@ function ResearchPage() {
     throw new Error('运行状态轮询超时')
   }
 
-  async function submit(event: React.FormEvent) {
-    event.preventDefault()
+  async function runResearch(nextQuestion: string) {
     setError(null)
     setResult(null)
     setTrace(null)
@@ -252,6 +369,7 @@ function ResearchPage() {
     setEvidence([])
     setCalculations([])
     setSubmitting(true)
+    scrollWorkspace()
     try {
       const created = await api.createAutonomousRun({
         company_query: companyQuery.trim(),
@@ -260,16 +378,27 @@ function ResearchPage() {
           ? null
           : periodLabel.trim() || null,
         research_mode: 'general',
-        research_question: question,
+        research_question: nextQuestion,
         research_time: new Date().toISOString(),
         idempotency_key: crypto.randomUUID(),
       })
       await poll(created.run_id)
     } catch (caught: unknown) {
       setError(caught instanceof Error ? caught.message : String(caught))
+      await refreshHistory()
     } finally {
       setSubmitting(false)
     }
+  }
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault()
+    await runResearch(question)
+  }
+
+  function continueResearch(followUp: string) {
+    setQuestion(followUp)
+    void runResearch(followUp)
   }
 
   async function cancelRun() {
@@ -370,6 +499,29 @@ function ResearchPage() {
               {submitting ? '正在发现并核验官方披露' : 'Research Company / 开始自主研究'}
             </button>
 
+            <section className="research-history" aria-label="最近研究">
+              <div className="history-heading">
+                <span><History size={14} /> 最近研究</span>
+                <small>{history.length > 0 ? `${history.length} 条` : historyLoading ? '读取中' : '暂无'}</small>
+              </div>
+              <div className="history-list">
+                {history.slice(0, 8).map((item) => (
+                  <button
+                    className={manifest?.run_id === item.run_id ? 'active' : ''}
+                    key={item.run_id}
+                    onClick={() => void loadExistingRun(item)}
+                    type="button"
+                  >
+                    <span>
+                      <strong>{item.company_name}</strong>
+                      <small>{item.research_intent_label ?? '公司研究'} · {item.period_label ?? 'Latest'} · {formatHistoryTime(item.created_at)}</small>
+                    </span>
+                    <span className={`history-state ${statusTone(item.lifecycle_state)}`}>{lifecycleLabels[item.lifecycle_state] ?? item.lifecycle_state}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
             <div className="data-boundary-note">
               <ShieldCheck size={15} />
               <span>
@@ -391,13 +543,14 @@ function ResearchPage() {
           </form>
         </aside>
 
-        <section className="result-workspace" aria-live="polite">
+        <section className="result-workspace" aria-live="polite" ref={workspaceRef}>
           <div className="workspace-topline">
             <div>
               <p className="eyebrow">RESEARCH WORKSPACE</p>
               <h2 className="mt-2 text-xl font-semibold text-white">
-                {manifest ? `Run ${manifest.run_id.slice(-10)}` : '等待研究任务'}
+                {manifest ? `${currentCompanyLabel} · ${currentStudyLabel}` : '等待研究任务'}
               </h2>
+              {manifest && <small className="run-meta">Run {manifest.run_id.slice(-10)} · {manifest.input.requested_period_labels[0] ?? 'Latest'}</small>}
             </div>
             {manifest && (
               <div className="flex items-center gap-2">
@@ -570,8 +723,9 @@ function ResearchPage() {
                     </div>
                   </details>
 
-                  <section className="report-panel counter-panel">
-                    <div className="section-heading"><span><Search size={16} /> Counter Evidence / 反证与相反信号</span><span className="micro-label">SEARCHED</span></div>
+                  <details className="audit-section counter-panel">
+                    <summary><span><Search size={16} /> 反证与相反信号</span><small>已检查</small></summary>
+                    <div className="audit-content counter-content">
                     {[...new Map(result.claims.filter((claim) => claim.counter_evidence_search.performed).map((claim) => [claim.counter_evidence_search.summary, claim.counter_evidence_search])).values()].map((counter) => (
                       <article className="counter-result" key={counter.summary}>
                         <div className="counter-result-heading">
@@ -594,32 +748,38 @@ function ResearchPage() {
                         )}
                       </article>
                     ))}
-                  </section>
+                    </div>
+                  </details>
 
                   <section className="report-panel">
-                    <div className="section-heading"><span><CircleAlert size={16} /> Risks & Limitations / 风险与限制</span></div>
+                    <div className="section-heading"><span><CircleAlert size={16} /> 结论边界 / 风险与限制</span></div>
                     <ul className="limitation-list">
                       {result.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
                     </ul>
                   </section>
 
-                  <section className="report-panel">
-                    <div className="section-heading"><span><Activity size={16} /> Monitoring Plan / 后续监控</span><span className="micro-label">NEXT FILING</span></div>
-                    <div className="monitor-list">
-                      {result.monitoring_items.map((item) => (
-                        <article key={item.monitor_code}>
-                          <strong>{item.title}</strong><p>{item.rationale}</p><small>触发条件：{item.trigger}</small><small>复核时间：{item.next_review}</small>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
+                  {meaningfulMonitoring.length > 0 && (
+                    <details className="audit-section monitoring-section">
+                      <summary><span><Activity size={16} /> 下一份财报重点看什么</span><small>{meaningfulMonitoring.length} 项</small></summary>
+                      <div className="audit-content monitoring-content">
+                        <p className="section-explainer">这不是自动提醒；它记录下一次官方财报发布时，最值得重新核验的指标、风险和变化。</p>
+                        <div className="monitor-list">
+                          {meaningfulMonitoring.map((item) => (
+                            <article key={item.monitor_code}>
+                              <strong>{item.title}</strong><p>{item.rationale}</p><small>关注条件：{item.trigger}</small><small>建议复核：{item.next_review}</small>
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                    </details>
+                  )}
 
                   {result.suggested_follow_ups && result.suggested_follow_ups.length > 0 && (
                     <section className="report-panel follow-up-panel">
-                      <div className="section-heading"><span><Sparkles size={16} /> Suggested Follow-ups / 继续研究</span></div>
+                      <div className="section-heading"><span><Sparkles size={16} /> 继续研究</span><span className="micro-label">点击后直接发起</span></div>
                       <div className="follow-up-grid">
                         {result.suggested_follow_ups.map((followUp) => (
-                          <button key={followUp} onClick={() => setQuestion(followUp)} type="button">
+                          <button disabled={submitting} key={followUp} onClick={() => continueResearch(followUp)} type="button">
                             <span>{followUp}</span><ChevronRight size={14} />
                           </button>
                         ))}
@@ -658,8 +818,8 @@ function ResearchPage() {
   )
 }
 
-function QualityLabPage() {
-  const [experimentId, setExperimentId] = useState('experiment_contingency_v1_5_001')
+function QualityLabPage({ onBack }: { onBack: () => void }) {
+  const [experimentId, setExperimentId] = useState('')
   const [experiment, setExperiment] = useState<EvolutionExperiment | null>(null)
   const [artifacts, setArtifacts] = useState<EvolutionArtifacts | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -736,11 +896,14 @@ function QualityLabPage() {
     <main className="page-shell lab-page">
       <section className="lab-hero">
         <div>
-          <p className="eyebrow">EXPERIMENTAL · READ-ONLY</p>
-          <h1>Quality Lab</h1>
-          <p>ResearchForge 背后的质量研究档案。它保存 V1.4 的冻结实验与负结果，但不是完成普通公司研究所必需的功能。</p>
+          <p className="eyebrow">QUALITY LAB ARCHIVE · READ-ONLY</p>
+          <h1>方法与实验</h1>
+          <p>这里保存早期 Quality Lab 的冻结实验、失败聚类和负结果，作为方法论与工程审计档案；正常公司研究不需要进入这里。</p>
         </div>
-        <div className="lab-principle"><ShieldCheck size={19} /><span><strong>只读技术资产</strong><small>NOT REQUIRED FOR NORMAL RESEARCH</small></span></div>
+        <div className="lab-hero-actions">
+          <button className="back-to-research" onClick={onBack} type="button">返回 Research</button>
+          <div className="lab-principle"><ShieldCheck size={19} /><span><strong>只读技术资产</strong><small>NOT REQUIRED FOR NORMAL RESEARCH</small></span></div>
+        </div>
       </section>
 
       <section className="lab-grid">
@@ -851,7 +1014,7 @@ function QualityLabPage() {
                 </article>
               )}
               <div className="lab-artifact-grid">
-                <article className="lab-artifact-card">
+                <article className="lab-artifact-card" id="quality-failure-cluster">
                   <div className="section-heading">
                     <span><CircleAlert size={15} /> 失败聚类</span>
                     <span className="micro-label">
@@ -866,7 +1029,7 @@ function QualityLabPage() {
                     </>
                   ) : <p>尚无达到冻结支持阈值的核验失败聚类。</p>}
                 </article>
-                <article className="lab-artifact-card">
+                <article className="lab-artifact-card" id="quality-experience">
                   <div className="section-heading">
                     <span><BookOpenCheck size={15} /> Experience</span>
                     <span className="micro-label">VERIFIER-GROUNDED</span>
@@ -880,7 +1043,7 @@ function QualityLabPage() {
                   ) : <p>只有失败聚类通过门槛后才会蒸馏 Experience。</p>}
                 </article>
               </div>
-              <article className="skill-diff-card">
+              <article className="skill-diff-card" id="quality-skill-diff">
                 <div className="section-heading">
                   <span><GitBranch size={15} /> Candidate Skill Diff</span>
                   <span className={`status-pill ${statusTone(artifacts?.patch?.status ?? 'pending')}`}>
@@ -896,7 +1059,7 @@ function QualityLabPage() {
                 )) : <p>Candidate 仅由受控 CLI 在合格失败聚类上生成；UI 保持只读。</p>}
               </article>
               <div className="paired-results">
-                <article>
+                <article id="quality-validation">
                   <div className="section-heading"><span>Validation 配对</span><span className="micro-label">3 REPEATS</span></div>
                   <div className="score-pair">
                     <span><small>Seed</small><strong>{averageScore(artifacts?.seedValidation ?? null)}</strong></span>
@@ -908,7 +1071,7 @@ function QualityLabPage() {
                     {artifacts?.validationDecision?.status ?? 'SEALED'}
                   </span>
                 </article>
-                <article>
+                <article id="quality-final-test">
                   <div className="section-heading"><span>Final Test</span><span className="micro-label">ONE-TIME</span></div>
                   <div className="score-pair">
                     <span><small>Seed</small><strong>{averageScore(artifacts?.seedFinal ?? null)}</strong></span>
@@ -928,9 +1091,29 @@ function QualityLabPage() {
         </div>
         <aside className="lab-side">
           <h2>采用路径</h2>
-          {['失败聚类', 'Experience 蒸馏', 'Candidate Skill Diff', 'Validation 配对', '封闭 Final Test'].map((step, index) => (
-            <div className="adoption-step" key={step}>
+          {[
+            ['失败聚类', 'quality-failure-cluster'],
+            ['Experience 蒸馏', 'quality-experience'],
+            ['Candidate Skill Diff', 'quality-skill-diff'],
+            ['Validation 配对', 'quality-validation'],
+            ['封闭 Final Test', 'quality-final-test'],
+          ].map(([step, target], index) => experiment ? (
+            <button
+              className="adoption-step"
+              key={step}
+              onClick={() => {
+                const targetNode = document.getElementById(target)
+                if (targetNode && typeof targetNode.scrollIntoView === 'function') {
+                  targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
+              }}
+              type="button"
+            >
               <span>{index + 1}</span><p><strong>{step}</strong><small>{index < 3 ? 'Evolution only' : 'sealed split'}</small></p><ChevronRight size={15} />
+            </button>
+          ) : (
+            <div className="adoption-step passive" key={step}>
+              <span>{index + 1}</span><p><strong>{step}</strong><small>{index < 3 ? 'Evolution only' : 'sealed split'}</small></p>
             </div>
           ))}
           <div className="honesty-note"><CircleAlert size={16} /><p>若实验不支持假设，系统保留负结果，不会把工程完成改写成研究成功。</p></div>
@@ -949,14 +1132,16 @@ export default function App() {
           <span className="brand-mark">RF</span>
           <span><strong>ResearchForge</strong><small>Evidence before narrative</small></span>
         </button>
-        <nav aria-label="主导航">
-          <button className={page === 'research' ? 'active' : ''} onClick={() => setPage('research')}><BarChart3 size={16} />Research</button>
-          <button className={`secondary ${page === 'lab' ? 'active' : ''}`} onClick={() => setPage('lab')}><FlaskConical size={16} />Quality Lab</button>
-        </nav>
-        <div className="header-badge"><span /> REAL DATA · V1.7.1</div>
+        <div className="header-badge"><span /> REAL DATA · V1.7.2</div>
       </header>
-      {page === 'research' ? <ResearchPage /> : <QualityLabPage />}
-      <footer>ResearchForge · 研究辅助工具，不构成投资建议 · 真实用户价值尚未验证</footer>
+      <div hidden={page !== 'research'}><ResearchPage /></div>
+      <div hidden={page !== 'lab'}><QualityLabPage onBack={() => setPage('research')} /></div>
+      <footer>
+        <span>ResearchForge · 研究辅助工具，不构成投资建议 · 真实用户价值尚未验证</span>
+        <button onClick={() => setPage(page === 'research' ? 'lab' : 'research')} type="button">
+          {page === 'research' ? '方法与实验' : '返回研究'}
+        </button>
+      </footer>
     </div>
   )
 }

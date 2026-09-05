@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased] — V1.7.2 Research Workspace UX Closeout
+
+### Continuous research and history
+
+- Added a bounded recent-run API and Web history list for persisted General Research runs; old reports reopen from existing Result/Facts/Evidence/Calculations/Trace without rerunning the model.
+- Suggested follow-ups now immediately start a new research run with the current company/market/period context instead of silently changing the textarea.
+- Research state stays mounted while the user visits the methodology archive and returns.
+
+### Information hierarchy
+
+- Kept conclusions, findings and deep analysis primary while collapsing financial facts, calculations, supporting evidence, counter-evidence, monitoring and Trace into audit-on-demand layers.
+- Renamed Monitoring to “下一份财报重点看什么”, explained that it is a future-review checklist rather than an automatic alert, and suppresses generic non-actionable entries.
+- Demoted Quality Lab from the primary navigation to a read-only “方法与实验” archive; inactive adoption steps no longer display fake clickable arrows, while loaded experiment steps navigate to real sections.
+- Reduced engineering jargon in report labels and demoted Run IDs to audit metadata.
+
+### Verification
+
+- V1.7.2 gate: 211 pytest tests, strict mypy over 105 source files, 7 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 11 n8n Node tests, 3 Docker smoke cases, 3 actual n8n success cases and 5/5 transport-only failure scenarios.
+
 ## [Unreleased] — V1.7.1 Research Synthesis & Report UX
 
 ### Synthesis quality

@@ -42,9 +42,9 @@ if (transport.status !== 'succeeded') {
     <details><summary>Financial Facts / 财务事实</summary>${list(facts)}</details>
     <details><summary>Calculations / 确定性计算</summary>${list(calculations)}</details>
     <details><summary>Supporting Evidence / 支持证据</summary>${list(evidence)}</details>
-    <details open><summary>Counter Evidence & Limitations / 反证与限制</summary>${list([...counters, ...transport.limitations.map(escape)])}</details>
-    <details open><summary>Monitoring Plan / 后续监控</summary>${list(monitoring)}</details>
-    ${followUps.length > 0 ? `<details open><summary>Suggested Follow-ups / 继续追问</summary>${list(followUps)}</details>` : ''}
+    <details><summary>Counter Evidence & Limitations / 反证与限制</summary>${list([...counters, ...transport.limitations.map(escape)])}</details>
+    <details><summary>下一份财报重点看什么</summary>${list(monitoring)}</details>
+    ${followUps.length > 0 ? `<details open><summary>继续研究</summary>${list(followUps)}</details>` : ''}
     ${transport.evidence_coverage ? `<p class="coverage">Evidence coverage: ${escape(transport.evidence_coverage.selected_chunk_count)} selected / ${escape(transport.evidence_coverage.available_chunk_count)} available · sections ${escape((transport.evidence_coverage.sections || []).join(', '))}</p>` : ''}
     <nav><a href="${safeUrl(transport.links.result)}">完整 Research Result</a><a href="${safeUrl(transport.links.trace)}">完整 Research Trace</a></nav>
     <footer>${escape(transport.trust_boundary)}</footer>`;

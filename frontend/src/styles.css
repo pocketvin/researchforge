@@ -20,17 +20,12 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: .45; }
 .app-root { min-height: 100vh; }
-.app-header { position: sticky; top: 0; z-index: 20; height: 68px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 34px; border-bottom: 1px solid var(--line); background: rgba(7, 16, 21, .88); backdrop-filter: blur(18px); }
+.app-header { position: sticky; top: 0; z-index: 20; height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 34px; border-bottom: 1px solid var(--line); background: rgba(7, 16, 21, .88); backdrop-filter: blur(18px); }
 .brand { display: flex; align-items: center; gap: 11px; width: fit-content; border: 0; color: white; background: transparent; text-align: left; }
 .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(67, 214, 163, .5); border-radius: 9px; color: var(--mint); font-family: ui-monospace, monospace; font-size: 12px; background: rgba(67, 214, 163, .08); }
 .brand strong, .brand small { display: block; }
 .brand strong { font-size: 14px; letter-spacing: .01em; }
 .brand small { margin-top: 2px; color: #6f818d; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
-.app-header nav { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255, 255, 255, .02); }
-.app-header nav button { display: flex; align-items: center; gap: 8px; padding: 8px 15px; border: 0; border-radius: 7px; color: #81929e; background: transparent; font-size: 12px; }
-.app-header nav button.active { color: white; background: #17262f; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
-.app-header nav button.secondary { color: #73838c; }
-.app-header nav button.secondary.active { color: #dfc58b; background: rgba(212,168,95,.1); }
 .header-badge { justify-self: end; color: #70838f; font: 10px ui-monospace, monospace; letter-spacing: .08em; }
 .header-badge span { display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px var(--mint); }
 .page-shell { max-width: 1540px; margin: 0 auto; padding: 28px 34px 58px; }
@@ -230,7 +225,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 footer { padding: 20px; border-top: 1px solid var(--line); color: #455b67; text-align: center; font: 9px ui-monospace, monospace; }
 
 @media (max-width: 980px) {
-  .app-header { grid-template-columns: 1fr auto; padding: 0 18px; }
+  .app-header { padding: 0 18px; }
   .header-badge { display: none; }
   .research-grid, .lab-grid { grid-template-columns: 1fr; }
   .control-panel { order: 0; }
@@ -241,7 +236,6 @@ footer { padding: 20px; border-top: 1px solid var(--line); color: #455b67; text-
 @media (max-width: 620px) {
   .app-header { height: auto; gap: 10px; padding: 12px; }
   .brand small { display: none; }
-  .app-header nav button { padding: 7px 9px; }
   .page-shell { padding: 16px 12px 44px; }
   .metric-grid, .check-list { grid-template-columns: 1fr; }
   .experiment-metrics, .split-grid, .lab-artifact-grid, .paired-results, .evolution-evidence-grid { grid-template-columns: 1fr; }
@@ -286,3 +280,37 @@ footer { padding: 20px; border-top: 1px solid var(--line); color: #455b67; text-
 .claim-evidence-list strong { color: #8db0a3; font-size: 9px; }
 .claim-evidence-list p { overflow: hidden; display: -webkit-box; margin: 6px 0 0; color: #718991; font: 9px/1.65 ui-monospace, monospace; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .claim-evidence-list a { display: inline-flex; align-items: center; gap: 4px; margin-top: 7px; color: #72b49e; font-size: 9px; text-decoration: none; }
+
+/* V1.7.2 research workspace closeout */
+.research-history { padding-top: 2px; border-top: 1px solid var(--line); }
+.history-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: #8fa2ac; }
+.history-heading > span { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 650; }
+.history-heading small { color: #5f7580; font: 8px ui-monospace, monospace; }
+.history-list { display: grid; gap: 5px; max-height: 260px; overflow-y: auto; }
+.history-list button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; color: #8fa2ac; background: rgba(0,0,0,.08); text-align: left; }
+.history-list button:hover, .history-list button.active { border-color: rgba(67,214,163,.3); background: rgba(67,214,163,.045); }
+.history-list button > span:first-child { min-width: 0; flex: 1; }
+.history-list strong, .history-list small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-list strong { color: #c2cfd5; font-size: 10px; }
+.history-list small { margin-top: 3px; color: #647984; font: 8px ui-monospace, monospace; }
+.history-state { flex: 0 0 auto; font: 7px ui-monospace, monospace; text-transform: uppercase; }
+.history-state.good { color: var(--mint); }
+.history-state.bad { color: #ff8f87; }
+.history-state.active { color: var(--amber); }
+.run-meta { display: block; margin-top: 4px; color: #59707c; font: 8px ui-monospace, monospace; }
+.section-explainer { margin: 0 0 12px; color: #748995; font-size: 10px; line-height: 1.7; }
+.counter-content, .monitoring-content { padding-top: 15px; }
+.lab-hero-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; }
+.back-to-research { padding: 7px 10px; border: 1px solid var(--line); border-radius: 7px; color: #91a4ae; background: rgba(255,255,255,.02); font-size: 9px; }
+.adoption-step { width: 100%; border-right: 0; border-bottom: 0; border-left: 0; background: transparent; text-align: left; }
+.adoption-step:hover { color: #9db0ba; background: rgba(255,255,255,.015); }
+.adoption-step:focus-visible { outline: 2px solid rgba(67,214,163,.45); outline-offset: 2px; }
+footer { display: flex; align-items: center; justify-content: center; gap: 12px; }
+footer button { padding: 0; border: 0; color: #6f877e; background: transparent; font: inherit; text-decoration: underline; text-underline-offset: 3px; }
+footer button:hover { color: #9ac9b8; }
+
+@media (max-width: 620px) {
+  .lab-hero-actions { align-items: flex-start; }
+  footer { flex-direction: column; }
+}
+.adoption-step.passive { cursor: default; opacity: .72; }

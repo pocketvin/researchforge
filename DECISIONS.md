@@ -49,6 +49,7 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-033 | Upgrade to V1.7 General Company Research | ACCEPTED | 2026-09-05 | — |
 | RF-034 | Separate engineering completion from owner acceptance | ACCEPTED | 2026-09-05 | Release freeze |
 | RF-035 | Separate Research Synthesis from Evidence Summary in V1.7.1 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
+| RF-036 | Make Research a persistent workspace and demote Quality Lab in V1.7.2 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
 
 ## RF-001 — Contract-First Implementation
 
@@ -790,3 +791,24 @@ Fact 标签必须在系统装配阶段再次做相关性过滤：Claim 正文未
 V1.7.1 的真实模型 smoke 必须至少覆盖 CN/US/HK 三市场并确认 `synthesis_mode=model`。2026-09-05 已验证：贵州茅台完整分析正确路由 `company_overview`，输出 8 Claims / 5 分析维度；NVIDIA 增长来源输出 6 Claims / 5 分析维度；腾讯业务结构输出 6 Claims / 5 分析维度。三者主报告均未出现旧版财报摘录模板噪声。
 
 Owner Acceptance 仍是人工动作。V1.7 的首次 Owner Acceptance 记录为失败；V1.7.1 完成工程门禁后只进入 owner re-acceptance，不由自动化代签 Release Freeze。
+
+## RF-036 — V1.7.2 将 Research 收口为可连续使用的持久工作台
+
+**日期：** 2026-09-05
+**状态：** Accepted
+
+### 背景
+
+V1.7.1 的 owner 实测确认研究综合质量已明显改善，但暴露出工作台交互缺口：Follow-up 只回填问题不发起研究；Research/Quality 页面切换会丢失 React state；没有历史研究入口；Monitoring 与 Audit 模块层级不清；Quality Lab 与主产品并列但对普通研究价值很低，且右侧步骤箭头存在不可点击的假 affordance。
+
+### 决策
+
+V1.7.2 不改变 Research Agent、证据边界或六项确定性数值骨架，只收口 Workspace UX。后端新增只读 Recent Run 列表，只暴露 product `company_research` 元数据；完整报告继续从既有 immutable run artifacts 恢复，不重新调用模型。Suggested Follow-up 点击后直接继承当前公司/市场/报告期并创建新 Run。
+
+Research 与方法档案同时保持 mounted，页面切换不得丢失当前研究。主阅读顺序固定为结论、关键发现、深入分析；Facts、Calculations、Supporting Evidence、Counter Evidence、Monitoring 与 Trace 默认作为按需审计层。Monitoring 对用户显示为“下一份财报重点看什么”，明确不是自动提醒，并隐藏通用无信息量条目。
+
+Quality Lab 不删除历史实验或负结果，但从主导航撤下，降级为“方法与实验”只读档案。未加载实验时采用路径不显示可点击箭头；存在真实目标内容时箭头必须导航到对应区块。Run ID 与技术枚举降级为审计元数据，主界面优先使用公司名、研究意图和中文可读标签。
+
+### 验证边界
+
+V1.7.2 必须验证：历史列表可恢复既有报告；Follow-up 无需再次点击主按钮即可创建新 Run；方法档案往返不丢当前报告；Audit 模块默认折叠层级一致；fresh Docker、live E2E、实际 n8n 和 failure fixture 继续通过。Release Freeze 仍只由 owner re-acceptance 完成。

@@ -19,7 +19,7 @@ const productCatalog = {
   ],
 }
 
-test('research and secondary Quality Lab are navigable', async ({ page }) => {
+test('research and demoted methodology archive are navigable', async ({ page }) => {
   await page.goto('/')
 
   await expect(page.getByRole('heading', { name: '开始公司研究' })).toBeVisible()
@@ -35,9 +35,9 @@ test('research and secondary Quality Lab are navigable', async ({ page }) => {
   expect(
     researchAccessibility.violations.filter((violation) => violation.impact === 'critical'),
   ).toEqual([])
-  await page.getByRole('button', { name: /Quality Lab/ }).click()
-  await expect(page.getByRole('heading', { name: 'Quality Lab' })).toBeVisible()
-  await expect(page.getByText(/不是完成普通公司研究所必需/)).toBeVisible()
+  await page.getByRole('button', { name: '方法与实验' }).click()
+  await expect(page.getByRole('heading', { name: '方法与实验' })).toBeVisible()
+  await expect(page.getByText(/正常公司研究不需要进入这里/)).toBeVisible()
   const labAccessibility = await new AxeBuilder({ page }).analyze()
   expect(labAccessibility.violations.filter((violation) => violation.impact === 'critical')).toEqual(
     [],
@@ -46,11 +46,14 @@ test('research and secondary Quality Lab are navigable', async ({ page }) => {
 
 test('real-data research journey exposes a progressively auditable result', async ({ page }) => {
   const runId = 'run_e2e_real_data'
+  let submissionCount = 0
   await page.route('**/v1/**', (route) => {
     const url = new URL(route.request().url())
     const path = url.pathname
     if (path === '/v1/catalog') return route.fulfill({ json: productCatalog })
+    if (path === '/v1/research-runs' && route.request().method() === 'GET') return route.fulfill({ json: [] })
     if (path === '/v1/autonomous-research-runs' && route.request().method() === 'POST') {
+      submissionCount += 1
       return route.fulfill({ status: 202, json: { run_id: runId } })
     }
     if (path === `/v1/research-runs/${runId}`) {
@@ -81,6 +84,7 @@ test('real-data research journey exposes a progressively auditable result', asyn
           task_type: 'filing_analysis',
           synthesis_mode: 'model',
           executive_summary: '经营现金流覆盖净利润；现金转化比为1.96倍。',
+          suggested_follow_ups: ['继续追踪下一报告期现金转化是否保持？'],
           claims: [
             {
               claim_id: 'claim_cash_conversion',
@@ -233,8 +237,20 @@ test('real-data research journey exposes a progressively auditable result', asyn
   await page.getByRole('button', { name: 'Research Company / 开始自主研究' }).click()
   await expect(page.getByText('经营现金流覆盖净利润；现金转化比为1.96倍。')).toBeVisible()
   await expect(page.getByText('MODEL SYNTHESIS')).toBeVisible()
-  await expect(page.getByText('中期财务报告未经审计，限制单期结论外推。')).toBeVisible()
-  await expect(page.getByText('下一同口径报告期复核现金转化与营运资本')).toBeVisible()
+  await page.getByRole('button', { name: '继续追踪下一报告期现金转化是否保持？' }).click()
+  await expect.poll(() => submissionCount).toBe(2)
+  await expect(page.getByText('经营现金流覆盖净利润；现金转化比为1.96倍。')).toBeVisible()
+  await page.getByRole('button', { name: '方法与实验' }).click()
+  await expect(page.getByRole('heading', { name: '方法与实验' })).toBeVisible()
+  await page.getByRole('button', { name: '返回 Research' }).click()
+  await expect(page.getByText('经营现金流覆盖净利润；现金转化比为1.96倍。')).toBeVisible()
+
+  const counter = page.locator('details').filter({ hasText: '反证与相反信号' })
+  const monitoring = page.locator('details').filter({ hasText: '下一份财报重点看什么' })
+  await expect(counter).not.toHaveAttribute('open', '')
+  await expect(monitoring).not.toHaveAttribute('open', '')
+  await expect(page.getByText('中期财务报告未经审计，限制单期结论外推。')).not.toBeVisible()
+  await expect(page.getByText('下一同口径报告期复核现金转化与营运资本')).not.toBeVisible()
 
   const facts = page.locator('details').filter({ hasText: 'Financial Facts' })
   const calculations = page.locator('details').filter({ hasText: 'Calculations' })
@@ -249,6 +265,10 @@ test('real-data research journey exposes a progressively auditable result', asyn
   await calculations.locator('summary').press('Enter')
   await evidence.locator('summary').press('Enter')
   await trace.locator('summary').press('Enter')
+  await counter.locator('summary').first().press('Enter')
+  await monitoring.locator('summary').press('Enter')
+  await expect(page.getByText('中期财务报告未经审计，限制单期结论外推。')).toBeVisible()
+  await expect(page.getByText('下一同口径报告期复核现金转化与营运资本')).toBeVisible()
   await page.getByText(/查看反证来源/).press('Enter')
   await expect(page.getByText('228.65 亿元', { exact: true })).toBeVisible()
   await expect(page.getByText(/Calculated as operating cash flow/)).toBeVisible()
@@ -267,6 +287,7 @@ test('terminal abstention is explicit and never renders a research report', asyn
   await page.route('**/v1/**', (route) => {
     const path = new URL(route.request().url()).pathname
     if (path === '/v1/catalog') return route.fulfill({ json: productCatalog })
+    if (path === '/v1/research-runs' && route.request().method() === 'GET') return route.fulfill({ json: [] })
     if (path === '/v1/autonomous-research-runs' && route.request().method() === 'POST') {
       return route.fulfill({ status: 202, json: { run_id: runId } })
     }

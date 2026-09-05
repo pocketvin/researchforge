@@ -187,7 +187,7 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
 
     form_status, form_page = form_request(form)
     expected_form_fields = [
-        "ResearchForge V1.7.1 · 通用公司研究",
+        "ResearchForge V1.7.2 · 通用公司研究",
         "Company / 公司或股票代码",
         "Market / 市场",
         "Period / 报告期（可选）",

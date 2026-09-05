@@ -21,6 +21,7 @@ const catalog = {
 }
 
 let synthesisMode: 'model' | 'evidence_summary_fallback' = 'model'
+let historyItems: unknown[] = []
 
 const manifest = {
   run_id: 'run_frontend_test',
@@ -50,6 +51,7 @@ function json(payload: unknown): Response {
 describe('ResearchForge UI', () => {
   beforeEach(() => {
     synthesisMode = 'model'
+    historyItems = []
     vi.stubGlobal('crypto', { randomUUID: () => 'frontend-idempotency-key' })
     vi.stubGlobal(
       'fetch',
@@ -192,6 +194,7 @@ describe('ResearchForge UI', () => {
             }),
           )
         }
+        if (path.startsWith('/v1/research-runs?')) return Promise.resolve(json(historyItems))
         if (path === '/v1/autonomous-research-runs') return Promise.resolve(json({ run_id: manifest.run_id }))
         if (path.endsWith('/result')) {
           return Promise.resolve(
@@ -374,16 +377,17 @@ describe('ResearchForge UI', () => {
   it('keeps Quality Lab secondary to the primary research product', async () => {
     render(<App />)
     expect(await screen.findByText('开始公司研究')).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: '主导航' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: '使用 n8n 表单入口' })).toHaveAttribute(
       'href',
       'http://127.0.0.1:5678/form/researchforge-v17-form',
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
+    fireEvent.click(screen.getByRole('button', { name: '方法与实验' }))
 
-    expect(screen.getByRole('heading', { name: 'Quality Lab' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '方法与实验' })).toBeInTheDocument()
     expect(screen.getByText('读取冻结质量研究')).toBeInTheDocument()
-    expect(screen.getByText(/不是完成普通公司研究所必需/)).toBeInTheDocument()
+    expect(screen.getByText(/正常公司研究不需要进入这里/)).toBeInTheDocument()
   })
 
   it('renders a report only after loading API artifacts', async () => {
@@ -408,6 +412,7 @@ describe('ResearchForge UI', () => {
     expect(screen.getByText('下一同口径报告期复核现金转化与营运资本')).toBeInTheDocument()
     fireEvent.click(screen.getByText(/Calculations/))
     expect(screen.getByText(/经营现金流除以净利润/)).toBeInTheDocument()
+    fireEvent.click(screen.getByText('反证与相反信号'))
     expect(
       screen.getByText('报告未经审计，且扣除非经常性损益后的净利润低于归母净利润。'),
     ).toBeInTheDocument()
@@ -415,6 +420,39 @@ describe('ResearchForge UI', () => {
     expect(screen.getByText('本半年度报告未经审计。')).toBeInTheDocument()
     expect(screen.getAllByText(/真实用户价值尚未验证/)).toHaveLength(2)
     expect(screen.getByRole('navigation', { name: '后端原始产物' })).toBeInTheDocument()
+  })
+
+  it('restores a persisted run from history and suggested follow-up starts a new run directly', async () => {
+    historyItems = [{
+      run_id: manifest.run_id, lifecycle_state: 'succeeded', created_at: '2026-09-05T10:00:00+08:00',
+      finished_at: '2026-09-05T10:01:00+08:00', company_id: 'cn_300750',
+      company_name: '宁德时代新能源科技股份有限公司', ticker: '300750', market: 'CN',
+      period_label: '2024H1', research_question: '利润是否转化为现金流？',
+      research_intent_label: '现金流质量', synthesis_mode: 'model', failure: null,
+    }]
+    render(<App />)
+
+    const historyRun = await screen.findByRole('button', { name: /宁德时代新能源科技股份有限公司/ })
+    fireEvent.click(historyRun)
+    expect(await screen.findByText('经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '增长来自哪个业务？' }))
+    await waitFor(() => {
+      const calls = vi.mocked(fetch).mock.calls.filter(([input]) => String(input) === '/v1/autonomous-research-runs')
+      expect(calls.length).toBeGreaterThanOrEqual(1)
+    })
+  })
+
+  it('keeps the current research mounted while visiting the methodology archive', async () => {
+    render(<App />)
+    const submit = await screen.findByRole('button', { name: 'Research Company / 开始自主研究' })
+    fireEvent.click(submit)
+    expect(await screen.findByText('经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '方法与实验' }))
+    expect(screen.getByRole('heading', { name: '方法与实验' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '返回 Research' }))
+    expect(screen.getByText('经营现金流覆盖净利润，结论来自真实官方披露与确定性计算。')).toBeInTheDocument()
   })
 
   it('clearly labels evidence-summary fallback instead of presenting it as model research', async () => {
@@ -432,7 +470,7 @@ describe('ResearchForge UI', () => {
   it('renders persisted Evolution state without inventing a supported result', async () => {
     render(<App />)
     await screen.findByText('开始公司研究')
-    fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
+    fireEvent.click(screen.getByRole('button', { name: '方法与实验' }))
     fireEvent.change(screen.getByLabelText('实验 ID'), {
       target: { value: 'experiment_frontend_test' },
     })
@@ -449,7 +487,7 @@ describe('ResearchForge UI', () => {
   it('renders the honest two-experiment negative outcome and audit trail', async () => {
     render(<App />)
     await screen.findByText('开始公司研究')
-    fireEvent.click(screen.getByRole('button', { name: /Quality Lab/ }))
+    fireEvent.click(screen.getByRole('button', { name: '方法与实验' }))
     fireEvent.change(screen.getByLabelText('实验 ID'), {
       target: { value: 'experiment_negative' },
     })

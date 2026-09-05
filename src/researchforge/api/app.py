@@ -6,7 +6,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Any, cast
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException, status
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query, status
 from fastapi import Path as ApiPath
 from fastapi.responses import JSONResponse
 
@@ -39,7 +39,7 @@ DEFAULT_SKILL_MANIFEST = (
 )
 PRODUCT_REASONING_INSTRUCTIONS = """
 
-V1.7.1 product response contract:
+V1.7.2 product response contract:
 - Answer the research_question directly. Never use the executive summary to narrate routing,
   retrieval counts, token limits, or what ResearchForge did internally.
 - For general_research_v1_7, use only selected_evidence, verified financial_facts and
@@ -170,7 +170,7 @@ def create_app(
     evolution_repository = EvolutionArtifactRepository(runtime.repository.root)
     app = FastAPI(
         title="ResearchForge API",
-        version="1.7.1",
+        version="1.7.2",
         description=(
             "Question-aware, evidence-first autonomous financial research for CN, US and HK "
             "public companies."
@@ -179,7 +179,7 @@ def create_app(
 
     @app.get("/healthz")
     def healthcheck() -> dict[str, str]:
-        return {"status": "ok", "version": "1.7.1"}
+        return {"status": "ok", "version": "1.7.2"}
 
     def not_found(run_id: str) -> HTTPException:
         return HTTPException(status_code=404, detail={"code": "RUN_NOT_FOUND", "run_id": run_id})
@@ -242,6 +242,12 @@ def create_app(
         if submission.created:
             background_tasks.add_task(prepared_service.execute, submission.run_id)
         return submission
+
+    @app.get("/v1/research-runs")
+    def list_research_runs(
+        limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    ) -> list[dict[str, Any]]:
+        return runtime.list_product_runs(limit=limit)
 
     @app.get("/v1/research-runs/{run_id}")
     def get_research_run(

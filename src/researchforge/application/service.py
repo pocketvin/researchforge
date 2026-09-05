@@ -387,6 +387,44 @@ class ResearchRunService:
     def get_manifest(self, run_id: str) -> dict[str, Any]:
         return self.repository.get_manifest(run_id)
 
+    def list_product_runs(self, *, limit: int = 20) -> list[dict[str, Any]]:
+        """Return newest product runs with enough metadata to restore the Web workspace."""
+        items: list[dict[str, Any]] = []
+        for run_id in self.repository.list_run_ids():
+            manifest = self.repository.get_manifest(run_id)
+            if manifest.get("run_kind") != "product":
+                continue
+            if manifest.get("input", {}).get("task_type") != "company_research":
+                continue
+            facts = self.repository.get_input_facts(run_id)
+            company = facts[0].get("company", {}) if facts else {}
+            result: dict[str, Any] = {}
+            if manifest.get("lifecycle_state") == "succeeded":
+                try:
+                    result = self.repository.get_result(run_id)
+                except KeyError:
+                    result = {}
+            company_id = str(manifest["input"]["company_ids"][0])
+            items.append(
+                {
+                    "run_id": run_id,
+                    "lifecycle_state": manifest["lifecycle_state"],
+                    "created_at": manifest["created_at"],
+                    "finished_at": manifest.get("finished_at"),
+                    "company_id": company_id,
+                    "company_name": company.get("legal_name") or company_id,
+                    "ticker": company.get("ticker"),
+                    "market": company_id.split("_", 1)[0].upper(),
+                    "period_label": (manifest["input"].get("requested_period_labels") or [None])[0],
+                    "research_question": manifest["input"]["research_question"],
+                    "research_intent_label": (result.get("research_intent") or {}).get("label"),
+                    "synthesis_mode": result.get("synthesis_mode"),
+                    "failure": manifest.get("failure"),
+                }
+            )
+        items.sort(key=lambda item: str(item["created_at"]), reverse=True)
+        return items[:limit]
+
     def get_result(self, run_id: str) -> dict[str, Any]:
         return self.repository.get_result(run_id)
 

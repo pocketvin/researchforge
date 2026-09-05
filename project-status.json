@@ -18,9 +18,9 @@
   "current_gate": "RELEASE_FREEZE",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "v171_engineering_complete",
-    "title": "V1.7.1 engineering complete; ready for owner re-acceptance",
-    "outcome": "Owner-feedback synthesis correction is implemented and verified: model/fallback modes are explicit, comprehensive routing is fixed, three-market real-model smoke passed, and the full static/browser/container/n8n gate is green. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
+    "id": "v172_engineering_complete",
+    "title": "V1.7.2 engineering complete; ready for owner re-acceptance",
+    "outcome": "Workspace UX closeout is implemented and verified: direct follow-up research, persisted recent-run history/restore, state-preserving methodology navigation, answer-first audit hierarchy and demoted Quality Lab. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -31,60 +31,50 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-05T17:26:00+08:00",
+    "at": "2026-09-05T19:20:00+08:00",
     "commands": [
       {
-        "command": "uv lock --check; ruff format --check; ruff check; mypy --strict; pytest -q; validate_contracts.py; n8n workflow tests",
+        "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py; frontend unit/build; n8n Node tests",
         "exit_code": 0,
-        "summary": "V1.7.1 full non-container gate passed: 210 pytest tests, strict mypy over 105 source files, contract validation and 11 n8n Node tests."
+        "summary": "V1.7.2 non-container gate passed: 211 pytest tests, strict mypy over 105 source files, 7 frontend unit tests, contracts and 11 n8n Node tests."
       },
       {
-        "command": "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/autonomous_regression.py --all",
+        "command": "npm run test:e2e; npm run test:e2e:live",
         "exit_code": 0,
-        "summary": "Extended nine-company V1.7 regression remained PASS after the V1.7.1 synthesis correction: six trusted successes across CN/US/HK plus three explicit safe abstentions."
+        "summary": "V1.7.2 Web passed 3 mocked E2E and 3 live-backend E2E, including the demoted methodology navigation and collapsed audit hierarchy."
       },
       {
-        "command": "frontend typecheck/lint/test/build; Playwright mocked + live-backend",
+        "command": "uv run python scripts/start_demo.py --reasoning-mode deterministic",
         "exit_code": 0,
-        "summary": "Frontend V1.7.1 passed typecheck/lint/build, 5 unit tests, 3 mocked E2E and 3 live-backend E2E."
+        "summary": "Fresh V1.7.2 API/frontend images built; PostgreSQL/API/Web healthy; 3 reviewed-cache Docker smoke cases and 3 actual n8n success cases passed."
       },
       {
-        "command": "RESEARCHFORGE_REASONING_MODE=deterministic docker compose up -d --build --wait; uv run python -m scripts.docker_smoke",
+        "command": "GET /v1/research-runs?limit=10",
         "exit_code": 0,
-        "summary": "Fresh V1.7.1 Docker API/frontend images built; PostgreSQL/API/Web healthy; three reviewed-cache Docker smoke cases passed."
+        "summary": "Packaged history endpoint returned persisted General Research runs with company/intent metadata; financial_snapshot smoke runs were excluded from normal history."
       },
       {
-        "command": "uv run python -m scripts.n8n_smoke",
+        "command": "uv run python -m scripts.n8n_smoke --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test --failure-fixture",
         "exit_code": 0,
-        "summary": "Actual n8n 2.37.9 V1.7.1 workflow passed three same-backend success cases, idempotent replay, native form checks and five HTTP failure checks."
+        "summary": "Five actual transport-only V1.7.2 n8n failure scenarios passed bounded routing without supplying research truth."
       },
       {
-        "command": "uv run python -m scripts.n8n_smoke --failure-fixture --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test",
+        "command": "retained V1.7.1 real model smoke: 贵州茅台 / NVIDIA / 腾讯",
         "exit_code": 0,
-        "summary": "Five actual transport-only V1.7.1 n8n failure scenarios passed bounded routing without supplying research truth."
-      },
-      {
-        "command": "real model smoke: 贵州茅台 / NVIDIA / 腾讯",
-        "exit_code": 0,
-        "summary": "Model synthesis succeeded across CN/US/HK: Moutai company_overview 8/5, NVIDIA growth_analysis 6/5, Tencent business_analysis 6/5; no old evidence-dump noise."
-      },
-      {
-        "command": "uv run python scripts/start_demo.py --no-build --skip-smoke",
-        "exit_code": 0,
-        "summary": "Owner-test stack restored after deterministic packaging smoke: API reports 1.7.1, RESEARCHFORGE_REASONING_MODE=auto, Web returns 200, and the native n8n V1.7.1 form returns 200."
+        "summary": "Research engine was not changed by V1.7.2; retained official-source model synthesis evidence remains Moutai 8/5, NVIDIA 6/5 and Tencent 6/5."
       }
     ]
   },
   "next_action": {
-    "title": "Perform owner re-acceptance and freeze V1.7.1",
-    "why": "V1.7 first owner acceptance failed on synthesis quality. The corrective V1.7.1 engineering gate is now green; only the owner can judge whether the revised research experience is acceptable.",
-    "first_step": "Use http://127.0.0.1:4173/ in model synthesis mode for representative arbitrary-company research, inspect one fallback/abstention plus Evidence and Trace, then accept or provide the next product correction.",
+    "title": "Perform owner re-acceptance and freeze V1.7.2",
+    "why": "Research quality was accepted as broadly usable in the latest owner feedback; V1.7.2 closes the remaining workspace UX blockers. Only the owner can approve the final experience.",
+    "first_step": "Use http://127.0.0.1:4173/: run a company study, click a suggested follow-up, reopen the prior run from 最近研究, visit 方法与实验 and return, then judge the audit hierarchy.",
     "acceptance_evidence": [
-      "A representative comprehensive company request returns synthesis_mode=model and a useful direct conclusion.",
-      "Findings and Deep Analysis synthesize evidence rather than reproducing filing excerpts.",
-      "Fallback is visibly labeled as Verified Evidence Summary and never presented as AI synthesis.",
-      "Claim Fact/Evidence links remain understandable and relevant.",
-      "An unsupported request clearly stops without presenting a plausible research report.",
+      "A suggested follow-up directly launches a second run without another primary-button click.",
+      "Both runs appear in 最近研究 and either persisted report can be reopened without rerunning the model.",
+      "Visiting 方法与实验 and returning does not discard the active Research workspace.",
+      "Main answer is readable while technical evidence/counter/monitoring/Trace layers are consistently on demand.",
+      "Methods/Quality history is clearly secondary and has no fake clickable arrows.",
       "Only after owner re-acceptance is RELEASE_FREEZE marked completed."
     ]
   },
@@ -96,8 +86,8 @@
       "README.md",
       "PROJECT_STATUS.md",
       "DECISIONS.md",
+      "docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
-      "docs/product/v1.6-to-v1.7-general-research-change-note.md",
       "PORTFOLIO.md"
     ],
     "commands": [
@@ -109,8 +99,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-05T17:26:00+08:00",
-    "summary": "Completed the V1.7.1 synthesis-first owner-feedback correction, verified real model synthesis in CN/US/HK, and passed the full static, browser, fresh Docker and actual n8n runtime gates. Owner re-acceptance is the only Release Freeze action.",
+    "ended_at": "2026-09-05T19:20:00+08:00",
+    "summary": "Completed V1.7.2 Research Workspace UX Closeout: direct follow-up runs, persisted research history/restore, state-preserving methodology navigation, clarified audit hierarchy, demoted Quality Lab, and full local runtime verification. Owner re-acceptance remains the only Release Freeze action.",
     "files_changed": [
       "CHANGELOG.md",
       "DECISIONS.md",
@@ -118,17 +108,18 @@
       "PROJECT_STATUS.md",
       "README.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
-      "docs/product/v1.7-to-v1.7.1-synthesis-change-note.md",
-      "frontend/e2e-live/research.spec.ts",
+      "docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md",
+      "frontend/src/App.tsx",
+      "frontend/src/api.ts",
+      "frontend/src/types.ts",
+      "frontend/src/styles.css",
+      "frontend/src/App.test.tsx",
       "frontend/e2e/research.spec.ts",
-      "integrations/n8n/README.md",
-      "integrations/n8n/workflow.test.mjs",
-      "project-status.json",
-      "src/researchforge/adapters/openai_responses.py",
+      "src/researchforge/application/service.py",
       "src/researchforge/api/app.py",
-      "src/researchforge/workflow/graph.py",
-      "tests/workflow/test_general_research_graph.py"
+      "tests/api/test_api.py",
+      "integrations/n8n/code/render-response.js"
     ]
   },
-  "updated_at": "2026-09-05T17:26:00+08:00"
+  "updated_at": "2026-09-05T19:20:00+08:00"
 }
