@@ -757,4 +757,4 @@ V1.7 工程完成必须同时满足：三市场 Golden Regression、全仓静态
 
 ### 结果
 
-最终工程门禁为 207 pytest tests、101-source strict mypy、4 frontend unit tests、3 mocked E2E、3 live-backend E2E、10 n8n Node tests、3 actual n8n success cases 和 5/5 transport-only failure routes。Extended Golden Regression 为 6 trusted successes + 3 safe abstentions。
+最终工程门禁为 208 pytest tests、105-source strict mypy、4 frontend unit tests、3 mocked E2E、3 live-backend E2E、11 n8n Node tests、3 actual n8n success cases 和 5/5 transport-only failure routes。Extended Golden Regression 为 6 trusted successes + 3 safe abstentions。

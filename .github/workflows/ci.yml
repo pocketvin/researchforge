@@ -69,8 +69,8 @@ jobs:
       - run: node integrations/n8n/build-runtime-fixture.mjs
       - name: Import and publish n8n workflows
         run: |
-          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n import:workflow --input=/files/researchforge-v1.6.workflow.json
-          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n publish:workflow --id=researchforgeV16
+          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n import:workflow --input=/files/researchforge-v1.7.workflow.json
+          docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n publish:workflow --id=researchforgeV17
           docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n import:workflow --input=/fixture/workflow.json
           docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n run --rm --no-deps n8n publish:workflow --id=rfTransportTest
       - run: docker compose -f docker-compose.yml -f integrations/n8n/compose.yml --profile n8n --profile n8n-test up -d --no-deps --wait --wait-timeout 90 n8n n8n-failure-fixture

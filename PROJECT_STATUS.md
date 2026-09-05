@@ -31,13 +31,13 @@ The deterministic six-fact layer remains the numerical backbone. General Researc
 
 Verified on the final working tree:
 
-- `uv lock --check`, Ruff format/check and strict mypy: PASS; mypy checked **101 source files**.
-- `pytest -q`: **207 passed**.
+- `uv lock --check`, Ruff format/check and strict mypy: PASS; mypy checked **105 source files**.
+- `pytest -q`: **208 passed**.
 - Contract validation: PASS; V1.7 schemas active while preserved V1.4/V1.5 historical contracts still validate.
 - Frontend: typecheck/lint/build + **4 unit tests + 3 mocked E2E + 3 live-backend E2E**: PASS.
-- n8n source: generated V1.7 workflow check + **10 Node tests**: PASS.
+- n8n source: generated V1.7 workflow check + **11 Node tests**: PASS.
 - Fresh Docker API/frontend build, PostgreSQL/API/Web health and 3 reviewed-cache Docker runs: PASS.
-- Actual n8n 2.37.9 V1.7 runtime: 3 autonomous cases, five identical backend artifact families, native form, idempotent replay and 5 HTTP failure checks: PASS.
+- Actual n8n 2.37.9 V1.7 runtime: 3 reviewed-cache `financial_snapshot` transport cases, five identical backend artifact families, native form availability/failure rendering, idempotent replay and 5 HTTP failure checks: PASS.
 - Actual n8n transport-only fixture: **5/5 bounded failure scenarios PASS** and no research truth supplied.
 - `git diff --check`: PASS before final documentation closeout.
 

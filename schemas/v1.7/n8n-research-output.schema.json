@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://researchforge.local/schemas/v1.7/n8n-research-output.schema.json",
-  "title": "ResearchForge V1.7 n8n general-research transport output",
-  "description": "Presentation aliases of unchanged V1.7 general research backend artifacts, or explicit orchestration failure.",
+  "title": "ResearchForge V1.7 n8n research transport output",
+  "description": "Presentation aliases of unchanged V1.7 General Research or bounded financial-snapshot backend artifacts, or explicit orchestration failure.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -151,7 +151,14 @@
       "$ref": "research-result.schema.json#/properties/monitoring_items"
     },
     "research_result": {
-      "$ref": "research-result.schema.json"
+      "oneOf": [
+        {
+          "$ref": "research-result.schema.json"
+        },
+        {
+          "$ref": "../v1.4/research-result.schema.json"
+        }
+      ]
     },
     "research_trace": {
       "$ref": "../v1.4/workflow-trace.schema.json"
@@ -192,12 +199,7 @@
       "request",
       "conclusion",
       "findings",
-      "research_intent",
       "research_plan",
-      "analysis_sections",
-      "overall_judgment",
-      "suggested_follow_ups",
-      "evidence_coverage",
       "financial_facts",
       "calculations",
       "supporting_evidence",
@@ -361,6 +363,7 @@
         "market_hint",
         "requested_period_label",
         "research_question",
+        "research_mode",
         "research_time",
         "idempotency_key"
       ],
@@ -402,8 +405,113 @@
           "type": "string",
           "minLength": 8,
           "maxLength": 256
+        },
+        "research_mode": {
+          "type": "string",
+          "enum": [
+            "general",
+            "financial_snapshot"
+          ]
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "succeeded"
+          },
+          "request": {
+            "properties": {
+              "research_mode": {
+                "const": "general"
+              }
+            },
+            "required": [
+              "research_mode"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "request"
+        ]
+      },
+      "then": {
+        "required": [
+          "research_intent",
+          "analysis_sections",
+          "overall_judgment",
+          "suggested_follow_ups",
+          "evidence_coverage"
+        ],
+        "properties": {
+          "research_result": {
+            "$ref": "research-result.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "succeeded"
+          },
+          "request": {
+            "properties": {
+              "research_mode": {
+                "const": "financial_snapshot"
+              }
+            },
+            "required": [
+              "research_mode"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "request"
+        ]
+      },
+      "then": {
+        "properties": {
+          "research_result": {
+            "$ref": "../v1.4/research-result.schema.json"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "research_intent"
+              ]
+            },
+            {
+              "required": [
+                "analysis_sections"
+              ]
+            },
+            {
+              "required": [
+                "overall_judgment"
+              ]
+            },
+            {
+              "required": [
+                "suggested_follow_ups"
+              ]
+            },
+            {
+              "required": [
+                "evidence_coverage"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

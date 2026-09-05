@@ -22,26 +22,26 @@ if (transport.status !== 'succeeded') {
   const facts = transport.financial_facts.map((fact) => `<strong>${escape(fact.metric_code)}</strong>: ${escape(fact.value ?? 'ABSTAINED')} ${escape(fact.currency ?? fact.measurement_unit ?? '')} · P${escape(fact.source_locator?.page ?? '—')}`);
   const calculations = transport.calculations.map((calculation) => `<strong>${escape(calculation.formula_code)}</strong>: ${escape(calculation.value ?? '不适用')} · ${escape(calculation.explanation)}`);
   const findings = transport.findings.map((finding) => escape(finding.text));
-  const plan = transport.research_plan.map((step) => `<strong>${escape(step.description)}</strong> · ${escape(step.status)}`);
-  const analysis = transport.analysis_sections.map((section) => `<strong>${escape(section.title)}</strong><br>${escape(section.text)}`);
-  const followUps = transport.suggested_follow_ups.map(escape);
+  const plan = (transport.research_plan || []).map((step) => `<strong>${escape(step.description)}</strong> · ${escape(step.status)}`);
+  const analysis = (transport.analysis_sections || []).map((section) => `<strong>${escape(section.title)}</strong><br>${escape(section.text)}`);
+  const followUps = (transport.suggested_follow_ups || []).map(escape);
   const evidence = transport.supporting_evidence.map((chunk) => `<strong>${escape(chunk.section)} · P${escape(chunk.locator?.page_start ?? '—')}</strong><br>${escape(chunk.text)}<br><a href="${safeUrl(chunk.source_uri)}">打开官方披露</a>`);
   const counters = transport.counter_evidence.map((entry) => `<strong>${escape(entry.search?.result)}</strong>: ${escape(entry.search?.summary)}`);
   const monitoring = transport.monitoring.map((item) => `<strong>${escape(item.title)}</strong>: ${escape(item.rationale)} · 触发条件 ${escape(item.trigger)} · ${escape(item.next_review)}`);
   content = `
     <header><p class="eyebrow">SAME BACKEND · VERIFIED PIPELINE</p><h1>ResearchForge 研究完成</h1><span class="status">SUCCEEDED</span></header>
     <section class="conclusion"><h2>Executive Conclusion / 核心结论</h2><p>${escape(transport.conclusion)}</p></section>
-    <section class="judgment"><h2>Research Intent / 研究意图</h2><p><strong>${escape(transport.research_intent.label)}</strong> · ${escape(transport.research_intent.skill)}</p><p>${escape(transport.overall_judgment.label)} — ${escape(transport.overall_judgment.rationale)}</p></section>
+    ${transport.research_intent && transport.overall_judgment ? `<section class="judgment"><h2>Research Intent / 研究意图</h2><p><strong>${escape(transport.research_intent.label)}</strong> · ${escape(transport.research_intent.skill)}</p><p>${escape(transport.overall_judgment.label)} — ${escape(transport.overall_judgment.rationale)}</p></section>` : ''}
     <details open><summary>Research Plan / 研究计划</summary>${list(plan)}</details>
     <details open><summary>Key Findings / 关键发现</summary>${list(findings)}</details>
-    <details open><summary>Deep Analysis / 深入分析</summary>${list(analysis)}</details>
+    ${analysis.length > 0 ? `<details open><summary>Deep Analysis / 深入分析</summary>${list(analysis)}</details>` : ''}
     <details><summary>Financial Facts / 财务事实</summary>${list(facts)}</details>
     <details><summary>Calculations / 确定性计算</summary>${list(calculations)}</details>
     <details><summary>Supporting Evidence / 支持证据</summary>${list(evidence)}</details>
     <details open><summary>Counter Evidence & Limitations / 反证与限制</summary>${list([...counters, ...transport.limitations.map(escape)])}</details>
     <details open><summary>Monitoring Plan / 后续监控</summary>${list(monitoring)}</details>
-    <details open><summary>Suggested Follow-ups / 继续追问</summary>${list(followUps)}</details>
-    <p class="coverage">Evidence coverage: ${escape(transport.evidence_coverage.selected_chunk_count)} selected / ${escape(transport.evidence_coverage.available_chunk_count)} available · sections ${escape((transport.evidence_coverage.sections || []).join(', '))}</p>
+    ${followUps.length > 0 ? `<details open><summary>Suggested Follow-ups / 继续追问</summary>${list(followUps)}</details>` : ''}
+    ${transport.evidence_coverage ? `<p class="coverage">Evidence coverage: ${escape(transport.evidence_coverage.selected_chunk_count)} selected / ${escape(transport.evidence_coverage.available_chunk_count)} available · sections ${escape((transport.evidence_coverage.sections || []).join(', '))}</p>` : ''}
     <nav><a href="${safeUrl(transport.links.result)}">完整 Research Result</a><a href="${safeUrl(transport.links.trace)}">完整 Research Trace</a></nav>
     <footer>${escape(transport.trust_boundary)}</footer>`;
 }

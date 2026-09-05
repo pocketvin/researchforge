@@ -54,7 +54,7 @@ V1.7 keeps six comparable financial facts—revenue, operating cost, net income,
 
 - Active direction: **V1.7 General Company Research**.
 - Golden Regression: **PASS** — quick CN/US/HK success; extended nine-company set produced **6 trusted successes + 3 explicit safe abstentions**.
-- Local engineering gate: **PASS** — 207 backend tests, strict mypy over 101 source files, V1.7 contracts, frontend unit/build, mocked/live E2E, fresh Docker build and actual n8n 2.37.9 runtime are green.
+- Local engineering gate: **PASS** — 208 backend tests, strict mypy over 105 source files, V1.7 contracts, frontend unit/build, mocked/live E2E, fresh Docker build and actual n8n 2.37.9 runtime are green.
 - Real NVIDIA growth research now yields 6 Findings, 4 Deep Analysis sections and 5 Follow-ups after SEC retrieval hardening.
 - Web and n8n V1.7 use the same company-first backend; historical V1.4/V1.5/V1.6 evidence remains preserved.
 - Current gate: **RELEASE_FREEZE — engineering complete, owner manual acceptance pending**.

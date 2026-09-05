@@ -25,6 +25,8 @@ The historical `researchforge.workflow.json` is the immutable V1.5 artifact reta
 - Period / 报告期（可选）: blank = Latest, or e.g. `2025FY`
 - Research Question / 研究问题
 
+The native form always uses V1.7 General Research. Automation webhook callers may additionally send `research_mode: "financial_snapshot"` for the bounded reviewed-cache compatibility path used by deterministic packaging/CI smoke; ordinary webhook requests default to `general`.
+
 The workflow maps these fields to `POST /v1/autonomous-research-runs`, polls the immutable ResearchRun, then returns the V1.7 Result, Facts, Calculations, Evidence and Trace unchanged. Presentation aliases also expose Research Intent, Research Plan, Deep Analysis, Overall Judgment, Follow-ups and Evidence Coverage.
 
 ## Generate and review

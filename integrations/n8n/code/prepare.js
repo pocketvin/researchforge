@@ -12,7 +12,7 @@ if (!body || typeof body !== 'object' || Array.isArray(body)) {
 }
 const allowed = [
   'company_query', 'market_hint', 'requested_period_label', 'research_question',
-  'research_time', 'idempotency_key',
+  'research_time', 'idempotency_key', 'research_mode',
 ];
 const formMetadata = ['submittedAt', 'formMode'];
 const rawSupplied = Object.fromEntries(Object.entries(body)
@@ -22,7 +22,7 @@ const formFields = [
   'Research Question / 研究问题',
 ];
 if (Object.keys(rawSupplied).some((key) => !(fromWebhook ? allowed : formFields).includes(key))) {
-  return fail('包含不支持的字段；后端地址和运行模式不可由请求覆盖。');
+  return fail('包含不支持的字段；后端地址和数据命名空间不可由请求覆盖。');
 }
 const formMarket = rawSupplied['Market / 市场'];
 const marketAliases = {
@@ -49,6 +49,9 @@ const normalizedPeriod = typeof supplied.requested_period_label === 'string'
 if (normalizedPeriod && !/^20[0-9]{2}(Q[1-4]|H1|FY)$/.test(normalizedPeriod)) {
   return fail('报告期请使用 2025FY / 2025H1 / 2025Q1 等格式，留空表示 Latest。');
 }
+if (![undefined, 'general', 'financial_snapshot'].includes(supplied.research_mode)) {
+  return fail('research_mode 仅支持 general 或 financial_snapshot。');
+}
 if (supplied.idempotency_key !== undefined &&
     (typeof supplied.idempotency_key !== 'string' || supplied.idempotency_key.length < 8 ||
      supplied.idempotency_key.length > 256 || !supplied.research_time)) {
@@ -73,6 +76,7 @@ return [{ json: {
     market_hint: supplied.market_hint || null,
     requested_period_label: normalizedPeriod || null,
     research_question: supplied.research_question.trim(),
+    research_mode: supplied.research_mode || 'general',
     research_time: supplied.research_time || new Date().toISOString(),
     idempotency_key: supplied.idempotency_key || `n8n-run-${$execution.id}`,
   },

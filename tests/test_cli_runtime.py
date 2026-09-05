@@ -5,9 +5,18 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from researchforge.api.app import PROJECT_ROOT
 from researchforge.cli import main
 from tests.runtime_helpers import assert_v14_schema
+
+
+@pytest.fixture(autouse=True)
+def _deterministic_reasoning(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep CLI runtime tests hermetic regardless of local model credentials."""
+    monkeypatch.setenv("RESEARCHFORGE_REASONING_MODE", "deterministic")
+
 
 EXPECTED_CATL_2024H1 = {
     "cash_conversion": "1.955345691552841179348299138",

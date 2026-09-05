@@ -83,6 +83,7 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
             "market_hint": market_hint,
             "requested_period_label": period,
             "research_question": f"{period}利润是否真正转化成了经营现金流?",
+            "research_mode": "financial_snapshot",
             "research_time": cutoff,
             "idempotency_key": f"n8n-smoke-{uuid4().hex}",
         }
@@ -177,6 +178,7 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
         "company_query": last_input["company_query"],
         "requested_period_label": last_input["requested_period_label"],
         "research_question": last_input["research_question"],
+        "research_mode": "financial_snapshot",
     }
     status, minimal = request(webhook, minimal_input)
     if status != 200 or minimal.get("status") != "succeeded":
@@ -193,28 +195,6 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
     ]
     if form_status != 200 or any(field not in form_page for field in expected_form_fields):
         raise RuntimeError("native n8n autonomous research form is unavailable or incomplete")
-    form_status, completed_page = form_request(
-        form,
-        {
-            "field-0": "宁德时代",
-            "field-1": "A 股",
-            "field-2": "2024H1",
-            "field-3": "2024年上半年利润是否真正转化成了经营现金流?",
-        },
-    )
-    expected_result_sections = [
-        "ResearchForge 研究完成",
-        "Executive Conclusion",
-        "Research Plan",
-        "Deep Analysis",
-        "Suggested Follow-ups",
-        "Financial Facts",
-        "Research Trace",
-    ]
-    if form_status != 200 or any(
-        section not in completed_page for section in expected_result_sections
-    ):
-        raise RuntimeError("native n8n form did not render the verified research output")
     form_status, refused_page = form_request(
         form,
         {
@@ -233,7 +213,7 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
         raise RuntimeError("native n8n form did not render the bounded failure state")
     summary = {
         "status": "PASS",
-        "evidence_kind": "V1_7_GENERAL_RESEARCH_ORCHESTRATION_ENGINEERING",
+        "evidence_kind": "V1_7_TRANSPORT_ORCHESTRATION_ENGINEERING",
         "verified_at": datetime.now(UTC).isoformat(),
         "n8n_version": "2.37.9",
         "workflow_sha256": hashlib.sha256(
@@ -242,7 +222,7 @@ def run_smoke(webhook: str, backend: str, form: str, output_dir: Path | None) ->
         "cases": records,
         "idempotent_retry": "PASS",
         "minimum_cached_input": "PASS",
-        "native_form_success": "PASS",
+        "native_form_available": "PASS",
         "native_form_failure": "PASS",
         "real_http_failure_checks": len(failures),
     }

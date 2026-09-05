@@ -65,7 +65,7 @@ fresh Docker build/start/smoke
 git diff review
 ```
 
-Final verified counts: 207 pytest tests, 101 mypy source files, 4 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 10 n8n Node tests, 3 actual n8n success cases and 5 transport-only failure scenarios.
+Final verified counts: 208 pytest tests, 105 mypy source files, 4 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 11 n8n Node tests, 3 actual n8n success cases and 5 transport-only failure scenarios.
 
 ## Phase F — Owner acceptance / Release Freeze
 

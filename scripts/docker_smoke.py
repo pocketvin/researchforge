@@ -80,6 +80,19 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
     }
 
 
+def reviewed_cache_request(company_query: str, market_hint: str, period: str) -> dict[str, Any]:
+    """Build a network-independent packaging-smoke request over reviewed product cache."""
+    return {
+        "company_query": company_query,
+        "market_hint": market_hint,
+        "requested_period_label": period,
+        "research_question": f"{period}利润是否转化为经营现金流?",
+        "research_mode": "financial_snapshot",
+        "research_time": "2026-09-05T00:00:00+08:00",
+        "idempotency_key": f"docker-smoke-{uuid4().hex}",
+    }
+
+
 def run_case(
     base_url: str,
     timeout: float,
@@ -87,18 +100,11 @@ def run_case(
     market_hint: str,
     period: str,
 ) -> dict[str, Any]:
-    """Run the same public HTTP path for a selected catalog case."""
+    """Run the public API path using deterministic reviewed-cache packaging data."""
 
     submission = request_json(
         f"{base_url}/v1/autonomous-research-runs",
-        payload={
-            "company_query": company_query,
-            "market_hint": market_hint,
-            "requested_period_label": period,
-            "research_question": f"{period}利润是否转化为经营现金流?",
-            "research_time": "2026-09-05T00:00:00+08:00",
-            "idempotency_key": f"docker-smoke-{uuid4().hex}",
-        },
+        payload=reviewed_cache_request(company_query, market_hint, period),
     )
     if not isinstance(submission, dict):
         raise RuntimeError("run submission was not a JSON object")
@@ -151,7 +157,8 @@ def run_case(
         raise RuntimeError("frontend root was not served")
     return {
         "status": "PASS",
-        "schema_version": "1.6.0",
+        "schema_version": "1.7.0",
+        "research_mode": "financial_snapshot",
         "data_namespace": "product",
         "company_query": company_query,
         "market_hint": market_hint,

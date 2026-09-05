@@ -12,7 +12,7 @@
 
 - Added a separate V1.7 n8n workflow/schema and migrated the active launcher, form and Web entry without overwriting historical workflow artifacts.
 - Verified quick and extended live regression: three-market quick success and 6 trusted successes + 3 safe abstentions across the nine-company suite.
-- Completed the V1.7 engineering gate: 207 pytest tests, strict mypy over 101 source files, frontend unit/build plus 3 mocked and 3 live E2E, fresh Docker build, actual n8n 2.37.9 success runtime and 5/5 failure-fixture routes.
+- Completed the V1.7 engineering gate: 208 pytest tests, strict mypy over 105 source files, frontend unit/build plus 3 mocked and 3 live E2E, fresh Docker build, actual n8n 2.37.9 success runtime and 5/5 failure-fixture routes.
 
 ## [Unreleased] — V1.6 Autonomous Research
 

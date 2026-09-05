@@ -57,6 +57,8 @@ test('native form and webhook enter the same bounded backend request path', () =
   assert.equal(form.request.market_hint, config.request.market_hint);
   assert.equal(form.request.requested_period_label, config.request.requested_period_label);
   assert.equal(form.request.research_question, config.request.research_question);
+  assert.equal(form.request.research_mode, 'general');
+  assert.equal(config.request.research_mode, 'general');
   assert.deepEqual(workflow.connections['Research webhook'].main[0], [{ node: 'Prepare request', type: 'main', index: 0 }]);
   assert.deepEqual(workflow.connections['Research form'].main[0], [{ node: 'Prepare request', type: 'main', index: 0 }]);
 });
@@ -71,9 +73,14 @@ test('minimum input maps to the same backend request, no namespace override', ()
     { ...request, data_namespace: 'fixture' }, { ...request, research_question: '' },
     { ...request, idempotency_key: 'retry-123' }, { ...request, research_time: 'yesterday' },
     { ...request, company_query: '' }, { ...request, market_hint: 'CRYPTO' },
-    { ...request, requested_period_label: '2025Q5' }]) {
+    { ...request, requested_period_label: '2025Q5' }, { ...request, research_mode: 'unsafe' }]) {
     assert.equal(execute('Prepare request', { body }).code, 'INVALID_INPUT');
   }
+});
+test('webhook may explicitly request the bounded financial snapshot compatibility mode', () => {
+  const snapshot = execute('Prepare request', { body: { ...request, research_mode: 'financial_snapshot' } });
+  assert.equal(snapshot.ok, true);
+  assert.equal(snapshot.request.research_mode, 'financial_snapshot');
 });
 test('cross-execution retry preserves all immutable input including cutoff', () => {
   const body = { ...request, idempotency_key: 'retry-123', research_time: '2026-09-03T00:00:00Z' };
@@ -153,6 +160,14 @@ test('mapped fields equal backend artifacts without numerical or prose generatio
   assert.deepEqual(output.overall_judgment, result.overall_judgment);
   assert.deepEqual(output.suggested_follow_ups, result.suggested_follow_ups);
   assert.deepEqual(output.evidence_coverage, result.evidence_coverage);
+  const snapshotConfig = execute('Prepare request', { body: { ...request, research_mode: 'financial_snapshot' } });
+  const snapshotOutput = execute('Map verified output', {}, { ...caseRefs,
+    'Prepare request': snapshotConfig, 'Fetch result': { statusCode: 200, body: legacy } });
+  assert.equal(snapshotOutput.status, 'succeeded');
+  assert.deepEqual(snapshotOutput.research_result, legacy);
+  for (const field of ['research_intent', 'analysis_sections', 'overall_judgment', 'suggested_follow_ups', 'evidence_coverage']) {
+    assert.equal(snapshotOutput[field], undefined);
+  }
   for (const kind of ['result', 'facts', 'calculations', 'evidence', 'trace']) {
     assert.equal(execute('Map verified output', {}, { ...caseRefs,
       [`Fetch ${kind}`]: { statusCode: 500 } }).code, 'RESULT_ARTIFACTS_UNAVAILABLE');

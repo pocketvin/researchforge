@@ -41,7 +41,7 @@
       {
         "command": "uv lock --check; ruff format/check; mypy; pytest -q; validate_contracts.py; n8n workflow tests",
         "exit_code": 0,
-        "summary": "Full non-container gate passed: 207 pytest tests, strict mypy over 101 source files, preserved historical contracts and 10 n8n Node tests."
+        "summary": "Full non-container gate passed: 208 pytest tests, strict mypy over 105 source files, preserved historical contracts and 11 n8n Node tests."
       },
       {
         "command": "frontend typecheck/lint/test/build; Playwright mocked + live-backend",
@@ -51,7 +51,7 @@
       {
         "command": "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/start_demo.py",
         "exit_code": 0,
-        "summary": "Fresh V1.7 Docker API/frontend images built; PostgreSQL/API/Web healthy; actual n8n 2.37.9 V1.7 workflow passed three autonomous same-backend cases, form/replay and five HTTP failure checks."
+        "summary": "Fresh V1.7 Docker API/frontend images built; PostgreSQL/API/Web healthy; actual n8n 2.37.9 V1.7 workflow passed three reviewed-cache financial_snapshot transport cases, native form availability/failure rendering, replay and five HTTP failure checks."
       },
       {
         "command": "uv run python -m scripts.n8n_smoke --failure-fixture --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test",
@@ -101,18 +101,18 @@
       "PORTFOLIO.md",
       "PROJECT_STATUS.md",
       "README.md",
-      "project-status.json",
-      "pyproject.toml",
-      "uv.lock",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "docs/product/v1.6-to-v1.7-general-research-change-note.md",
-      "frontend/package.json",
-      "frontend/package-lock.json",
-      "frontend/src/App.test.tsx",
       "frontend/e2e/research.spec.ts",
+      "frontend/package-lock.json",
+      "frontend/package.json",
+      "frontend/src/App.test.tsx",
       "integrations/n8n/build-runtime-fixture.mjs",
       "integrations/n8n/runtime-fixture.py",
+      "project-status.json",
+      "pyproject.toml",
       "schemas/v1.5/project-checkpoint.schema.json",
+      "scripts/docker_smoke.py",
       "scripts/n8n_smoke.py",
       "scripts/validate_contracts.py",
       "src/researchforge/adapters/fixtures.py",
@@ -120,8 +120,10 @@
       "tests/api/test_api.py",
       "tests/application/test_modes.py",
       "tests/test_contract_package.py",
-      "tests/workflow/test_graph.py"
+      "tests/test_docker_smoke.py",
+      "tests/workflow/test_graph.py",
+      "uv.lock"
     ]
   },
-  "updated_at": "2026-09-05T05:58:00+08:00"
+  "updated_at": "2026-09-05T13:28:00+08:00"
 }
