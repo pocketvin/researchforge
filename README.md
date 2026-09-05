@@ -40,7 +40,7 @@ ResearchForge is not primarily a filing summarizer. Its core promise is that suc
 - The same authoritative backend serves Web and n8n.
 - Historical evaluation/Quality Lab evidence remains preserved but is not the normal user journey.
 
-## V1.7.2 market boundary
+## V1.7.3 market boundary
 
 | Market | Company resolution | Official source | Numerical truth path |
 |---|---|---|---|
@@ -48,18 +48,18 @@ ResearchForge is not primarily a filing summarizer. Its core promise is that suc
 | US | ticker / issuer name | SEC EDGAR | SEC Company Facts/XBRL tied to filing accession |
 | HK | ticker / English / traditional / simplified Chinese name | HKEXnews | verified native-text IFRS annual-report PDF |
 
-V1.7.2 keeps six comparable financial facts—revenue, operating cost, net income, operating cash flow, accounts receivable and inventory—as the deterministic numerical backbone, while General Research retrieves full-filing narrative Evidence and distinguishes model synthesis from an explicit evidence-summary fallback. Unsupported document layouts fail closed.
+V1.7.3 keeps six comparable financial facts—revenue, operating cost, net income, operating cash flow, accounts receivable and inventory—as the deterministic numerical backbone, while General Research retrieves full-filing narrative Evidence and distinguishes model synthesis from an explicit evidence-summary fallback. Unsupported document layouts fail closed.
 
 ## Current status
 
-- Active direction: **V1.7.2 Research Workspace UX Closeout** over the V1.7 General Company Research scope.
-- Research synthesis remains the V1.7.1 model/fallback design; V1.7.2 changes workspace continuity and information hierarchy, not research truth.
-- Recent General Research runs are listed in the Web and can be reopened from persisted artifacts without rerunning the model. Suggested follow-ups immediately start a new run in the same company context.
-- Research state survives visits to the demoted **方法与实验** archive; historical Quality Lab evidence is preserved but no longer occupies primary navigation.
+- Active direction: **V1.7.3 Reliability & Audit Hardening** over the frozen V1.7 General Company Research scope.
+- Research synthesis remains the V1.7.1 model/fallback design and the V1.7.2 workspace remains the user surface; V1.7.3 hardens lifecycle, restart, concurrency, source trust and packaging rather than widening research truth.
+- Autonomous submission now creates a durable queued Run before disclosure discovery; preparation state, dynamic package context, cancellation/failure and restart recovery belong to that same Run.
+- Cross-instance idempotency/budget reservation, run-scoped execution locks, checkpoint cleanup and official redirect final-host validation are enforced.
+- Recent General Research history is paginated; queued runs retain submitted company context; the historical **方法与实验** evidence is packaged read-only.
 - V1.7 Golden Regression remains **PASS** — 6 trusted successes + 3 explicit safe abstentions; V1.7.1 real-model CN/US/HK synthesis evidence remains valid.
-- V1.7.2 engineering gate: **PASS** — 211 pytest tests, strict mypy over 105 source files, 7 frontend unit tests, 3 mocked + 3 live E2E, fresh Docker smoke, 11 n8n Node tests, 3 actual n8n success cases and 5/5 failure-fixture routes.
-- Current gate: **RELEASE_FREEZE in progress — engineering complete, owner re-acceptance pending**.
-- Six-person Human Pilot remains removed from active release criteria; investment advice/order execution/price prediction are not provided.
+- V1.7.3 engineering gate: **PASS** — 225 pytest tests, strict mypy over 109 source files, 7 frontend unit tests, 3 mocked + 3 live E2E, fresh Docker smoke, 11 n8n Node tests, 3 actual n8n success cases and 5/5 failure-fixture routes.
+- Current gate: **RELEASE_FREEZE in progress — engineering complete, owner re-acceptance pending**. Six-person Human Pilot remains removed; investment advice/order execution/price prediction are not provided.
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) and [DECISIONS.md](DECISIONS.md) for current authority.
 
@@ -103,7 +103,7 @@ uv run python scripts/start_demo.py
 ```
 
 Web: `http://127.0.0.1:4173/`
-n8n V1.7.2 form: `http://127.0.0.1:5678/form/researchforge-v17-form`
+n8n V1.7.3 form: `http://127.0.0.1:5678/form/researchforge-v17-form`
 
 ## Autonomous API
 
@@ -157,7 +157,7 @@ A successful case must contain exactly the six required facts, valid Claim→Fac
 
 Product data comes from public official disclosures. Raw downloaded filing bytes remain ignored by Git. Derived artifacts retain provenance and hashes. `fixture` and `benchmark` namespaces never silently substitute for missing product data.
 
-When an explicit company+period matches a reviewed V1.5 product package, compatibility `financial_snapshot` runs may reuse that immutable cache. V1.7/V1.7.1/V1.7.2 General Research uses separate versioned full-text Evidence packages so stale six-fact-only packages cannot satisfy a deep-research run. General Research Result schema remains `1.7.0`; product/API package version is `1.7.2`.
+When an explicit company+period matches a reviewed V1.5 product package, compatibility `financial_snapshot` runs may reuse that immutable cache. V1.7 through V1.7.3 General Research uses separate versioned full-text Evidence packages so stale six-fact-only packages cannot satisfy a deep-research run. General Research Result schema remains `1.7.0`; product/API package version is `1.7.3`.
 
 ## Historical evidence
 
@@ -169,18 +169,19 @@ The V1.4 formal evolution hypothesis ended honestly at:
 RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
 ```
 
-The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032 through RF-036 and the active roadmap define the current V1.7.2 direction.
+The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032 through RF-037 and the active roadmap define the current V1.7.3 direction.
 
 ## Start here
 
 1. [PROJECT_STATUS.md](PROJECT_STATUS.md) — current milestone and release gate.
-2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.7.2 completion and owner re-acceptance sequence.
-3. [V1.7.1 → V1.7.2 workspace UX change note](docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md) — continuous research, history restore, audit hierarchy and Quality Lab demotion.
-4. [V1.7 → V1.7.1 synthesis change note](docs/product/v1.7-to-v1.7.1-synthesis-change-note.md) — why the first V1.7 Owner Acceptance failed and how synthesis/fallback are separated.
-5. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032 through RF-036.
-6. [n8n integration](integrations/n8n/README.md) — V1.7.2 external workflow entry.
-7. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
+2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.7.3 completion and owner re-acceptance sequence.
+3. [V1.7.2 → V1.7.3 reliability/audit hardening note](docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md) — Run-first lifecycle, restart/concurrency safety and source/package hardening.
+4. [V1.7.1 → V1.7.2 workspace UX change note](docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md) — continuous research, history restore, audit hierarchy and Quality Lab demotion.
+5. [V1.7 → V1.7.1 synthesis change note](docs/product/v1.7-to-v1.7.1-synthesis-change-note.md) — why the first V1.7 Owner Acceptance failed and how synthesis/fallback are separated.
+6. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032 through RF-037.
+7. [n8n integration](integrations/n8n/README.md) — V1.7.3 external workflow entry.
+8. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
 
 ## Non-goals
 
-V1.7.2 does not provide trading, order execution, price targets, portfolio optimization, real-time market-data infrastructure, Bloomberg-scale proprietary coverage, unrestricted global-market support, open-ended self-modification or investment recommendations.
+V1.7.3 does not provide trading, order execution, price targets, portfolio optimization, real-time market-data infrastructure, Bloomberg-scale proprietary coverage, unrestricted global-market support, open-ended self-modification or investment recommendations.

@@ -1,0 +1,89 @@
+{
+  "artifacts": {
+    "evaluation_id": null,
+    "explicit_plan_id": null,
+    "patch_id": null,
+    "result_id": null,
+    "tool_record_ids": [],
+    "workflow_trace_id": null
+  },
+  "attempt": 1,
+  "autonomous_request": {
+    "company_query": "贵州茅台",
+    "idempotency_key": "contract-v173-autonomous-queued-001",
+    "market_hint": "CN",
+    "requested_period_label": "2025FY",
+    "research_mode": "general",
+    "research_question": "完整分析公司基本面。",
+    "research_time": "2026-09-05T20:00:00+08:00"
+  },
+  "case_id": null,
+  "configuration": {
+    "dataset_package_hash": null,
+    "dataset_package_id": null,
+    "evidence_cutoff": "2026-09-05T20:00:00+08:00",
+    "formula_version": "1.0.0",
+    "model": {
+      "built_in_tools": [],
+      "max_output_tokens": 1000,
+      "model_id": "deterministic-conclusion-v1",
+      "model_snapshot": "1.0.0",
+      "provider": "local",
+      "reasoning_effort": "none",
+      "seed": null,
+      "store": false,
+      "temperature": null,
+      "tool_choice_policy": "controlled"
+    },
+    "prompt_hashes": {
+      "research_system": "e06634b95805336af932b72730b13ec3a030f3aff6d5407acee51329b910f346"
+    },
+    "skill_hash": "71991b5a424638e4437699e63d3649a3ca0b36b308b456e2172d6a3922785890",
+    "skill_version": "1.0.0",
+    "tool_versions": {
+      "financial_tools": "1.0.0",
+      "retrieval": "1.0.0"
+    },
+    "workflow": {
+      "checkpoint_schema_version": "1.0.0",
+      "engine": "langgraph",
+      "graph_version": "1.0.0"
+    }
+  },
+  "created_at": "2026-09-05T20:00:00+08:00",
+  "failure": null,
+  "finished_at": null,
+  "idempotency_key": "contract-v173-autonomous-queued-001",
+  "input": {
+    "company_ids": [
+      "pending_cn_cdd9fe24fe41e901"
+    ],
+    "input_kind": "research",
+    "requested_period_labels": [
+      "2025FY"
+    ],
+    "research_question": "完整分析公司基本面。",
+    "research_time": "2026-09-05T20:00:00+08:00",
+    "task_type": "company_research"
+  },
+  "lifecycle_state": "queued",
+  "limits": {
+    "max_estimated_cost": 0.02,
+    "max_tool_calls": 30,
+    "max_total_tokens": 12000,
+    "timeout_seconds": 300
+  },
+  "preparation": {
+    "filing_id": null,
+    "message": "Awaiting official-source discovery.",
+    "provider": null,
+    "stage": "discovery",
+    "state": "queued"
+  },
+  "run_id": "run_1234567890abcdef1234567890abcdef",
+  "run_kind": "product",
+  "schema_version": "1.7.3",
+  "split": null,
+  "started_at": null,
+  "usage": null
+}

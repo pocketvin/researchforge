@@ -278,22 +278,26 @@ class ResearchWorkflow:
                 {
                     "step_id": f"step_{run_id}_load",
                     "description": "加载截止时点可用财务事实",
-                    "status": "completed",
+                    "status": "blocked",
+                    "reason": "Awaiting execution",
                 },
                 {
                     "step_id": f"step_{run_id}_calculate",
                     "description": "执行冻结收益质量公式",
-                    "status": "completed",
+                    "status": "blocked",
+                    "reason": "Awaiting execution",
                 },
                 {
                     "step_id": f"step_{run_id}_counter",
                     "description": "搜索当前证据包中的反证",
-                    "status": "completed",
+                    "status": "blocked",
+                    "reason": "Awaiting execution",
                 },
                 {
                     "step_id": f"step_{run_id}_validate",
                     "description": "组装并验证结构化结果",
-                    "status": "completed",
+                    "status": "blocked",
+                    "reason": "Awaiting execution",
                 },
             ]
             summary = "Persistable four-step research plan prepared."
@@ -772,8 +776,10 @@ class ResearchWorkflow:
         return "stop" if state.get("terminal_state") == "failed" else "continue"
 
     def _validate_output(self, state: ResearchGraphState) -> dict[str, Any]:
-        result = self._assemble_result(state)
+        completed_plan = [{**step, "status": "completed", "reason": None} for step in state["plan"]]
+        result = self._assemble_result({**state, "plan": completed_plan})
         return {
+            "plan": completed_plan,
             "result": result,
             "stages": self._event(
                 state,
@@ -1191,6 +1197,11 @@ class ResearchWorkflow:
         if self.checkpointer is None:
             return False
         return self.checkpointer.get_tuple(self._config(run_id)) is not None
+
+    def delete_checkpoint(self, run_id: str) -> None:
+        """Drop transient graph state after durable terminal artifacts are persisted."""
+        if self.checkpointer is not None:
+            self.checkpointer.delete_thread(run_id)
 
     def _checkpoint_state(self, run_id: str) -> ResearchGraphState:
         if not self.has_checkpoint(run_id):

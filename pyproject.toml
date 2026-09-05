@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "researchforge"
-version = "1.7.2"
+version = "1.7.3"
 description = "Auditable autonomous financial research agent for CN, US and HK public companies"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"

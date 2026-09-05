@@ -334,7 +334,8 @@ class ResearchPlanner:
             {
                 "step_id": f"step_{run_id}_research_{index}",
                 "description": description,
-                "status": "completed",
+                "status": "blocked",
+                "reason": "Awaiting execution",
             }
             for index, description in enumerate(self._steps[intent.skill], start=1)
         ]

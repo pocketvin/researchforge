@@ -17,7 +17,7 @@ class RuntimeSettings(BaseSettings):
 
     openai_api_key: SecretStr | None = None
     researchforge_rotated_key_confirmed: bool = False
-    researchforge_model: str = "gpt-5.6-luna"
+    researchforge_model: Literal["gpt-5.6-luna"] = "gpt-5.6-luna"
     researchforge_reasoning_effort: Literal["none", "low", "medium", "high", "xhigh", "max"] = (
         "medium"
     )

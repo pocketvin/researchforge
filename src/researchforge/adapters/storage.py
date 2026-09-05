@@ -6,10 +6,11 @@ import hashlib
 import json
 import os
 import tempfile
-import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
+
+from researchforge.file_lock import exclusive_file_lock
 
 
 class RunNotFoundError(KeyError):
@@ -102,7 +103,7 @@ class FileRunRepository:
         self.idempotency_dir = self.root / "idempotency"
         self.run_dir.mkdir(parents=True, exist_ok=True)
         self.idempotency_dir.mkdir(parents=True, exist_ok=True)
-        self._lock = threading.RLock()
+        self._lock_path = self.root / ".repository.lock"
 
     @staticmethod
     def request_fingerprint(request: dict[str, Any]) -> str:
@@ -135,7 +136,7 @@ class FileRunRepository:
     ) -> tuple[dict[str, Any], bool]:
         fingerprint = self.request_fingerprint(request)
         key_path = self.idempotency_dir / f"{self._safe_key_name(request['idempotency_key'])}.json"
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             if key_path.exists():
                 record = json.loads(key_path.read_text(encoding="utf-8"))
                 if record["request_fingerprint"] != fingerprint:
@@ -180,42 +181,42 @@ class FileRunRepository:
 
     def save_manifest(self, run_id: str, manifest: dict[str, Any]) -> None:
         artifact = self.store.put(manifest)
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             pointer["manifest_digest"] = artifact.digest
             self._save_pointer(pointer)
 
     def save_result(self, run_id: str, result: dict[str, Any]) -> None:
         artifact = self.store.put(result)
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             pointer["result_digest"] = artifact.digest
             self._save_pointer(pointer)
 
     def save_trace(self, run_id: str, trace: dict[str, Any]) -> None:
         artifact = self.store.put(trace)
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             pointer["trace_digest"] = artifact.digest
             self._save_pointer(pointer)
 
     def save_plan(self, run_id: str, plan: dict[str, Any]) -> None:
         artifact = self.store.put(plan)
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             pointer["plan_digest"] = artifact.digest
             self._save_pointer(pointer)
 
     def save_calculations(self, run_id: str, calculations: list[dict[str, Any]]) -> None:
         digests = [self.store.put(calculation).digest for calculation in calculations]
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             pointer["calculation_digests"] = digests
             self._save_pointer(pointer)
 
     def save_evaluation(self, run_id: str, evaluation: dict[str, Any]) -> None:
         artifact = self.store.put(evaluation)
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             pointer["evaluation_digest"] = artifact.digest
             self._save_pointer(pointer)
@@ -230,7 +231,7 @@ class FileRunRepository:
         """Snapshot the exact facts and evidence consumed by one run."""
         fact_digests = [self.store.put(fact).digest for fact in facts]
         evidence_digests = [self.store.put(chunk).digest for chunk in evidence]
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             pointer["fact_digests"] = fact_digests
             pointer["evidence_digests"] = evidence_digests
@@ -290,7 +291,7 @@ class FileRunRepository:
         return references
 
     def request_cancel(self, run_id: str) -> bool:
-        with self._lock:
+        with exclusive_file_lock(self._lock_path):
             pointer = self._pointer(run_id)
             already_requested = bool(pointer["cancel_requested"])
             pointer["cancel_requested"] = True

@@ -50,6 +50,7 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-034 | Separate engineering completion from owner acceptance | ACCEPTED | 2026-09-05 | Release freeze |
 | RF-035 | Separate Research Synthesis from Evidence Summary in V1.7.1 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
 | RF-036 | Make Research a persistent workspace and demote Quality Lab in V1.7.2 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
+| RF-037 | Harden autonomous lifecycle, concurrency and audit boundaries in V1.7.3 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
 
 ## RF-001 — Contract-First Implementation
 
@@ -812,3 +813,30 @@ Quality Lab 不删除历史实验或负结果，但从主导航撤下，降级�
 ### 验证边界
 
 V1.7.2 必须验证：历史列表可恢复既有报告；Follow-up 无需再次点击主按钮即可创建新 Run；方法档案往返不丢当前报告；Audit 模块默认折叠层级一致；fresh Docker、live E2E、实际 n8n 和 failure fixture 继续通过。Release Freeze 仍只由 owner re-acceptance 完成。
+
+## RF-037 — V1.7.3 将 Autonomous Research 生命周期与审计边界做成真实运行语义
+
+**日期：** 2026-09-05
+**状态：** Accepted
+
+### 背景
+
+V1.7.2 的用户工作流已经收口，但项目级审计发现几个可靠性风险与“Every run is auditable”承诺不完全一致：Autonomous disclosure discovery 可能发生在 durable Run 创建之前；restart recovery、API background execution 和同一 Run 的并发执行缺少跨实例互斥；file-backed idempotency 与预算 reservation 只有进程内语义；provider preparation failure 可能被错误包装为 evidence insufficiency；共享 LangGraph checkpoint 会持续累积 terminal thread 状态。
+
+### 决策
+
+V1.7.3 不扩大产品研究范围，只做 Reliability & Audit Hardening。Autonomous Research 必须先持久化 queued Run，再进入 entity/source discovery、filing preparation 和 LangGraph Research。V1.7.3 Run Manifest 显式记录 `preparation` 状态、provider/package、失败阶段和 retryability；如果 preparation 阶段失败或用户在 discovery 前取消，不创建假的 workflow Trace。
+
+Run execution 使用 run-scoped file lock，使 API background task、restart recovery 与并行 service 实例不能同时执行同一个 Run。动态 company/package context 与原始 deadline 必须持久化，restart 后不能回退到静态 catalog，也不能重置总超时。API 启动恢复必须后台执行，不能因为一个慢/坏 Run 阻塞 health endpoint。
+
+FileRunRepository 的 idempotency 和 BudgetLedger reservation 必须跨实例原子化。Terminal Run 完成后删除自己的共享 checkpoint thread，防止 checkpoint 文件无限增长。官方来源 HTTP redirect 后必须再次验证最终 host；SEC/HKEX/CNINFO/discovery 不能通过 allowlisted 初始 URL 跳转到非官方域。
+
+未认证 packaged API/Web 默认只绑定 `127.0.0.1`。模型预算配置只允许存在明确价格契约的模型，并将一次允许的 Structured Output repair 纳入 per-run worst-case token/cost bound。投资建议、买卖建议与目标价请求统一在 public Research 输入边界拒绝。
+
+Recent Run API 增加 offset pagination，Web 不再只显示前八条。Queued autonomous Run 在 facts 尚未生成时也必须保留用户提交的公司/市场/报告期上下文。历史 Quality/Evolution 方法档案打包为只读项目资产，不能依赖旧的本机 mutable artifact volume。
+
+### 兼容与验收
+
+General Research Result schema 继续为 `1.7.0`；V1.7.3 新增 lifecycle manifest schema，不重写历史 V1.7/V1.5/V1.4 artifacts。n8n 保留 `researchforgeV17` 与既有 V17 URL，仅把 product backend health contract 升级到 1.7.3。
+
+V1.7.3 必须通过正常全仓工程门禁以及专门 reliability regression：queued-before-discovery、restart recovery、provider failure no fake trace、cancel-before-discovery、跨实例 idempotency、跨实例 budget reservation、并发执行互斥、checkpoint cleanup、官方 redirect final-host 验证、非阻塞 startup recovery、history pagination 和 packaged method archive。`RELEASE_FREEZE` 仍由 owner re-acceptance 决定，自动化不得代签。

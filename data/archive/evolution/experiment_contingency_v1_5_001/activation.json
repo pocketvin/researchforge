@@ -1,0 +1,21 @@
+{
+  "activated_at": "2026-09-01T15:59:29.078523+00:00",
+  "activation_count": 1,
+  "activation_hash": "a43ff4669e8eddf60bc829e423745ee57a05b00a37803480d206e3c0b0ac5039",
+  "authorization_basis": "V1.4_SCOPE_ANY_UNSUPPORTED_PRIMARY",
+  "contingency_experiment_id": "experiment_contingency_v1_5_001",
+  "contingency_package_hash": "ba95986b94d416e7c5d3960749d253463d61161ca081b3454c4428b6344c93f4",
+  "contingency_package_id": "package_v1_5_contingency_battery_earnings_quality",
+  "primary_experiment_id": "experiment_primary_v1_4_001",
+  "primary_negative_result_hash": "60d7620ca0f620e926c99f22a091d7305097dd787c28d89270977cb8a6c735ed",
+  "primary_outcome": "NO_ELIGIBLE_CLUSTER",
+  "protocol_deviation": {
+    "applied_scope_rule": "V1.4_SCOPE_ANY_UNSUPPORTED_PRIMARY",
+    "code": "FROZEN_ACTIVATION_PREDICATE_TOO_NARROW",
+    "data_or_threshold_changed": false,
+    "explanation": "The controlling V1.4 scope requires the one disjoint contingency after any unsupported primary result; the frozen package field named only Validation rejection. The package, companies, cases, truth, model, graph, and thresholds remain unchanged.",
+    "frozen_package_predicate": "PRIMARY_VALIDATION_REJECTS_CANDIDATE"
+  },
+  "schema_version": "1.4.0",
+  "status": "ACTIVATED_ONCE"
+}

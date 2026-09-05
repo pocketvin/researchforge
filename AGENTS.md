@@ -6,17 +6,17 @@ These instructions apply to all work under this project and supplement the Works
 
 Read, in order:
 
-1. `docs/product/researchforge-v1.5-product-thesis.md`
-2. `docs/product/researchforge-final-delivery-roadmap.md`
-3. `docs/product/v1.4-to-v1.5-productization-change-note.md`
-4. `docs/contracts/README.md`
-5. The contract document and JSON schemas relevant to the change
+1. `README.md`
+2. `PROJECT_STATUS.md`
+3. `docs/product/researchforge-final-delivery-roadmap.md`
+4. `docs/product/v1.7.2-to-v1.7.3-reliability-hardening.md`
+5. `docs/contracts/README.md` and the schemas relevant to the change
 
 Do not implement behavior from memory or from the demo narrative alone.
 
 ## Scope Control
 
-- V1.5 Productization is the active product direction. V1.4 remains the preserved engineering and research baseline; new persisted semantics require V1.5 contracts/schemas rather than silent V1.4 mutation.
+- V1.7.3 Reliability & Audit Hardening over V1.7 General Company Research is the active product direction. V1.4/V1.5/V1.6/V1.7.0-1.7.2 remain preserved history; never silently rewrite older persisted semantics.
 - Research is the primary product. Evolution is a frozen, read-only Quality / Research Lab and must not drive new features unless real usage later establishes a stable failure pattern and a new protocol is approved.
 - Do not add excluded capabilities such as trading, price prediction, multi-agent debate, complex RAG, full-market data, or open-ended optimization without an explicit scope decision.
 - A scope change requires a decision-log entry, change note, contract/schema impact assessment, and updated acceptance evidence.
@@ -25,8 +25,7 @@ Do not implement behavior from memory or from the demo narrative alone.
 ## Execution Discipline
 
 - Maintain one active milestone and one work-in-progress slice.
-- The current critical path is Phase 5 product/demo hardening. Phase 3 extraction and Phase 4
-  n8n checkpoints passed public CI. Follow the frozen final delivery roadmap.
+- The current critical path is V1.7.3 reliability hardening: truthful run bounds, restart recovery, concurrency-safe local persistence, localhost-only demo exposure, complete history access, source guards and documentation alignment. Then return to owner re-acceptance.
 - Update both `PROJECT_STATUS.md` and `project-status.json` at the end of every implementation session.
 - Record architecture, data, cost, or scope choices in `DECISIONS.md`; chat history is not a decision record.
 - Do not introduce infrastructure unless `docs/architecture/implementation-blueprint.md` shows a current gate requires it and a smaller option was evaluated.
@@ -78,7 +77,6 @@ python3 scripts/validate_contracts.py
 ```
 
 For implementation work, run the repository's applicable formatting, lint, type-check, unit,
-integration, smoke, runtime and public CI checks. Under the owner-frozen final delivery policy,
-Phases 2–6 are engineering checkpoints and must not invoke independent acceptance. Invoke the
-Workspace independent completion gate once, for the final project-wide Phase 7 release review,
-after implementation, n8n, final UX, real-human evaluation and release evidence are complete.
+integration, smoke, runtime and public CI checks. Do not invoke or require a separate Codex/GPT
+completion-review agent or review artifact. Normal engineering verification, Integration Check and
+owner acceptance remain required where applicable.

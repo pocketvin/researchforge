@@ -1,6 +1,6 @@
 {
   "id": "researchforgeV17",
-  "name": "ResearchForge — General Company Research V1.7.2",
+  "name": "ResearchForge — General Company Research V1.7.3",
   "active": false,
   "nodes": [
     {
@@ -31,7 +31,7 @@
       ],
       "parameters": {
         "path": "researchforge-v17-form",
-        "formTitle": "ResearchForge V1.7.2 · 通用公司研究",
+        "formTitle": "ResearchForge V1.7.3 · 通用公司研究",
         "formDescription": "输入上市公司名称或股票代码。系统会自主识别 A 股/美股/港股并定位官方披露，再走与 Web 相同的证据、计算与研究链路。",
         "formFields": {
           "values": [
@@ -172,7 +172,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "const response = $input.first().json;\nconst ready = response.statusCode === 200 && response.body?.status === 'ok' && response.body?.version === '1.7.2';\nif (!ready) {\n  return [{ json: {\n    ok: false,\n    http_status: 502,\n    schema_version: '1.7.0',\n    status: 'error',\n    code: 'BACKEND_UNAVAILABLE_OR_UNSAFE',\n    run_id: null,\n    links: null,\n    message: 'ResearchForge 后端未就绪；未创建研究任务。',\n  } }];\n}\nreturn [{ json: { ok: true } }];\n"
+        "jsCode": "const response = $input.first().json;\nconst ready = response.statusCode === 200 && response.body?.status === 'ok' && response.body?.version === '1.7.3';\nif (!ready) {\n  return [{ json: {\n    ok: false,\n    http_status: 502,\n    schema_version: '1.7.0',\n    status: 'error',\n    code: 'BACKEND_UNAVAILABLE_OR_UNSAFE',\n    run_id: null,\n    links: null,\n    message: 'ResearchForge 后端未就绪；未创建研究任务。',\n  } }];\n}\nreturn [{ json: { ok: true } }];\n"
       }
     },
     {

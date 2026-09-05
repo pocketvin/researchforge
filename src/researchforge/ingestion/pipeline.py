@@ -196,7 +196,7 @@ class OfficialDocumentAcquirer:
             payload = destination.read_bytes()
             retrieved_at = str(record.get("reviewed_retrieved_at") or self.clock().isoformat())
         else:
-            request = Request(uri, headers={"User-Agent": "ResearchForge/1.5"})
+            request = Request(uri, headers={"User-Agent": "ResearchForge/1.7.3"})
             with self._opener.open(request, timeout=30) as response:
                 _validate_official_url(str(response.geturl()))
                 payload = response.read(self.max_bytes + 1)

@@ -218,6 +218,8 @@ function EvidenceLink({
   )
 }
 
+const HISTORY_PAGE_SIZE = 20
+
 function ResearchPage() {
   const [companyQuery, setCompanyQuery] = useState('贵州茅台')
   const [marketHint, setMarketHint] = useState<'AUTO' | 'CN' | 'US' | 'HK'>('AUTO')
@@ -235,15 +237,33 @@ function ResearchPage() {
 
   const [history, setHistory] = useState<RunHistoryItem[]>([])
   const [historyLoading, setHistoryLoading] = useState(true)
+  const [historyLoadingMore, setHistoryLoadingMore] = useState(false)
+  const [historyHasMore, setHistoryHasMore] = useState(true)
   const workspaceRef = useRef<HTMLElement | null>(null)
 
   async function refreshHistory() {
     try {
-      setHistory(await api.history(20))
+      const items = await api.history(HISTORY_PAGE_SIZE, 0)
+      setHistory(items)
+      setHistoryHasMore(items.length === HISTORY_PAGE_SIZE)
     } catch {
       // History is a convenience surface; a temporary listing failure must not block research.
     } finally {
       setHistoryLoading(false)
+    }
+  }
+
+  async function loadMoreHistory() {
+    if (historyLoadingMore || !historyHasMore) return
+    setHistoryLoadingMore(true)
+    try {
+      const items = await api.history(HISTORY_PAGE_SIZE, history.length)
+      setHistory((current) => [...current, ...items])
+      setHistoryHasMore(items.length === HISTORY_PAGE_SIZE)
+    } catch {
+      // Keep already loaded history usable when a later page fails.
+    } finally {
+      setHistoryLoadingMore(false)
     }
   }
 
@@ -256,8 +276,13 @@ function ResearchPage() {
 
   useEffect(() => {
     let active = true
-    void api.history(20)
-      .then((items) => { if (active) setHistory(items) })
+    void api.history(HISTORY_PAGE_SIZE, 0)
+      .then((items) => {
+        if (active) {
+          setHistory(items)
+          setHistoryHasMore(items.length === HISTORY_PAGE_SIZE)
+        }
+      })
       .catch(() => undefined)
       .finally(() => { if (active) setHistoryLoading(false) })
     return () => { active = false }
@@ -505,7 +530,7 @@ function ResearchPage() {
                 <small>{history.length > 0 ? `${history.length} 条` : historyLoading ? '读取中' : '暂无'}</small>
               </div>
               <div className="history-list">
-                {history.slice(0, 8).map((item) => (
+                {history.map((item) => (
                   <button
                     className={manifest?.run_id === item.run_id ? 'active' : ''}
                     key={item.run_id}
@@ -520,6 +545,16 @@ function ResearchPage() {
                   </button>
                 ))}
               </div>
+              {historyHasMore && history.length > 0 && (
+                <button
+                  className="history-more"
+                  disabled={historyLoadingMore}
+                  onClick={() => void loadMoreHistory()}
+                  type="button"
+                >
+                  {historyLoadingMore ? '加载中…' : '加载更多研究记录'}
+                </button>
+              )}
             </section>
 
             <div className="data-boundary-note">
@@ -1132,7 +1167,7 @@ export default function App() {
           <span className="brand-mark">RF</span>
           <span><strong>ResearchForge</strong><small>Evidence before narrative</small></span>
         </button>
-        <div className="header-badge"><span /> REAL DATA · V1.7.2</div>
+        <div className="header-badge"><span /> REAL DATA · V1.7.3</div>
       </header>
       <div hidden={page !== 'research'}><ResearchPage /></div>
       <div hidden={page !== 'lab'}><QualityLabPage onBack={() => setPage('research')} /></div>

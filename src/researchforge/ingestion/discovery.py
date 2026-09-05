@@ -24,13 +24,19 @@ from urllib.request import Request, urlopen
 from opencc import OpenCC  # type: ignore[import-untyped]
 
 from researchforge.ingestion.errors import IngestionAbstention
+from researchforge.ingestion.source_security import validate_official_https
 
 Market = Literal["CN", "US", "HK"]
 JsonObject = dict[str, Any]
 
 _BROWSER_HEADERS = {
-    "User-Agent": "Mozilla/5.0 ResearchForge/1.6",
+    "User-Agent": "Mozilla/5.0 ResearchForge/1.7.3",
     "Accept": "application/json,text/plain,*/*",
+}
+_DISCOVERY_HOSTS = {
+    "CNINFO": {"www.cninfo.com.cn"},
+    "SEC": {"www.sec.gov", "data.sec.gov"},
+    "HKEX": {"www1.hkexnews.hk"},
 }
 
 
@@ -46,11 +52,30 @@ def _provider_label(url: str) -> str:
 
 
 def _read_json(request: Request) -> Any:
+    provider = _provider_label(request.full_url)
+    allowed_hosts = _DISCOVERY_HOSTS.get(provider)
+    if allowed_hosts is None:
+        raise IngestionAbstention(
+            "UNTRUSTED_SOURCE_URI",
+            "discovery",
+            "Disclosure discovery URL is outside the supported official providers.",
+        )
+    validate_official_https(
+        request.full_url,
+        allowed_hosts=allowed_hosts,
+        provider=provider,
+        stage="discovery",
+    )
     try:
         with urlopen(request, timeout=20) as response:
+            validate_official_https(
+                response.geturl(),
+                allowed_hosts=allowed_hosts,
+                provider=provider,
+                stage="discovery",
+            )
             return json.load(response)
     except (HTTPError, URLError, TimeoutError, OSError) as exc:
-        provider = _provider_label(request.full_url)
         raise IngestionAbstention(
             "DISCLOSURE_PROVIDER_UNAVAILABLE",
             "discovery",
@@ -474,7 +499,7 @@ class SecDiscoveryProvider:
     def _headers() -> dict[str, str]:
         user_agent = os.getenv(
             "RESEARCHFORGE_SEC_USER_AGENT",
-            "ResearchForge/1.6 researchforge@example.com",
+            "ResearchForge/1.7.3 researchforge@example.com",
         )
         return {"User-Agent": user_agent, "Accept": "application/json"}
 
@@ -562,8 +587,27 @@ class HkexDiscoveryProvider:
             {"callback": "callback", "lang": "EN", "type": "A", "name": ticker, "market": "SEHK"}
         )
         request = Request(f"{self.prefix_url}?{params}", headers=_BROWSER_HEADERS)
-        with urlopen(request, timeout=20) as response:
-            raw = response.read().decode("utf-8")
+        validate_official_https(
+            request.full_url,
+            allowed_hosts=_DISCOVERY_HOSTS["HKEX"],
+            provider="HKEX",
+            stage="discovery",
+        )
+        try:
+            with urlopen(request, timeout=20) as response:
+                validate_official_https(
+                    response.geturl(),
+                    allowed_hosts=_DISCOVERY_HOSTS["HKEX"],
+                    provider="HKEX",
+                    stage="discovery",
+                )
+                raw = response.read().decode("utf-8")
+        except (HTTPError, URLError, TimeoutError, OSError) as exc:
+            raise IngestionAbstention(
+                "DISCLOSURE_PROVIDER_UNAVAILABLE",
+                "discovery",
+                f"HKEX could not be reached safely ({type(exc).__name__}).",
+            ) from exc
         match = re.search(r'"stockId":(\d+)', raw)
         if match is None:
             raise IngestionAbstention(

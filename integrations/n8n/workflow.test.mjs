@@ -88,13 +88,13 @@ test('cross-execution retry preserves all immutable input including cutoff', () 
 });
 test('backend readiness is checked before autonomous submission', () => {
   for (const response of [{ error: 'secret exception' }, { statusCode: 500 },
-    { statusCode: 200, body: { status: 'starting', version: '1.7.2' } },
+    { statusCode: 200, body: { status: 'starting', version: '1.7.3' } },
     { statusCode: 200, body: { status: 'ok', version: '1.5.0' } }]) {
     const result = execute('Check backend', response, refs);
     assert.equal(result.code, 'BACKEND_UNAVAILABLE_OR_UNSAFE');
     assert(!JSON.stringify(result).includes('secret exception'));
   }
-  assert.equal(execute('Check backend', { statusCode: 200, body: { status: 'ok', version: '1.7.2' } }, refs).ok, true);
+  assert.equal(execute('Check backend', { statusCode: 200, body: { status: 'ok', version: '1.7.3' } }, refs).ok, true);
 });
 test('submission accepts only safe IDs and does not follow response-supplied URLs', () => {
   const response = execute('Accept submission', { statusCode: 202,

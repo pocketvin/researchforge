@@ -14,6 +14,7 @@ from urllib.request import Request, urlopen
 
 from researchforge.ingestion.discovery import DiscoveredFiling
 from researchforge.ingestion.errors import IngestionAbstention
+from researchforge.ingestion.source_security import validate_official_https
 from researchforge.retrieval.fulltext import index_html
 
 JsonObject = dict[str, Any]
@@ -22,7 +23,7 @@ JsonObject = dict[str, Any]
 def _sec_headers() -> dict[str, str]:
     user_agent = os.getenv(
         "RESEARCHFORGE_SEC_USER_AGENT",
-        "ResearchForge/1.6 researchforge@example.com",
+        "ResearchForge/1.7.3 researchforge@example.com",
     )
     return {"User-Agent": user_agent, "Accept": "application/json,text/html,*/*"}
 
@@ -63,9 +64,17 @@ def _sha256(payload: bytes) -> str:
 
 
 def _fetch(url: str) -> bytes:
+    allowed_hosts = {"www.sec.gov", "data.sec.gov"}
+    validate_official_https(url, allowed_hosts=allowed_hosts, provider="SEC", stage="acquisition")
     request = Request(url, headers=_sec_headers())
     try:
         with urlopen(request, timeout=30) as response:
+            validate_official_https(
+                response.geturl(),
+                allowed_hosts=allowed_hosts,
+                provider="SEC",
+                stage="acquisition",
+            )
             return cast(bytes, response.read())
     except (HTTPError, URLError, TimeoutError, OSError) as exc:
         raise IngestionAbstention(

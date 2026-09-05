@@ -1,0 +1,21 @@
+{
+  "claim_boundary": "Engineering delivery may complete, but the research hypothesis is unsupported and no further formal experiment is authorized.",
+  "concluded_at": "2026-09-01T16:30:14.297955+00:00",
+  "contingency": {
+    "experiment_id": "experiment_contingency_v1_5_001",
+    "outcome": "NO_ELIGIBLE_CLUSTER",
+    "result_hash": "dadd29917979b53a2b47ed66e7bfa9deae6ba8486802acc12bdba38ab3a3877f"
+  },
+  "final_test_consumed": false,
+  "formal_experiment_count": 2,
+  "outcome_hash": "bdc0c1aed55e930312f01ecaebee8969e96e7ff625b27b735b940fcff8a1d2af",
+  "primary": {
+    "experiment_id": "experiment_primary_v1_4_001",
+    "outcome": "NO_ELIGIBLE_CLUSTER",
+    "result_hash": "60d7620ca0f620e926c99f22a091d7305097dd787c28d89270977cb8a6c735ed"
+  },
+  "research_hypothesis_supported": false,
+  "schema_version": "1.4.0",
+  "status": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
+  "stopping_rule_applied": true
+}

@@ -18,9 +18,9 @@
   "current_gate": "RELEASE_FREEZE",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "v172_engineering_complete",
-    "title": "V1.7.2 engineering complete; ready for owner re-acceptance",
-    "outcome": "Workspace UX closeout is implemented and verified: direct follow-up research, persisted recent-run history/restore, state-preserving methodology navigation, answer-first audit hierarchy and demoted Quality Lab. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
+    "id": "v173_engineering_complete",
+    "title": "V1.7.3 reliability and audit hardening complete; ready for owner re-acceptance",
+    "outcome": "Run-first autonomous lifecycle, restart/concurrency safety, source-trust hardening, localhost packaging, paginated history and packaged method evidence are implemented and runtime-verified. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -31,50 +31,55 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-05T19:20:00+08:00",
+    "at": "2026-09-05T23:58:00+08:00",
     "commands": [
       {
-        "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py; frontend unit/build; n8n Node tests",
+        "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
         "exit_code": 0,
-        "summary": "V1.7.2 non-container gate passed: 211 pytest tests, strict mypy over 105 source files, 7 frontend unit tests, contracts and 11 n8n Node tests."
+        "summary": "V1.7.3 backend gate passed: 225 pytest tests, strict mypy over 109 source files, 611 schema refs, 116 Markdown links and 128 required contract files."
       },
       {
-        "command": "npm run test:e2e; npm run test:e2e:live",
+        "command": "npm run typecheck; npm run lint; npm test; npm run build; npm run test:e2e; npm run test:e2e:live",
         "exit_code": 0,
-        "summary": "V1.7.2 Web passed 3 mocked E2E and 3 live-backend E2E, including the demoted methodology navigation and collapsed audit hierarchy."
+        "summary": "V1.7.3 Web passed typecheck/lint/build, 7 unit tests, 3 mocked E2E and 3 live-backend E2E."
+      },
+      {
+        "command": "node integrations/n8n/build-workflow.mjs --check; node --test integrations/n8n/workflow.test.mjs; integration eslint",
+        "exit_code": 0,
+        "summary": "V1.7.3 n8n portable source matched generated JSON, 11 Node tests and integration lint passed."
       },
       {
         "command": "uv run python scripts/start_demo.py --reasoning-mode deterministic",
         "exit_code": 0,
-        "summary": "Fresh V1.7.2 API/frontend images built; PostgreSQL/API/Web healthy; 3 reviewed-cache Docker smoke cases and 3 actual n8n success cases passed."
+        "summary": "Fresh V1.7.3 API/frontend images built; PostgreSQL/API/Web healthy; 3 reviewed-cache Docker smoke cases and 3 actual n8n 2.37.9 success cases passed."
       },
       {
-        "command": "GET /v1/research-runs?limit=10",
+        "command": "packaged autonomous lifecycle smoke",
         "exit_code": 0,
-        "summary": "Packaged history endpoint returned persisted General Research runs with company/intent metadata; financial_snapshot smoke runs were excluded from normal history."
+        "summary": "Submission returned a durable Run ID in 32.7 ms and the observed lifecycle was queued/queued -> running/completed -> succeeded/completed; final manifest validated against the V1.7.3 schema."
+      },
+      {
+        "command": "docker port inspection",
+        "exit_code": 0,
+        "summary": "API, Web and n8n published only on 127.0.0.1 at ports 8000, 4173 and 5678; API health reported version 1.7.3."
       },
       {
         "command": "uv run python -m scripts.n8n_smoke --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test --failure-fixture",
         "exit_code": 0,
-        "summary": "Five actual transport-only V1.7.2 n8n failure scenarios passed bounded routing without supplying research truth."
-      },
-      {
-        "command": "retained V1.7.1 real model smoke: 贵州茅台 / NVIDIA / 腾讯",
-        "exit_code": 0,
-        "summary": "Research engine was not changed by V1.7.2; retained official-source model synthesis evidence remains Moutai 8/5, NVIDIA 6/5 and Tencent 6/5."
+        "summary": "Five actual transport-only failure scenarios passed bounded routing without supplying research truth."
       }
     ]
   },
   "next_action": {
-    "title": "Perform owner re-acceptance and freeze V1.7.2",
-    "why": "Research quality was accepted as broadly usable in the latest owner feedback; V1.7.2 closes the remaining workspace UX blockers. Only the owner can approve the final experience.",
-    "first_step": "Use http://127.0.0.1:4173/: run a company study, click a suggested follow-up, reopen the prior run from 最近研究, visit 方法与实验 and return, then judge the audit hierarchy.",
+    "title": "Perform owner re-acceptance and freeze V1.7.3",
+    "why": "V1.7.3 completes the reliability/audit hardening without changing the accepted General Research direction. Only the owner can approve the final experience.",
+    "first_step": "Use http://127.0.0.1:4173/: run a representative company study, click a suggested follow-up, reopen a prior run from 最近研究, inspect one audit chain and one bounded failure.",
     "acceptance_evidence": [
-      "A suggested follow-up directly launches a second run without another primary-button click.",
-      "Both runs appear in 最近研究 and either persisted report can be reopened without rerunning the model.",
-      "Visiting 方法与实验 and returning does not discard the active Research workspace.",
-      "Main answer is readable while technical evidence/counter/monitoring/Trace layers are consistently on demand.",
-      "Methods/Quality history is clearly secondary and has no fake clickable arrows.",
+      "A representative General Research result is useful and sufficiently deep.",
+      "Suggested follow-up creates a second Run and paginated history can reopen persisted reports without model reruns.",
+      "Facts, calculations, supporting/counter evidence and Trace remain understandable on demand.",
+      "A bounded unsupported/failure case is explicit and never renders a plausible fake report.",
+      "方法与实验 remains clearly secondary and its packaged read-only evidence opens correctly.",
       "Only after owner re-acceptance is RELEASE_FREEZE marked completed."
     ]
   },
@@ -86,7 +91,7 @@
       "README.md",
       "PROJECT_STATUS.md",
       "DECISIONS.md",
-      "docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md",
+      "docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "PORTFOLIO.md"
     ],
@@ -99,27 +104,26 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-05T19:20:00+08:00",
-    "summary": "Completed V1.7.2 Research Workspace UX Closeout: direct follow-up runs, persisted research history/restore, state-preserving methodology navigation, clarified audit hierarchy, demoted Quality Lab, and full local runtime verification. Owner re-acceptance remains the only Release Freeze action.",
+    "ended_at": "2026-09-05T23:58:00+08:00",
+    "summary": "Completed V1.7.3 Reliability & Audit Hardening: Run-first autonomous preparation, restart/concurrency and budget/idempotency safety, official-source redirect validation, localhost packaging, paginated history and packaged method archive. Full local/packaged runtime gate passed; owner re-acceptance remains the Release Freeze action.",
     "files_changed": [
       "CHANGELOG.md",
       "DECISIONS.md",
       "PORTFOLIO.md",
       "PROJECT_STATUS.md",
       "README.md",
+      "project-status.json",
       "docs/product/researchforge-final-delivery-roadmap.md",
-      "docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md",
-      "frontend/src/App.tsx",
-      "frontend/src/api.ts",
-      "frontend/src/types.ts",
-      "frontend/src/styles.css",
-      "frontend/src/App.test.tsx",
-      "frontend/e2e/research.spec.ts",
+      "docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md",
+      "schemas/v1.7.3/run-manifest.schema.json",
+      "examples/contracts/v1.7.3/run-manifest.autonomous-queued.example.json",
+      "src/researchforge/application/autonomous.py",
       "src/researchforge/application/service.py",
       "src/researchforge/api/app.py",
-      "tests/api/test_api.py",
-      "integrations/n8n/code/render-response.js"
+      "src/researchforge/ingestion/source_security.py",
+      "frontend/src/App.tsx",
+      "integrations/n8n/researchforge-v1.7.workflow.json"
     ]
   },
-  "updated_at": "2026-09-05T19:20:00+08:00"
+  "updated_at": "2026-09-05T23:58:00+08:00"
 }

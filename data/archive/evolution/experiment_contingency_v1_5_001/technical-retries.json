@@ -1,0 +1,27 @@
+{
+  "experiment_id": "experiment_contingency_v1_5_001",
+  "policy": "one_retry_only_for_zero_provider_token_technical_failure",
+  "records": [
+    {
+      "excluded_failed_run_from_formal_denominator": true,
+      "failed_run_id": "run_4f56e7bb37f4429ba71df36b33a5fb3b",
+      "failure_code": "TOOL_FAILED",
+      "provider_tokens_before_failure": 0,
+      "recorded_at": "2026-09-01T16:06:37.598001+00:00",
+      "retry_key": "evolution:base:case_evo_greatpower_2024fy:repeat-1",
+      "retry_run_id": "run_dd52d58aa2db437ab7f78bd4aa16f751",
+      "retry_state": "succeeded"
+    },
+    {
+      "excluded_failed_run_from_formal_denominator": true,
+      "failed_run_id": "run_c646bd48959e4499977c1b8856c305e9",
+      "failure_code": "TOOL_FAILED",
+      "provider_tokens_before_failure": 0,
+      "recorded_at": "2026-09-01T16:17:29.195460+00:00",
+      "retry_key": "evolution:seed:case_evo_greatpower_2024h1:repeat-2",
+      "retry_run_id": "run_2f954577868b4140be36e976d67a61fa",
+      "retry_state": "succeeded"
+    }
+  ],
+  "schema_version": "1.4.0"
+}

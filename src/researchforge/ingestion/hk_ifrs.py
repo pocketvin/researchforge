@@ -10,6 +10,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, cast
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from pypdf import PdfReader
@@ -17,11 +18,12 @@ from pypdf import __version__ as pypdf_version
 
 from researchforge.ingestion.discovery import DiscoveredFiling
 from researchforge.ingestion.errors import IngestionAbstention
+from researchforge.ingestion.source_security import validate_official_https
 from researchforge.retrieval.fulltext import index_pdf_pages
 
 JsonObject = dict[str, Any]
 
-_HEADERS = {"User-Agent": "Mozilla/5.0 ResearchForge/1.6", "Accept": "application/pdf,*/*"}
+_HEADERS = {"User-Agent": "Mozilla/5.0 ResearchForge/1.7.3", "Accept": "application/pdf,*/*"}
 _NUMBER_RE = re.compile(r"\(?-?\d[\d,]*(?:\.\d+)?\)?")
 _UNIT_RE = re.compile(
     r"(?P<currency>RMB|CNY|HKD|HK\$|USD|US\$)[\u2019']?\s*(?P<scale>Million|Thousand|Billion)",
@@ -93,8 +95,25 @@ class HkIfrsProductIngestion:
 
     @staticmethod
     def _fetch(url: str) -> bytes:
-        with urlopen(Request(url, headers=_HEADERS), timeout=45) as response:
-            payload = cast(bytes, response.read())
+        allowed_hosts = {"www1.hkexnews.hk"}
+        validate_official_https(
+            url, allowed_hosts=allowed_hosts, provider="HKEX", stage="acquisition"
+        )
+        try:
+            with urlopen(Request(url, headers=_HEADERS), timeout=45) as response:
+                validate_official_https(
+                    response.geturl(),
+                    allowed_hosts=allowed_hosts,
+                    provider="HKEX",
+                    stage="acquisition",
+                )
+                payload = cast(bytes, response.read())
+        except (HTTPError, URLError, TimeoutError, OSError) as exc:
+            raise IngestionAbstention(
+                "DISCLOSURE_PROVIDER_UNAVAILABLE",
+                "acquisition",
+                f"HKEX filing acquisition failed safely ({type(exc).__name__}).",
+            ) from exc
         if not payload.startswith(b"%PDF"):
             raise IngestionAbstention(
                 "NON_PDF_PAYLOAD", "acquisition", "HKEX source did not return a PDF payload."

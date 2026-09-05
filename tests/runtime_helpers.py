@@ -9,7 +9,13 @@ from typing import Any
 from researchforge.api.app import DEFAULT_FIXTURE_ROOT, DEFAULT_SKILL_MANIFEST
 from researchforge.application.contracts import ResearchRunRequest
 from researchforge.application.service import ResearchRunService
-from scripts.validate_contracts import SCHEMA_DIR, V17_SCHEMA_DIR, load_json, validate_instance
+from scripts.validate_contracts import (
+    SCHEMA_DIR,
+    V17_SCHEMA_DIR,
+    V173_SCHEMA_DIR,
+    load_json,
+    validate_instance,
+)
 
 
 def build_service(artifact_root: Path) -> ResearchRunService:
@@ -47,4 +53,15 @@ def assert_v17_schema(payload: dict[str, Any], schema_name: str) -> None:
     schema_paths = [*SCHEMA_DIR.glob("*.json"), *V17_SCHEMA_DIR.glob("*.json")]
     schemas = {path.resolve(): load_json(path) for path in schema_paths}
     schema_path = (V17_SCHEMA_DIR / schema_name).resolve()
+    validate_instance(payload, schemas[schema_path], schema_path, schemas)
+
+
+def assert_v173_schema(payload: dict[str, Any], schema_name: str) -> None:
+    schema_paths = [
+        *SCHEMA_DIR.glob("*.json"),
+        *V17_SCHEMA_DIR.glob("*.json"),
+        *V173_SCHEMA_DIR.glob("*.json"),
+    ]
+    schemas = {path.resolve(): load_json(path) for path in schema_paths}
+    schema_path = (V173_SCHEMA_DIR / schema_name).resolve()
     validate_instance(payload, schemas[schema_path], schema_path, schemas)

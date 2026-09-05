@@ -1,5 +1,28 @@
 # Changelog
 
+## [Unreleased] — V1.7.3 Reliability & Audit Hardening
+
+### Durable autonomous lifecycle
+
+- Autonomous submission now persists a queued V1.7.3 Run before company/source discovery; preparation state, dynamic package context and terminal failure/cancellation are owned by the same Run.
+- Restart recovery preserves the submitted company/package context and original deadline; startup recovery is backgrounded so a slow Run cannot block API health.
+- Added run-scoped execution locking, cross-instance file idempotency and budget reservation, plus terminal LangGraph checkpoint cleanup.
+- Preparation-only failure/cancellation no longer fabricates workflow Trace artifacts; temporary official-provider unavailability is a retryable failure rather than evidence insufficiency.
+
+### Trust, packaging and workspace reliability
+
+- Revalidate final redirect hosts for official SEC/HKEX/discovery fetches and reject redirects to non-official domains.
+- Bind packaged API/Web/n8n surfaces to localhost by default; restrict model configuration to the priced model contract and include one allowed repair in the worst-case cost bound.
+- Reject investment recommendations, buy/sell instructions and target-price requests at the public Research input boundary.
+- Added offset-paginated Research history and Web load-more; queued runs retain submitted company/market/period context before facts exist.
+- Packaged the historical Quality/Evolution method evidence as a read-only repository archive.
+- Added a V1.7.3 Run Manifest schema while preserving V1.7 Result and historical contract artifacts.
+
+### Verification
+
+- V1.7.3 gate: 225 pytest tests, strict mypy over 109 source files, 611 local schema refs, 7 frontend unit tests, 3 mocked + 3 live E2E, 11 n8n Node tests, fresh Docker build, 3 Docker smoke cases, 3 actual n8n success cases and 5/5 transport-only failure scenarios.
+- Packaged lifecycle smoke observed `queued/queued → running/completed → succeeded/completed`, and API/Web/n8n published only on `127.0.0.1`.
+
 ## [Unreleased] — V1.7.2 Research Workspace UX Closeout
 
 ### Continuous research and history

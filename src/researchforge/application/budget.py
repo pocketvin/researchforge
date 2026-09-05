@@ -7,9 +7,13 @@ import os
 import tempfile
 import threading
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
+
+from researchforge.file_lock import exclusive_file_lock
 
 
 class BudgetExceededError(RuntimeError):
@@ -43,23 +47,40 @@ class BudgetLedger:
         self._spent = spent
         self._reservations: dict[str, Decimal] = {}
         self._state_path = state_path.resolve() if state_path is not None else None
-        self._lock = threading.Lock()
-        if self._state_path is not None and self._state_path.exists():
-            state = json.loads(self._state_path.read_text(encoding="utf-8"))
-            persisted_cap = Decimal(str(state["cap"]))
-            if persisted_cap != cap:
-                raise ValueError("persisted budget cap differs from configured cap")
-            self._spent = Decimal(str(state["spent"]))
-            self._reservations = {
-                str(key): Decimal(str(value)) for key, value in state["reservations"].items()
-            }
-            if self._spent < 0 or self._spent > self._cap:
-                raise ValueError("persisted spend is outside the budget cap")
-            if self._spent + sum(self._reservations.values(), start=Decimal(0)) > self._cap:
-                raise ValueError("persisted reservations exceed the budget cap")
-        elif self._state_path is not None:
-            with self._lock:
-                self._persist_locked()
+        self._lock = threading.RLock()
+        if self._state_path is not None:
+            with self._guard():
+                if self._state_path.exists():
+                    self._reload_locked()
+                else:
+                    self._persist_locked()
+
+    def _reload_locked(self) -> None:
+        if self._state_path is None or not self._state_path.exists():
+            return
+        state = json.loads(self._state_path.read_text(encoding="utf-8"))
+        persisted_cap = Decimal(str(state["cap"]))
+        if persisted_cap != self._cap:
+            raise ValueError("persisted budget cap differs from configured cap")
+        self._spent = Decimal(str(state["spent"]))
+        self._reservations = {
+            str(key): Decimal(str(value)) for key, value in state["reservations"].items()
+        }
+        if self._spent < 0 or self._spent > self._cap:
+            raise ValueError("persisted spend is outside the budget cap")
+        if self._spent + sum(self._reservations.values(), start=Decimal(0)) > self._cap:
+            raise ValueError("persisted reservations exceed the budget cap")
+
+    @contextmanager
+    def _guard(self) -> Iterator[None]:
+        with self._lock:
+            if self._state_path is None:
+                yield
+                return
+            lock_path = self._state_path.with_name(f".{self._state_path.name}.lock")
+            with exclusive_file_lock(lock_path):
+                self._reload_locked()
+                yield
 
     def _persist_locked(self) -> None:
         if self._state_path is None:
@@ -88,7 +109,7 @@ class BudgetLedger:
             temporary.unlink(missing_ok=True)
 
     def snapshot(self) -> BudgetSnapshot:
-        with self._lock:
+        with self._guard():
             return BudgetSnapshot(
                 self._cap,
                 self._spent,
@@ -98,7 +119,7 @@ class BudgetLedger:
     def reserve(self, worst_case_cost: Decimal) -> str:
         if worst_case_cost < 0:
             raise ValueError("worst-case cost cannot be negative")
-        with self._lock:
+        with self._guard():
             reserved = sum(self._reservations.values(), start=Decimal(0))
             if self._spent + reserved + worst_case_cost > self._cap:
                 raise BudgetExceededError("OpenAI aggregate project budget would be exceeded")
@@ -110,7 +131,7 @@ class BudgetLedger:
     def complete(self, reservation_id: str, actual_cost: Decimal) -> None:
         if actual_cost < 0:
             raise ValueError("actual cost cannot be negative")
-        with self._lock:
+        with self._guard():
             reserved = self._reservations[reservation_id]
             if actual_cost > reserved:
                 raise ValueError("actual cost exceeds its worst-case reservation")
@@ -121,6 +142,6 @@ class BudgetLedger:
             self._persist_locked()
 
     def release(self, reservation_id: str) -> None:
-        with self._lock:
+        with self._guard():
             self._reservations.pop(reservation_id, None)
             self._persist_locked()

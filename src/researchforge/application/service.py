@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import uuid
 from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
@@ -25,6 +26,7 @@ from researchforge.application.research import (
     EarningsQualityAnalyzer,
 )
 from researchforge.application.verification import FinancialVerifier
+from researchforge.file_lock import exclusive_file_lock
 from researchforge.persistence import DatabaseIndex
 from researchforge.workflow.graph import (
     CHECKPOINT_SCHEMA_VERSION,
@@ -42,6 +44,42 @@ def _default_clock() -> datetime:
 
 class UnsupportedCapabilityError(ValueError):
     """Raised before queueing a mode that is not yet in the G1 thin slice."""
+
+
+_PROHIBITED_ADVICE_MARKERS = (
+    "目标价",
+    "股价预测",
+    "买入建议",
+    "卖出建议",
+    "值不值得买",
+    "该不该买",
+    "该不该卖",
+    "建议买入",
+    "建议卖出",
+    "投资建议",
+    "推荐股票",
+    "price target",
+    "investment recommendation",
+    "should i buy",
+    "should i sell",
+    "recommend buying",
+    "recommend selling",
+)
+
+
+def enforce_research_question_policy(question: str) -> None:
+    """Reject product requests that cross the research-assistance boundary."""
+    lowered = question.casefold()
+    if any(marker in lowered for marker in _PROHIBITED_ADVICE_MARKERS):
+        raise UnsupportedCapabilityError(
+            "ResearchForge provides research assistance, not investment advice, "
+            "buy/sell recommendations, or price targets"
+        )
+    if re.search(r"\b(?:buy|sell)\s+(?:this|the)\s+(?:stock|share)\b", lowered):
+        raise UnsupportedCapabilityError(
+            "ResearchForge provides research assistance, not investment advice, "
+            "buy/sell recommendations, or price targets"
+        )
 
 
 class ResearchRunService:
@@ -103,7 +141,7 @@ class ResearchRunService:
         skill_hash = str(skill_manifest["content_hash"])
         catalog = G0FixtureCatalog(fixture_root, expected_namespace=data_namespace)
         checkpointer = DurableJsonCheckpointSaver(
-            artifact_root / "checkpoints" / "langgraph-checkpoints.json"
+            artifact_root / "checkpoints" / "langgraph-checkpoints-v1.7.3.json"
         )
         generator = conclusion_generator or DeterministicConclusionGenerator()
         workflow = ResearchWorkflow(
@@ -160,6 +198,23 @@ class ResearchRunService:
                 self.repository.artifact_references(str(manifest["run_id"])),
             )
 
+    def _run_limits(self, run_kind: str) -> dict[str, int | float]:
+        if run_kind == "product" and self.model_config.get("provider") == "openai":
+            # General Research permits one structure repair, so the persisted cap
+            # reflects two bounded 24k-input/6k-output provider requests.
+            return {
+                "timeout_seconds": 300,
+                "max_tool_calls": 30,
+                "max_total_tokens": 60_000,
+                "max_estimated_cost": 0.024,
+            }
+        return {
+            "timeout_seconds": 300,
+            "max_tool_calls": 30,
+            "max_total_tokens": 12_000,
+            "max_estimated_cost": 0.02,
+        }
+
     def _manifest(
         self,
         request: ResearchRunRequest,
@@ -206,12 +261,7 @@ class ResearchRunService:
                 "dataset_package_hash": package["package_hash"],
                 "evidence_cutoff": request_payload["research_time"],
             },
-            "limits": {
-                "timeout_seconds": 300,
-                "max_tool_calls": 30,
-                "max_total_tokens": 12000,
-                "max_estimated_cost": 0.02,
-            },
+            "limits": self._run_limits(run_kind),
             "attempt": 1,
             "idempotency_key": request.idempotency_key,
             "created_at": timestamp,
@@ -229,6 +279,38 @@ class ResearchRunService:
             "failure": None,
         }
 
+    def persist_manifest(self, run_id: str, manifest: dict[str, Any]) -> None:
+        """Persist and mirror an internally prepared lifecycle manifest."""
+        self.repository.save_manifest(run_id, manifest)
+        self._mirror(manifest)
+
+    def adopt_existing_run(
+        self,
+        run_id: str,
+        request: ResearchRunRequest,
+        prior_manifest: dict[str, Any],
+        *,
+        extensions: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Bind a pre-discovery autonomous run to its resolved immutable package."""
+        manifest = self._manifest(
+            request,
+            run_id,
+            run_kind=str(prior_manifest["run_kind"]),
+            case_id=prior_manifest.get("case_id"),
+            split=prior_manifest.get("split"),
+        )
+        manifest = {
+            **manifest,
+            "schema_version": "1.7.3",
+            "lifecycle_state": "running",
+            "created_at": prior_manifest["created_at"],
+            "started_at": prior_manifest.get("started_at") or self.clock().isoformat(),
+            **dict(extensions or {}),
+        }
+        self.persist_manifest(run_id, manifest)
+        return manifest
+
     def submit(
         self,
         request: ResearchRunRequest,
@@ -237,6 +319,7 @@ class ResearchRunService:
         case_id: str | None = None,
         split: str | None = None,
     ) -> RunSubmission:
+        enforce_research_question_policy(request.research_question)
         expected_kinds = {
             None: "product",
             "evolution": "benchmark_evolution",
@@ -258,13 +341,6 @@ class ResearchRunService:
             raise UnsupportedCapabilityError(
                 f"{request.task_type} requires at least two comparable periods"
             )
-        if request.task_type == "thesis_investigation":
-            lowered = request.research_question.casefold()
-            prohibited = ("目标价", "股价预测", "买入", "卖出", "price target", "buy or sell")
-            if any(term in lowered for term in prohibited):
-                raise UnsupportedCapabilityError(
-                    "thesis_investigation refuses price predictions and investment advice"
-                )
         run_id = f"run_{uuid.uuid4().hex}"
         request_payload = request.model_dump(mode="json")
         repository_request = {
@@ -297,7 +373,22 @@ class ResearchRunService:
             ),
         )
 
-    def execute(self, run_id: str) -> dict[str, Any]:
+    def execute(
+        self,
+        run_id: str,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> dict[str, Any]:
+        lock_path = self.repository.root / "run-locks" / f"{run_id}.lock"
+        with exclusive_file_lock(lock_path):
+            return self._execute_locked(run_id, timeout_seconds=timeout_seconds)
+
+    def _execute_locked(
+        self,
+        run_id: str,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> dict[str, Any]:
         manifest = self.repository.get_manifest(run_id)
         if manifest["lifecycle_state"] in TERMINAL_STATES:
             return manifest
@@ -322,7 +413,11 @@ class ResearchRunService:
                 manifest["input"],
                 resume=resume,
                 should_cancel=lambda: self.repository.is_cancel_requested(run_id),
-                timeout_seconds=float(manifest["limits"]["timeout_seconds"]),
+                timeout_seconds=(
+                    timeout_seconds
+                    if timeout_seconds is not None
+                    else float(manifest["limits"]["timeout_seconds"])
+                ),
             )
         except Exception as exc:
             outcome = self.workflow.failed_outcome(run_id, trace_id, manifest["input"], exc)
@@ -373,13 +468,22 @@ class ResearchRunService:
         }
         self.repository.save_manifest(run_id, manifest)
         self._mirror(manifest)
+        self.workflow.delete_checkpoint(run_id)
         return manifest
 
-    def recover_interrupted_runs(self) -> list[str]:
-        """Resume every persisted running run after a single-process restart."""
+    def recover_interrupted_runs(
+        self,
+        *,
+        exclude_run_ids: set[str] | None = None,
+    ) -> list[str]:
+        """Resume queued/running runs that belong to this service catalog."""
+        excluded = exclude_run_ids or set()
         recovered: list[str] = []
         for run_id in self.repository.list_run_ids():
-            if self.repository.get_manifest(run_id)["lifecycle_state"] == "running":
+            if run_id in excluded:
+                continue
+            state = self.repository.get_manifest(run_id)["lifecycle_state"]
+            if state in {"queued", "running"}:
                 self.execute(run_id)
                 recovered.append(run_id)
         return recovered
@@ -387,8 +491,13 @@ class ResearchRunService:
     def get_manifest(self, run_id: str) -> dict[str, Any]:
         return self.repository.get_manifest(run_id)
 
-    def list_product_runs(self, *, limit: int = 20) -> list[dict[str, Any]]:
-        """Return newest product runs with enough metadata to restore the Web workspace."""
+    def list_product_runs(
+        self,
+        *,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> list[dict[str, Any]]:
+        """Return a newest-first page of product runs for Web workspace restore."""
         items: list[dict[str, Any]] = []
         for run_id in self.repository.list_run_ids():
             manifest = self.repository.get_manifest(run_id)
@@ -405,6 +514,11 @@ class ResearchRunService:
                 except KeyError:
                     result = {}
             company_id = str(manifest["input"]["company_ids"][0])
+            autonomous = manifest.get("autonomous_request") or {}
+            market = autonomous.get("market_hint") or company_id.split("_", 1)[0].upper()
+            period = (manifest["input"].get("requested_period_labels") or [None])[0]
+            if period == "LATEST":
+                period = autonomous.get("requested_period_label")
             items.append(
                 {
                     "run_id": run_id,
@@ -412,10 +526,12 @@ class ResearchRunService:
                     "created_at": manifest["created_at"],
                     "finished_at": manifest.get("finished_at"),
                     "company_id": company_id,
-                    "company_name": company.get("legal_name") or company_id,
+                    "company_name": (
+                        company.get("legal_name") or autonomous.get("company_query") or company_id
+                    ),
                     "ticker": company.get("ticker"),
-                    "market": company_id.split("_", 1)[0].upper(),
-                    "period_label": (manifest["input"].get("requested_period_labels") or [None])[0],
+                    "market": market,
+                    "period_label": period,
                     "research_question": manifest["input"]["research_question"],
                     "research_intent_label": (result.get("research_intent") or {}).get("label"),
                     "synthesis_mode": result.get("synthesis_mode"),
@@ -423,7 +539,7 @@ class ResearchRunService:
                 }
             )
         items.sort(key=lambda item: str(item["created_at"]), reverse=True)
-        return items[:limit]
+        return items[offset : offset + limit]
 
     def get_result(self, run_id: str) -> dict[str, Any]:
         return self.repository.get_result(run_id)
@@ -574,4 +690,5 @@ class ResearchRunService:
         }
         self.repository.save_manifest(run_id, manifest)
         self._mirror(manifest)
+        self.workflow.delete_checkpoint(run_id)
         return manifest

@@ -55,7 +55,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     }),
-  history: (limit = 20) => request<RunHistoryItem[]>(`/v1/research-runs?limit=${limit}`),
+  history: (limit = 20, offset = 0) => request<RunHistoryItem[]>(`/v1/research-runs?limit=${limit}&offset=${offset}`),
   manifest: (runId: string) => request<RunManifest>(`/v1/research-runs/${runId}`),
   result: (runId: string) => request<ResearchResult>(`/v1/research-runs/${runId}/result`),
   trace: (runId: string) => request<Trace>(`/v1/research-runs/${runId}/trace`),

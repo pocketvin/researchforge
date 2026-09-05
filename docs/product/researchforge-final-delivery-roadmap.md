@@ -1,24 +1,24 @@
-# ResearchForge V1.7.2 Final Delivery Roadmap
+# ResearchForge V1.7.3 Final Delivery Roadmap
 
 **Updated:** 2026-09-05
-**Status:** V1.7.2 engineering complete; owner re-acceptance remains
+**Status:** V1.7.3 engineering complete; owner re-acceptance remains
 
 ## Final product definition
 
-ResearchForge V1.7.2 is an auditable, question-driven Financial Research Agent with explicit Research Synthesis vs Evidence Summary modes:
+ResearchForge V1.7.3 is an auditable, question-driven Financial Research Agent with explicit Research Synthesis vs Evidence Summary modes:
 
 > Input a public company name/ticker and a natural-language research question; ResearchForge resolves the issuer, finds an official filing, builds a verified numerical backbone plus full-filing Evidence, plans research around the question, and returns inspectable conclusions, Claims, Deep Analysis and Trace.
 
 The product differentiates on **autonomous official-source acquisition + evidence-first reasoning + fail-closed auditability**, not on generic filing summarization.
 
-## V1.7.2 implemented scope
+## V1.7.3 implemented scope
 
 - Markets: CN / US / HK through CNINFO, SEC EDGAR and HKEXnews.
 - Skills: Company Overview, Earnings Change, Growth Analysis, Financial Health, Risk Analysis and Business Analysis.
 - Numerical backbone: six deterministic facts and versioned calculations.
 - Research evidence: native PDF/SEC HTML full-text chunks with source identity, locator and hash.
 - Result: Intent, Plan, Claims, Deep Analysis, Overall Judgment, Evidence Coverage, Follow-ups and explicit `synthesis_mode`.
-- Surfaces: Web and n8n V1.7.2 presentation over the same authoritative backend; stable V17 routes/IDs are retained for compatibility.
+- Surfaces: Web and n8n V1.7.3 presentation over the same authoritative backend; stable V17 routes/IDs are retained for compatibility.
 - Compatibility: `financial_snapshot` preserves the narrow V1.6-style filing-analysis path; General Research uses versioned evidence packages.
 
 ## Phase A — Question-driven research layer
@@ -64,6 +64,16 @@ Owner feedback after V1.7.1 identified product-continuity rather than research-q
 
 Monitoring is reframed as “下一份财报重点看什么” with an explicit non-alert explanation. Quality Lab is preserved as the read-only “方法与实验” archive but removed from primary navigation; inactive adoption steps no longer show fake arrows and loaded steps navigate to real sections.
 
+## Phase D.3 — V1.7.3 Reliability & Audit Hardening
+
+**Status: completed and runtime-verified.**
+
+The project-wide audit found that autonomous source discovery could happen before a durable Run owned the work. V1.7.3 corrects the lifecycle to queued Run → preparation/discovery → graph execution → terminal state, persists dynamic recovery context and the original deadline, and records preparation-only failure/cancellation without fabricating a LangGraph Trace.
+
+Run-scoped file locks, cross-instance idempotency/budget locking, non-blocking startup recovery and terminal checkpoint cleanup harden concurrent/restart behavior. Official-source redirect final hosts are revalidated, public product ports bind to localhost, public Research rejects investment-advice/target-price requests, history is paginated, queued history preserves submitted company context, and the methodology archive ships its read-only historical evidence.
+
+A V1.7.3 runtime Run Manifest contract was added without replacing the V1.7 Research Result schema or rewriting historical contracts. n8n retains the stable V17 workflow/routes while requiring the V1.7.3 backend health contract.
+
 ## Phase E — Full engineering gate
 
 **Status: PASS.**
@@ -82,13 +92,13 @@ fresh Docker build/start/smoke
 git diff review
 ```
 
-Final verified counts: 211 pytest tests, 105 mypy source files, 7 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 11 n8n Node tests, 3 Docker smoke cases, 3 actual n8n success cases and 5 transport-only failure scenarios.
+Final verified counts: 225 pytest tests, 109 mypy source files, 611 local schema refs, 7 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 11 n8n Node tests, 3 Docker smoke cases, 3 actual n8n success cases and 5 transport-only failure scenarios. Packaged lifecycle smoke observed `queued/queued → running/completed → succeeded/completed`; API/Web/n8n published only on localhost.
 
 ## Phase F — Owner re-acceptance / Release Freeze
 
 **Status: pending owner re-acceptance; engineering is complete.**
 
-The first V1.7 Owner Acceptance failed on synthesis quality and is preserved as such. The owner now manually rechecks representative model synthesis plus the V1.7.2 continuous-research/history workflow, audit hierarchy, the explicit fallback state and one bounded failure. Automation must not invent this human acceptance. There is no six-person Human Pilot prerequisite.
+The first V1.7 Owner Acceptance failed on synthesis quality and is preserved as such. The owner now manually rechecks representative model synthesis plus the V1.7.3 hardened continuous-research/history workflow, audit hierarchy, the explicit fallback state and one bounded failure. Automation must not invent this human acceptance. There is no six-person Human Pilot prerequisite.
 
 ## Explicit non-goals
 

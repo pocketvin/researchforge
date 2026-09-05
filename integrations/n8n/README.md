@@ -1,8 +1,8 @@
-# ResearchForge V1.7.2 n8n Integration
+# ResearchForge V1.7.3 n8n Integration
 
 n8n is an optional external workflow surface for the same ResearchForge autonomous backend. It does not calculate finance, discover filings independently or generate a second research answer.
 
-## V1.7.2 workflow
+## V1.7.3 workflow
 
 Portable artifact:
 
@@ -25,7 +25,7 @@ The historical `researchforge.workflow.json` is the immutable V1.5 artifact reta
 - Period / 报告期（可选）: blank = Latest, or e.g. `2025FY`
 - Research Question / 研究问题
 
-The native form always uses V1.7.2 General Research. Automation webhook callers may additionally send `research_mode: "financial_snapshot"` for the bounded reviewed-cache compatibility path used by deterministic packaging/CI smoke; ordinary webhook requests default to `general`.
+The native form always uses V1.7.3 General Research. Automation webhook callers may additionally send `research_mode: "financial_snapshot"` for the bounded reviewed-cache compatibility path used by deterministic packaging/CI smoke; ordinary webhook requests default to `general`.
 
 The workflow maps these fields to `POST /v1/autonomous-research-runs`, polls the immutable ResearchRun, then returns the V1.7-compatible Result, Facts, Calculations, Evidence and Trace unchanged. Presentation aliases also expose synthesis mode, Research Intent, Research Plan, Deep Analysis, Overall Judgment, Follow-ups and Evidence Coverage. A fallback response is visibly labeled and is never rendered as model synthesis.
 
@@ -37,7 +37,7 @@ node integrations/n8n/build-workflow.mjs --check
 node --test integrations/n8n/workflow.test.mjs
 ```
 
-The generator builds the V1.7.2 workflow from reviewable Code-node source files under `integrations/n8n/code/`.
+The generator builds the V1.7.3 workflow from reviewable Code-node source files under `integrations/n8n/code/`.
 
 ## Import and publish
 
@@ -84,7 +84,7 @@ Example webhook body:
 
 The workflow checks backend readiness, validates transport input and applies bounded polling. Backend-supplied URLs are never followed as control data. Unsupported input, idempotency conflict, backend failure, timeout or terminal insufficient-data state returns an explicit error envelope without a `research_result`.
 
-V1.7.2 transport output (schema 1.7.0) is validated by `schemas/v1.7/n8n-research-output.schema.json`. V1.6 and V1.5 n8n artifacts keep their original schemas and remain historical evidence.
+V1.7.3 transport output (schema 1.7.0) is validated by `schemas/v1.7/n8n-research-output.schema.json`. V1.6 and V1.5 n8n artifacts keep their original schemas and remain historical evidence.
 
 The workflow source is covered by deterministic Node contract tests. Live CN/US/HK research quality is covered separately by `scripts/autonomous_regression.py`; runtime smoke must not be treated as a second research-quality oracle.
 

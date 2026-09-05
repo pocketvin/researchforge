@@ -16,6 +16,7 @@ COPY schemas ./schemas
 COPY skills ./skills
 COPY data/fixtures ./data/fixtures
 COPY data/product ./data/product
+COPY data/archive ./data/archive
 COPY src ./src
 RUN uv sync --frozen --no-dev
 

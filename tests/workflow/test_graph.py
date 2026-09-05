@@ -165,6 +165,6 @@ def test_checkpoint_is_loadable_by_a_new_service_instance(tmp_path: object) -> N
     second = build_service(root)
 
     assert second.workflow.has_checkpoint("run_graph_durable") is True
-    checkpoint_file = root / "checkpoints" / "langgraph-checkpoints.json"
+    checkpoint_file = root / "checkpoints" / "langgraph-checkpoints-v1.7.3.json"
     assert checkpoint_file.is_file()
     assert checkpoint_file.stat().st_mode & 0o777 == 0o600

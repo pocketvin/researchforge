@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import json
+import logging
+import threading
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Any, cast
@@ -29,17 +34,19 @@ from researchforge.application.contracts import (
 )
 from researchforge.application.service import ResearchRunService, UnsupportedCapabilityError
 from researchforge.config import load_runtime_settings
-from researchforge.ingestion.errors import IngestionAbstention
+
+LOGGER = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_FIXTURE_ROOT = PROJECT_ROOT / "data" / "fixtures" / "g0"
 DEFAULT_PRODUCT_ROOT = PROJECT_ROOT / "data" / "product" / "packages"
+DEFAULT_EVOLUTION_ARCHIVE = PROJECT_ROOT / "data" / "archive" / "evolution"
 DEFAULT_SKILL_MANIFEST = (
     PROJECT_ROOT / "skills" / "fundamental-research" / "versions" / "1.0.0" / "skill-version.json"
 )
 PRODUCT_REASONING_INSTRUCTIONS = """
 
-V1.7.2 product response contract:
+V1.7.3 product response contract:
 - Answer the research_question directly. Never use the executive summary to narrate routing,
   retrieval counts, token limits, or what ResearchForge did internally.
 - For general_research_v1_7, use only selected_evidence, verified financial_facts and
@@ -158,7 +165,6 @@ def create_app(
 ) -> FastAPI:
     """Create an app whose background tasks share one lifecycle service."""
     runtime = service or build_default_service(artifact_root)
-    runtime.recover_interrupted_runs()
     autonomous = AutonomousResearchCoordinator(
         runtime.repository.root,
         lambda data_root: build_default_service(
@@ -166,11 +172,39 @@ def create_app(
             data_root_override=data_root,
         ),
         reviewed_root=DEFAULT_PRODUCT_ROOT,
+        submission_service=runtime,
     )
     evolution_repository = EvolutionArtifactRepository(runtime.repository.root)
+
+    def recover_interrupted() -> None:
+        try:
+            managed_autonomous_runs = autonomous.managed_run_ids()
+            autonomous.recover_interrupted_runs()
+            runtime.recover_interrupted_runs(exclude_run_ids=managed_autonomous_runs)
+        except Exception:
+            LOGGER.exception("background recovery failed safely")
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        recovery_thread = threading.Thread(
+            target=recover_interrupted,
+            name="researchforge-recovery",
+            daemon=True,
+        )
+        recovery_thread.start()
+        yield
+
+    def archived_evolution(experiment_id: str, kind: str) -> dict[str, Any]:
+        root = DEFAULT_EVOLUTION_ARCHIVE.resolve()
+        path = (root / experiment_id / f"{kind}.json").resolve()
+        if root not in path.parents or not path.is_file():
+            raise KeyError((experiment_id, kind))
+        return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
+
     app = FastAPI(
         title="ResearchForge API",
-        version="1.7.2",
+        version="1.7.3",
+        lifespan=lifespan,
         description=(
             "Question-aware, evidence-first autonomous financial research for CN, US and HK "
             "public companies."
@@ -179,7 +213,7 @@ def create_app(
 
     @app.get("/healthz")
     def healthcheck() -> dict[str, str]:
-        return {"status": "ok", "version": "1.7.2"}
+        return {"status": "ok", "version": "1.7.3"}
 
     def not_found(run_id: str) -> HTTPException:
         return HTTPException(status_code=404, detail={"code": "RUN_NOT_FOUND", "run_id": run_id})
@@ -219,20 +253,11 @@ def create_app(
         background_tasks: BackgroundTasks,
     ) -> RunSubmission:
         try:
-            prepared_service, submission, _filing = autonomous.prepare(request)
-        except IngestionAbstention as exc:
-            raise HTTPException(
-                status_code=422,
-                detail={
-                    "code": exc.code,
-                    "stage": exc.stage,
-                    "message": exc.reason,
-                },
-            ) from exc
+            submission = autonomous.submit(request)
         except UnsupportedCapabilityError as exc:
             raise HTTPException(
                 status_code=422,
-                detail={"code": "MARKET_NOT_READY", "message": str(exc)},
+                detail={"code": "UNSUPPORTED_TASK", "message": str(exc)},
             ) from exc
         except IdempotencyConflictError as exc:
             raise HTTPException(
@@ -240,14 +265,15 @@ def create_app(
                 detail={"code": "IDEMPOTENCY_CONFLICT", "message": str(exc)},
             ) from exc
         if submission.created:
-            background_tasks.add_task(prepared_service.execute, submission.run_id)
+            background_tasks.add_task(autonomous.execute, submission.run_id)
         return submission
 
     @app.get("/v1/research-runs")
     def list_research_runs(
         limit: Annotated[int, Query(ge=1, le=100)] = 20,
+        offset: Annotated[int, Query(ge=0)] = 0,
     ) -> list[dict[str, Any]]:
-        return runtime.list_product_runs(limit=limit)
+        return runtime.list_product_runs(limit=limit, offset=offset)
 
     @app.get("/v1/research-runs/{run_id}")
     def get_research_run(
@@ -340,6 +366,8 @@ def create_app(
         run_id: Annotated[str, ApiPath(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")],
     ) -> dict[str, Any]:
         try:
+            if run_id in autonomous.managed_run_ids():
+                return autonomous.cancel(run_id)
             return runtime.cancel(run_id)
         except RunNotFoundError as exc:
             raise not_found(run_id) from exc
@@ -354,11 +382,14 @@ def create_app(
     ) -> dict[str, Any]:
         try:
             return evolution_repository.get(experiment_id)
-        except KeyError as exc:
-            raise HTTPException(
-                status_code=404,
-                detail={"code": "EXPERIMENT_NOT_FOUND", "experiment_id": experiment_id},
-            ) from exc
+        except KeyError:
+            try:
+                return archived_evolution(experiment_id, "experiment")
+            except KeyError as exc:
+                raise HTTPException(
+                    status_code=404,
+                    detail={"code": "EXPERIMENT_NOT_FOUND", "experiment_id": experiment_id},
+                ) from exc
 
     @app.get("/v1/evolution-experiments/{experiment_id}/artifacts/{kind}")
     def get_evolution_artifact(
@@ -367,14 +398,17 @@ def create_app(
     ) -> dict[str, Any]:
         try:
             return evolution_repository.get(experiment_id, kind)
-        except KeyError as exc:
-            raise HTTPException(
-                status_code=404,
-                detail={
-                    "code": "EXPERIMENT_ARTIFACT_NOT_FOUND",
-                    "experiment_id": experiment_id,
-                    "kind": kind,
-                },
-            ) from exc
+        except KeyError:
+            try:
+                return archived_evolution(experiment_id, kind)
+            except KeyError as exc:
+                raise HTTPException(
+                    status_code=404,
+                    detail={
+                        "code": "EXPERIMENT_ARTIFACT_NOT_FOUND",
+                        "experiment_id": experiment_id,
+                        "kind": kind,
+                    },
+                ) from exc
 
     return app

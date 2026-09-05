@@ -20,6 +20,8 @@ from langgraph.checkpoint.base import (
 )
 from langgraph.checkpoint.memory import InMemorySaver
 
+from researchforge.file_lock import exclusive_file_lock
+
 
 def _encode_typed(value: tuple[str, bytes]) -> list[str]:
     return [value[0], base64.b64encode(value[1]).decode("ascii")]
@@ -41,10 +43,15 @@ class DurableJsonCheckpointSaver(InMemorySaver):
     def __init__(self, path: Path) -> None:
         self.path = path.resolve()
         self._persistence_lock = threading.RLock()
+        self._lock_path = self.path.with_name(f".{self.path.name}.lock")
         super().__init__()
-        self._load()
+        with exclusive_file_lock(self._lock_path):
+            self._reload_locked()
 
-    def _load(self) -> None:
+    def _reload_locked(self) -> None:
+        self.storage.clear()
+        self.writes.clear()
+        self.blobs.clear()
         if not self.path.exists():
             return
         payload = json.loads(self.path.read_text(encoding="utf-8"))
@@ -158,7 +165,8 @@ class DurableJsonCheckpointSaver(InMemorySaver):
             temporary_path.unlink(missing_ok=True)
 
     def get_tuple(self, config: RunnableConfig) -> CheckpointTuple | None:
-        with self._persistence_lock:
+        with self._persistence_lock, exclusive_file_lock(self._lock_path):
+            self._reload_locked()
             return super().get_tuple(config)
 
     def list(
@@ -169,7 +177,8 @@ class DurableJsonCheckpointSaver(InMemorySaver):
         before: RunnableConfig | None = None,
         limit: int | None = None,
     ) -> Iterator[CheckpointTuple]:
-        with self._persistence_lock:
+        with self._persistence_lock, exclusive_file_lock(self._lock_path):
+            self._reload_locked()
             return iter(list(super().list(config, filter=filter, before=before, limit=limit)))
 
     def put(
@@ -179,7 +188,8 @@ class DurableJsonCheckpointSaver(InMemorySaver):
         metadata: CheckpointMetadata,
         new_versions: ChannelVersions,
     ) -> RunnableConfig:
-        with self._persistence_lock:
+        with self._persistence_lock, exclusive_file_lock(self._lock_path):
+            self._reload_locked()
             updated = super().put(config, checkpoint, metadata, new_versions)
             self._sync()
             return updated
@@ -191,11 +201,13 @@ class DurableJsonCheckpointSaver(InMemorySaver):
         task_id: str,
         task_path: str = "",
     ) -> None:
-        with self._persistence_lock:
+        with self._persistence_lock, exclusive_file_lock(self._lock_path):
+            self._reload_locked()
             super().put_writes(config, writes, task_id, task_path)
             self._sync()
 
     def delete_thread(self, thread_id: str) -> None:
-        with self._persistence_lock:
+        with self._persistence_lock, exclusive_file_lock(self._lock_path):
+            self._reload_locked()
             super().delete_thread(thread_id)
             self._sync()

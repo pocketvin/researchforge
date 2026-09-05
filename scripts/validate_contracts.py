@@ -21,10 +21,14 @@ ACTIVE_PRODUCT_SCHEMA_VERSION = "v1.5"
 ACTIVE_PRODUCT_ARTIFACT_VERSION = "1.5.0"
 V17_SCHEMA_VERSION = "v1.7"
 V17_ARTIFACT_VERSION = "1.7.0"
+V173_SCHEMA_VERSION = "v1.7.3"
+V173_ARTIFACT_VERSION = "1.7.3"
 HISTORICAL_SCHEMA_VERSIONS = ("v1.3", "v1.2")
 SCHEMA_DIR = ROOT / "schemas" / CURRENT_SCHEMA_VERSION
 ACTIVE_PRODUCT_SCHEMA_DIR = ROOT / "schemas" / ACTIVE_PRODUCT_SCHEMA_VERSION
 V17_SCHEMA_DIR = ROOT / "schemas" / V17_SCHEMA_VERSION
+V173_SCHEMA_DIR = ROOT / "schemas" / V173_SCHEMA_VERSION
+V173_EXAMPLE_DIR = ROOT / "examples" / "contracts" / V173_SCHEMA_VERSION
 HISTORICAL_SCHEMA_DIRS = {
     version: ROOT / "schemas" / version for version in HISTORICAL_SCHEMA_VERSIONS
 }
@@ -95,6 +99,8 @@ REQUIRED_SCHEMAS = {
 }
 
 V17_REQUIRED_SCHEMAS = {"research-result.schema.json", "n8n-research-output.schema.json"}
+V173_REQUIRED_SCHEMAS = {"run-manifest.schema.json"}
+V173_EXAMPLES = {"run-manifest.autonomous-queued.example.json": "run-manifest.schema.json"}
 
 ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "common.schema.json",
@@ -379,6 +385,7 @@ def validate_schema_shape(path: Path, schema: dict[str, Any]) -> None:
     recognized_versions = {
         ACTIVE_PRODUCT_SCHEMA_VERSION,
         V17_SCHEMA_VERSION,
+        V173_SCHEMA_VERSION,
         CURRENT_SCHEMA_VERSION,
         *HISTORICAL_SCHEMA_VERSIONS,
     }
@@ -2015,6 +2022,7 @@ def main() -> int:
             "preserved V1.5 productization",
         )
         validate_schema_catalog(V17_SCHEMA_DIR, V17_REQUIRED_SCHEMAS, "active V1.7 product")
+        validate_schema_catalog(V173_SCHEMA_DIR, V173_REQUIRED_SCHEMAS, "active V1.7.3 runtime")
         for version, directory in HISTORICAL_SCHEMA_DIRS.items():
             validate_schema_catalog(
                 directory,
@@ -2026,6 +2034,7 @@ def main() -> int:
         schema_paths = sorted(SCHEMA_DIR.glob("*.schema.json"))
         schema_paths.extend(sorted(ACTIVE_PRODUCT_SCHEMA_DIR.glob("*.schema.json")))
         schema_paths.extend(sorted(V17_SCHEMA_DIR.glob("*.schema.json")))
+        schema_paths.extend(sorted(V173_SCHEMA_DIR.glob("*.schema.json")))
         for version in HISTORICAL_SCHEMA_VERSIONS:
             schema_paths.extend(sorted(HISTORICAL_SCHEMA_DIRS[version].glob("*.schema.json")))
         for path in schema_paths:
@@ -2074,6 +2083,13 @@ def main() -> int:
             schemas,
             "V1.4",
         )
+        v173_examples = validate_example_catalog(
+            V173_EXAMPLE_DIR,
+            V173_EXAMPLES,
+            V173_SCHEMA_DIR,
+            schemas,
+            "V1.7.3 runtime",
+        )
         active_product_examples = validate_example_catalog(
             ACTIVE_PRODUCT_EXAMPLE_DIR,
             ACTIVE_PRODUCT_EXAMPLES,
@@ -2089,6 +2105,13 @@ def main() -> int:
                 schemas,
                 version.upper(),
             )
+
+        v173_run_schema = schemas[(V173_SCHEMA_DIR / "run-manifest.schema.json").resolve()]
+        if v173_run_schema["properties"]["schema_version"].get("const") != V173_ARTIFACT_VERSION:
+            raise ContractError("V1.7.3 autonomous Run Manifest schema version is not frozen")
+        if v173_run_schema["properties"]["run_kind"].get("const") != "product":
+            raise ContractError("V1.7.3 autonomous Run Manifest must remain product-only")
+        _ = v173_examples["run-manifest.autonomous-queued.example.json"]
 
         workflow_example = current_examples["workflow-trace.example.json"]
         validate_workflow_trace(workflow_example)
@@ -2167,7 +2190,8 @@ def main() -> int:
         markdown_link_count = validate_markdown_links()
 
         print(
-            f"PASS: {len(V17_REQUIRED_SCHEMAS)} active V1.7, "
+            f"PASS: {len(V173_REQUIRED_SCHEMAS)} active V1.7.3 runtime, "
+            f"{len(V17_REQUIRED_SCHEMAS)} active V1.7, "
             f"{len(ACTIVE_PRODUCT_REQUIRED_SCHEMAS)} preserved V1.5 productization, "
             f"{len(REQUIRED_SCHEMAS)} preserved V1.4, "
             f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.3'])} historical V1.3, and "
@@ -2175,7 +2199,8 @@ def main() -> int:
         )
         print(f"PASS: {reference_count} local schema references resolved")
         print(
-            f"PASS: {len(ACTIVE_PRODUCT_EXAMPLES)} V1.5 productization, "
+            f"PASS: {len(V173_EXAMPLES)} V1.7.3 runtime, "
+            f"{len(ACTIVE_PRODUCT_EXAMPLES)} V1.5 productization, "
             f"{len(CURRENT_EXAMPLES)} V1.4, "
             f"{len(HISTORICAL_EXAMPLES['v1.3'])} V1.3, and "
             f"{len(HISTORICAL_EXAMPLES['v1.2'])} V1.2 examples validated"
