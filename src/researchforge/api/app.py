@@ -165,6 +165,13 @@ def create_app(
 ) -> FastAPI:
     """Create an app whose background tasks share one lifecycle service."""
     runtime = service or build_default_service(artifact_root)
+    runtime_settings = load_runtime_settings(PROJECT_ROOT)
+    model_synthesis_configured = runtime.model_config.get("provider") == "openai"
+    runtime_reasoning_mode = (
+        runtime_settings.researchforge_reasoning_mode
+        if service is None
+        else ("openai" if model_synthesis_configured else "deterministic")
+    )
     autonomous = AutonomousResearchCoordinator(
         runtime.repository.root,
         lambda data_root: build_default_service(
@@ -214,6 +221,17 @@ def create_app(
     @app.get("/healthz")
     def healthcheck() -> dict[str, str]:
         return {"status": "ok", "version": "1.7.3"}
+
+    @app.get("/v1/runtime-capabilities")
+    def runtime_capabilities() -> dict[str, str | bool]:
+        return {
+            "version": "1.7.3",
+            "reasoning_mode": runtime_reasoning_mode,
+            "model_synthesis_configured": model_synthesis_configured,
+            "research_output_mode": (
+                "model_synthesis" if model_synthesis_configured else "evidence_only"
+            ),
+        }
 
     def not_found(run_id: str) -> HTTPException:
         return HTTPException(status_code=404, detail={"code": "RUN_NOT_FOUND", "run_id": run_id})

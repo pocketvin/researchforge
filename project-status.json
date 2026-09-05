@@ -18,9 +18,9 @@
   "current_gate": "RELEASE_FREEZE",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "v173_engineering_complete",
-    "title": "V1.7.3 reliability and audit hardening complete; ready for owner re-acceptance",
-    "outcome": "Run-first autonomous lifecycle, restart/concurrency safety, source-trust hardening, localhost packaging, paginated history and packaged method evidence are implemented and runtime-verified. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
+    "id": "v173_owner_runtime_hotfix_complete",
+    "title": "V1.7.3 engineering complete with Owner runtime isolation correction; ready for owner re-acceptance",
+    "outcome": "Owner/test runtime isolation, live capability verification, truthful evidence-only fallback semantics and current-run Structured Output ID constraints are implemented and verified. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -31,55 +31,55 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-05T23:58:00+08:00",
+    "at": "2026-09-06T01:15:00+08:00",
     "commands": [
       {
         "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
         "exit_code": 0,
-        "summary": "V1.7.3 backend gate passed: 225 pytest tests, strict mypy over 109 source files, 611 schema refs, 116 Markdown links and 128 required contract files."
+        "summary": "V1.7.3 hotfix backend gate passed: 225 pytest tests, strict mypy over 110 source files, 611 schema refs, 119 Markdown links and 128 required contract files."
       },
       {
         "command": "npm run typecheck; npm run lint; npm test; npm run build; npm run test:e2e; npm run test:e2e:live",
         "exit_code": 0,
-        "summary": "V1.7.3 Web passed typecheck/lint/build, 7 unit tests, 3 mocked E2E and 3 live-backend E2E."
+        "summary": "Web passed typecheck/lint/build, 7 unit tests, 3 mocked E2E and 3 live-backend E2E with runtime capability and evidence-only semantics."
       },
       {
         "command": "node integrations/n8n/build-workflow.mjs --check; node --test integrations/n8n/workflow.test.mjs; integration eslint",
         "exit_code": 0,
-        "summary": "V1.7.3 n8n portable source matched generated JSON, 11 Node tests and integration lint passed."
+        "summary": "n8n portable source matched generated JSON, 11 Node tests and integration lint passed with evidence-only presentation semantics."
       },
       {
-        "command": "uv run python scripts/start_demo.py --reasoning-mode deterministic",
+        "command": "uv run python scripts/container_gate.py",
         "exit_code": 0,
-        "summary": "Fresh V1.7.3 API/frontend images built; PostgreSQL/API/Web healthy; 3 reviewed-cache Docker smoke cases and 3 actual n8n 2.37.9 success cases passed."
+        "summary": "Isolated deterministic researchforge-gate stack passed 3/3 reviewed-cache Docker smoke cases on separate ports/volumes; Owner runtime stayed auto + model_synthesis before and after."
       },
       {
-        "command": "packaged autonomous lifecycle smoke",
+        "command": "uv run python scripts/start_demo.py --skip-smoke",
         "exit_code": 0,
-        "summary": "Submission returned a durable Run ID in 32.7 ms and the observed lifecycle was queued/queued -> running/completed -> succeeded/completed; final manifest validated against the V1.7.3 schema."
+        "summary": "Owner stack was force-recreated and live capability verification reported reasoning=auto and output=model_synthesis before handing off the Web URL."
       },
       {
-        "command": "docker port inspection",
+        "command": "Owner regression re-test: 贵州茅台 profitability; 大华股份 growth",
         "exit_code": 0,
-        "summary": "API, Web and n8n published only on 127.0.0.1 at ports 8000, 4173 and 5678; API health reported version 1.7.3."
+        "summary": "Both exact owner-path categories succeeded with synthesis_mode=model, 6 Claims / 5 sections and Supported judgment."
       },
       {
-        "command": "uv run python -m scripts.n8n_smoke --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test --failure-fixture",
+        "command": "uv run python -m scripts.n8n_smoke; uv run python -m scripts.n8n_smoke --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test --failure-fixture",
         "exit_code": 0,
-        "summary": "Five actual transport-only failure scenarios passed bounded routing without supplying research truth."
+        "summary": "Actual n8n 2.37.9 runtime passed 3 success cases, idempotent replay, minimum cached input, native form/failure rendering, 5 HTTP failure checks and 5/5 transport-only failure scenarios."
       }
     ]
   },
   "next_action": {
     "title": "Perform owner re-acceptance and freeze V1.7.3",
-    "why": "V1.7.3 completes the reliability/audit hardening without changing the accepted General Research direction. Only the owner can approve the final experience.",
-    "first_step": "Use http://127.0.0.1:4173/: run a representative company study, click a suggested follow-up, reopen a prior run from 最近研究, inspect one audit chain and one bounded failure.",
+    "why": "The runtime contamination and model Evidence-ID failures exposed by owner testing are now fixed and regression-tested. Only the owner can approve the final experience.",
+    "first_step": "Use http://127.0.0.1:4173/: confirm the header says AI READY, rerun representative company research, then exercise follow-up/history/audit and one explicit bounded failure.",
     "acceptance_evidence": [
+      "Header reports AI READY before a normal model research run.",
       "A representative General Research result is useful and sufficiently deep.",
-      "Suggested follow-up creates a second Run and paginated history can reopen persisted reports without model reruns.",
+      "Suggested follow-up creates a second Run and paginated history reopens persisted reports without model reruns.",
       "Facts, calculations, supporting/counter evidence and Trace remain understandable on demand.",
-      "A bounded unsupported/failure case is explicit and never renders a plausible fake report.",
-      "方法与实验 remains clearly secondary and its packaged read-only evidence opens correctly.",
+      "Evidence-only fallback is clearly labeled and is not presented as successful AI synthesis.",
       "Only after owner re-acceptance is RELEASE_FREEZE marked completed."
     ]
   },
@@ -91,12 +91,13 @@
       "README.md",
       "PROJECT_STATUS.md",
       "DECISIONS.md",
-      "docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md",
+      "docs/product/v1.7.3-owner-runtime-isolation-hotfix.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "PORTFOLIO.md"
     ],
     "commands": [
       "uv run python scripts/start_demo.py --no-build",
+      "uv run python scripts/container_gate.py",
       "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/autonomous_regression.py --all",
       "uv run python scripts/validate_contracts.py",
       "git diff --check",
@@ -104,26 +105,29 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-05T23:58:00+08:00",
-    "summary": "Completed V1.7.3 Reliability & Audit Hardening: Run-first autonomous preparation, restart/concurrency and budget/idempotency safety, official-source redirect validation, localhost packaging, paginated history and packaged method archive. Full local/packaged runtime gate passed; owner re-acceptance remains the Release Freeze action.",
+    "ended_at": "2026-09-06T01:15:00+08:00",
+    "summary": "Closed the Owner runtime isolation regression: Owner startup now verifies the live model capability, deterministic packaging is isolated, fallback semantics are truthful, Structured Output IDs are bound to current-run Evidence/Facts, and actual n8n success/failure runtime routes re-passed. Moutai profitability and Dahua growth owner-path reruns both returned model synthesis; owner re-acceptance remains pending.",
     "files_changed": [
+      "AGENTS.md",
       "CHANGELOG.md",
       "DECISIONS.md",
-      "PORTFOLIO.md",
       "PROJECT_STATUS.md",
       "README.md",
       "project-status.json",
       "docs/product/researchforge-final-delivery-roadmap.md",
-      "docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md",
-      "schemas/v1.7.3/run-manifest.schema.json",
-      "examples/contracts/v1.7.3/run-manifest.autonomous-queued.example.json",
-      "src/researchforge/application/autonomous.py",
-      "src/researchforge/application/service.py",
+      "docs/product/v1.7.3-owner-runtime-isolation-hotfix.md",
+      "docker-compose.yml",
+      "scripts/start_demo.py",
+      "scripts/container_gate.py",
       "src/researchforge/api/app.py",
-      "src/researchforge/ingestion/source_security.py",
+      "src/researchforge/adapters/openai_responses.py",
+      "src/researchforge/application/research.py",
+      "src/researchforge/workflow/graph.py",
       "frontend/src/App.tsx",
+      "frontend/src/api.ts",
+      "frontend/src/types.ts",
       "integrations/n8n/researchforge-v1.7.workflow.json"
     ]
   },
-  "updated_at": "2026-09-05T23:58:00+08:00"
+  "updated_at": "2026-09-06T01:15:00+08:00"
 }

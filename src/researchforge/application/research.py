@@ -114,7 +114,12 @@ class GeneralResearchDraft(BaseModel):
     limitations: list[str] = Field(max_length=12)
     suggested_follow_ups: list[str] = Field(min_length=4, max_length=6)
     overall_judgment: Literal[
-        "Strongly Supported", "Supported", "Mixed", "Weak Evidence", "Insufficient Evidence"
+        "Strongly Supported",
+        "Supported",
+        "Mixed",
+        "Weak Evidence",
+        "Insufficient Evidence",
+        "AI Synthesis Unavailable",
     ]
     overall_judgment_rationale: str = Field(min_length=1, max_length=2200)
 
@@ -263,7 +268,7 @@ class DeterministicConclusionGenerator:
                 str(context.get("counter_evidence", {}).get("summary", "反向证据状态未提供。")),
             ],
             suggested_follow_ups=follow_ups,
-            overall_judgment="Insufficient Evidence",
+            overall_judgment="AI Synthesis Unavailable",
             overall_judgment_rationale=(
                 "官方证据本身可追溯，但当前没有执行模型综合；因此不能把证据集合包装成完整研究判断。"
             ),

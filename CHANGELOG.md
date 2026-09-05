@@ -2,6 +2,14 @@
 
 ## [Unreleased] — V1.7.3 Reliability & Audit Hardening
 
+### Owner runtime isolation hotfix
+
+- Owner startup now force-recreates API/Web and verifies the actual running `/v1/runtime-capabilities` mode before exposing the demo URL; stale deterministic containers cannot masquerade as `auto`.
+- Added an isolated `researchforge-gate` deterministic packaging stack on separate ports/volumes, so local engineering smoke cannot mutate the Owner runtime.
+- Web and n8n expose evidence-only fallback as `EVIDENCE ONLY`; fallback judgment is `AI Synthesis Unavailable` and the primary fallback surface is an Evidence Inventory rather than pseudo Findings/Deep Analysis.
+- General Research Structured Output dynamically constrains Evidence/Fact IDs to the exact current-run context, while retaining downstream validation as defense in depth.
+- Re-tested the Owner scenarios that exposed the defect: 贵州茅台 profitability and 大华股份 growth both completed with `synthesis_mode=model`, 6 Claims / 5 sections and `Supported`.
+
 ### Durable autonomous lifecycle
 
 - Autonomous submission now persists a queued V1.7.3 Run before company/source discovery; preparation state, dynamic package context and terminal failure/cancellation are owned by the same Run.
@@ -20,7 +28,7 @@
 
 ### Verification
 
-- V1.7.3 gate: 225 pytest tests, strict mypy over 109 source files, 611 local schema refs, 7 frontend unit tests, 3 mocked + 3 live E2E, 11 n8n Node tests, fresh Docker build, 3 Docker smoke cases, 3 actual n8n success cases and 5/5 transport-only failure scenarios.
+- V1.7.3 gate: 225 pytest tests, strict mypy over 110 source files, 611 local schema refs, 7 frontend unit tests, 3 mocked + 3 live E2E, 11 n8n Node tests, fresh Docker build, 3 Docker smoke cases, 3 actual n8n success cases and 5/5 transport-only failure scenarios.
 - Packaged lifecycle smoke observed `queued/queued → running/completed → succeeded/completed`, and API/Web/n8n published only on `127.0.0.1`.
 
 ## [Unreleased] — V1.7.2 Research Workspace UX Closeout

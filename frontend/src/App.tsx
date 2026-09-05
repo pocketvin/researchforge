@@ -29,6 +29,7 @@ import type {
   ResearchResult,
   RunHistoryItem,
   RunManifest,
+  RuntimeCapabilities,
   TaskType,
   Trace,
   Experience,
@@ -599,8 +600,8 @@ function ResearchPage() {
                     <Square size={11} /> {cancelling ? '取消中' : '取消'}
                   </button>
                 )}
-                <span className={`status-pill ${statusTone(manifest.lifecycle_state)}`}>
-                  <Activity size={13} /> {manifest.lifecycle_state}
+                <span className={`status-pill ${manifest.lifecycle_state === 'succeeded' && result?.synthesis_mode === 'evidence_summary_fallback' ? 'active' : statusTone(manifest.lifecycle_state)}`}>
+                  <Activity size={13} /> {manifest.lifecycle_state === 'succeeded' && result?.synthesis_mode === 'evidence_summary_fallback' ? 'completed · evidence only' : manifest.lifecycle_state}
                 </span>
               </div>
             )}
@@ -685,21 +686,37 @@ function ResearchPage() {
                     )}
                   </section>
 
-                  <section>
-                    <div className="section-heading"><span><BarChart3 size={16} /> {result.synthesis_mode === 'model' ? 'Key Findings / 关键发现' : 'Verified Evidence Summary / 已核验证据摘要'}</span><span className="micro-label">{result.claims.length} ITEMS</span></div>
-                    <div className="space-y-3">
-                      {result.claims.map((claim) => (
-                        <EvidenceLink
-                          claim={claim}
-                          facts={facts}
-                          evidence={evidence}
-                          key={claim.claim_id}
-                        />
-                      ))}
-                    </div>
-                  </section>
+                  {result.synthesis_mode === 'model' ? (
+                    <section>
+                      <div className="section-heading"><span><BarChart3 size={16} /> Key Findings / 关键发现</span><span className="micro-label">{result.claims.length} ITEMS</span></div>
+                      <div className="space-y-3">
+                        {result.claims.map((claim) => (
+                          <EvidenceLink
+                            claim={claim}
+                            facts={facts}
+                            evidence={evidence}
+                            key={claim.claim_id}
+                          />
+                        ))}
+                      </div>
+                    </section>
+                  ) : (
+                    <section className="fallback-evidence-panel">
+                      <div className="section-heading"><span><BookOpenCheck size={16} /> Evidence Inventory / 已核验证据</span><span className="micro-label">{supportingEvidence.length} VERIFIED</span></div>
+                      <p className="fallback-evidence-note">这些是已定位的官方披露，不是研究结论。AI 综合恢复后可重新运行同一问题。</p>
+                      <div className="fallback-evidence-grid">
+                        {supportingEvidence.slice(0, 8).map((chunk) => (
+                          <article key={chunk.chunk_id}>
+                            <strong>{chunk.section} · P{chunk.locator.page_start}</strong>
+                            <p>{chunk.text.length > 260 ? `${chunk.text.slice(0, 260)}…` : chunk.text}</p>
+                            <a href={chunk.source_uri} rel="noreferrer" target="_blank">打开官方披露 <ArrowUpRight size={11} /></a>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
-                  {result.analysis_sections && result.analysis_sections.length > 0 && (
+                  {result.synthesis_mode === 'model' && result.analysis_sections && result.analysis_sections.length > 0 && (
                     <section className="report-panel deep-analysis-panel">
                       <div className="section-heading">
                         <span><BookOpenCheck size={16} /> Deep Analysis / 深入分析</span>
@@ -1160,6 +1177,17 @@ function QualityLabPage({ onBack }: { onBack: () => void }) {
 
 export default function App() {
   const [page, setPage] = useState<'research' | 'lab'>('research')
+  const [capabilities, setCapabilities] = useState<RuntimeCapabilities | null>(null)
+
+  useEffect(() => {
+    let active = true
+    void api.capabilities()
+      .then((value) => { if (active) setCapabilities(value) })
+      .catch(() => { if (active) setCapabilities(null) })
+    return () => { active = false }
+  }, [])
+
+  const aiReady = capabilities?.model_synthesis_configured === true
   return (
     <div className="app-root">
       <header className="app-header">
@@ -1167,7 +1195,9 @@ export default function App() {
           <span className="brand-mark">RF</span>
           <span><strong>ResearchForge</strong><small>Evidence before narrative</small></span>
         </button>
-        <div className="header-badge"><span /> REAL DATA · V1.7.3</div>
+        <div className={`header-badge ${capabilities && !aiReady ? 'evidence-only' : 'ai-ready'}`} title={capabilities ? `reasoning=${capabilities.reasoning_mode}` : '正在检查研究能力'}>
+          <span /> REAL DATA · V1.7.3 · {capabilities ? (aiReady ? 'AI READY' : 'EVIDENCE ONLY') : 'CHECKING AI'}
+        </div>
       </header>
       <div hidden={page !== 'research'}><ResearchPage /></div>
       <div hidden={page !== 'lab'}><QualityLabPage onBack={() => setPage('research')} /></div>

@@ -1,6 +1,6 @@
 # ResearchForge Project Status
 
-**Updated:** 2026-09-05
+**Updated:** 2026-09-06
 **Contract package:** 1.5.0
 **Product package:** 1.7.3
 **Scope:** V1.7 General Company Research
@@ -15,7 +15,7 @@ Scope: V1.7 general company research
 
 **V1.7.3 Reliability & Audit Hardening — ENGINEERING COMPLETE**
 
-V1.7.3 keeps the V1.7/V1.7.1 research truth boundary and V1.7.2 workspace product, but closes lifecycle, restart, concurrency, source-trust and packaging gaps found in the project-wide audit. Engineering completion does not imply Owner Acceptance.
+V1.7.3 keeps the V1.7/V1.7.1 research truth boundary and V1.7.2 workspace product, closes lifecycle/restart/concurrency/source-trust gaps, and now also isolates deterministic engineering gates from the Owner runtime. Engineering completion does not imply Owner Acceptance.
 
 ## V1.7.3 hardening delivered
 
@@ -31,13 +31,17 @@ V1.7.3 keeps the V1.7/V1.7.1 research truth boundary and V1.7.2 workspace produc
 - Public Research rejects investment recommendations, buy/sell instructions and target-price requests at the input boundary.
 - Recent Run history supports offset pagination and Web “load more”; queued autonomous history retains submitted company/market/period context.
 - Historical Quality/Evolution method evidence is packaged as a read-only archive rather than depending on a mutable local artifact volume.
+- Owner startup force-recreates the product stack and verifies the actual `/v1/runtime-capabilities` response; stale deterministic containers cannot silently survive an `auto` configuration.
+- Local deterministic Docker smoke uses a separate `researchforge-gate` Compose project, ports and volumes, and leaves the Owner 8000/4173 runtime unchanged.
+- Web/n8n distinguish `EVIDENCE ONLY` from successful AI synthesis; fallback judgment is `AI Synthesis Unavailable` and no pseudo Findings/Deep Analysis are rendered.
+- General Research Structured Output Evidence/Fact IDs are dynamically restricted to the current run's retrieved/verified IDs before provider generation, with graph validation retained as defense in depth.
 ## Full engineering gate — PASS
 
 Verified on the V1.7.3 working tree:
 
-- `uv lock --check`, Ruff format/check and strict mypy: PASS; mypy checked **109 source files**.
+- `uv lock --check`, Ruff format/check and strict mypy: PASS; mypy checked **110 source files**.
 - `pytest -q`: **225 passed**, with 2 known upstream deprecation warnings.
-- Contract validation: PASS — **611 local schema refs**, **116 local Markdown links**, **128 required contract files**; V1.7.3 and preserved historical schemas/examples validate together.
+- Contract validation: PASS — **611 local schema refs**, **119 local Markdown links**, **128 required contract files**; V1.7.3 and preserved historical schemas/examples validate together.
 - Frontend: typecheck/lint/build + **7 unit tests + 3 mocked E2E + 3 live-backend E2E**: PASS.
 - n8n source: generated workflow check + **11 Node tests** + integration lint: PASS.
 - Fresh API/frontend Docker images + PostgreSQL/API/Web health + **3 reviewed-cache Docker smoke cases**: PASS.
@@ -45,6 +49,8 @@ Verified on the V1.7.3 working tree:
 - Published ports verified localhost-only: API `127.0.0.1:8000`, Web `127.0.0.1:4173`, n8n `127.0.0.1:5678`.
 - Actual n8n 2.37.9 runtime: **3 success cases**, idempotent replay, minimum cached input, native form, native form failure and 5 HTTP failure checks: PASS.
 - Actual n8n transport-only fixture: **5/5 bounded failure scenarios PASS** with no research truth supplied.
+- Isolated deterministic container gate: **3/3 PASS** using separate `researchforge-gate` resources; Owner runtime remained `auto + model_synthesis` before and after the gate.
+- Owner regression re-test after runtime/ID hardening: 贵州茅台 profitability **6 Claims / 5 sections / Supported** and 大华股份 growth **6 / 5 / Supported**, both `synthesis_mode=model`.
 
 ## Research-quality evidence retained
 
@@ -68,4 +74,4 @@ The owner should verify one representative General Research run, one follow-up/h
 
 ## Resume here
 
-Read first: [README.md](README.md), [DECISIONS.md](DECISIONS.md), the [V1.7.3 change note](docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md), the [V1.7.2 UX note](docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), and [PORTFOLIO.md](PORTFOLIO.md).
+Read first: [README.md](README.md), [DECISIONS.md](DECISIONS.md), the [Owner runtime hotfix note](docs/product/v1.7.3-owner-runtime-isolation-hotfix.md), the [V1.7.3 change note](docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md), the [V1.7.2 UX note](docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), and [PORTFOLIO.md](PORTFOLIO.md).

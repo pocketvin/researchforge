@@ -19,6 +19,14 @@ def test_healthcheck_does_not_require_a_run(tmp_path: Path) -> None:
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "version": "1.7.3"}
+    capabilities = client.get("/v1/runtime-capabilities")
+    assert capabilities.status_code == 200
+    assert capabilities.json() == {
+        "version": "1.7.3",
+        "reasoning_mode": "deterministic",
+        "model_synthesis_configured": False,
+        "research_output_mode": "evidence_only",
+    }
 
 
 def test_api_runs_one_complete_background_case(tmp_path: Path) -> None:

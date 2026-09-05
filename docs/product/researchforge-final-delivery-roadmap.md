@@ -1,6 +1,6 @@
 # ResearchForge V1.7.3 Final Delivery Roadmap
 
-**Updated:** 2026-09-05
+**Updated:** 2026-09-06
 **Status:** V1.7.3 engineering complete; owner re-acceptance remains
 
 ## Final product definition
@@ -74,6 +74,14 @@ Run-scoped file locks, cross-instance idempotency/budget locking, non-blocking s
 
 A V1.7.3 runtime Run Manifest contract was added without replacing the V1.7 Research Result schema or rewriting historical contracts. n8n retains the stable V17 workflow/routes while requiring the V1.7.3 backend health contract.
 
+## Phase D.4 — V1.7.3 Owner Runtime Isolation Correction
+
+**Status: completed and real-owner-path verified.**
+
+Owner re-testing exposed that a previously created deterministic container can remain deterministic even when `.env` and a fresh Compose rendering both say `auto`. Owner startup now force-recreates the stack and verifies `/v1/runtime-capabilities`; deterministic packaging smoke uses the isolated `researchforge-gate` project on separate ports and volumes. The Web surfaces `AI READY` vs `EVIDENCE ONLY` before research starts, and fallback no longer uses successful-research semantics.
+
+After runtime recovery, two representative General Research questions still exposed out-of-context Evidence IDs in model Structured Output. Evidence/Fact ID fields are now dynamically enum-constrained to the exact current-run context before provider generation, while graph validation remains in place. The exact owner-path categories were rerun successfully: 贵州茅台 profitability (6 Claims / 5 sections / Supported) and 大华股份 growth (6 / 5 / Supported), both with `synthesis_mode=model`.
+
 ## Phase E — Full engineering gate
 
 **Status: PASS.**
@@ -92,7 +100,7 @@ fresh Docker build/start/smoke
 git diff review
 ```
 
-Final verified counts: 225 pytest tests, 109 mypy source files, 611 local schema refs, 7 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 11 n8n Node tests, 3 Docker smoke cases, 3 actual n8n success cases and 5 transport-only failure scenarios. Packaged lifecycle smoke observed `queued/queued → running/completed → succeeded/completed`; API/Web/n8n published only on localhost.
+Final verified counts: 225 pytest tests, 110 mypy source files, 611 local schema refs, 7 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 11 n8n Node tests, 3 Docker smoke cases, 3 actual n8n success cases and 5 transport-only failure scenarios. Packaged lifecycle smoke observed `queued/queued → running/completed → succeeded/completed`; API/Web/n8n published only on localhost.
 
 ## Phase F — Owner re-acceptance / Release Freeze
 

@@ -5,6 +5,7 @@ import type {
   EvolutionExperiment,
   FinancialFact,
   ResearchResult,
+  RuntimeCapabilities,
   RunHistoryItem,
   RunManifest,
   TaskType,
@@ -27,6 +28,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  capabilities: () => request<RuntimeCapabilities>('/v1/runtime-capabilities'),
   catalog: () => request<Catalog>('/v1/catalog'),
   createAutonomousRun: (payload: {
     company_query: string

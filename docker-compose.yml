@@ -39,7 +39,7 @@ services:
     volumes:
       - researchforge-artifacts:/app/artifacts
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:${RESEARCHFORGE_API_PORT:-8000}:8000"
 
   frontend:
     build:
@@ -57,7 +57,7 @@ services:
       timeout: 3s
       retries: 20
     ports:
-      - "127.0.0.1:4173:80"
+      - "127.0.0.1:${RESEARCHFORGE_WEB_PORT:-4173}:80"
 
 volumes:
   researchforge-postgres:

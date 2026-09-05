@@ -605,7 +605,7 @@ class ResearchWorkflow:
                     }
                 except StructuredOutputError as exc:
                     if attempt == 1:
-                        return self._invalid_conclusion(state, repairs)
+                        return self._invalid_conclusion(state, repairs, reason=str(exc))
                     repairs += 1
                     context["repair_feedback"] = (
                         "Previous structured draft was rejected. Return a complete replacement "
@@ -748,10 +748,15 @@ class ResearchWorkflow:
                 kept.append(fact_id)
         return kept
 
-    def _invalid_conclusion(self, state: ResearchGraphState, repairs: int) -> dict[str, Any]:
+    def _invalid_conclusion(
+        self, state: ResearchGraphState, repairs: int, *, reason: str | None = None
+    ) -> dict[str, Any]:
+        message = "Structured conclusion remained invalid after one repair attempt."
+        if reason:
+            message += f" Last validation: {reason[:500]}"
         failure = {
             "code": "OUTPUT_SCHEMA_INVALID",
-            "message": "Structured conclusion remained invalid after one repair attempt.",
+            "message": message,
             "retryable": False,
         }
         return {

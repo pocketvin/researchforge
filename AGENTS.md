@@ -10,7 +10,8 @@ Read, in order:
 2. `PROJECT_STATUS.md`
 3. `docs/product/researchforge-final-delivery-roadmap.md`
 4. `docs/product/v1.7.2-to-v1.7.3-reliability-hardening.md`
-5. `docs/contracts/README.md` and the schemas relevant to the change
+5. `docs/product/v1.7.3-owner-runtime-isolation-hotfix.md`
+6. `docs/contracts/README.md` and the schemas relevant to the change
 
 Do not implement behavior from memory or from the demo narrative alone.
 
@@ -80,3 +81,8 @@ For implementation work, run the repository's applicable formatting, lint, type-
 integration, smoke, runtime and public CI checks. Do not invoke or require a separate Codex/GPT
 completion-review agent or review artifact. Normal engineering verification, Integration Check and
 owner acceptance remain required where applicable.
+
+Local deterministic container gates must use `python scripts/container_gate.py`; never recreate the
+Owner stack on ports 8000/4173 with `RESEARCHFORGE_REASONING_MODE=deterministic`. Owner startup
+must go through `scripts/start_demo.py`, which force-recreates the stack and verifies the actual API
+runtime capability before handing the Web URL to a user.

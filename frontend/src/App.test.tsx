@@ -57,6 +57,7 @@ describe('ResearchForge UI', () => {
       'fetch',
       vi.fn((input: RequestInfo | URL) => {
         const path = String(input)
+        if (path === '/v1/runtime-capabilities') return Promise.resolve(json({ version: '1.7.3', reasoning_mode: synthesisMode === 'model' ? 'auto' : 'deterministic', model_synthesis_configured: synthesisMode === 'model', research_output_mode: synthesisMode === 'model' ? 'model_synthesis' : 'evidence_only' }))
         if (path === '/v1/catalog') return Promise.resolve(json(catalog))
         if (path.endsWith('/artifacts/failure-cluster')) {
           return Promise.resolve(json({
@@ -465,6 +466,8 @@ describe('ResearchForge UI', () => {
     expect(await screen.findByText('当前仅生成 Verified Evidence Summary，未执行 AI Research Synthesis。')).toBeInTheDocument()
     expect(screen.getByText('EVIDENCE SUMMARY FALLBACK · 未执行 AI 综合分析')).toBeInTheDocument()
     expect(screen.getByText('EVIDENCE SUMMARY')).toBeInTheDocument()
+    expect(screen.getByText('Evidence Inventory / 已核验证据')).toBeInTheDocument()
+    expect(screen.queryByText('Key Findings / 关键发现')).not.toBeInTheDocument()
   })
 
   it('renders persisted Evolution state without inventing a supported result', async () => {

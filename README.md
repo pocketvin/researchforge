@@ -57,8 +57,10 @@ V1.7.3 keeps six comparable financial facts—revenue, operating cost, net incom
 - Autonomous submission now creates a durable queued Run before disclosure discovery; preparation state, dynamic package context, cancellation/failure and restart recovery belong to that same Run.
 - Cross-instance idempotency/budget reservation, run-scoped execution locks, checkpoint cleanup and official redirect final-host validation are enforced.
 - Recent General Research history is paginated; queued runs retain submitted company context; the historical **方法与实验** evidence is packaged read-only.
+- Owner startup force-recreates and verifies the actual runtime capability; deterministic packaging smoke runs in an isolated Compose project and cannot leave the Owner stack in evidence-only mode.
+- General Research Structured Output Evidence/Fact IDs are constrained to current-run retrieved/verified IDs; fallback is visibly `EVIDENCE ONLY` with `AI Synthesis Unavailable`, not a successful AI research report.
 - V1.7 Golden Regression remains **PASS** — 6 trusted successes + 3 explicit safe abstentions; V1.7.1 real-model CN/US/HK synthesis evidence remains valid.
-- V1.7.3 engineering gate: **PASS** — 225 pytest tests, strict mypy over 109 source files, 7 frontend unit tests, 3 mocked + 3 live E2E, fresh Docker smoke, 11 n8n Node tests, 3 actual n8n success cases and 5/5 failure-fixture routes.
+- V1.7.3 engineering gate: **PASS** — 225 pytest tests, strict mypy over 110 source files, 7 frontend unit tests, 3 mocked + 3 live E2E, fresh Docker smoke, 11 n8n Node tests, 3 actual n8n success cases and 5/5 failure-fixture routes.
 - Current gate: **RELEASE_FREEZE in progress — engineering complete, owner re-acceptance pending**. Six-person Human Pilot remains removed; investment advice/order execution/price prediction are not provided.
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) and [DECISIONS.md](DECISIONS.md) for current authority.
@@ -169,18 +171,19 @@ The V1.4 formal evolution hypothesis ended honestly at:
 RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
 ```
 
-The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032 through RF-037 and the active roadmap define the current V1.7.3 direction.
+The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032 through RF-038 and the active roadmap define the current V1.7.3 direction.
 
 ## Start here
 
 1. [PROJECT_STATUS.md](PROJECT_STATUS.md) — current milestone and release gate.
 2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.7.3 completion and owner re-acceptance sequence.
 3. [V1.7.2 → V1.7.3 reliability/audit hardening note](docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md) — Run-first lifecycle, restart/concurrency safety and source/package hardening.
-4. [V1.7.1 → V1.7.2 workspace UX change note](docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md) — continuous research, history restore, audit hierarchy and Quality Lab demotion.
-5. [V1.7 → V1.7.1 synthesis change note](docs/product/v1.7-to-v1.7.1-synthesis-change-note.md) — why the first V1.7 Owner Acceptance failed and how synthesis/fallback are separated.
-6. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032 through RF-037.
-7. [n8n integration](integrations/n8n/README.md) — V1.7.3 external workflow entry.
-8. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
+4. [V1.7.3 Owner runtime isolation hotfix](docs/product/v1.7.3-owner-runtime-isolation-hotfix.md) — prevents deterministic test-stack contamination and binds model Evidence/Fact IDs to the current run.
+5. [V1.7.1 → V1.7.2 workspace UX change note](docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md) — continuous research, history restore, audit hierarchy and Quality Lab demotion.
+6. [V1.7 → V1.7.1 synthesis change note](docs/product/v1.7-to-v1.7.1-synthesis-change-note.md) — why the first V1.7 Owner Acceptance failed and how synthesis/fallback are separated.
+7. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032 through RF-038.
+8. [n8n integration](integrations/n8n/README.md) — V1.7.3 external workflow entry.
+9. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
 
 ## Non-goals
 

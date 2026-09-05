@@ -126,6 +126,31 @@ class OpenAIResponsesConclusionGenerator:
         output_name = (
             "researchforge_general_research_draft" if general else "researchforge_conclusion_draft"
         )
+        output_schema = output_model.model_json_schema()
+        if general:
+            allowed_evidence = [
+                str(item["chunk_id"]) for item in context.get("selected_evidence", [])
+            ]
+            allowed_evidence.extend(
+                str(item) for item in context.get("counter_evidence", {}).get("evidence_ids", [])
+            )
+            allowed_evidence = list(dict.fromkeys(allowed_evidence))
+            allowed_facts = [str(item["fact_id"]) for item in context.get("financial_facts", [])]
+            finding_props = output_schema["$defs"]["GeneralFindingDraft"]["properties"]
+            analysis_props = output_schema["$defs"]["GeneralAnalysisSectionDraft"]["properties"]
+            finding_props["evidence_ids"]["items"] = {
+                "type": "string",
+                "enum": allowed_evidence,
+            }
+            analysis_props["evidence_ids"]["items"] = {
+                "type": "string",
+                "enum": allowed_evidence,
+            }
+            if allowed_facts:
+                finding_props["fact_ids"]["items"] = {
+                    "type": "string",
+                    "enum": allowed_facts,
+                }
         if (len(prompt.encode()) + 1) // 2 > self.max_input_tokens:
             raise ValueError("bounded conclusion input exceeds its token safety estimate")
         reservation_id = self.ledger.reserve(self._worst_case_cost())
@@ -144,7 +169,7 @@ class OpenAIResponsesConclusionGenerator:
                         "type": "json_schema",
                         "name": output_name,
                         "strict": True,
-                        "schema": output_model.model_json_schema(),
+                        "schema": output_schema,
                     }
                 },
             )

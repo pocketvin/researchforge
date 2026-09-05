@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shlex
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,7 +25,7 @@ N8N_COMPOSE = [
 
 
 def build_commands(*, build: bool, smoke: bool) -> list[list[str]]:
-    base_up = [*COMPOSE, "up", "-d"]
+    base_up = [*COMPOSE, "up", "-d", "--force-recreate"]
     if build:
         base_up.append("--build")
     base_up.append("--wait")
@@ -60,6 +62,21 @@ def build_commands(*, build: bool, smoke: bool) -> list[list[str]]:
     return commands
 
 
+def verify_runtime(expected_reasoning_mode: str) -> None:
+    """Verify the running Owner API actually uses the requested reasoning mode."""
+    with urllib.request.urlopen(
+        "http://127.0.0.1:8000/v1/runtime-capabilities", timeout=10.0
+    ) as response:
+        payload = json.load(response)
+    actual = payload.get("reasoning_mode")
+    if actual != expected_reasoning_mode:
+        raise RuntimeError(
+            f"Owner runtime mode mismatch: expected {expected_reasoning_mode}, got {actual}"
+        )
+    synthesis = payload.get("research_output_mode")
+    print(f"Runtime: reasoning={actual} · output={synthesis}", flush=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-build", action="store_true", help="Reuse existing local images.")
@@ -85,6 +102,7 @@ def main() -> None:
         if not args.dry_run:
             subprocess.run(command, cwd=ROOT, env=environment, check=True)
     if not args.dry_run:
+        verify_runtime(args.reasoning_mode)
         print("Web: http://127.0.0.1:4173/", flush=True)
         print("n8n form: http://127.0.0.1:5678/form/researchforge-v17-form", flush=True)
 

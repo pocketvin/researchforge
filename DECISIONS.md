@@ -840,3 +840,25 @@ Recent Run API 增加 offset pagination，Web 不再只显示前八条。Queued 
 General Research Result schema 继续为 `1.7.0`；V1.7.3 新增 lifecycle manifest schema，不重写历史 V1.7/V1.5/V1.4 artifacts。n8n 保留 `researchforgeV17` 与既有 V17 URL，仅把 product backend health contract 升级到 1.7.3。
 
 V1.7.3 必须通过正常全仓工程门禁以及专门 reliability regression：queued-before-discovery、restart recovery、provider failure no fake trace、cancel-before-discovery、跨实例 idempotency、跨实例 budget reservation、并发执行互斥、checkpoint cleanup、官方 redirect final-host 验证、非阻塞 startup recovery、history pagination 和 packaged method archive。`RELEASE_FREEZE` 仍由 owner re-acceptance 决定，自动化不得代签。
+
+
+## RF-038 — Owner runtime 与 deterministic engineering gate 必须隔离，Structured Output ID 必须绑定当前证据上下文
+
+**日期：** 2026-09-06
+**状态：** Accepted
+
+### 背景
+
+V1.7.3 工程门禁完成后的 Owner 实测发现：`.env` 与 `docker compose config` 都是 `auto`，但已经运行的 API 容器仍保留此前验收时创建的 `deterministic` 环境，因此两次正常 General Research 都进入 Evidence Summary fallback。将 Owner stack 真正恢复为 `auto` 后，同样的茅台盈利能力与大华股份增长来源问题又暴露第二层问题：模型综合确实执行，但 Structured Output 在 repair 后仍可能引用本次 retrieved context 之外的 Evidence ID，最终安全失败为 `OUTPUT_SCHEMA_INVALID`。
+
+### 决策
+
+Owner runtime 与 deterministic engineering gate 不再共享容器生命周期、端口或 volumes。`scripts/start_demo.py` 必须 force-recreate Owner stack，并在交付 URL 前读取运行中 API 的 `/v1/runtime-capabilities` 验证实际 reasoning mode；只检查 `.env` 或 Compose 渲染结果不构成 runtime 证明。确定性 packaging gate 使用独立 `researchforge-gate` Compose project、独立端口和独立 volumes，结束后销毁测试资源，不得改变 Owner 8000/4173 runtime。
+
+Web 在研究前安全显示 `AI READY` 或 `EVIDENCE ONLY`。Fallback 完成态显示为 evidence-only completion，不再用绿色 `SUCCEEDED` 暗示 AI synthesis 成功；fallback 的总体判断为 `AI Synthesis Unavailable`，而不是错误的 `Insufficient Evidence`，并只展示紧凑 Evidence Inventory，不生成伪 Findings/Deep Analysis。n8n 采用相同语义。
+
+General Research 的 Structured Output schema 必须在每次请求时把 `evidence_ids` 和 `fact_ids` 限定为该 run 实际 selected/counter Evidence 与 verified Facts 的 enum；后续 graph validator 继续保留为第二道边界。一次 repair 后仍失败时，只允许持久化安全的校验规则摘要，不保存原始模型草稿或隐藏推理。
+
+### 验证边界
+
+Owner stack 已验证 `reasoning_mode=auto` 且 `research_output_mode=model_synthesis`。同类真实问题复测：贵州茅台盈利能力为 6 Claims / 5 sections / Supported，大华股份增长来源为 6 / 5 / Supported，均为 `synthesis_mode=model`。隔离 deterministic container gate 3/3 PASS，且前后 Owner runtime 均保持 `auto + model_synthesis`。`RELEASE_FREEZE` 仍必须由 owner 手工 re-acceptance 完成。

@@ -57,6 +57,13 @@ export interface RunManifest {
   failure: { code: string; message: string } | null
 }
 
+export interface RuntimeCapabilities {
+  version: string
+  reasoning_mode: 'auto' | 'openai' | 'deterministic'
+  model_synthesis_configured: boolean
+  research_output_mode: 'model_synthesis' | 'evidence_only'
+}
+
 export interface Claim {
   claim_id: string
   claim_type: string

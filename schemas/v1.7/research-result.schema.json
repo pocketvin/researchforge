@@ -405,7 +405,8 @@
             "Supported",
             "Mixed",
             "Weak Evidence",
-            "Insufficient Evidence"
+            "Insufficient Evidence",
+            "AI Synthesis Unavailable"
           ]
         },
         "rationale": {

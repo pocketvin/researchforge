@@ -149,7 +149,21 @@ def test_openai_adapter_validates_general_research_synthesis_contract() -> None:
     responses = FakeGeneralResponses()
     adapter = OpenAIResponsesConclusionGenerator(responses, BudgetLedger())
 
-    draft = adapter.generate({"response_contract": "general_research_v1_7"})
+    draft = adapter.generate(
+        {
+            "response_contract": "general_research_v1_7",
+            "selected_evidence": [
+                {"chunk_id": "chunk_business"},
+                {"chunk_id": "chunk_cash"},
+            ],
+            "counter_evidence": {"evidence_ids": ["chunk_counter"]},
+            "financial_facts": [
+                {"fact_id": "fact_revenue"},
+                {"fact_id": "fact_ocf"},
+                {"fact_id": "fact_profit"},
+            ],
+        }
+    )
 
     assert isinstance(draft, GeneralResearchDraft)
     assert draft.executive_summary.startswith("公司当前经营表现稳定")
@@ -161,3 +175,16 @@ def test_openai_adapter_validates_general_research_synthesis_contract() -> None:
     schema = call["text"]["format"]["schema"]
     assert "overall_judgment_rationale" in schema["properties"]
     assert "claim_type" in schema["$defs"]["GeneralFindingDraft"]["properties"]
+    finding_props = schema["$defs"]["GeneralFindingDraft"]["properties"]
+    analysis_props = schema["$defs"]["GeneralAnalysisSectionDraft"]["properties"]
+    assert finding_props["evidence_ids"]["items"]["enum"] == [
+        "chunk_business",
+        "chunk_cash",
+        "chunk_counter",
+    ]
+    assert analysis_props["evidence_ids"]["items"]["enum"] == [
+        "chunk_business",
+        "chunk_cash",
+        "chunk_counter",
+    ]
+    assert finding_props["fact_ids"]["items"]["enum"] == ["fact_revenue", "fact_ocf", "fact_profit"]
