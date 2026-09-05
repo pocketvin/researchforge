@@ -7,6 +7,16 @@ for (const [company, period] of [
   ['比亚迪', '2024H1'],
 ]) {
   test(`autonomous reviewed-cache backend research: ${company}/${period}`, async ({ page }) => {
+    // Keep this browser→API integration gate deterministic: official-provider network
+    // quality is covered by Golden Regression, while this suite exercises reviewed-cache runtime.
+    await page.route('**/v1/autonomous-research-runs', async (route) => {
+      const request = route.request()
+      if (request.method() !== 'POST') return route.continue()
+      const payload = request.postDataJSON() as Record<string, unknown>
+      await route.continue({
+        postData: JSON.stringify({ ...payload, research_mode: 'financial_snapshot' }),
+      })
+    })
     await page.goto('/')
     await page.getByLabel('Company search').fill(company)
     await page.getByLabel('Market selector').selectOption('CN')
@@ -18,13 +28,12 @@ for (const [company, period] of [
     await page.getByRole('button', { name: 'Research Company / 开始自主研究' }).click()
     const response = await responsePromise
     const result = await response.json() as {
+      schema_version: string
       executive_summary: string
       limitations: string[]
-      synthesis_mode: 'model' | 'evidence_summary_fallback'
     }
-    expect(result.synthesis_mode).toBe('evidence_summary_fallback')
+    expect(result.schema_version).toBe('1.4.0')
     await expect(page.getByText(result.executive_summary, { exact: true })).toBeVisible()
-    await expect(page.getByText('EVIDENCE SUMMARY FALLBACK · 未执行 AI 综合分析')).toBeVisible()
     for (const section of ['Financial Facts', 'Calculations', 'Supporting Evidence', 'Research Trace']) {
       await page.locator('details').filter({ hasText: section }).locator('summary').press('Enter')
     }
