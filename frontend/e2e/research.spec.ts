@@ -79,6 +79,7 @@ test('real-data research journey exposes a progressively auditable result', asyn
         json: {
           result_id: `result_${runId}`,
           task_type: 'filing_analysis',
+          synthesis_mode: 'model',
           executive_summary: '经营现金流覆盖净利润；现金转化比为1.96倍。',
           claims: [
             {
@@ -231,6 +232,7 @@ test('real-data research journey exposes a progressively auditable result', asyn
   await page.goto('/')
   await page.getByRole('button', { name: 'Research Company / 开始自主研究' }).click()
   await expect(page.getByText('经营现金流覆盖净利润；现金转化比为1.96倍。')).toBeVisible()
+  await expect(page.getByText('MODEL SYNTHESIS')).toBeVisible()
   await expect(page.getByText('中期财务报告未经审计，限制单期结论外推。')).toBeVisible()
   await expect(page.getByText('下一同口径报告期复核现金转化与营运资本')).toBeVisible()
 
@@ -250,7 +252,7 @@ test('real-data research journey exposes a progressively auditable result', asyn
   await page.getByText(/查看反证来源/).press('Enter')
   await expect(page.getByText('228.65 亿元', { exact: true })).toBeVisible()
   await expect(page.getByText(/Calculated as operating cash flow/)).toBeVisible()
-  await expect(page.getByText(/经营活动产生的现金流量净额/)).toBeVisible()
+  await expect(page.getByText(/经营活动产生的现金流量净额/).last()).toBeVisible()
   await expect(page.getByText('本半年度财务报告未经审计。')).toBeVisible()
   await expect(trace.locator('.stage-item')).toHaveCount(10)
 

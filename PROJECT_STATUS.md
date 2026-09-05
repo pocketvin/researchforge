@@ -2,7 +2,7 @@
 
 **Updated:** 2026-09-05
 **Contract package:** 1.5.0
-**Product scope:** V1.7
+**Product scope:** V1.7.1 synthesis correction over V1.7 General Company Research
 **Scope: V1.7 general company research**
 
 Contract package: 1.5.0
@@ -11,64 +11,78 @@ Scope: V1.7 general company research
 
 ## Current milestone
 
-**V1.7 Engineering Complete — READY FOR OWNER ACCEPTANCE**
+**V1.7.1 Engineering Complete — READY FOR OWNER RE-ACCEPTANCE**
 
-ResearchForge now executes a question-driven, evidence-first company research flow:
+The first V1.7 Owner Acceptance failed on synthesis quality: the running demo had inherited deterministic mode and presented verified filing excerpts too much like a finished analyst report. V1.7.1 corrects that failure without weakening the evidence boundary.
 
-`Company / Ticker → Official Filing → Full-text Evidence → Skill Routing → Research Plan → Claims / Deep Analysis → Verification → Trace`
+The active flow is now:
 
-The deterministic six-fact layer remains the numerical backbone. General Research adds full-filing Evidence retrieval, question-specific Skills, counter-evidence, deeper analysis sections, overall judgment and follow-up questions without allowing model memory to invent financial truth.
+`Company / Ticker → Official Filing → Verified Facts + Full-text Evidence → Question Routing → Research Plan → Research Synthesis → Claim Verification → Evidence-on-demand Report → Trace`
 
-## V1.7 acceptance evidence
+General Research explicitly records `synthesis_mode=model` or `synthesis_mode=evidence_summary_fallback`. A fallback is labeled as a Verified Evidence Summary and is never presented as AI research synthesis.
 
-- Quick live regression: 贵州茅台 / NVIDIA / 腾讯 all succeeded from CNINFO / SEC / HKEX official sources.
-- Extended nine-company regression: **6 trusted successes + 3 explicit safe abstentions; overall PASS**.
-- NVIDIA retrieval hardening increased the real growth-analysis result from 2 Findings to **6 Findings / 4 Deep Analysis sections / 5 Follow-ups**.
-- V1.7 n8n workflow is separate from preserved historical V1.6/V1.5 artifacts and returns Intent, Plan, Deep Analysis, Judgment, Follow-ups and Evidence Coverage from the same backend.
-- Package versions, API health, Web and n8n active entry points are aligned to **1.7.0**.
+## V1.7.1 owner-feedback correction
+
+- Comprehensive questions now route to `company_overview` before narrower keyword matches.
+- Model-backed Findings carry analytical title, Claim type, epistemic status, confidence, direction, Evidence IDs and only relevant Fact IDs.
+- Company Overview requires evidence-backed breadth: at least 5 Findings and 5 analytical sections when the model path succeeds.
+- Raw source-section headings, table/check-box noise and long filing excerpts are rejected from the primary model report.
+- The one structure repair now receives safe validation feedback instead of blindly repeating the same request.
+- Web is analysis-first/evidence-on-demand and visibly distinguishes `MODEL SYNTHESIS` from `EVIDENCE SUMMARY FALLBACK`.
+- Packaged demo startup actively sets `RESEARCHFORGE_REASONING_MODE=auto`; deterministic remains explicit for CI/reproducible smoke only.
+
+## Real-model verification
+
+Official-source model synthesis succeeded across all three supported markets:
+
+- 贵州茅台 comprehensive analysis → `company_overview`, **8 Claims / 5 analytical sections**.
+- NVIDIA growth analysis → `growth_analysis`, **6 Claims / 5 analytical sections**.
+- 腾讯 business-structure analysis → `business_analysis`, **6 Claims / 5 analytical sections**.
+
+All three runs reported `synthesis_mode=model`; none reproduced the old “官方披露在该部分记录” template or `√适用 / □不适用` PDF noise in the primary report.
 
 ## Full engineering gate — PASS
 
-Verified on the final working tree:
+Verified on the V1.7.1 working tree:
 
 - `uv lock --check`, Ruff format/check and strict mypy: PASS; mypy checked **105 source files**.
-- `pytest -q`: **208 passed**.
-- Contract validation: PASS; V1.7 schemas active while preserved V1.4/V1.5 historical contracts still validate.
-- Frontend: typecheck/lint/build + **4 unit tests + 3 mocked E2E + 3 live-backend E2E**: PASS.
-- n8n source: generated V1.7 workflow check + **11 Node tests**: PASS.
-- Fresh Docker API/frontend build, PostgreSQL/API/Web health and 3 reviewed-cache Docker runs: PASS.
-- Actual n8n 2.37.9 V1.7 runtime: 3 reviewed-cache `financial_snapshot` transport cases, five identical backend artifact families, native form availability/failure rendering, idempotent replay and 5 HTTP failure checks: PASS.
+- `pytest -q`: **210 passed**.
+- Contract validation: PASS; V1.7 result schemas remain compatible while historical V1.4/V1.5 contracts are preserved.
+- Frontend: typecheck/lint/unit/build + **5 unit tests + 3 mocked E2E + 3 live-backend E2E**: PASS.
+- n8n source: generated workflow check + **11 Node tests**: PASS.
+- Fresh Docker API/frontend build + PostgreSQL/API/Web health + **3 Docker smoke cases**: PASS.
+- Actual n8n 2.37.9 V1.7.1 runtime: **3 success cases**, same five backend artifact families, idempotent replay, native form checks and five HTTP failure checks: PASS.
 - Actual n8n transport-only fixture: **5/5 bounded failure scenarios PASS** and no research truth supplied.
-- `git diff --check`: PASS before final documentation closeout.
 
 ## Release boundary
 
-Engineering construction is complete. `RELEASE_FREEZE` remains **in progress only because owner manual acceptance is a human action** and is not fabricated by automation. There is no six-person Human Pilot requirement.
+`RELEASE_FREEZE` remains **in progress only for owner re-acceptance**. Automation cannot convert green engineering tests into human product acceptance. There is no six-person Human Pilot requirement.
 
-Owner acceptance should confirm:
+Owner re-acceptance should confirm:
 
-1. A representative arbitrary-company Web request feels useful and sufficiently deep.
-2. Supporting Evidence and Trace are understandable.
-3. At least one unsupported case is clearly presented as a bounded failure, not a plausible report.
-4. Any remaining UI/prompt limitations are either fixed or explicitly accepted as non-blocking.
+1. A representative arbitrary-company request returns a useful `MODEL SYNTHESIS` report rather than a filing summary.
+2. Findings/Deep Analysis answer “what happened / why it matters / what could contradict it”.
+3. Fact and Evidence links are relevant and understandable when expanded.
+4. A fallback is clearly labeled as evidence summary, and an unsupported case stops without a plausible fake report.
+5. Remaining UX/prompt limitations are fixed or explicitly accepted as non-blocking.
 
 ## Known bounded limitations
 
-- CN/US/HK are supported source adapters; universal listed-company/layout coverage is not claimed.
+- CN/US/HK official-source adapters are supported; universal listed-company/layout coverage is not claimed.
 - Six deterministic financial facts remain required for the current numerical backbone.
-- Latest BYD, Xiaomi and Alibaba examples currently expose parser/layout boundaries and safely abstain.
-- V1.7 does not include real-time news, broker research, price targets, trading, portfolio management or unrestricted multi-agent debate.
-- Human usefulness, analyst productivity improvement and investment performance are not validated claims.
+- Latest BYD, Xiaomi and Alibaba examples expose parser/layout boundaries and safely abstain in the extended regression.
+- V1.7.1 does not include real-time news, broker research, price targets, trading, portfolio management or unrestricted multi-agent debate.
+- Human usefulness, analyst productivity improvement and investment performance remain unvalidated claims.
 
 ## Resume here
 
-Read first: [README.md](README.md), [DECISIONS.md](DECISIONS.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), [V1.7 change note](docs/product/v1.6-to-v1.7-general-research-change-note.md), and [PORTFOLIO.md](PORTFOLIO.md).
+Read first: [README.md](README.md), [DECISIONS.md](DECISIONS.md), the [V1.7.1 change note](docs/product/v1.7-to-v1.7.1-synthesis-change-note.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), and [PORTFOLIO.md](PORTFOLIO.md).
 
 Primary checks:
 
 ```bash
+uv run python scripts/start_demo.py --no-build
 RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/autonomous_regression.py --all
-RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/start_demo.py --no-build
 uv run python scripts/validate_contracts.py
 git diff --check
 git status --short

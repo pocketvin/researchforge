@@ -52,7 +52,7 @@ problem: every important result must be traceable and every missing input must r
 | Product API | autonomous submission plus lifecycle, facts, evidence, calculations, trace and cancel | implemented |
 | Product UI | company-first Web Research + secondary read-only Quality Lab | unit, mocked E2E and live-backend E2E pass |
 | Cross-market regression | quick + extended Golden Company suites | PASS; unsupported layouts abstain |
-| n8n integration | separate V1.7 form/webhook over the same autonomous backend | implemented and contract-tested |
+| n8n integration | V1.7.1 form/webhook over the same autonomous backend, with explicit synthesis/fallback mode | implemented and contract-tested |
 | Quality research | two frozen formal experiments and stopping rule | complete negative historical result |
 
 ## Claims Allowed Today
@@ -82,7 +82,7 @@ problem: every important result must be traceable and every missing input must r
 - “The historical Evolution hypothesis is supported.”
 - “The system provides investment recommendations or predicts returns.”
 
-The V1.7 release criterion is engineering reliability plus owner acceptance, not a six-person
+The V1.7.1 release criterion is engineering reliability plus owner re-acceptance, not a six-person
 Human Pilot. Therefore no human-usability or market-demand claim is made. Coverage claims must be
 phrased around the implemented CN/US/HK official-source adapters, the deterministic six-fact
 numerical backbone plus full-filing Evidence retrieval, and explicit abstention on unsupported layouts.
@@ -143,5 +143,5 @@ the same backend artifacts. Quality Lab is optional historical depth, not the pr
 - source identity, license/redistribution boundary and provenance;
 - deterministic calculation and abstention examples;
 - full verification and CI evidence;
-- historical human/simulated evidence clearly separated from current V1.7 release evidence;
+- historical human/simulated evidence clearly separated from current V1.7.1 release evidence;
 - Quality Lab explicitly secondary and read-only.

@@ -41,6 +41,14 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-025 | Use the model only for bounded research language | ACCEPTED | 2026-09-02 | — |
 | RF-026 | Freeze final delivery order and defer human evaluation | ACCEPTED | 2026-09-03 | Final release |
 | RF-027 | Make verified PDF recovery the only numerical truth source | ACCEPTED | 2026-09-03 | Phase 3 |
+| RF-028 | Perform one final project-wide independent acceptance | ACCEPTED | 2026-09-03 | Final release |
+| RF-029 | Generalize by financial semantics, not company-specific answers | ACCEPTED | 2026-09-03 | — |
+| RF-030 | Keep n8n as a bounded same-backend transport surface | ACCEPTED | 2026-09-04 | — |
+| RF-031 | Freeze a human-readable n8n surface and evaluation denominator | ACCEPTED | 2026-09-04 | Historical |
+| RF-032 | Make autonomous official-source research the V1.6 mainline | ACCEPTED | 2026-09-05 | — |
+| RF-033 | Upgrade to V1.7 General Company Research | ACCEPTED | 2026-09-05 | — |
+| RF-034 | Separate engineering completion from owner acceptance | ACCEPTED | 2026-09-05 | Release freeze |
+| RF-035 | Separate Research Synthesis from Evidence Summary in V1.7.1 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
 
 ## RF-001 — Contract-First Implementation
 
@@ -758,3 +766,27 @@ V1.7 工程完成必须同时满足：三市场 Golden Regression、全仓静态
 ### 结果
 
 最终工程门禁为 208 pytest tests、105-source strict mypy、4 frontend unit tests、3 mocked E2E、3 live-backend E2E、11 n8n Node tests、3 actual n8n success cases 和 5/5 transport-only failure routes。Extended Golden Regression 为 6 trusted successes + 3 safe abstentions。
+
+## RF-035 — V1.7.1 把 Research Synthesis 与 Evidence Summary 明确分层
+
+**日期：** 2026-09-05
+**状态：** Accepted
+
+### 背景
+
+V1.7 的 Retrieval breadth 已通过 owner 实测，但首次 Owner Acceptance 仍未通过。问题不再是“答案太少”，而是 deterministic General Research fallback 把检索到的财报片段直接包装成 Findings / Deep Analysis，导致页面看起来内容很多，实际只是可审计摘录而不是研究综合；同时完整分析被较窄的“业务结构”关键词抢路由。
+
+### 决策
+
+V1.7.1 将 General Research 的产品结果严格分成 `model` 与 `evidence_summary_fallback` 两种 `synthesis_mode`。只有模型在检索证据、已验证财务事实和确定性计算的边界内完成综合后，才显示为正式 Research Synthesis。模型不可用或显式 deterministic 时，只生成 Verified Evidence Summary，并在 Web/n8n 明确标注“未执行 AI 综合分析”，不得把原始 Evidence 摘录冒充完整研究结论。
+
+完整分析请求优先路由 `company_overview`，不能因为问题中同时出现“业务结构/风险/增长”等词而降级成单一 Skill。模型综合的 Executive Summary 必须直接回答用户问题；Finding 必须是分析性标题 + 解释，不得复述长篇财报原文、表格行或 `√适用/□不适用` 等 PDF 噪声。Company Overview 在证据允许时至少形成 5 个 Findings 和 5 个分析维度。
+Fact 标签必须在系统装配阶段再次做相关性过滤：Claim 正文未直接讨论某指标时，不显示该 Fact。主报告采用 Analysis-first / Evidence-on-demand；原始证据仍完整保留在审计层并可展开查看。
+
+正式 Demo/Owner Test 默认显式使用 `auto`，启动脚本不得继承之前 CI 留下的 deterministic 环境值。CI、reviewed-cache smoke 和零成本测试仍可显式使用 deterministic，保证可重复性而不改变正式产品运行模式。
+
+### 验证边界
+
+V1.7.1 的真实模型 smoke 必须至少覆盖 CN/US/HK 三市场并确认 `synthesis_mode=model`。2026-09-05 已验证：贵州茅台完整分析正确路由 `company_overview`，输出 8 Claims / 5 分析维度；NVIDIA 增长来源输出 6 Claims / 5 分析维度；腾讯业务结构输出 6 Claims / 5 分析维度。三者主报告均未出现旧版财报摘录模板噪声。
+
+Owner Acceptance 仍是人工动作。V1.7 的首次 Owner Acceptance 记录为失败；V1.7.1 完成工程门禁后只进入 owner re-acceptance，不由自动化代签 Release Freeze。

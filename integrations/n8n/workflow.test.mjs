@@ -177,7 +177,7 @@ test('mapped fields equal backend artifacts without numerical or prose generatio
 });
 test('form response escapes backend text and transport response remains unchanged', () => {
   const success = {
-    status: 'succeeded', conclusion: '<script>alert(1)</script>', findings: [],
+    status: 'succeeded', synthesis_mode: 'model', conclusion: '<script>alert(1)</script>', findings: [],
     research_intent: { skill: 'growth_analysis', label: '<b>增长来源</b>' },
     research_plan: [{ description: '<img src=x>', status: 'completed' }],
     analysis_sections: [{ title: '<analysis>', text: '<script>deep</script>' }],
@@ -196,6 +196,10 @@ test('form response escapes backend text and transport response remains unchange
   assert(rendered.formPage.includes('Deep Analysis / 深入分析'));
   assert(rendered.formPage.includes('Suggested Follow-ups / 继续追问'));
   assert(!rendered.formPage.includes('<script>deep</script>'));
+  const fallbackRendered = execute('Render surface response',
+    { ...success, synthesis_mode: 'evidence_summary_fallback' }, { 'Prepare request': config });
+  assert(fallbackRendered.formPage.includes('EVIDENCE SUMMARY FALLBACK'));
+  assert(fallbackRendered.formPage.includes('未执行 AI 综合分析'));
   const failure = execute('Render surface response', { status: 'error', code: 'RUN_FAILED', message: '<failure>', links: null }, { 'Prepare request': config });
   assert(failure.formPage.includes('研究未生成'));
   assert(!failure.formPage.includes('<failure>'));

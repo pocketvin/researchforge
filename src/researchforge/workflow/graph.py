@@ -599,10 +599,14 @@ class ResearchWorkflow:
                             output_ids=[f"conclusion_{state['run_id']}"],
                         ),
                     }
-                except StructuredOutputError:
+                except StructuredOutputError as exc:
                     if attempt == 1:
                         return self._invalid_conclusion(state, repairs)
                     repairs += 1
+                    context["repair_feedback"] = (
+                        "Previous structured draft was rejected. Return a complete replacement "
+                        f"that fixes this requirement: {exc}"
+                    )
             raise AssertionError("unreachable general-research repair state")
 
         conclusions: list[ConclusionDraft] = []

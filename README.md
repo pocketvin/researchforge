@@ -40,7 +40,7 @@ ResearchForge is not primarily a filing summarizer. Its core promise is that suc
 - The same authoritative backend serves Web and n8n.
 - Historical evaluation/Quality Lab evidence remains preserved but is not the normal user journey.
 
-## V1.7 market boundary
+## V1.7.1 market boundary
 
 | Market | Company resolution | Official source | Numerical truth path |
 |---|---|---|---|
@@ -48,16 +48,17 @@ ResearchForge is not primarily a filing summarizer. Its core promise is that suc
 | US | ticker / issuer name | SEC EDGAR | SEC Company Facts/XBRL tied to filing accession |
 | HK | ticker / English / traditional / simplified Chinese name | HKEXnews | verified native-text IFRS annual-report PDF |
 
-V1.7 keeps six comparable financial facts—revenue, operating cost, net income, operating cash flow, accounts receivable and inventory—as the deterministic numerical backbone, while General Research also retrieves full-filing narrative Evidence. Unsupported document layouts fail closed.
+V1.7.1 keeps six comparable financial facts—revenue, operating cost, net income, operating cash flow, accounts receivable and inventory—as the deterministic numerical backbone, while General Research retrieves full-filing narrative Evidence and distinguishes model synthesis from an explicit evidence-summary fallback. Unsupported document layouts fail closed.
 
 ## Current status
 
-- Active direction: **V1.7 General Company Research**.
-- Golden Regression: **PASS** — quick CN/US/HK success; extended nine-company set produced **6 trusted successes + 3 explicit safe abstentions**.
-- Local engineering gate: **PASS** — 208 backend tests, strict mypy over 105 source files, V1.7 contracts, frontend unit/build, mocked/live E2E, fresh Docker build and actual n8n 2.37.9 runtime are green.
-- Real NVIDIA growth research now yields 6 Findings, 4 Deep Analysis sections and 5 Follow-ups after SEC retrieval hardening.
-- Web and n8n V1.7 use the same company-first backend; historical V1.4/V1.5/V1.6 evidence remains preserved.
-- Current gate: **RELEASE_FREEZE — engineering complete, owner manual acceptance pending**.
+- Active direction: **V1.7.1 Research Synthesis & Report UX** over the V1.7 General Company Research scope.
+- V1.7 first Owner Acceptance: **FAILED** — retrieval breadth passed, but deterministic evidence excerpts were incorrectly presented as research synthesis. RF-035 records the correction.
+- V1.7 Golden Regression remains **PASS** — quick CN/US/HK success; extended nine-company set produced **6 trusted successes + 3 explicit safe abstentions**.
+- V1.7.1 real model smoke: 贵州茅台 `company_overview` 8 Claims / 5 sections; NVIDIA `growth_analysis` 6 / 5; 腾讯 `business_analysis` 6 / 5.
+- Web and n8n expose `synthesis_mode`; model-backed research and evidence-summary fallback are visibly different. Historical V1.4/V1.5/V1.6 evidence remains preserved.
+- V1.7.1 engineering gate: **PASS** — 210 pytest tests, strict mypy over 105 source files, 5 frontend unit tests, 3 mocked + 3 live E2E, fresh Docker smoke, 11 n8n Node tests, 3 actual n8n success cases and 5/5 failure-fixture routes.
+- Current gate: **RELEASE_FREEZE in progress — engineering complete, owner re-acceptance pending**.
 - Six-person Human Pilot: **removed from the active release criteria by RF-032**.
 - Investment advice, order execution and price prediction: not provided.
 
@@ -90,7 +91,7 @@ npm ci --prefix frontend
 Start API and Web separately:
 
 ```bash
-RESEARCHFORGE_REASONING_MODE=deterministic \
+RESEARCHFORGE_REASONING_MODE=auto \
 uv run uvicorn researchforge.api.app:create_app --factory --reload
 
 npm run dev --prefix frontend
@@ -103,7 +104,7 @@ uv run python scripts/start_demo.py
 ```
 
 Web: `http://127.0.0.1:4173/`
-n8n V1.7 form: `http://127.0.0.1:5678/form/researchforge-v17-form`
+n8n V1.7.1 form: `http://127.0.0.1:5678/form/researchforge-v17-form`
 
 ## Autonomous API
 
@@ -156,7 +157,7 @@ A successful case must contain exactly the six required facts, valid Claim→Fac
 
 Product data comes from public official disclosures. Raw downloaded filing bytes remain ignored by Git. Derived artifacts retain provenance and hashes. `fixture` and `benchmark` namespaces never silently substitute for missing product data.
 
-When an explicit company+period matches a reviewed V1.5 product package, compatibility `financial_snapshot` runs may reuse that immutable cache. V1.7 General Research uses separate versioned full-text Evidence packages so stale six-fact-only packages cannot satisfy a deep-research run.
+When an explicit company+period matches a reviewed V1.5 product package, compatibility `financial_snapshot` runs may reuse that immutable cache. V1.7/V1.7.1 General Research uses separate versioned full-text Evidence packages so stale six-fact-only packages cannot satisfy a deep-research run. General Research Result schema remains `1.7.0`; product/API package version is `1.7.1`.
 
 ## Historical evidence
 
@@ -168,16 +169,17 @@ The V1.4 formal evolution hypothesis ended honestly at:
 RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS
 ```
 
-The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032, RF-033 and the active roadmap define the V1.7 direction.
+The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-generalization/README.md](docs/evidence/v1.5-generalization/README.md). The previous V1.5 product thesis is historical context; RF-032 through RF-035 and the active roadmap define the current V1.7.1 direction.
 
 ## Start here
 
 1. [PROJECT_STATUS.md](PROJECT_STATUS.md) — current milestone and release gate.
-2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.7 completion and acceptance sequence.
-3. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032/RF-033.
-4. [n8n integration](integrations/n8n/README.md) — V1.7 external workflow entry.
-5. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
+2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.7.1 completion and owner re-acceptance sequence.
+3. [V1.7 → V1.7.1 synthesis change note](docs/product/v1.7-to-v1.7.1-synthesis-change-note.md) — why the first V1.7 Owner Acceptance failed and how synthesis/fallback are separated.
+4. [DECISIONS.md](DECISIONS.md) — product and architecture decisions, including RF-032 through RF-035.
+5. [n8n integration](integrations/n8n/README.md) — V1.7.1 external workflow entry.
+6. [PORTFOLIO.md](PORTFOLIO.md) — project positioning and historical evidence.
 
 ## Non-goals
 
-V1.6 does not provide trading, order execution, price targets, portfolio optimization, real-time market-data infrastructure, Bloomberg-scale proprietary coverage, unrestricted global-market support, open-ended self-modification or investment recommendations.
+V1.7.1 does not provide trading, order execution, price targets, portfolio optimization, real-time market-data infrastructure, Bloomberg-scale proprietary coverage, unrestricted global-market support, open-ended self-modification or investment recommendations.

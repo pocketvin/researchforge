@@ -174,7 +174,13 @@ class OpenAIResponsesConclusionGenerator:
         try:
             draft = output_model.model_validate_json(cast(str, response.output_text))
         except ValidationError as exc:
-            raise StructuredOutputError("OpenAI research output failed validation") from exc
+            summary = "; ".join(
+                f"{'.'.join(str(item) for item in error['loc'])}:{error['type']}"
+                for error in exc.errors()[:6]
+            )
+            raise StructuredOutputError(
+                f"OpenAI research output failed validation: {summary}"
+            ) from exc
         if isinstance(draft, ConclusionDraft) and draft.reported_check_codes is None:
             raise StructuredOutputError("OpenAI conclusion omitted procedural coverage attestation")
         return draft

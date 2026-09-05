@@ -17,8 +17,14 @@ for (const [company, period] of [
     )
     await page.getByRole('button', { name: 'Research Company / 开始自主研究' }).click()
     const response = await responsePromise
-    const result = await response.json() as { executive_summary: string; limitations: string[] }
+    const result = await response.json() as {
+      executive_summary: string
+      limitations: string[]
+      synthesis_mode: 'model' | 'evidence_summary_fallback'
+    }
+    expect(result.synthesis_mode).toBe('evidence_summary_fallback')
     await expect(page.getByText(result.executive_summary, { exact: true })).toBeVisible()
+    await expect(page.getByText('EVIDENCE SUMMARY FALLBACK · 未执行 AI 综合分析')).toBeVisible()
     for (const section of ['Financial Facts', 'Calculations', 'Supporting Evidence', 'Research Trace']) {
       await page.locator('details').filter({ hasText: section }).locator('summary').press('Enter')
     }

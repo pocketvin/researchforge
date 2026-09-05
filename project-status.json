@@ -18,9 +18,9 @@
   "current_gate": "RELEASE_FREEZE",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "v17_engineering_complete",
-    "title": "V1.7 engineering complete; ready for owner acceptance",
-    "outcome": "Question-driven General Research, V1.7 Web/n8n surfaces, retrieval hardening, nine-company Golden Regression and the complete local backend/frontend/container/runtime gate passed. RELEASE_FREEZE remains in progress only for owner manual acceptance.",
+    "id": "v171_engineering_complete",
+    "title": "V1.7.1 engineering complete; ready for owner re-acceptance",
+    "outcome": "Owner-feedback synthesis correction is implemented and verified: model/fallback modes are explicit, comprehensive routing is fixed, three-market real-model smoke passed, and the full static/browser/container/n8n gate is green. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -31,45 +31,61 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-05T05:58:00+08:00",
+    "at": "2026-09-05T17:26:00+08:00",
     "commands": [
+      {
+        "command": "uv lock --check; ruff format --check; ruff check; mypy --strict; pytest -q; validate_contracts.py; n8n workflow tests",
+        "exit_code": 0,
+        "summary": "V1.7.1 full non-container gate passed: 210 pytest tests, strict mypy over 105 source files, contract validation and 11 n8n Node tests."
+      },
       {
         "command": "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/autonomous_regression.py --all",
         "exit_code": 0,
-        "summary": "Extended nine-company V1.7 regression passed with six trusted successes and three explicit safe abstentions; quick set has trusted CN/US/HK success."
-      },
-      {
-        "command": "uv lock --check; ruff format/check; mypy; pytest -q; validate_contracts.py; n8n workflow tests",
-        "exit_code": 0,
-        "summary": "Full non-container gate passed: 208 pytest tests, strict mypy over 105 source files, preserved historical contracts and 11 n8n Node tests."
+        "summary": "Extended nine-company V1.7 regression remained PASS after the V1.7.1 synthesis correction: six trusted successes across CN/US/HK plus three explicit safe abstentions."
       },
       {
         "command": "frontend typecheck/lint/test/build; Playwright mocked + live-backend",
         "exit_code": 0,
-        "summary": "Frontend V1.7 passed typecheck/lint/build, 4 unit tests, 3 mocked E2E and 3 live-backend E2E."
+        "summary": "Frontend V1.7.1 passed typecheck/lint/build, 5 unit tests, 3 mocked E2E and 3 live-backend E2E."
       },
       {
-        "command": "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/start_demo.py",
+        "command": "RESEARCHFORGE_REASONING_MODE=deterministic docker compose up -d --build --wait; uv run python -m scripts.docker_smoke",
         "exit_code": 0,
-        "summary": "Fresh V1.7 Docker API/frontend images built; PostgreSQL/API/Web healthy; actual n8n 2.37.9 V1.7 workflow passed three reviewed-cache financial_snapshot transport cases, native form availability/failure rendering, replay and five HTTP failure checks."
+        "summary": "Fresh V1.7.1 Docker API/frontend images built; PostgreSQL/API/Web healthy; three reviewed-cache Docker smoke cases passed."
+      },
+      {
+        "command": "uv run python -m scripts.n8n_smoke",
+        "exit_code": 0,
+        "summary": "Actual n8n 2.37.9 V1.7.1 workflow passed three same-backend success cases, idempotent replay, native form checks and five HTTP failure checks."
       },
       {
         "command": "uv run python -m scripts.n8n_smoke --failure-fixture --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test",
         "exit_code": 0,
-        "summary": "Five actual transport-only V1.7 n8n failure scenarios passed bounded routing without supplying financial truth."
+        "summary": "Five actual transport-only V1.7.1 n8n failure scenarios passed bounded routing without supplying research truth."
+      },
+      {
+        "command": "real model smoke: 贵州茅台 / NVIDIA / 腾讯",
+        "exit_code": 0,
+        "summary": "Model synthesis succeeded across CN/US/HK: Moutai company_overview 8/5, NVIDIA growth_analysis 6/5, Tencent business_analysis 6/5; no old evidence-dump noise."
+      },
+      {
+        "command": "uv run python scripts/start_demo.py --no-build --skip-smoke",
+        "exit_code": 0,
+        "summary": "Owner-test stack restored after deterministic packaging smoke: API reports 1.7.1, RESEARCHFORGE_REASONING_MODE=auto, Web returns 200, and the native n8n V1.7.1 form returns 200."
       }
     ]
   },
   "next_action": {
-    "title": "Perform owner acceptance and freeze V1.7",
-    "why": "All automated and runtime engineering acceptance is green. The only remaining release action is the owner judging the product experience; automation cannot truthfully perform that human acceptance.",
-    "first_step": "Use http://127.0.0.1:4173/ for representative arbitrary-company General Research, inspect Evidence and Trace, then confirm one bounded abstention is understandable.",
+    "title": "Perform owner re-acceptance and freeze V1.7.1",
+    "why": "V1.7 first owner acceptance failed on synthesis quality. The corrective V1.7.1 engineering gate is now green; only the owner can judge whether the revised research experience is acceptable.",
+    "first_step": "Use http://127.0.0.1:4173/ in model synthesis mode for representative arbitrary-company research, inspect one fallback/abstention plus Evidence and Trace, then accept or provide the next product correction.",
     "acceptance_evidence": [
-      "Owner can submit a representative arbitrary-company General Research request from the Web entry.",
-      "A successful result is sufficiently deep and exposes inspectable Evidence and Trace.",
+      "A representative comprehensive company request returns synthesis_mode=model and a useful direct conclusion.",
+      "Findings and Deep Analysis synthesize evidence rather than reproducing filing excerpts.",
+      "Fallback is visibly labeled as Verified Evidence Summary and never presented as AI synthesis.",
+      "Claim Fact/Evidence links remain understandable and relevant.",
       "An unsupported request clearly stops without presenting a plausible research report.",
-      "Remaining UI/prompt limitations are fixed or explicitly accepted as non-blocking.",
-      "Only after owner acceptance is RELEASE_FREEZE marked completed."
+      "Only after owner re-acceptance is RELEASE_FREEZE marked completed."
     ]
   },
   "blockers": [],
@@ -85,7 +101,7 @@
       "PORTFOLIO.md"
     ],
     "commands": [
-      "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/start_demo.py --no-build",
+      "uv run python scripts/start_demo.py --no-build",
       "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/autonomous_regression.py --all",
       "uv run python scripts/validate_contracts.py",
       "git diff --check",
@@ -93,8 +109,8 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-05T05:58:00+08:00",
-    "summary": "Completed V1.7 engineering: hardened SEC evidence retrieval, promoted Web/n8n to General Research 1.7.0, passed nine-company live regression and every local/static/browser/container/n8n runtime gate. Owner manual acceptance remains the only Release Freeze action.",
+    "ended_at": "2026-09-05T17:26:00+08:00",
+    "summary": "Completed the V1.7.1 synthesis-first owner-feedback correction, verified real model synthesis in CN/US/HK, and passed the full static, browser, fresh Docker and actual n8n runtime gates. Owner re-acceptance is the only Release Freeze action.",
     "files_changed": [
       "CHANGELOG.md",
       "DECISIONS.md",
@@ -102,28 +118,17 @@
       "PROJECT_STATUS.md",
       "README.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
-      "docs/product/v1.6-to-v1.7-general-research-change-note.md",
+      "docs/product/v1.7-to-v1.7.1-synthesis-change-note.md",
+      "frontend/e2e-live/research.spec.ts",
       "frontend/e2e/research.spec.ts",
-      "frontend/package-lock.json",
-      "frontend/package.json",
-      "frontend/src/App.test.tsx",
-      "integrations/n8n/build-runtime-fixture.mjs",
-      "integrations/n8n/runtime-fixture.py",
+      "integrations/n8n/README.md",
+      "integrations/n8n/workflow.test.mjs",
       "project-status.json",
-      "pyproject.toml",
-      "schemas/v1.5/project-checkpoint.schema.json",
-      "scripts/docker_smoke.py",
-      "scripts/n8n_smoke.py",
-      "scripts/validate_contracts.py",
-      "src/researchforge/adapters/fixtures.py",
-      "src/researchforge/application/calibration.py",
-      "tests/api/test_api.py",
-      "tests/application/test_modes.py",
-      "tests/test_contract_package.py",
-      "tests/test_docker_smoke.py",
-      "tests/workflow/test_graph.py",
-      "uv.lock"
+      "src/researchforge/adapters/openai_responses.py",
+      "src/researchforge/api/app.py",
+      "src/researchforge/workflow/graph.py",
+      "tests/workflow/test_general_research_graph.py"
     ]
   },
-  "updated_at": "2026-09-05T13:28:00+08:00"
+  "updated_at": "2026-09-05T17:26:00+08:00"
 }

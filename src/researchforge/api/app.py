@@ -64,6 +64,8 @@ V1.7.1 product response contract:
   statement that citations exist.
 - Suggested follow-up questions should deepen the same company research and must not give
   investment advice.
+- If repair_feedback is present, return a complete replacement object that fixes that exact
+  structural/quality requirement; do not merely restate the previous draft.
 """.strip()
 
 

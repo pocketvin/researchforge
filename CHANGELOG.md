@@ -1,5 +1,34 @@
 # Changelog
 
+## [Unreleased] — V1.7.1 Research Synthesis & Report UX
+
+### Synthesis quality
+
+- Corrected comprehensive-question routing so “完整分析” wins over narrower business/growth/risk keywords.
+- Added explicit `model` vs `evidence_summary_fallback` synthesis modes; deterministic fallback now states that AI synthesis was not executed instead of promoting filing excerpts into a faux analyst report.
+- Upgraded model Structured Output with per-Finding claim type/epistemic status and substantive Overall Judgment rationale, plus one repair retry that receives safe structural feedback.
+- Added synthesis quality gates: comprehensive research requires multiple analytical Findings/sections, raw source-section headings and filing boilerplate are rejected, and Claim Fact IDs are filtered by actual metric relevance.
+
+### Product UX and runtime
+
+- Reworked the Web report around analytical headlines and evidence-on-demand, with explicit synthesis badges and a prominent fallback warning.
+- Made `start_demo.py` actively default to `auto` so a prior CI deterministic environment cannot silently contaminate Owner Testing.
+- Verified real model synthesis on 贵州茅台, NVIDIA and 腾讯 across CN/US/HK official-source packages.
+
+## [Unreleased] — V1.7.1 Research Synthesis Correction
+
+### Owner-feedback correction
+
+- Recorded the first V1.7 Owner Acceptance as failed on synthesis quality rather than incorrectly freezing the release.
+- Added explicit `synthesis_mode` so model Research Synthesis and deterministic Evidence Summary fallback cannot be confused.
+- Fixed comprehensive-query routing precedence, synthesis-first prompts, analytical Claim semantics, unrelated Fact-chip filtering and evidence-on-demand report UX.
+- Replaced blind structure retry with one bounded repair that receives only safe validation feedback.
+
+### Verification
+
+- Real model smoke passed for 贵州茅台 (`company_overview`, 8 Claims / 5 sections), NVIDIA (`growth_analysis`, 6 / 5) and 腾讯 (`business_analysis`, 6 / 5).
+- Final V1.7.1 engineering gate passed: 210 pytest tests, strict mypy over 105 source files, 5 frontend unit tests, 3 mocked + 3 live E2E, fresh Docker smoke, 11 n8n Node tests, 3 actual n8n success cases and 5/5 transport-only failures.
+
 ## [Unreleased] — V1.7 General Company Research
 
 ### Research intelligence

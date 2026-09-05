@@ -5,7 +5,12 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from researchforge.application.research import LoadedResearchData
+from researchforge.application.research import (
+    DeterministicConclusionGenerator,
+    LoadedResearchData,
+    ResearchLanguageDraft,
+    StructuredOutputError,
+)
 from tests.runtime_helpers import assert_v17_schema, build_service
 
 
@@ -101,3 +106,68 @@ def test_company_research_graph_builds_question_aware_v17_result(tmp_path: Path)
     counter = set(outcome.result["claims"][0]["counter_evidence_search"]["evidence_ids"])
     assert cited <= selected | counter
     assert len(outcome.trace["stages"]) == 10
+
+
+class _RepairAwareGenerator:
+    def __init__(self) -> None:
+        self.contexts: list[dict[str, object]] = []
+        self.fallback = DeterministicConclusionGenerator()
+
+    def generate(self, context: dict[str, object]) -> ResearchLanguageDraft:
+        self.contexts.append(dict(context))
+        if len(self.contexts) == 1:
+            raise StructuredOutputError("General analysis used a source-section heading")
+        return self.fallback.generate(context)
+
+
+def test_general_research_repair_receives_safe_feedback(tmp_path: Path) -> None:
+    service = build_service(tmp_path)
+    loaded = service.fixture_catalog.load(
+        ["cn_300750"], ["2024H1"], datetime.fromisoformat("2024-08-01T00:00:00+08:00")
+    )
+    seed = dict(loaded.evidence_chunks[0])
+    enriched = LoadedResearchData(
+        facts=loaded.facts,
+        source_documents=loaded.source_documents,
+        requested_periods=loaded.requested_periods,
+        companies=loaded.companies,
+        evidence_chunks=(
+            *loaded.evidence_chunks,
+            _narrative(
+                seed,
+                "chunk_repair_growth",
+                "Growth drivers",
+                "动力电池销量增长与海外需求共同推动收入变化。",
+                18,
+            ),
+            _narrative(
+                seed,
+                "chunk_repair_risk",
+                "Risk factors",
+                "市场竞争与原材料价格仍是重要不确定性。",
+                31,
+            ),
+        ),
+    )
+    service.workflow.load_data = lambda *_args: enriched
+    generator = _RepairAwareGenerator()
+    service.workflow.conclusion_generator = generator
+    request = {
+        "input_kind": "research",
+        "task_type": "company_research",
+        "research_question": "这家公司最近增长主要来自哪里？",
+        "company_ids": ["cn_300750"],
+        "requested_period_labels": ["2024H1"],
+        "research_time": "2024-08-01T00:00:00+08:00",
+    }
+
+    outcome = service.workflow.run("run_general_repair", "trace_general_repair", request)
+
+    assert outcome.terminal_state == "succeeded"
+    assert len(generator.contexts) == 2
+    assert "repair_feedback" not in generator.contexts[0]
+    assert generator.contexts[1]["repair_feedback"] == (
+        "Previous structured draft was rejected. Return a complete replacement "
+        "that fixes this requirement: General analysis used a source-section heading"
+    )
+    assert outcome.trace["repair_attempts"] == 1
