@@ -18,9 +18,9 @@
   "current_gate": "RELEASE_FREEZE",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "v185_remote_closeout",
-    "title": "V1.8.5 local engineering complete; GitHub remote closeout pending",
-    "outcome": "V1.8.5 security, Agent Eval, Failure Analysis, Retrieval Benchmark, MCP and interview/architecture hardening pass the fresh local gate without changing the V1.7 research truth boundary. Remote CI and owner re-acceptance remain.",
+    "id": "v185_owner_reacceptance",
+    "title": "V1.8.5 engineering complete; Owner re-acceptance pending",
+    "outcome": "V1.8.5 local engineering gate and public GitHub CI pass across backend, contracts, eval, security, frontend and containers. main is synchronized; only Owner re-acceptance remains before Release Freeze.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -31,7 +31,7 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-06T03:10:00+08:00",
+    "at": "2026-09-06T08:43:49+08:00",
     "commands": [
       {
         "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
@@ -72,18 +72,23 @@
         "command": "python scripts/mcp_smoke.py --include-discovery --run-id <persisted-owner-run>",
         "exit_code": 0,
         "summary": "Seven-tool MCP live read-only smoke passed company resolution, official filing discovery, facts, evidence, model result and ten-stage Trace."
+      },
+      {
+        "command": "git push origin main; GitHub Actions run 34001887719",
+        "exit_code": 0,
+        "summary": "Remote sync passed at commit e7481c5; backend, contracts, eval, security, frontend and containers jobs all succeeded."
       }
     ]
   },
   "next_action": {
-    "title": "Commit, push and verify V1.8.5 public CI",
-    "why": "All fresh local engineering gates pass; remote GitHub state must match before engineering completion can be declared.",
-    "first_step": "Run final freshness/diff/secret checks, commit V1.8.5, push main and require all public CI jobs to succeed.",
+    "title": "Perform Owner re-acceptance for V1.8.5",
+    "why": "Implementation, local verification, remote synchronization and public CI are complete; Release Freeze now depends only on the owner validating the product experience.",
+    "first_step": "Use the V1.8.5 Web in auto + model_synthesis mode on representative research questions and verify continuous research/history, audit hierarchy, explicit fallback behavior and one bounded failure.",
     "acceptance_evidence": [
-      "main and origin/main resolve to the same V1.8.5 commit.",
-      "GitHub backend, contracts, eval, security, frontend and containers jobs all succeed.",
-      "Owner runtime remains V1.8.5 auto + model_synthesis after local gates.",
-      "Only after remote closeout does the remaining release boundary become owner re-acceptance."
+      "Representative General Research answers are useful, deep enough and model-synthesized.",
+      "History and follow-up research preserve the expected workspace flow.",
+      "Facts, Evidence and Trace are understandable when expanded without overwhelming the primary report.",
+      "Fallback/unsupported cases are explicit bounded failures rather than plausible fake research."
     ]
   },
   "blockers": [],
@@ -108,26 +113,16 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-06T03:10:00+08:00",
-    "summary": "V1.8.5 local engineering gate passed across security/dependency refresh, Product Agent Eval, Failure Analysis, Retrieval Benchmark, MCP, Web/API hardening, Docker and n8n. Remote GitHub closeout remains before owner re-acceptance.",
+    "ended_at": "2026-09-06T08:43:49+08:00",
+    "summary": "V1.8.5 engineering and remote closeout completed. Commit e7481c5 is synchronized to main; GitHub Actions run 34001887719 passed backend, contracts, eval, security, frontend and containers. Owner re-acceptance is the only remaining Release Freeze step.",
     "files_changed": [
-      "pyproject.toml",
-      "uv.lock",
-      "src/researchforge/evaluation",
-      "src/researchforge/mcp_server.py",
-      "scripts/mcp_smoke.py",
-      "schemas/v1.8",
-      "examples/contracts/v1.8",
-      "data/evaluation/v1.8",
-      "docs/evidence/v1.8",
-      "docs/product/v1.8.5-agent-engineering-hardening.md",
-      "docs/architecture/v1.8.5-agent-engineering.md",
-      ".github/workflows/ci.yml",
+      "PROJECT_STATUS.md",
+      "project-status.json",
       "README.md",
-      "PORTFOLIO.md",
-      "DECISIONS.md",
-      "CHANGELOG.md"
+      "AGENTS.md",
+      "docs/product/researchforge-final-delivery-roadmap.md",
+      "docs/product/v1.8.5-agent-engineering-hardening.md"
     ]
   },
-  "updated_at": "2026-09-06T03:10:00+08:00"
+  "updated_at": "2026-09-06T08:43:49+08:00"
 }

@@ -61,7 +61,7 @@ V1.8.5 keeps the V1.7 General Research truth boundary and V1.7.3 lifecycle seman
 - MCP exposes seven bounded tools over the same backend; stdio is default, optional Streamable HTTP binds to localhost.
 - V1.8 contract validation currently covers four new schemas/examples alongside preserved V1.7.3/V1.7/V1.5/V1.4 history.
 - V1.7 Golden Regression remains **PASS** — 6 trusted successes + 3 explicit safe abstentions; V1.7.3 Owner-path model evidence remains preserved.
-- The fresh local V1.8.5 gate passes; release completion still requires remote GitHub CI and Owner re-acceptance. Engineering automation never signs the human acceptance step.
+- The fresh V1.8.5 local gate and public GitHub CI both pass. `main` is synchronized; only Owner re-acceptance remains before Release Freeze. Engineering automation never signs the human acceptance step.
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md), the [V1.8.5 engineering note](docs/product/v1.8.5-agent-engineering-hardening.md), the [V1.8.5 architecture](docs/architecture/v1.8.5-agent-engineering.md), and [DECISIONS.md](DECISIONS.md).
 

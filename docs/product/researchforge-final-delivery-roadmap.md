@@ -98,9 +98,9 @@ See [V1.8.5 engineering note](v1.8.5-agent-engineering-hardening.md), [architect
 
 ## Phase E — V1.8.5 Full engineering gate
 
-**Status: local PASS; remote GitHub CI pending.**
+**Status: PASS — local gate + public GitHub CI.**
 
-The preserved V1.7.3 gate passed previously. V1.8.5 has now rerun the complete local gate after the dependency, Eval, MCP and CI changes; remote CI still must match before engineering completion is declared.
+The preserved V1.7.3 gate passed previously. V1.8.5 reran the complete local gate after the dependency, Eval, MCP and CI changes, then passed public GitHub CI on `main` across backend, contracts, eval, security, frontend and containers.
 
 ```text
 uv lock --check
@@ -120,7 +120,7 @@ Fresh V1.8.5 local gate: **233 pytest tests**, strict mypy over **120 source fil
 
 ## Phase F — Owner re-acceptance / Release Freeze
 
-**Status: pending after V1.8.5 engineering/remote closeout.**
+**Status: pending Owner re-acceptance only.**
 
 The first V1.7 Owner Acceptance failed on synthesis quality and is preserved as such. The owner now manually rechecks representative model synthesis plus the V1.7.3 hardened continuous-research/history workflow, audit hierarchy, the explicit fallback state and one bounded failure. Automation must not invent this human acceptance. There is no six-person Human Pilot prerequisite.
 
