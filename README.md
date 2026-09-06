@@ -61,7 +61,7 @@ V1.8.5 keeps the V1.7 General Research truth boundary and V1.7.3 lifecycle seman
 - MCP exposes seven bounded tools over the same backend; stdio is default, optional Streamable HTTP binds to localhost.
 - V1.8 contract validation currently covers four new schemas/examples alongside preserved V1.7.3/V1.7/V1.5/V1.4 history.
 - V1.7 Golden Regression remains **PASS** — 6 trusted successes + 3 explicit safe abstentions; V1.7.3 Owner-path model evidence remains preserved.
-- The fresh V1.8.5 local gate and public GitHub CI both pass. `main` is synchronized; only Owner re-acceptance remains before Release Freeze. Engineering automation never signs the human acceptance step.
+- The fresh V1.8.5 local gate and public GitHub CI both pass, `main` is synchronized, and Owner re-acceptance found no release blocker. **V1.8.5 Release Freeze is complete.**
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md), the [V1.8.5 engineering note](docs/product/v1.8.5-agent-engineering-hardening.md), the [V1.8.5 architecture](docs/architecture/v1.8.5-agent-engineering.md), and [DECISIONS.md](DECISIONS.md).
 
@@ -203,7 +203,7 @@ The V1.5 three-filing evidence remains documented in [docs/evidence/v1.5-general
 ## Start here
 
 1. [PROJECT_STATUS.md](PROJECT_STATUS.md) — current milestone and release gate.
-2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.8.5 engineering closeout and owner re-acceptance sequence.
+2. [Final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md) — V1.8.5 frozen release scope and acceptance evidence.
 3. [V1.8.5 Agent engineering hardening](docs/product/v1.8.5-agent-engineering-hardening.md) — security, Eval, Failure, Retrieval and MCP scope.
 4. [V1.8.5 architecture](docs/architecture/v1.8.5-agent-engineering.md) — technology ownership and closed-loop design.
 5. [V1.7.2 → V1.7.3 reliability/audit hardening note](docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md) — Run-first lifecycle, restart/concurrency safety and source/package hardening.

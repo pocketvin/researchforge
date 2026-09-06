@@ -1,7 +1,7 @@
 # ResearchForge V1.8.5 Final Delivery Roadmap
 
 **Updated:** 2026-09-06
-**Status:** V1.8.5 Agent Engineering Hardening in release closeout; owner re-acceptance remains
+**Status:** V1.8.5 Release Freeze complete
 
 ## Final product definition
 
@@ -120,9 +120,9 @@ Fresh V1.8.5 local gate: **233 pytest tests**, strict mypy over **120 source fil
 
 ## Phase F — Owner re-acceptance / Release Freeze
 
-**Status: pending Owner re-acceptance only.**
+**Status: COMPLETE — Owner re-acceptance passed.**
 
-The first V1.7 Owner Acceptance failed on synthesis quality and is preserved as such. The owner now manually rechecks representative model synthesis plus the V1.7.3 hardened continuous-research/history workflow, audit hierarchy, the explicit fallback state and one bounded failure. Automation must not invent this human acceptance. There is no six-person Human Pilot prerequisite.
+The first V1.7 Owner Acceptance failed on synthesis quality and remains preserved as historical evidence. After the V1.8.5 engineering and remote gates passed, the owner manually re-tested a representative 贵州茅台 risk-analysis run in the V1.8.5 Web workspace, observed `AI READY` + `MODEL SYNTHESIS` with supported conclusions/findings, and reported no release blocker. This manual acceptance completes Release Freeze. There is no six-person Human Pilot prerequisite.
 
 ## Explicit non-goals
 

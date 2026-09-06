@@ -27,7 +27,7 @@ Do not implement behavior from memory or from the demo narrative alone.
 ## Execution Discipline
 
 - Maintain one active milestone and one work-in-progress slice.
-- V1.8.5 engineering, contracts/evidence, security/eval/product gates, MCP verification and GitHub synchronization are complete. The current critical path is Owner re-acceptance; do not reopen the engineering scope unless acceptance feedback exposes a defect or a new requirement.
+- V1.8.5 engineering, contracts/evidence, security/eval/product gates, MCP verification, GitHub synchronization and Owner re-acceptance are complete. V1.8.5 is release-frozen; do not reopen this milestone unless a new defect or separately approved requirement creates a new scoped milestone.
 - Update both `PROJECT_STATUS.md` and `project-status.json` at the end of every implementation session.
 - Record architecture, data, cost, or scope choices in `DECISIONS.md`; chat history is not a decision record.
 - Do not introduce infrastructure unless `docs/architecture/implementation-blueprint.md` shows a current gate requires it and a smaller option was evaluated.

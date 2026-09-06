@@ -13,15 +13,16 @@
     "FACT_EXTRACTION",
     "GENERALIZATION",
     "N8N_INTEGRATION",
-    "PRODUCT_HARDENING"
+    "PRODUCT_HARDENING",
+    "RELEASE_FREEZE"
   ],
   "current_gate": "RELEASE_FREEZE",
-  "gate_status": "in_progress",
+  "gate_status": "completed",
   "current_milestone": {
-    "id": "v185_owner_reacceptance",
-    "title": "V1.8.5 engineering complete; Owner re-acceptance pending",
-    "outcome": "V1.8.5 local engineering gate and public GitHub CI pass across backend, contracts, eval, security, frontend and containers. main is synchronized; only Owner re-acceptance remains before Release Freeze.",
-    "status": "in_progress"
+    "id": "v185_release_frozen",
+    "title": "V1.8.5 Release Freeze complete",
+    "outcome": "V1.8.5 local engineering, public GitHub CI, synchronized main and manual Owner re-acceptance all passed. The owner tested a representative 贵州茅台 risk-analysis model-synthesis run and reported no release blocker.",
+    "status": "completed"
   },
   "frozen_v1_4": {
     "outcome": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
@@ -81,14 +82,14 @@
     ]
   },
   "next_action": {
-    "title": "Perform Owner re-acceptance for V1.8.5",
-    "why": "Implementation, local verification, remote synchronization and public CI are complete; Release Freeze now depends only on the owner validating the product experience.",
-    "first_step": "Use the V1.8.5 Web in auto + model_synthesis mode on representative research questions and verify continuous research/history, audit hierarchy, explicit fallback behavior and one bounded failure.",
+    "title": "Keep V1.8.5 frozen until a new scoped milestone is approved",
+    "why": "The V1.8.5 release lifecycle is complete; new product work should start from a new requirement rather than silently modifying the frozen milestone.",
+    "first_step": "Use V1.8.5 as the stable demo/interview baseline; open a new scoped milestone only for a new defect or approved requirement.",
     "acceptance_evidence": [
-      "Representative General Research answers are useful, deep enough and model-synthesized.",
-      "History and follow-up research preserve the expected workspace flow.",
-      "Facts, Evidence and Trace are understandable when expanded without overwhelming the primary report.",
-      "Fallback/unsupported cases are explicit bounded failures rather than plausible fake research."
+      "Local V1.8.5 engineering gate passed across backend, frontend, contracts, eval, security, containers, n8n and MCP.",
+      "main and origin/main are synchronized and the final public GitHub CI run passed all six jobs.",
+      "Owner runtime is V1.8.5 auto + model_synthesis.",
+      "Owner manually tested a representative 贵州茅台 risk-analysis run and reported no release blocker."
     ]
   },
   "blockers": [],
@@ -113,16 +114,17 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-06T08:43:49+08:00",
-    "summary": "V1.8.5 engineering and remote closeout completed. Commit e7481c5 is synchronized to main; GitHub Actions run 34001887719 passed backend, contracts, eval, security, frontend and containers. Owner re-acceptance is the only remaining Release Freeze step.",
+    "ended_at": "2026-09-06T12:35:00+08:00",
+    "summary": "Owner re-acceptance passed after manual V1.8.5 Web testing. Release Freeze is complete; V1.8.5 is the stable demo/interview baseline.",
     "files_changed": [
       "PROJECT_STATUS.md",
       "project-status.json",
       "README.md",
       "AGENTS.md",
+      "PORTFOLIO.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "docs/product/v1.8.5-agent-engineering-hardening.md"
     ]
   },
-  "updated_at": "2026-09-06T08:43:49+08:00"
+  "updated_at": "2026-09-06T12:35:00+08:00"
 }

@@ -98,8 +98,8 @@ problem: every important result must be traceable and every missing input must r
 - “The historical Evolution hypothesis is supported.”
 - “The system provides investment recommendations or predicts returns.”
 
-The V1.8.5 release criterion is engineering reliability plus owner re-acceptance, not a six-person
-Human Pilot. Therefore no human-usability or market-demand claim is made. Coverage claims must be
+The V1.8.5 release criterion was engineering reliability plus owner re-acceptance, not a six-person
+Human Pilot; both release conditions are now complete. This still does not justify a representative human-usability or market-demand claim. Coverage claims must be
 phrased around the implemented CN/US/HK official-source adapters, the deterministic six-fact
 numerical backbone plus full-filing Evidence retrieval, and explicit abstention on unsupported layouts.
 
