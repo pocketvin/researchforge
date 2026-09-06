@@ -21,6 +21,10 @@
 - Added V1.8 schemas/examples for Product Agent Evaluation, Retrieval Benchmark, Failure Analysis and the MCP toolset while preserving V1.7.3/V1.7 persisted contracts.
 - Split GitHub CI into explicit backend, contracts, eval, security, frontend and containers jobs.
 
+### Reliability closeout
+
+- Hardened the content-addressed JSON store so concurrent Runs writing identical digest/content use atomic temp-file installation and treat an already-installed identical object as idempotent success; added a deterministic multi-thread regression for the CI-only race.
+
 ### Measured evidence
 
 - Offline Router accuracy: 1.0. Production lexical Retrieval Recall@10 0.8125 / Precision@5 0.4583 / MRR 0.75; TF-IDF 0.8542 / 0.5417 / 1.0; simple RRF 0.8750 / 0.3750 / 1.0.

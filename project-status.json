@@ -13,16 +13,15 @@
     "FACT_EXTRACTION",
     "GENERALIZATION",
     "N8N_INTEGRATION",
-    "PRODUCT_HARDENING",
-    "RELEASE_FREEZE"
+    "PRODUCT_HARDENING"
   ],
   "current_gate": "RELEASE_FREEZE",
-  "gate_status": "completed",
+  "gate_status": "in_progress",
   "current_milestone": {
-    "id": "v185_release_frozen",
-    "title": "V1.8.5 Release Freeze complete",
-    "outcome": "V1.8.5 local engineering, public GitHub CI, synchronized main and manual Owner re-acceptance all passed. The owner tested a representative 贵州茅台 risk-analysis model-synthesis run and reported no release blocker.",
-    "status": "completed"
+    "id": "v185_cas_concurrency_closeout",
+    "title": "Owner accepted; final CAS concurrency fix awaiting remote CI",
+    "outcome": "Owner re-acceptance passed with no product blocker. A status-only public CI rerun exposed a low-probability same-digest content-addressed-store race; the atomic-install/idempotent CAS fix passes focused local concurrency regression and now requires full local/remote verification.",
+    "status": "in_progress"
   },
   "frozen_v1_4": {
     "outcome": "RESEARCH_HYPOTHESIS_UNSUPPORTED_AFTER_TWO_EXPERIMENTS",
@@ -82,14 +81,14 @@
     ]
   },
   "next_action": {
-    "title": "Keep V1.8.5 frozen until a new scoped milestone is approved",
-    "why": "The V1.8.5 release lifecycle is complete; new product work should start from a new requirement rather than silently modifying the frozen milestone.",
-    "first_step": "Use V1.8.5 as the stable demo/interview baseline; open a new scoped milestone only for a new defect or approved requirement.",
+    "title": "Verify and ship the CAS concurrency reliability fix",
+    "why": "Release Freeze must not remain completed while the latest public CI has a real backend concurrency failure, even though Owner Acceptance passed.",
+    "first_step": "Run the full backend/contract gate, push the atomic same-digest CAS fix, and require all six public CI jobs to pass before restoring Release Freeze completed.",
     "acceptance_evidence": [
-      "Local V1.8.5 engineering gate passed across backend, frontend, contracts, eval, security, containers, n8n and MCP.",
-      "main and origin/main are synchronized and the final public GitHub CI run passed all six jobs.",
-      "Owner runtime is V1.8.5 auto + model_synthesis.",
-      "Owner manually tested a representative 贵州茅台 risk-analysis run and reported no release blocker."
+      "Deterministic same-digest concurrent-write regression passes repeatedly.",
+      "Full local backend and contract gates pass.",
+      "GitHub backend, contracts, eval, security, frontend and containers all pass on the fix commit.",
+      "Owner Acceptance remains PASS because the fix changes storage concurrency only, not research UX or semantics."
     ]
   },
   "blockers": [],
@@ -114,17 +113,20 @@
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-06T12:35:00+08:00",
-    "summary": "Owner re-acceptance passed after manual V1.8.5 Web testing. Release Freeze is complete; V1.8.5 is the stable demo/interview baseline.",
+    "ended_at": "2026-09-06T12:45:00+08:00",
+    "summary": "Owner re-acceptance passed, but the final status-triggered CI exposed a real same-digest content-addressed-store concurrency race. Release Freeze was truthfully reopened while the atomic idempotent CAS fix is verified.",
     "files_changed": [
+      "src/researchforge/adapters/storage.py",
+      "tests/adapters/test_storage.py",
       "PROJECT_STATUS.md",
       "project-status.json",
       "README.md",
       "AGENTS.md",
       "PORTFOLIO.md",
+      "CHANGELOG.md",
       "docs/product/researchforge-final-delivery-roadmap.md",
       "docs/product/v1.8.5-agent-engineering-hardening.md"
     ]
   },
-  "updated_at": "2026-09-06T12:35:00+08:00"
+  "updated_at": "2026-09-06T12:45:00+08:00"
 }

@@ -63,16 +63,22 @@ class ContentAddressedJsonStore:
             if path.read_bytes() != content:
                 raise RuntimeError("content-address collision or corrupted artifact")
         else:
+            descriptor, temporary_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")
+            temporary_path = Path(temporary_name)
             try:
-                descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            except FileExistsError as exc:
-                if path.read_bytes() != content:
-                    raise RuntimeError("concurrent content-address collision") from exc
-            else:
                 with os.fdopen(descriptor, "wb") as handle:
                     handle.write(content)
                     handle.flush()
                     os.fsync(handle.fileno())
+                try:
+                    os.link(temporary_path, path)
+                except FileExistsError as exc:
+                    if path.read_bytes() != content:
+                        raise RuntimeError(
+                            "content-address collision or corrupted artifact"
+                        ) from exc
+            finally:
+                temporary_path.unlink(missing_ok=True)
         return StoredJsonArtifact(
             digest=digest,
             artifact_id=f"artifact_sha256_{digest}",
