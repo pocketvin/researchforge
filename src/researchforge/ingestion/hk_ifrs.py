@@ -23,7 +23,7 @@ from researchforge.retrieval.fulltext import index_pdf_pages
 
 JsonObject = dict[str, Any]
 
-_HEADERS = {"User-Agent": "Mozilla/5.0 ResearchForge/1.7.3", "Accept": "application/pdf,*/*"}
+_HEADERS = {"User-Agent": "Mozilla/5.0 ResearchForge/1.8.5", "Accept": "application/pdf,*/*"}
 _NUMBER_RE = re.compile(r"\(?-?\d[\d,]*(?:\.\d+)?\)?")
 _UNIT_RE = re.compile(
     r"(?P<currency>RMB|CNY|HKD|HK\$|USD|US\$)[\u2019']?\s*(?P<scale>Million|Thousand|Billion)",

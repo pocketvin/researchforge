@@ -46,7 +46,7 @@ DEFAULT_SKILL_MANIFEST = (
 )
 PRODUCT_REASONING_INSTRUCTIONS = """
 
-V1.7.3 product response contract:
+V1.8.5 product response contract:
 - Answer the research_question directly. Never use the executive summary to narrate routing,
   retrieval counts, token limits, or what ResearchForge did internally.
 - For general_research_v1_7, use only selected_evidence, verified financial_facts and
@@ -210,7 +210,10 @@ def create_app(
 
     app = FastAPI(
         title="ResearchForge API",
-        version="1.7.3",
+        version="1.8.5",
+        docs_url="/docs" if runtime_settings.researchforge_api_docs_enabled else None,
+        redoc_url="/redoc" if runtime_settings.researchforge_api_docs_enabled else None,
+        openapi_url="/openapi.json" if runtime_settings.researchforge_api_docs_enabled else None,
         lifespan=lifespan,
         description=(
             "Question-aware, evidence-first autonomous financial research for CN, US and HK "
@@ -220,12 +223,12 @@ def create_app(
 
     @app.get("/healthz")
     def healthcheck() -> dict[str, str]:
-        return {"status": "ok", "version": "1.7.3"}
+        return {"status": "ok", "version": "1.8.5"}
 
     @app.get("/v1/runtime-capabilities")
     def runtime_capabilities() -> dict[str, str | bool]:
         return {
-            "version": "1.7.3",
+            "version": "1.8.5",
             "reasoning_mode": runtime_reasoning_mode,
             "model_synthesis_configured": model_synthesis_configured,
             "research_output_mode": (

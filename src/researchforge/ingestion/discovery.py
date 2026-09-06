@@ -30,7 +30,7 @@ Market = Literal["CN", "US", "HK"]
 JsonObject = dict[str, Any]
 
 _BROWSER_HEADERS = {
-    "User-Agent": "Mozilla/5.0 ResearchForge/1.7.3",
+    "User-Agent": "Mozilla/5.0 ResearchForge/1.8.5",
     "Accept": "application/json,text/plain,*/*",
 }
 _DISCOVERY_HOSTS = {
@@ -499,7 +499,7 @@ class SecDiscoveryProvider:
     def _headers() -> dict[str, str]:
         user_agent = os.getenv(
             "RESEARCHFORGE_SEC_USER_AGENT",
-            "ResearchForge/1.7.3 researchforge@example.com",
+            "ResearchForge/1.8.5 researchforge@example.com",
         )
         return {"User-Agent": user_agent, "Accept": "application/json"}
 

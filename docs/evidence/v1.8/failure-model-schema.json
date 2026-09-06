@@ -1,0 +1,10 @@
+{
+  "code": "OUTPUT_SCHEMA_INVALID",
+  "failure_class": "MODEL_SCHEMA_FAILURE",
+  "regression_case_recommended": true,
+  "retryable": false,
+  "root_cause": "Structured conclusion remained invalid after one repair attempt. Last validation: General finding cited evidence outside retrieved context",
+  "run_id": "run_1362acef47c84cd2b372ed5ad044a0ca",
+  "schema_version": "1.8.0",
+  "stage": null
+}

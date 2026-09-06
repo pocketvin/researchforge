@@ -18,9 +18,9 @@
   "current_gate": "RELEASE_FREEZE",
   "gate_status": "in_progress",
   "current_milestone": {
-    "id": "v173_owner_runtime_hotfix_complete",
-    "title": "V1.7.3 engineering complete with Owner runtime isolation correction; ready for owner re-acceptance",
-    "outcome": "Owner/test runtime isolation, live capability verification, truthful evidence-only fallback semantics and current-run Structured Output ID constraints are implemented and verified. RELEASE_FREEZE remains in progress only for owner re-acceptance.",
+    "id": "v185_remote_closeout",
+    "title": "V1.8.5 local engineering complete; GitHub remote closeout pending",
+    "outcome": "V1.8.5 security, Agent Eval, Failure Analysis, Retrieval Benchmark, MCP and interview/architecture hardening pass the fresh local gate without changing the V1.7 research truth boundary. Remote CI and owner re-acceptance remain.",
     "status": "in_progress"
   },
   "frozen_v1_4": {
@@ -31,56 +31,59 @@
     "additional_formal_experiments_authorized": false
   },
   "last_verified": {
-    "at": "2026-09-06T01:15:00+08:00",
+    "at": "2026-09-06T03:10:00+08:00",
     "commands": [
       {
         "command": "uv lock --check; ruff format/check; mypy --strict; pytest -q; validate_contracts.py",
         "exit_code": 0,
-        "summary": "V1.7.3 hotfix backend gate passed: 225 pytest tests, strict mypy over 110 source files, 611 schema refs, 119 Markdown links and 128 required contract files."
+        "summary": "V1.8.5 backend gate passed: 233 pytest tests, strict mypy over 120 source files, 625 schema refs plus validated V1.8 engineering evidence."
       },
       {
-        "command": "npm run typecheck; npm run lint; npm test; npm run build; npm run test:e2e; npm run test:e2e:live",
+        "command": "researchforge eval; persisted three-run owner thread eval; failure-analyze",
         "exit_code": 0,
-        "summary": "Web passed typecheck/lint/build, 7 unit tests, 3 mocked E2E and 3 live-backend E2E with runtime capability and evidence-only semantics."
+        "summary": "Router accuracy 1.0; persisted same-company model Runs each pass routing/plan/grounding/citation/structured-output/trajectory checks; real schema failure classifies as MODEL_SCHEMA_FAILURE."
       },
       {
-        "command": "node integrations/n8n/build-workflow.mjs --check; node --test integrations/n8n/workflow.test.mjs; integration eslint",
+        "command": "pip-audit --local --skip-editable; npm audit --audit-level=high",
         "exit_code": 0,
-        "summary": "n8n portable source matched generated JSON, 11 Node tests and integration lint passed with evidence-only presentation semantics."
+        "summary": "Python audit found no known vulnerabilities; frontend audit found 0 vulnerabilities."
       },
       {
-        "command": "uv run python scripts/container_gate.py",
+        "command": "frontend typecheck/lint/unit/build; mocked E2E; live-backend E2E",
         "exit_code": 0,
-        "summary": "Isolated deterministic researchforge-gate stack passed 3/3 reviewed-cache Docker smoke cases on separate ports/volumes; Owner runtime stayed auto + model_synthesis before and after."
+        "summary": "Frontend passed 7 unit tests, 3 mocked E2E and 3 live-backend E2E."
       },
       {
-        "command": "uv run python scripts/start_demo.py --skip-smoke",
+        "command": "python scripts/container_gate.py",
         "exit_code": 0,
-        "summary": "Owner stack was force-recreated and live capability verification reported reasoning=auto and output=model_synthesis before handing off the Web URL."
+        "summary": "Isolated deterministic V1.8.5 Docker gate passed 3/3 reviewed-cache cases and cleaned its separate resources."
       },
       {
-        "command": "Owner regression re-test: 贵州茅台 profitability; 大华股份 growth",
+        "command": "python scripts/start_demo.py --skip-smoke; runtime/security probes",
         "exit_code": 0,
-        "summary": "Both exact owner-path categories succeeded with synthesis_mode=model, 6 Claims / 5 sections and Supported judgment."
+        "summary": "Owner stack force-recreated at V1.8.5 with auto + model_synthesis; API/Web/n8n localhost-only, docs disabled and Web security headers present."
       },
       {
-        "command": "uv run python -m scripts.n8n_smoke; uv run python -m scripts.n8n_smoke --webhook http://127.0.0.1:5678/webhook/researchforge-runtime-test --failure-fixture",
+        "command": "n8n source/unit/lint + actual success/failure smoke",
         "exit_code": 0,
-        "summary": "Actual n8n 2.37.9 runtime passed 3 success cases, idempotent replay, minimum cached input, native form/failure rendering, 5 HTTP failure checks and 5/5 transport-only failure scenarios."
+        "summary": "n8n 2.37.9 passed 11 Node tests, 3 actual success cases and 5/5 transport-only bounded failure scenarios."
+      },
+      {
+        "command": "python scripts/mcp_smoke.py --include-discovery --run-id <persisted-owner-run>",
+        "exit_code": 0,
+        "summary": "Seven-tool MCP live read-only smoke passed company resolution, official filing discovery, facts, evidence, model result and ten-stage Trace."
       }
     ]
   },
   "next_action": {
-    "title": "Perform owner re-acceptance and freeze V1.7.3",
-    "why": "The runtime contamination and model Evidence-ID failures exposed by owner testing are now fixed and regression-tested. Only the owner can approve the final experience.",
-    "first_step": "Use http://127.0.0.1:4173/: confirm the header says AI READY, rerun representative company research, then exercise follow-up/history/audit and one explicit bounded failure.",
+    "title": "Commit, push and verify V1.8.5 public CI",
+    "why": "All fresh local engineering gates pass; remote GitHub state must match before engineering completion can be declared.",
+    "first_step": "Run final freshness/diff/secret checks, commit V1.8.5, push main and require all public CI jobs to succeed.",
     "acceptance_evidence": [
-      "Header reports AI READY before a normal model research run.",
-      "A representative General Research result is useful and sufficiently deep.",
-      "Suggested follow-up creates a second Run and paginated history reopens persisted reports without model reruns.",
-      "Facts, calculations, supporting/counter evidence and Trace remain understandable on demand.",
-      "Evidence-only fallback is clearly labeled and is not presented as successful AI synthesis.",
-      "Only after owner re-acceptance is RELEASE_FREEZE marked completed."
+      "main and origin/main resolve to the same V1.8.5 commit.",
+      "GitHub backend, contracts, eval, security, frontend and containers jobs all succeed.",
+      "Owner runtime remains V1.8.5 auto + model_synthesis after local gates.",
+      "Only after remote closeout does the remaining release boundary become owner re-acceptance."
     ]
   },
   "blockers": [],
@@ -91,43 +94,40 @@
       "README.md",
       "PROJECT_STATUS.md",
       "DECISIONS.md",
-      "docs/product/v1.7.3-owner-runtime-isolation-hotfix.md",
-      "docs/product/researchforge-final-delivery-roadmap.md",
+      "docs/product/v1.8.5-agent-engineering-hardening.md",
+      "docs/architecture/v1.8.5-agent-engineering.md",
       "PORTFOLIO.md"
     ],
     "commands": [
-      "uv run python scripts/start_demo.py --no-build",
-      "uv run python scripts/container_gate.py",
-      "RESEARCHFORGE_REASONING_MODE=deterministic uv run python scripts/autonomous_regression.py --all",
+      "uv run researchforge eval",
       "uv run python scripts/validate_contracts.py",
+      "uv run python scripts/container_gate.py",
+      "uv run python scripts/mcp_smoke.py --api-base http://127.0.0.1:8000 --run-id <RUN_ID>",
       "git diff --check",
       "git status --short"
     ]
   },
   "last_session": {
-    "ended_at": "2026-09-06T01:15:00+08:00",
-    "summary": "Closed the Owner runtime isolation regression: Owner startup now verifies the live model capability, deterministic packaging is isolated, fallback semantics are truthful, Structured Output IDs are bound to current-run Evidence/Facts, and actual n8n success/failure runtime routes re-passed. Moutai profitability and Dahua growth owner-path reruns both returned model synthesis; owner re-acceptance remains pending.",
+    "ended_at": "2026-09-06T03:10:00+08:00",
+    "summary": "V1.8.5 local engineering gate passed across security/dependency refresh, Product Agent Eval, Failure Analysis, Retrieval Benchmark, MCP, Web/API hardening, Docker and n8n. Remote GitHub closeout remains before owner re-acceptance.",
     "files_changed": [
-      "AGENTS.md",
-      "CHANGELOG.md",
-      "DECISIONS.md",
-      "PROJECT_STATUS.md",
+      "pyproject.toml",
+      "uv.lock",
+      "src/researchforge/evaluation",
+      "src/researchforge/mcp_server.py",
+      "scripts/mcp_smoke.py",
+      "schemas/v1.8",
+      "examples/contracts/v1.8",
+      "data/evaluation/v1.8",
+      "docs/evidence/v1.8",
+      "docs/product/v1.8.5-agent-engineering-hardening.md",
+      "docs/architecture/v1.8.5-agent-engineering.md",
+      ".github/workflows/ci.yml",
       "README.md",
-      "project-status.json",
-      "docs/product/researchforge-final-delivery-roadmap.md",
-      "docs/product/v1.7.3-owner-runtime-isolation-hotfix.md",
-      "docker-compose.yml",
-      "scripts/start_demo.py",
-      "scripts/container_gate.py",
-      "src/researchforge/api/app.py",
-      "src/researchforge/adapters/openai_responses.py",
-      "src/researchforge/application/research.py",
-      "src/researchforge/workflow/graph.py",
-      "frontend/src/App.tsx",
-      "frontend/src/api.ts",
-      "frontend/src/types.ts",
-      "integrations/n8n/researchforge-v1.7.workflow.json"
+      "PORTFOLIO.md",
+      "DECISIONS.md",
+      "CHANGELOG.md"
     ]
   },
-  "updated_at": "2026-09-06T01:15:00+08:00"
+  "updated_at": "2026-09-06T03:10:00+08:00"
 }

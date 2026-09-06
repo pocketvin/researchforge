@@ -1,0 +1,102 @@
+{
+  "component_eval": {
+    "retrieval": {
+      "hybrid_rrf": {
+        "mrr": 1.0,
+        "precision_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "recall_at_5": 1.0
+      },
+      "lexical": {
+        "mrr": 1.0,
+        "precision_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "recall_at_5": 1.0
+      },
+      "tfidf_vector": {
+        "mrr": 1.0,
+        "precision_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "recall_at_5": 1.0
+      }
+    },
+    "router_accuracy": 1.0
+  },
+  "passed": true,
+  "retrieval_benchmark": {
+    "case_count": 1,
+    "cases": [
+      {
+        "case_id": "catl_h1_cash_quality",
+        "expected_skill": "financial_health",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "lexical": {
+            "mrr": 1.0,
+            "precision_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          }
+        },
+        "observed_skill": "financial_health",
+        "question": "现金流和利润质量如何？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_net_income"
+          ],
+          "lexical": [
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_net_income"
+          ],
+          "tfidf_vector": [
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_net_income"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_operating_cash_flow"
+        ],
+        "router_pass": true
+      }
+    ],
+    "decision_rule": "Adopt a more complex retrieval strategy only after frozen evaluation shows a material quality gain without weakening deterministic evidence controls.",
+    "router_accuracy": 1.0,
+    "schema_version": "1.8.0",
+    "strategies": {
+      "hybrid_rrf": {
+        "mrr": 1.0,
+        "precision_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "recall_at_5": 1.0
+      },
+      "lexical": {
+        "mrr": 1.0,
+        "precision_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "recall_at_5": 1.0
+      },
+      "tfidf_vector": {
+        "mrr": 1.0,
+        "precision_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "recall_at_5": 1.0
+      }
+    }
+  },
+  "run_evaluations": [],
+  "schema_version": "1.8.0",
+  "suite_id": "product-agent-eval-v1.8.0"
+}

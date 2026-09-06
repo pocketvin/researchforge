@@ -1,0 +1,50 @@
+{
+  "discover_filing": {
+    "company": {
+      "company_id": "cn_600519",
+      "country_code": "CN",
+      "exchange": "SSE",
+      "legal_name": "贵州茅台",
+      "ticker": "600519"
+    },
+    "filing_id": "cninfo-1225114741",
+    "found": true,
+    "period_label": "2025FY",
+    "provider": "CNINFO",
+    "published_at": "2026-04-17T00:00:00+08:00",
+    "source_uri": "https://static.cninfo.com.cn/finalpage/2026-04-17/1225114741.PDF",
+    "title": "贵州茅台2025年年度报告"
+  },
+  "existing_run": {
+    "claim_count": 6,
+    "evidence_count": 5,
+    "fact_count": 6,
+    "intent": "financial_health",
+    "run_id": "run_db3de1c938b246f78173dc7f3f54bb6f",
+    "synthesis_mode": "model",
+    "terminal_state": "succeeded",
+    "trace_stage_count": 10
+  },
+  "product_version": "1.8.5",
+  "resolve_company": {
+    "company": {
+      "company_id": "cn_600519",
+      "country_code": "CN",
+      "exchange": "SSE",
+      "legal_name": "贵州茅台",
+      "ticker": "600519"
+    },
+    "market": "CN",
+    "resolved": true
+  },
+  "schema_version": "1.8.0",
+  "tools": [
+    "resolve_company",
+    "discover_filing",
+    "run_company_research",
+    "get_research_result",
+    "get_research_trace",
+    "get_financial_facts",
+    "search_filing_evidence"
+  ]
+}

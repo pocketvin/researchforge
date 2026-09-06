@@ -228,7 +228,7 @@ footer { padding: 20px; border-top: 1px solid var(--line); color: #455b67; text-
 
 @media (max-width: 980px) {
   .app-header { padding: 0 18px; }
-  .header-badge { display: none; }
+  .header-badge { font-size: 8px; letter-spacing: .04em; text-align: right; }
   .research-grid, .lab-grid { grid-template-columns: 1fr; }
   .control-panel { order: 0; }
   .metric-grid { grid-template-columns: repeat(2, 1fr); }
@@ -238,6 +238,7 @@ footer { padding: 20px; border-top: 1px solid var(--line); color: #455b67; text-
 @media (max-width: 620px) {
   .app-header { height: auto; gap: 10px; padding: 12px; }
   .brand small { display: none; }
+  .header-badge { max-width: 150px; line-height: 1.45; }
   .page-shell { padding: 16px 12px 44px; }
   .metric-grid, .check-list { grid-template-columns: 1fr; }
   .experiment-metrics, .split-grid, .lab-artifact-grid, .paired-results, .evolution-evidence-grid { grid-template-columns: 1fr; }

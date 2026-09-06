@@ -1,5 +1,32 @@
 # Changelog
 
+## [Unreleased] — V1.8.5 Agent Engineering Hardening
+
+### Security and dependency refresh
+
+- Upgraded the active LangGraph line to 1.x and refreshed pypdf/test/security dependencies without replacing the bounded StateGraph research architecture.
+- Added `pip-audit`/`npm audit` CI gates, default-disabled FastAPI docs, browser security headers and narrow-screen runtime capability visibility.
+- Corrected contract-link validation so generated `.venv` Markdown cannot contaminate repository evidence counts.
+
+### Agent Eval, Failure Analysis and Retrieval Benchmark
+
+- Added `researchforge eval` for frozen Router/Retrieval component cases and persisted Run-level routing, plan, grounding, citation, structured-output and ten-stage trajectory checks.
+- Added same-company Thread evaluation without inventing an LLM-judge semantic-consistency score.
+- Added fourteen deterministic failure classes plus `researchforge failure-analyze`; a real historical Evidence-ID/schema failure is frozen as a regression candidate.
+- Added an eight-case reviewed retrieval benchmark comparing production lexical, TF-IDF sparse-vector and simple RRF strategies. The evidence does not yet justify pgvector/dense retrieval.
+
+### MCP and contracts
+
+- Added an official-Python-SDK MCP server with seven bounded tools over the existing ResearchForge backend, stdio by default and localhost Streamable HTTP as an optional transport.
+- Added V1.8 schemas/examples for Product Agent Evaluation, Retrieval Benchmark, Failure Analysis and the MCP toolset while preserving V1.7.3/V1.7 persisted contracts.
+- Split GitHub CI into explicit backend, contracts, eval, security, frontend and containers jobs.
+
+### Measured evidence
+
+- Offline Router accuracy: 1.0. Production lexical Retrieval Recall@10 0.8125 / Precision@5 0.4583 / MRR 0.75; TF-IDF 0.8542 / 0.5417 / 1.0; simple RRF 0.8750 / 0.3750 / 1.0.
+- Three persisted 贵州茅台 model Runs each scored 1.0 for routing, plan completion, grounding, citation validity, structured output and ten-stage trajectory completion.
+- Read-only MCP live smoke resolved 贵州茅台, found the CNINFO 2025FY filing, read six facts, searched evidence and reopened a six-Claim model Result plus ten-stage Trace without a new model request.
+
 ## [Unreleased] — V1.7.3 Reliability & Audit Hardening
 
 ### Owner runtime isolation hotfix

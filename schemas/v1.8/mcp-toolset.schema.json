@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.8/mcp-toolset.schema.json",
+  "title": "ResearchForge V1.8 MCP Toolset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "product_version", "server_name", "backend_authority", "default_transport", "remote_transport", "default_bind", "tools"],
+  "properties": {
+    "schema_version": {"const": "1.8.0"},
+    "product_version": {"const": "1.8.5"},
+    "server_name": {"const": "researchforge"},
+    "backend_authority": {"const": "existing_researchforge_backend"},
+    "default_transport": {"const": "stdio"},
+    "remote_transport": {"const": "streamable-http"},
+    "default_bind": {"const": "127.0.0.1:8001"},
+    "tools": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "read_only", "destructive", "idempotent", "open_world"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "read_only": {"type": "boolean"},
+          "destructive": {"const": false},
+          "idempotent": {"type": "boolean"},
+          "open_world": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

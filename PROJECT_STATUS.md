@@ -1,77 +1,74 @@
 # ResearchForge Project Status
 
 **Updated:** 2026-09-06
-**Contract package:** 1.5.0
-**Product package:** 1.7.3
-**Scope:** V1.7 General Company Research
+**Contract package:** historical product contracts preserved; V1.8 engineering artifacts use schema 1.8.0
+**Product package:** 1.8.5
+**Research scope:** V1.7 General Company Research
 
 Contract package: 1.5.0
 Current gate: RELEASE_FREEZE
 Scope: V1.7 general company research
 
-**Gate meaning:** RELEASE_FREEZE remains in progress because owner re-acceptance is still pending.
+Current gate: **RELEASE_FREEZE**
+Gate status: **in progress — local V1.8.5 engineering gate passed; remote CI and owner re-acceptance remain**
 
 ## Current milestone
 
-**V1.7.3 Reliability & Audit Hardening — ENGINEERING COMPLETE**
+**V1.8.5 Agent Engineering Hardening — LOCAL ENGINEERING COMPLETE**
 
-V1.7.3 keeps the V1.7/V1.7.1 research truth boundary and V1.7.2 workspace product, closes lifecycle/restart/concurrency/source-trust gaps, and now also isolates deterministic engineering gates from the Owner runtime. Engineering completion does not imply Owner Acceptance.
+V1.8.5 keeps the V1.7 research truth boundary and V1.7.3 lifecycle semantics while adding a current security/dependency baseline, Product Agent Eval, deterministic Failure Analysis, measured Retrieval Benchmark, MCP interoperability and interview/architecture evidence. It does not rewrite historical Research Results or claim new financial truth.
 
-## V1.7.3 hardening delivered
+## V1.8.5 delivered
 
-- Autonomous submission persists a V1.7.3 `queued` Run before official-source discovery or acquisition.
-- Preparation/discovery, dynamic package identity, retryable failure and cancellation are represented by the same durable Run; preparation-only failure never fabricates a LangGraph Trace.
-- Persisted autonomous company/package context and the original total deadline survive process restart.
-- Run-scoped file locks prevent background execution and restart recovery from running the same Run concurrently.
-- File-backed idempotency and project budget reservation are atomic across repository/ledger instances.
-- API startup recovery runs in a daemon thread and cannot block `/healthz` while a Run resumes.
-- Terminal Runs delete their shared LangGraph checkpoint thread instead of accumulating stale checkpoint state.
-- SEC/HKEX/discovery redirect final hosts are revalidated against official-source policy.
-- Packaged API/Web/n8n ports bind to `127.0.0.1`; unauthenticated product services are not exposed to the LAN by default.
-- Public Research rejects investment recommendations, buy/sell instructions and target-price requests at the input boundary.
-- Recent Run history supports offset pagination and Web “load more”; queued autonomous history retains submitted company/market/period context.
-- Historical Quality/Evolution method evidence is packaged as a read-only archive rather than depending on a mutable local artifact volume.
-- Owner startup force-recreates the product stack and verifies the actual `/v1/runtime-capabilities` response; stale deterministic containers cannot silently survive an `auto` configuration.
-- Local deterministic Docker smoke uses a separate `researchforge-gate` Compose project, ports and volumes, and leaves the Owner 8000/4173 runtime unchanged.
-- Web/n8n distinguish `EVIDENCE ONLY` from successful AI synthesis; fallback judgment is `AI Synthesis Unavailable` and no pseudo Findings/Deep Analysis are rendered.
-- General Research Structured Output Evidence/Fact IDs are dynamically restricted to the current run's retrieved/verified IDs before provider generation, with graph validation retained as defense in depth.
-## Full engineering gate — PASS
+- LangGraph upgraded to the 1.x line; pypdf/test/security dependencies refreshed without replacing the bounded ten-stage StateGraph architecture.
+- `pip-audit` and `npm audit` are explicit CI security gates; current local audits report no known/high vulnerabilities.
+- API interactive docs are disabled by default; packaged Web exposes CSP, `nosniff`, frame denial, referrer and permissions policies.
+- `researchforge eval` evaluates frozen Router/Retrieval cases and persisted Runs for routing, plan completion, grounding, citation validity, structured-output validity and ten-stage trajectory completion.
+- Same-company Thread Eval verifies context identity and grounding but explicitly does not fabricate semantic-contradiction scores.
+- Fourteen deterministic failure classes plus `researchforge failure-analyze` convert persisted failures into diagnosable regression candidates.
+- The eight-case retrieval benchmark compares production lexical, TF-IDF sparse vector and simple RRF. Current evidence is insufficient to justify pgvector/dense retrieval, so production retrieval remains unchanged.
+- MCP uses the official Python SDK and exposes seven bounded same-backend tools; stdio is default and optional Streamable HTTP binds to `127.0.0.1:8001`.
+- V1.8 schemas/examples contract Agent Evaluation, Retrieval Benchmark, Failure Analysis and the MCP toolset while preserving V1.7.3/V1.7/V1.5/V1.4 history.
+- GitHub CI is split into backend, contracts, eval, security, frontend and containers jobs.
 
-Verified on the V1.7.3 working tree:
+## Fresh local engineering gate — PASS
 
-- `uv lock --check`, Ruff format/check and strict mypy: PASS; mypy checked **110 source files**.
-- `pytest -q`: **225 passed**, with 2 known upstream deprecation warnings.
-- Contract validation: PASS — **611 local schema refs**, **119 local Markdown links**, **128 required contract files**; V1.7.3 and preserved historical schemas/examples validate together.
+- `uv lock --check`, Ruff format/check: PASS.
+- strict mypy: **120 source files**, PASS.
+- pytest: **233 passed**.
+- Contract validation: PASS — **625 local schema refs**, four active V1.8 engineering schemas/examples plus preserved history; V1.8 offline/thread Eval, Failure and MCP evidence validate.
+- Agent Eval: Router accuracy **1.0**; lexical Recall@10 **0.8125**, TF-IDF **0.8542**, RRF **0.8750**. Precision@5 is lexical **0.4583**, TF-IDF **0.5417**, RRF **0.3750**.
+- Persisted three-turn 贵州茅台 Thread: all three model Runs score **1.0** for routing, plan completion, grounding, citations, structured output and trajectory.
+- Security: `pip-audit` reports **no known vulnerabilities**; `npm audit --audit-level=high` reports **0 vulnerabilities**.
 - Frontend: typecheck/lint/build + **7 unit tests + 3 mocked E2E + 3 live-backend E2E**: PASS.
-- n8n source: generated workflow check + **11 Node tests** + integration lint: PASS.
-- Fresh API/frontend Docker images + PostgreSQL/API/Web health + **3 reviewed-cache Docker smoke cases**: PASS.
-- Packaged Autonomous lifecycle observed `queued/queued → running/completed → succeeded/completed`; final manifest validates against the V1.7.3 runtime schema.
-- Published ports verified localhost-only: API `127.0.0.1:8000`, Web `127.0.0.1:4173`, n8n `127.0.0.1:5678`.
-- Actual n8n 2.37.9 runtime: **3 success cases**, idempotent replay, minimum cached input, native form, native form failure and 5 HTTP failure checks: PASS.
-- Actual n8n transport-only fixture: **5/5 bounded failure scenarios PASS** with no research truth supplied.
-- Isolated deterministic container gate: **3/3 PASS** using separate `researchforge-gate` resources; Owner runtime remained `auto + model_synthesis` before and after the gate.
-- Owner regression re-test after runtime/ID hardening: 贵州茅台 profitability **6 Claims / 5 sections / Supported** and 大华股份 growth **6 / 5 / Supported**, both `synthesis_mode=model`.
+- Isolated deterministic Docker gate: **3/3 PASS** with separate ports/volumes.
+- Owner stack force-recreated as **V1.8.5**, `reasoning_mode=auto`, `research_output_mode=model_synthesis`.
+- Owner packaging: API/Web/n8n publish only on localhost; `/docs` and `/openapi.json` return 404 by default; Web security headers verified.
+- n8n 2.37.9: **11/11 Node tests**, 3 actual success cases, idempotent/minimum-input/form checks and **5/5 transport-only bounded failures**: PASS.
+- MCP: 7-tool contract test + live read-only smoke passed; 贵州茅台 resolves to CNINFO 2025FY, existing Run exposes 6 facts, 5 retrieved evidence items, 6 model Claims and a 10-stage succeeded Trace.
 
 ## Research-quality evidence retained
 
 - V1.7 extended Golden Regression: **6 trusted successes + 3 explicit safe abstentions; PASS**.
-- V1.7.1 real-model smoke: 贵州茅台 `company_overview` **8 Claims / 5 sections**; NVIDIA `growth_analysis` **6 / 5**; 腾讯 `business_analysis` **6 / 5**.
-- V1.7.3 changes runtime reliability and audit semantics; it does not replace or inflate that retained research-quality evidence.
+- V1.7.1 real-model smoke: 贵州茅台 8 Claims / 5 sections; NVIDIA 6 / 5; 腾讯 6 / 5.
+- V1.7.3 Owner regression: 贵州茅台 profitability and 大华股份 growth both returned `synthesis_mode=model`, 6 Claims / 5 sections and Supported.
+- V1.8.5 does not inflate those research-quality claims; it evaluates and exposes the engineering around them.
 
 ## Release boundary
 
-`RELEASE_FREEZE` remains **in progress only for owner re-acceptance**. No six-person Human Pilot is required. Owner acceptance must remain a human judgment; engineering tests cannot sign it on the owner's behalf.
+`RELEASE_FREEZE` remains in progress. Local implementation/verification is complete, but Git/GitHub remote synchronization and public CI must still be verified before engineering completion is declared. After that, only Owner re-acceptance remains human-only.
 
-The owner should verify one representative General Research run, one follow-up/history restore flow, the audit hierarchy, one explicit bounded failure, and that the visible product still feels useful after the reliability hardening.
+No six-person Human Pilot is required. Owner Acceptance cannot be generated by tests.
+
 ## Known bounded limitations
 
 - CN/US/HK official-source adapters are supported; universal issuer/layout coverage is not claimed.
-- Six deterministic financial facts remain the current numerical backbone.
-- BYD latest, Xiaomi and Alibaba examples expose parser/layout boundaries and safely abstain in the retained extended regression.
-- “下一份财报重点看什么” is a review checklist, not a scheduled notification service.
-- 方法与实验 is historical technical evidence, not a normal research workflow.
-- Real-time news, broker research, price targets, trading, portfolio management and unrestricted multi-agent debate remain out of scope.
+- Six deterministic financial facts remain the numerical backbone.
+- The initial V1.8 retrieval suite contains eight reviewed cases; it is a decision baseline, not proof that TF-IDF is universally superior.
+- Thread Eval does not score prose-level semantic contradiction.
+- MCP is local-first and unauthenticated; remote/public deployment is not claimed.
+- Real-time news, broker research, price targets, trading, portfolio management, unrestricted multi-agent debate and open-ended self-modification remain out of scope.
 
 ## Resume here
 
-Read first: [README.md](README.md), [DECISIONS.md](DECISIONS.md), the [Owner runtime hotfix note](docs/product/v1.7.3-owner-runtime-isolation-hotfix.md), the [V1.7.3 change note](docs/product/v1.7.2-to-v1.7.3-reliability-audit-hardening-change-note.md), the [V1.7.2 UX note](docs/product/v1.7.1-to-v1.7.2-workspace-ux-change-note.md), the [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), and [PORTFOLIO.md](PORTFOLIO.md).
+Read first: [README.md](README.md), [V1.8.5 engineering note](docs/product/v1.8.5-agent-engineering-hardening.md), [V1.8.5 architecture](docs/architecture/v1.8.5-agent-engineering.md), [V1.8 evidence](docs/evidence/v1.8/README.md), [DECISIONS.md](DECISIONS.md), [final delivery roadmap](docs/product/researchforge-final-delivery-roadmap.md), and [PORTFOLIO.md](PORTFOLIO.md).

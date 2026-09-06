@@ -29,6 +29,7 @@ class RuntimeSettings(BaseSettings):
     researchforge_artifact_root: Path | None = None
     researchforge_data_namespace: Literal["product", "fixture", "benchmark"] = "product"
     researchforge_data_root: Path | None = None
+    researchforge_api_docs_enabled: bool = False
 
 
 def load_runtime_settings(project_root: Path) -> RuntimeSettings:

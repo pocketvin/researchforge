@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v1.8/failure-analysis.schema.json",
+  "title": "ResearchForge V1.8 Failure Analysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "failure_class", "stage", "code", "retryable", "root_cause", "regression_case_recommended"],
+  "properties": {
+    "schema_version": {"const": "1.8.0"},
+    "run_id": {"type": "string", "minLength": 1},
+    "failure_class": {
+      "type": "string",
+      "enum": [
+        "COMPANY_RESOLUTION_FAILURE", "DISCOVERY_FAILURE", "ACQUISITION_FAILURE", "PARSER_FAILURE",
+        "RETRIEVAL_FAILURE", "INSUFFICIENT_EVIDENCE", "TOOL_FAILURE", "MODEL_SCHEMA_FAILURE",
+        "GROUNDING_FAILURE", "CITATION_FAILURE", "TIMEOUT", "BUDGET_EXCEEDED",
+        "STATE_RECOVERY_FAILURE", "INFRASTRUCTURE_FAILURE"
+      ]
+    },
+    "stage": {"type": ["string", "null"]},
+    "code": {"type": ["string", "null"]},
+    "retryable": {"type": "boolean"},
+    "root_cause": {"type": "string", "minLength": 1},
+    "regression_case_recommended": {"type": "boolean"}
+  }
+}

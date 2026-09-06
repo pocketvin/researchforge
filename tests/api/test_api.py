@@ -18,11 +18,11 @@ def test_healthcheck_does_not_require_a_run(tmp_path: Path) -> None:
     response = client.get("/healthz")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "version": "1.7.3"}
+    assert response.json() == {"status": "ok", "version": "1.8.5"}
     capabilities = client.get("/v1/runtime-capabilities")
     assert capabilities.status_code == 200
     assert capabilities.json() == {
-        "version": "1.7.3",
+        "version": "1.8.5",
         "reasoning_mode": "deterministic",
         "model_synthesis_configured": False,
         "research_output_mode": "evidence_only",

@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.8.0",
+  "suite_id": "product-agent-eval-v1.8.0",
+  "description": "Frozen offline Router/Retrieval evaluation over immutable reviewed product packages. No provider or benchmark-private truth is used.",
+  "retrieval_cases": [
+    {
+      "case_id": "catl_h1_cash_quality",
+      "package": "data/product/packages/catl-2024h1",
+      "question": "现金流和利润质量如何？",
+      "expected_skill": "financial_health",
+      "relevant_evidence_ids": [
+        "chunk_product_catl_2024h1_operating_cash_flow",
+        "chunk_product_catl_2024h1_net_income"
+      ]
+    },
+    {
+      "case_id": "catl_h1_working_capital",
+      "package": "data/product/packages/catl-2024h1",
+      "question": "应收账款和存货是否值得关注？",
+      "expected_skill": "financial_health",
+      "relevant_evidence_ids": [
+        "chunk_product_catl_2024h1_accounts_receivable",
+        "chunk_product_catl_2024h1_inventory"
+      ]
+    },
+    {
+      "case_id": "catl_h1_profitability",
+      "package": "data/product/packages/catl-2024h1",
+      "question": "盈利能力和毛利率怎么样？",
+      "expected_skill": "financial_health",
+      "relevant_evidence_ids": [
+        "chunk_product_catl_2024h1_revenue",
+        "chunk_product_catl_2024h1_operating_cost",
+        "chunk_product_catl_2024h1_net_income"
+      ]
+    },
+    {
+      "case_id": "catl_fy_revenue_change",
+      "package": "data/product/packages/catl-2024fy",
+      "question": "营业收入为什么发生变化？",
+      "expected_skill": "earnings_change",
+      "relevant_evidence_ids": [
+        "chunk_product_catl_2024fy_revenue"
+      ]
+    },
+    {
+      "case_id": "catl_fy_cash_flow",
+      "package": "data/product/packages/catl-2024fy",
+      "question": "经营现金流表现如何？",
+      "expected_skill": "financial_health",
+      "relevant_evidence_ids": [
+        "chunk_product_catl_2024fy_operating_cash_flow"
+      ]
+    },
+    {
+      "case_id": "byd_h1_profit_change",
+      "package": "data/product/packages/byd-2024h1",
+      "question": "净利润为什么变化？",
+      "expected_skill": "earnings_change",
+      "relevant_evidence_ids": [
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_non_recurring_profit"
+      ]
+    },
+    {
+      "case_id": "byd_h1_working_capital",
+      "package": "data/product/packages/byd-2024h1",
+      "question": "应收和存货变化是否异常？",
+      "expected_skill": "financial_health",
+      "relevant_evidence_ids": [
+        "chunk_product_byd_2024h1_accounts_receivable",
+        "chunk_product_byd_2024h1_inventory"
+      ]
+    },
+    {
+      "case_id": "byd_h1_full_analysis",
+      "package": "data/product/packages/byd-2024h1",
+      "question": "请做一个完整分析，覆盖业绩、现金流和财务质量。",
+      "expected_skill": "company_overview",
+      "relevant_evidence_ids": [
+        "chunk_product_byd_2024h1_revenue",
+        "chunk_product_byd_2024h1_operating_cost",
+        "chunk_product_byd_2024h1_net_income",
+        "chunk_product_byd_2024h1_operating_cash_flow",
+        "chunk_product_byd_2024h1_accounts_receivable",
+        "chunk_product_byd_2024h1_inventory"
+      ]
+    }
+  ]
+}

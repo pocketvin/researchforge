@@ -9,15 +9,16 @@ Read, in order:
 1. `README.md`
 2. `PROJECT_STATUS.md`
 3. `docs/product/researchforge-final-delivery-roadmap.md`
-4. `docs/product/v1.7.2-to-v1.7.3-reliability-hardening.md`
-5. `docs/product/v1.7.3-owner-runtime-isolation-hotfix.md`
-6. `docs/contracts/README.md` and the schemas relevant to the change
+4. `docs/product/v1.8.5-agent-engineering-hardening.md`
+5. `docs/architecture/v1.8.5-agent-engineering.md`
+6. `docs/product/v1.7.3-owner-runtime-isolation-hotfix.md`
+7. `docs/contracts/README.md` and the schemas relevant to the change
 
 Do not implement behavior from memory or from the demo narrative alone.
 
 ## Scope Control
 
-- V1.7.3 Reliability & Audit Hardening over V1.7 General Company Research is the active product direction. V1.4/V1.5/V1.6/V1.7.0-1.7.2 remain preserved history; never silently rewrite older persisted semantics.
+- V1.8.5 Agent Engineering Hardening is the active product package over the preserved V1.7 General Company Research truth boundary. V1.8 adds security, Agent Eval, failure analysis, retrieval benchmarking and MCP interoperability; it does not reinterpret V1.7.3 Run Manifests or V1.7 Research Results. Older persisted semantics remain preserved history.
 - Research is the primary product. Evolution is a frozen, read-only Quality / Research Lab and must not drive new features unless real usage later establishes a stable failure pattern and a new protocol is approved.
 - Do not add excluded capabilities such as trading, price prediction, multi-agent debate, complex RAG, full-market data, or open-ended optimization without an explicit scope decision.
 - A scope change requires a decision-log entry, change note, contract/schema impact assessment, and updated acceptance evidence.
@@ -26,7 +27,7 @@ Do not implement behavior from memory or from the demo narrative alone.
 ## Execution Discipline
 
 - Maintain one active milestone and one work-in-progress slice.
-- The current critical path is V1.7.3 reliability hardening: truthful run bounds, restart recovery, concurrency-safe local persistence, localhost-only demo exposure, complete history access, source guards and documentation alignment. Then return to owner re-acceptance.
+- The current critical path is V1.8.5 release closeout: freeze V1.8 contracts/evidence, keep the measured retrieval decision honest, verify MCP stays a thin same-backend adapter, run the full security/eval/product gate, sync main to GitHub and return to owner re-acceptance.
 - Update both `PROJECT_STATUS.md` and `project-status.json` at the end of every implementation session.
 - Record architecture, data, cost, or scope choices in `DECISIONS.md`; chat history is not a decision record.
 - Do not introduce infrastructure unless `docs/architecture/implementation-blueprint.md` shows a current gate requires it and a smaller option was evaluated.
@@ -42,10 +43,8 @@ Do not implement behavior from memory or from the demo narrative alone.
 
 ## Contract-First Development
 
-- New V1.5 product artifacts must validate against an active V1.5 schema when one exists; reused
-  unchanged research artifacts continue to validate against their preserved V1.4 schema.
-- Schema-breaking changes require a new schema version. Do not silently mutate V1.4 or V1.5
-  semantics.
+- New V1.8 engineering artifacts (Agent Eval, Retrieval Benchmark, Failure Analysis and MCP toolset metadata) validate against `schemas/v1.8/`. Existing Research Results and lifecycle artifacts keep their original V1.7/V1.7.3 schema versions.
+- Reused unchanged V1.5/V1.4 artifacts continue to validate against their preserved schemas. Schema-breaking changes require a new schema version; do not silently mutate historical semantics.
 - Deterministic finance formulas must follow `docs/contracts/financial-methodology.md` and carry a `formula_version`.
 - Every material research claim must link to fact IDs, evidence IDs, or be explicitly marked as a limitation/hypothesis.
 - Do not persist hidden chain-of-thought. Persist explicit plan steps, tool inputs/outputs, claim-evidence links, and concise decision summaries.

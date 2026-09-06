@@ -57,7 +57,7 @@ describe('ResearchForge UI', () => {
       'fetch',
       vi.fn((input: RequestInfo | URL) => {
         const path = String(input)
-        if (path === '/v1/runtime-capabilities') return Promise.resolve(json({ version: '1.7.3', reasoning_mode: synthesisMode === 'model' ? 'auto' : 'deterministic', model_synthesis_configured: synthesisMode === 'model', research_output_mode: synthesisMode === 'model' ? 'model_synthesis' : 'evidence_only' }))
+        if (path === '/v1/runtime-capabilities') return Promise.resolve(json({ version: '1.8.5', reasoning_mode: synthesisMode === 'model' ? 'auto' : 'deterministic', model_synthesis_configured: synthesisMode === 'model', research_output_mode: synthesisMode === 'model' ? 'model_synthesis' : 'evidence_only' }))
         if (path === '/v1/catalog') return Promise.resolve(json(catalog))
         if (path.endsWith('/artifacts/failure-cluster')) {
           return Promise.resolve(json({

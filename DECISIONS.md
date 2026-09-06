@@ -51,6 +51,13 @@ This file records decisions that materially affect scope, architecture, data, ev
 | RF-035 | Separate Research Synthesis from Evidence Summary in V1.7.1 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
 | RF-036 | Make Research a persistent workspace and demote Quality Lab in V1.7.2 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
 | RF-037 | Harden autonomous lifecycle, concurrency and audit boundaries in V1.7.3 | ACCEPTED | 2026-09-05 | Owner re-acceptance |
+| RF-038 | Isolate Owner runtime and bind model IDs to current evidence | ACCEPTED | 2026-09-06 | Owner re-acceptance |
+| RF-039 | Add V1.8.5 Agent engineering hardening without changing V1.7 research truth | ACCEPTED | 2026-09-06 | Release closeout |
+| RF-040 | Evaluate product agents with artifact-grounded metrics and no invented LLM-judge truth | ACCEPTED | 2026-09-06 | — |
+| RF-041 | Require frozen retrieval evidence before pgvector/dense retrieval adoption | ACCEPTED | 2026-09-06 | — |
+| RF-042 | Turn persisted failures into a deterministic taxonomy and regression loop | ACCEPTED | 2026-09-06 | — |
+| RF-043 | Keep MCP as a thin same-backend interoperability layer | ACCEPTED | 2026-09-06 | — |
+| RF-044 | Make dependency and browser/API security checks explicit CI gates | ACCEPTED | 2026-09-06 | Release closeout |
 
 ## RF-001 — Contract-First Implementation
 
@@ -862,3 +869,47 @@ General Research 的 Structured Output schema 必须在每次请求时把 `evide
 ### 验证边界
 
 Owner stack 已验证 `reasoning_mode=auto` 且 `research_output_mode=model_synthesis`。同类真实问题复测：贵州茅台盈利能力为 6 Claims / 5 sections / Supported，大华股份增长来源为 6 / 5 / Supported，均为 `synthesis_mode=model`。隔离 deterministic container gate 3/3 PASS，且前后 Owner runtime 均保持 `auto + model_synthesis`。`RELEASE_FREEZE` 仍必须由 owner 手工 re-acceptance 完成。
+
+## RF-039 — V1.8.5 adds Agent engineering hardening without changing V1.7 research truth
+
+**Date:** 2026-09-06
+**Status:** ACCEPTED
+
+V1.8.5 is an engineering/product-package upgrade over the preserved V1.7 General Company Research semantics. It adds dependency/security refresh, Product Agent Eval, failure analysis, retrieval benchmarking, MCP interoperability and interview-oriented architecture evidence. Existing V1.7.3 Run Manifests and V1.7 Research Results keep their original schema versions; release numbering is not a license to rewrite persisted history.
+
+## RF-040 — Product Agent Eval uses inspectable artifact metrics, not an invented judge
+
+**Date:** 2026-09-06
+**Status:** ACCEPTED
+
+`researchforge eval` may score routing, plan completion, grounded-claim coverage, citation existence, structured-output validity and workflow trajectory from frozen cases or persisted Runs. Thread evaluation requires a common company context. V1.8.5 does not claim prose-level semantic consistency unless a separately versioned judge/human protocol is introduced and validated.
+
+The frozen offline suite and persisted Owner runs are engineering evidence, not a claim of analyst usefulness or market validation.
+
+## RF-041 — Retrieval infrastructure follows frozen benchmark evidence
+
+**Date:** 2026-09-06
+**Status:** ACCEPTED
+
+V1.8.3 compares the production lexical retriever against local TF-IDF sparse-vector ranking and simple reciprocal-rank fusion before adding a vector database. On the initial eight reviewed cases, TF-IDF improves Recall@10, Precision@5 and MRR; RRF improves Recall@10 but reduces Precision@5. The current sample is too small to justify pgvector or dense embeddings, so production retrieval remains unchanged while the benchmark becomes a CI-visible decision instrument.
+
+## RF-042 — Persisted failures feed a deterministic failure/regression loop
+
+**Date:** 2026-09-06
+**Status:** ACCEPTED
+
+V1.8.2 defines fourteen failure classes spanning company resolution, discovery, acquisition, parsing, retrieval, evidence insufficiency, tools, model schema, grounding, citations, timeout, budget, recovery and infrastructure. `researchforge failure-analyze` classifies only recorded failure metadata and preserves the root-cause summary. Failures other than expected evidence insufficiency are marked as regression candidates rather than silently disappearing from the product story.
+
+## RF-043 — MCP is a thin same-backend interoperability layer
+
+**Date:** 2026-09-06
+**Status:** ACCEPTED
+
+The MCP server uses the official Python SDK and exposes seven bounded tools. Research submission and persisted artifacts go through the existing ResearchForge backend; company discovery and evidence search reuse the existing bounded components. MCP must not own finance formulas, a second evidence store or an alternate research engine. stdio is the default transport; optional Streamable HTTP binds to localhost by default.
+
+## RF-044 — Security audits are release gates, not occasional manual checks
+
+**Date:** 2026-09-06
+**Status:** ACCEPTED
+
+V1.8.0 upgrades the active dependency line, runs `pip-audit` and `npm audit` in CI, disables FastAPI interactive docs by default, keeps product services localhost-bound and adds explicit browser security headers. A later dependency CVE can therefore fail CI even when application tests still pass. Security findings are not inferred from test success alone.

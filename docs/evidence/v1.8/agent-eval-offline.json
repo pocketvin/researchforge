@@ -1,0 +1,465 @@
+{
+  "component_eval": {
+    "retrieval": {
+      "hybrid_rrf": {
+        "mrr": 1.0,
+        "precision_at_5": 0.375,
+        "recall_at_10": 0.875,
+        "recall_at_5": 0.8542
+      },
+      "lexical": {
+        "mrr": 0.75,
+        "precision_at_5": 0.4583,
+        "recall_at_10": 0.8125,
+        "recall_at_5": 0.8125
+      },
+      "tfidf_vector": {
+        "mrr": 1.0,
+        "precision_at_5": 0.5417,
+        "recall_at_10": 0.8542,
+        "recall_at_5": 0.8542
+      }
+    },
+    "router_accuracy": 1.0
+  },
+  "passed": true,
+  "retrieval_benchmark": {
+    "case_count": 8,
+    "cases": [
+      {
+        "case_id": "catl_h1_cash_quality",
+        "expected_skill": "financial_health",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.4,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "lexical": {
+            "mrr": 1.0,
+            "precision_at_5": 0.4,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          }
+        },
+        "observed_skill": "financial_health",
+        "question": "现金流和利润质量如何？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_net_income",
+            "chunk_product_catl_2024h1_non_recurring_profit",
+            "chunk_product_catl_2024h1_accounts_receivable",
+            "chunk_product_catl_2024h1_inventory"
+          ],
+          "lexical": [
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_accounts_receivable",
+            "chunk_product_catl_2024h1_inventory",
+            "chunk_product_catl_2024h1_non_recurring_profit",
+            "chunk_product_catl_2024h1_net_income"
+          ],
+          "tfidf_vector": [
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_net_income",
+            "chunk_product_catl_2024h1_non_recurring_profit"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_operating_cash_flow"
+        ],
+        "router_pass": true
+      },
+      {
+        "case_id": "catl_h1_working_capital",
+        "expected_skill": "financial_health",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.5,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "lexical": {
+            "mrr": 1.0,
+            "precision_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          }
+        },
+        "observed_skill": "financial_health",
+        "question": "应收账款和存货是否值得关注？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_catl_2024h1_accounts_receivable",
+            "chunk_product_catl_2024h1_inventory",
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_revenue"
+          ],
+          "lexical": [
+            "chunk_product_catl_2024h1_accounts_receivable",
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_inventory"
+          ],
+          "tfidf_vector": [
+            "chunk_product_catl_2024h1_accounts_receivable",
+            "chunk_product_catl_2024h1_inventory",
+            "chunk_product_catl_2024h1_revenue"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_catl_2024h1_accounts_receivable",
+          "chunk_product_catl_2024h1_inventory"
+        ],
+        "router_pass": true
+      },
+      {
+        "case_id": "catl_h1_profitability",
+        "expected_skill": "financial_health",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.2,
+            "recall_at_10": 0.3333333333333333,
+            "recall_at_5": 0.3333333333333333
+          },
+          "lexical": {
+            "mrr": 0.0,
+            "precision_at_5": 0.0,
+            "recall_at_10": 0.0,
+            "recall_at_5": 0.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.5,
+            "recall_at_10": 0.3333333333333333,
+            "recall_at_5": 0.3333333333333333
+          }
+        },
+        "observed_skill": "financial_health",
+        "question": "盈利能力和毛利率怎么样？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_catl_2024h1_net_income",
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_accounts_receivable",
+            "chunk_product_catl_2024h1_non_recurring_profit",
+            "chunk_product_catl_2024h1_inventory"
+          ],
+          "lexical": [
+            "chunk_product_catl_2024h1_operating_cash_flow",
+            "chunk_product_catl_2024h1_accounts_receivable",
+            "chunk_product_catl_2024h1_inventory"
+          ],
+          "tfidf_vector": [
+            "chunk_product_catl_2024h1_net_income",
+            "chunk_product_catl_2024h1_non_recurring_profit"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_catl_2024h1_net_income",
+          "chunk_product_catl_2024h1_operating_cost",
+          "chunk_product_catl_2024h1_revenue"
+        ],
+        "router_pass": true
+      },
+      {
+        "case_id": "catl_fy_revenue_change",
+        "expected_skill": "earnings_change",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.2,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "lexical": {
+            "mrr": 1.0,
+            "precision_at_5": 0.3333333333333333,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.25,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          }
+        },
+        "observed_skill": "earnings_change",
+        "question": "营业收入为什么发生变化？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_catl_2024fy_revenue",
+            "chunk_product_catl_2024fy_operating_cost",
+            "chunk_product_catl_2024fy_net_income",
+            "chunk_product_catl_2024fy_operating_cash_flow",
+            "chunk_product_catl_2024fy_accounts_receivable"
+          ],
+          "lexical": [
+            "chunk_product_catl_2024fy_revenue",
+            "chunk_product_catl_2024fy_operating_cost",
+            "chunk_product_catl_2024fy_net_income"
+          ],
+          "tfidf_vector": [
+            "chunk_product_catl_2024fy_revenue",
+            "chunk_product_catl_2024fy_operating_cost",
+            "chunk_product_catl_2024fy_operating_cash_flow",
+            "chunk_product_catl_2024fy_accounts_receivable"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_catl_2024fy_revenue"
+        ],
+        "router_pass": true
+      },
+      {
+        "case_id": "catl_fy_cash_flow",
+        "expected_skill": "financial_health",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.2,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "lexical": {
+            "mrr": 1.0,
+            "precision_at_5": 0.3333333333333333,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.3333333333333333,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          }
+        },
+        "observed_skill": "financial_health",
+        "question": "经营现金流表现如何？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_catl_2024fy_operating_cash_flow",
+            "chunk_product_catl_2024fy_accounts_receivable",
+            "chunk_product_catl_2024fy_revenue",
+            "chunk_product_catl_2024fy_inventory",
+            "chunk_product_catl_2024fy_operating_cost"
+          ],
+          "lexical": [
+            "chunk_product_catl_2024fy_operating_cash_flow",
+            "chunk_product_catl_2024fy_accounts_receivable",
+            "chunk_product_catl_2024fy_inventory"
+          ],
+          "tfidf_vector": [
+            "chunk_product_catl_2024fy_operating_cash_flow",
+            "chunk_product_catl_2024fy_revenue",
+            "chunk_product_catl_2024fy_operating_cost"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_catl_2024fy_operating_cash_flow"
+        ],
+        "router_pass": true
+      },
+      {
+        "case_id": "byd_h1_profit_change",
+        "expected_skill": "earnings_change",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.5,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "lexical": {
+            "mrr": 1.0,
+            "precision_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          }
+        },
+        "observed_skill": "earnings_change",
+        "question": "净利润为什么变化？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_byd_2024h1_net_income",
+            "chunk_product_byd_2024h1_non_recurring_profit",
+            "chunk_product_byd_2024h1_operating_cash_flow",
+            "chunk_product_byd_2024h1_revenue"
+          ],
+          "lexical": [
+            "chunk_product_byd_2024h1_non_recurring_profit",
+            "chunk_product_byd_2024h1_net_income",
+            "chunk_product_byd_2024h1_revenue"
+          ],
+          "tfidf_vector": [
+            "chunk_product_byd_2024h1_net_income",
+            "chunk_product_byd_2024h1_non_recurring_profit",
+            "chunk_product_byd_2024h1_operating_cash_flow"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_byd_2024h1_net_income",
+          "chunk_product_byd_2024h1_non_recurring_profit"
+        ],
+        "router_pass": true
+      },
+      {
+        "case_id": "byd_h1_working_capital",
+        "expected_skill": "financial_health",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.4,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "lexical": {
+            "mrr": 0.5,
+            "precision_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.5,
+            "recall_at_10": 1.0,
+            "recall_at_5": 1.0
+          }
+        },
+        "observed_skill": "financial_health",
+        "question": "应收和存货变化是否异常？",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_byd_2024h1_inventory",
+            "chunk_product_byd_2024h1_accounts_receivable",
+            "chunk_product_byd_2024h1_operating_cash_flow",
+            "chunk_product_byd_2024h1_revenue",
+            "chunk_product_byd_2024h1_non_recurring_profit"
+          ],
+          "lexical": [
+            "chunk_product_byd_2024h1_operating_cash_flow",
+            "chunk_product_byd_2024h1_accounts_receivable",
+            "chunk_product_byd_2024h1_inventory"
+          ],
+          "tfidf_vector": [
+            "chunk_product_byd_2024h1_inventory",
+            "chunk_product_byd_2024h1_accounts_receivable",
+            "chunk_product_byd_2024h1_revenue",
+            "chunk_product_byd_2024h1_non_recurring_profit"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_byd_2024h1_accounts_receivable",
+          "chunk_product_byd_2024h1_inventory"
+        ],
+        "router_pass": true
+      },
+      {
+        "case_id": "byd_h1_full_analysis",
+        "expected_skill": "company_overview",
+        "metrics": {
+          "hybrid_rrf": {
+            "mrr": 1.0,
+            "precision_at_5": 0.6,
+            "recall_at_10": 0.6666666666666666,
+            "recall_at_5": 0.5
+          },
+          "lexical": {
+            "mrr": 0.5,
+            "precision_at_5": 0.6,
+            "recall_at_10": 0.5,
+            "recall_at_5": 0.5
+          },
+          "tfidf_vector": {
+            "mrr": 1.0,
+            "precision_at_5": 0.75,
+            "recall_at_10": 0.5,
+            "recall_at_5": 0.5
+          }
+        },
+        "observed_skill": "company_overview",
+        "question": "请做一个完整分析，覆盖业绩、现金流和财务质量。",
+        "rankings": {
+          "hybrid_rrf": [
+            "chunk_product_byd_2024h1_operating_cash_flow",
+            "chunk_product_byd_2024h1_unaudited_interim_report",
+            "chunk_product_byd_2024h1_revenue",
+            "chunk_product_byd_2024h1_non_recurring_profit",
+            "chunk_product_byd_2024h1_operating_cost",
+            "chunk_product_byd_2024h1_net_income"
+          ],
+          "lexical": [
+            "chunk_product_byd_2024h1_non_recurring_profit",
+            "chunk_product_byd_2024h1_operating_cash_flow",
+            "chunk_product_byd_2024h1_revenue",
+            "chunk_product_byd_2024h1_unaudited_interim_report",
+            "chunk_product_byd_2024h1_net_income"
+          ],
+          "tfidf_vector": [
+            "chunk_product_byd_2024h1_operating_cash_flow",
+            "chunk_product_byd_2024h1_unaudited_interim_report",
+            "chunk_product_byd_2024h1_revenue",
+            "chunk_product_byd_2024h1_operating_cost"
+          ]
+        },
+        "relevant_evidence_ids": [
+          "chunk_product_byd_2024h1_accounts_receivable",
+          "chunk_product_byd_2024h1_inventory",
+          "chunk_product_byd_2024h1_net_income",
+          "chunk_product_byd_2024h1_operating_cash_flow",
+          "chunk_product_byd_2024h1_operating_cost",
+          "chunk_product_byd_2024h1_revenue"
+        ],
+        "router_pass": true
+      }
+    ],
+    "decision_rule": "Adopt a more complex retrieval strategy only if Recall@10 improves materially without reducing evidence precision or violating deterministic/offline constraints.",
+    "router_accuracy": 1.0,
+    "schema_version": "1.8.0",
+    "strategies": {
+      "hybrid_rrf": {
+        "mrr": 1.0,
+        "precision_at_5": 0.375,
+        "recall_at_10": 0.875,
+        "recall_at_5": 0.8542
+      },
+      "lexical": {
+        "mrr": 0.75,
+        "precision_at_5": 0.4583,
+        "recall_at_10": 0.8125,
+        "recall_at_5": 0.8125
+      },
+      "tfidf_vector": {
+        "mrr": 1.0,
+        "precision_at_5": 0.5417,
+        "recall_at_10": 0.8542,
+        "recall_at_5": 0.8542
+      }
+    }
+  },
+  "run_evaluations": [],
+  "schema_version": "1.8.0",
+  "suite_id": "product-agent-eval-v1.8.0"
+}

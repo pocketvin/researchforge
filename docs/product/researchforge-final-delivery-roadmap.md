@@ -1,11 +1,11 @@
-# ResearchForge V1.7.3 Final Delivery Roadmap
+# ResearchForge V1.8.5 Final Delivery Roadmap
 
 **Updated:** 2026-09-06
-**Status:** V1.7.3 engineering complete; owner re-acceptance remains
+**Status:** V1.8.5 Agent Engineering Hardening in release closeout; owner re-acceptance remains
 
 ## Final product definition
 
-ResearchForge V1.7.3 is an auditable, question-driven Financial Research Agent with explicit Research Synthesis vs Evidence Summary modes:
+ResearchForge V1.8.5 is an auditable, question-driven Financial Research Agent with explicit Research Synthesis vs Evidence Summary modes plus a measured Agent-engineering layer for evaluation, failure analysis, retrieval benchmarking, security and MCP interoperability:
 
 > Input a public company name/ticker and a natural-language research question; ResearchForge resolves the issuer, finds an official filing, builds a verified numerical backbone plus full-filing Evidence, plans research around the question, and returns inspectable conclusions, Claims, Deep Analysis and Trace.
 
@@ -82,9 +82,25 @@ Owner re-testing exposed that a previously created deterministic container can r
 
 After runtime recovery, two representative General Research questions still exposed out-of-context Evidence IDs in model Structured Output. Evidence/Fact ID fields are now dynamically enum-constrained to the exact current-run context before provider generation, while graph validation remains in place. The exact owner-path categories were rerun successfully: 贵州茅台 profitability (6 Claims / 5 sections / Supported) and 大华股份 growth (6 / 5 / Supported), both with `synthesis_mode=model`.
 
-## Phase E — Full engineering gate
+## Phase D.5 — V1.8.5 Agent Engineering Hardening
 
-**Status: PASS.**
+**Status: implemented; final release gate pending.**
+
+V1.8.5 preserves the V1.7 research truth boundary and V1.7.3 lifecycle contracts while adding current dependency/security baselines, Product Agent Eval, deterministic failure classification, a frozen retrieval benchmark and a seven-tool MCP interface over the same backend.
+
+The first frozen retrieval suite measures production lexical against TF-IDF sparse-vector and simple RRF alternatives. TF-IDF improves the current small suite; naïve RRF raises recall while reducing precision. Per RF-041, this is not enough evidence to introduce pgvector/dense retrieval.
+
+Persisted Owner model Runs can be evaluated without rerunning the model. Three same-company 贵州茅台 Runs pass routing, plan, grounding, citation, structured-output and ten-stage trajectory checks; prose-level contradiction scoring is intentionally not claimed. A real historical Evidence-ID `OUTPUT_SCHEMA_INVALID` failure is classified as `MODEL_SCHEMA_FAILURE` and retained as a regression candidate.
+
+MCP uses the official Python SDK, stdio by default and optional localhost Streamable HTTP. It exposes company resolution, filing discovery, research submission, persisted result/trace/facts and evidence search while leaving finance/evidence/research ownership in the existing backend.
+
+See [V1.8.5 engineering note](v1.8.5-agent-engineering-hardening.md), [architecture](../architecture/v1.8.5-agent-engineering.md) and [measured evidence](../evidence/v1.8/README.md).
+
+## Phase E — V1.8.5 Full engineering gate
+
+**Status: local PASS; remote GitHub CI pending.**
+
+The preserved V1.7.3 gate passed previously. V1.8.5 has now rerun the complete local gate after the dependency, Eval, MCP and CI changes; remote CI still must match before engineering completion is declared.
 
 ```text
 uv lock --check
@@ -100,11 +116,11 @@ fresh Docker build/start/smoke
 git diff review
 ```
 
-Final verified counts: 225 pytest tests, 110 mypy source files, 611 local schema refs, 7 frontend unit tests, 3 mocked E2E, 3 live-backend E2E, 11 n8n Node tests, 3 Docker smoke cases, 3 actual n8n success cases and 5 transport-only failure scenarios. Packaged lifecycle smoke observed `queued/queued → running/completed → succeeded/completed`; API/Web/n8n published only on localhost.
+Fresh V1.8.5 local gate: **233 pytest tests**, strict mypy over **120 source files**, **625 local schema refs**, 7 frontend unit tests, 3 mocked + 3 live-backend E2E, no known Python dependency vulnerabilities, 0 frontend audit vulnerabilities, 11 n8n Node tests, 3 isolated Docker smoke cases, 3 actual n8n success cases, 5/5 transport-only failures and a seven-tool MCP live smoke. Owner runtime is V1.8.5 `auto + model_synthesis`, localhost-only, with API docs disabled and Web security headers verified.
 
 ## Phase F — Owner re-acceptance / Release Freeze
 
-**Status: pending owner re-acceptance; engineering is complete.**
+**Status: pending after V1.8.5 engineering/remote closeout.**
 
 The first V1.7 Owner Acceptance failed on synthesis quality and is preserved as such. The owner now manually rechecks representative model synthesis plus the V1.7.3 hardened continuous-research/history workflow, audit hierarchy, the explicit fallback state and one bounded failure. Automation must not invent this human acceptance. There is no six-person Human Pilot prerequisite.
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
@@ -35,6 +36,7 @@ from researchforge.application.formal_experiment import (
 )
 from researchforge.application.research import ConclusionGenerator
 from researchforge.application.simulated_usability import SimulatedUsabilityRunner
+from researchforge.evaluation import AgentEvalHarness, failure_record
 from researchforge.ingestion import FilingRegistry, ProductDisclosureIngestion
 
 
@@ -163,6 +165,25 @@ def _parser() -> argparse.ArgumentParser:
             type=Path,
             default=PROJECT_ROOT / "docs" / "assets" / "skill-lab-page.png",
         )
+    evaluation = subcommands.add_parser(
+        "eval", help="run the frozen V1.8 product-agent evaluation harness"
+    )
+    evaluation.add_argument(
+        "--suite",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "evaluation" / "v1.8" / "eval-suite.json",
+    )
+    evaluation.add_argument("--run-id", action="append", default=[])
+    evaluation.add_argument(
+        "--api-base",
+        help="evaluate persisted runs through a live ResearchForge API instead of local artifacts",
+    )
+    evaluation.add_argument("--output", type=Path)
+    failure = subcommands.add_parser(
+        "failure-analyze", help="classify one persisted failed run without model calls"
+    )
+    failure.add_argument("run_id")
+    failure.add_argument("--api-base")
     subcommands.add_parser("catalog", help="show the configured allowlisted data catalog")
     ingest = subcommands.add_parser(
         "ingest-disclosure",
@@ -195,6 +216,12 @@ def _parser() -> argparse.ArgumentParser:
 
 def _print(payload: Any) -> None:
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+def _api_json(api_base: str, path: str) -> Any:
+    url = f"{api_base.rstrip('/')}{path}"
+    with urllib.request.urlopen(url, timeout=30) as response:
+        return json.load(response)
 
 
 def _openai_generator_factory() -> GeneratorFactory:
@@ -343,6 +370,92 @@ def _simulated_usability_runner(args: argparse.Namespace) -> SimulatedUsabilityR
 def main(argv: list[str] | None = None) -> None:
     """Execute a run or inspect persisted artifacts without provider calls."""
     args = _parser().parse_args(argv)
+    if args.command == "eval":
+        suite = json.loads(Path(args.suite).read_text(encoding="utf-8"))
+        if not isinstance(suite, dict):
+            raise ValueError("evaluation suite must be a JSON object")
+        harness = AgentEvalHarness()
+        payload = harness.evaluate_offline_suite(PROJECT_ROOT, suite)
+        run_evaluations: list[dict[str, Any]] = []
+        if args.run_id:
+            service = None if args.api_base else build_default_service(args.artifact_root)
+            for run_id in args.run_id:
+                run_id = str(run_id)
+                if args.api_base:
+                    manifest = _api_json(args.api_base, f"/v1/research-runs/{run_id}")
+                    succeeded = manifest["lifecycle_state"] == "succeeded"
+                    has_trace = manifest["artifacts"]["workflow_trace_id"] is not None
+                    result = (
+                        _api_json(args.api_base, f"/v1/research-runs/{run_id}/result")
+                        if succeeded
+                        else None
+                    )
+                    trace = (
+                        _api_json(args.api_base, f"/v1/research-runs/{run_id}/trace")
+                        if has_trace
+                        else None
+                    )
+                    facts = (
+                        _api_json(args.api_base, f"/v1/research-runs/{run_id}/facts")
+                        if succeeded
+                        else []
+                    )
+                    evidence = (
+                        _api_json(args.api_base, f"/v1/research-runs/{run_id}/evidence")
+                        if succeeded
+                        else []
+                    )
+                    calculations = (
+                        _api_json(args.api_base, f"/v1/research-runs/{run_id}/calculations")
+                        if succeeded
+                        else []
+                    )
+                else:
+                    assert service is not None
+                    manifest = service.get_manifest(run_id)
+                    succeeded = manifest["lifecycle_state"] == "succeeded"
+                    has_trace = manifest["artifacts"]["workflow_trace_id"] is not None
+                    result = service.get_result(run_id) if succeeded else None
+                    trace = service.get_trace(run_id) if has_trace else None
+                    facts = service.get_facts(run_id) if succeeded else []
+                    evidence = service.get_evidence(run_id) if succeeded else []
+                    calculations = service.get_calculations(run_id) if succeeded else []
+                run_evaluations.append(
+                    harness.evaluate_bundle(
+                        manifest=manifest,
+                        result=result,
+                        trace=trace,
+                        facts=facts,
+                        evidence=evidence,
+                        calculations=calculations,
+                    )
+                )
+        payload["run_evaluations"] = run_evaluations
+        if len(run_evaluations) > 1:
+            payload["thread_eval"] = harness.evaluate_thread(run_evaluations)
+        if args.output is not None:
+            output = Path(args.output)
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+        _print(payload)
+        if not payload["passed"] or any(
+            not bool(item.get("task_success")) for item in run_evaluations
+        ):
+            raise SystemExit(2)
+        return
+    if args.command == "failure-analyze":
+        run_id = str(args.run_id)
+        manifest = (
+            _api_json(args.api_base, f"/v1/research-runs/{run_id}")
+            if args.api_base
+            else build_default_service(args.artifact_root).get_manifest(run_id)
+        )
+        record = failure_record(manifest)
+        _print(record or {"run_id": run_id, "failure": None})
+        return
     if args.command in {"calibration-preflight", "calibrate"}:
         calibration_runner = _calibration_runner(args)
         _print(

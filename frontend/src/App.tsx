@@ -1196,7 +1196,7 @@ export default function App() {
           <span><strong>ResearchForge</strong><small>Evidence before narrative</small></span>
         </button>
         <div className={`header-badge ${capabilities && !aiReady ? 'evidence-only' : 'ai-ready'}`} title={capabilities ? `reasoning=${capabilities.reasoning_mode}` : '正在检查研究能力'}>
-          <span /> REAL DATA · V1.7.3 · {capabilities ? (aiReady ? 'AI READY' : 'EVIDENCE ONLY') : 'CHECKING AI'}
+          <span /> REAL DATA · V1.8.5 · {capabilities ? (aiReady ? 'AI READY' : 'EVIDENCE ONLY') : 'CHECKING AI'}
         </div>
       </header>
       <div hidden={page !== 'research'}><ResearchPage /></div>

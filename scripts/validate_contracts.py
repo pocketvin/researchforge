@@ -23,12 +23,17 @@ V17_SCHEMA_VERSION = "v1.7"
 V17_ARTIFACT_VERSION = "1.7.0"
 V173_SCHEMA_VERSION = "v1.7.3"
 V173_ARTIFACT_VERSION = "1.7.3"
+V18_SCHEMA_VERSION = "v1.8"
+V18_ARTIFACT_VERSION = "1.8.0"
 HISTORICAL_SCHEMA_VERSIONS = ("v1.3", "v1.2")
 SCHEMA_DIR = ROOT / "schemas" / CURRENT_SCHEMA_VERSION
 ACTIVE_PRODUCT_SCHEMA_DIR = ROOT / "schemas" / ACTIVE_PRODUCT_SCHEMA_VERSION
 V17_SCHEMA_DIR = ROOT / "schemas" / V17_SCHEMA_VERSION
 V173_SCHEMA_DIR = ROOT / "schemas" / V173_SCHEMA_VERSION
 V173_EXAMPLE_DIR = ROOT / "examples" / "contracts" / V173_SCHEMA_VERSION
+V18_SCHEMA_DIR = ROOT / "schemas" / V18_SCHEMA_VERSION
+V18_EXAMPLE_DIR = ROOT / "examples" / "contracts" / V18_SCHEMA_VERSION
+V18_EVIDENCE_DIR = ROOT / "docs" / "evidence" / "v1.8"
 HISTORICAL_SCHEMA_DIRS = {
     version: ROOT / "schemas" / version for version in HISTORICAL_SCHEMA_VERSIONS
 }
@@ -101,6 +106,18 @@ REQUIRED_SCHEMAS = {
 V17_REQUIRED_SCHEMAS = {"research-result.schema.json", "n8n-research-output.schema.json"}
 V173_REQUIRED_SCHEMAS = {"run-manifest.schema.json"}
 V173_EXAMPLES = {"run-manifest.autonomous-queued.example.json": "run-manifest.schema.json"}
+V18_REQUIRED_SCHEMAS = {
+    "agent-evaluation.schema.json",
+    "failure-analysis.schema.json",
+    "mcp-toolset.schema.json",
+    "retrieval-benchmark.schema.json",
+}
+V18_EXAMPLES = {
+    "agent-evaluation.example.json": "agent-evaluation.schema.json",
+    "failure-analysis.example.json": "failure-analysis.schema.json",
+    "mcp-toolset.example.json": "mcp-toolset.schema.json",
+    "retrieval-benchmark.example.json": "retrieval-benchmark.schema.json",
+}
 
 ACTIVE_PRODUCT_REQUIRED_SCHEMAS = {
     "common.schema.json",
@@ -201,7 +218,16 @@ REQUIRED_CONTRACTS = {
     ROOT / "scripts" / "extract_primary_pdf_text.py",
     ROOT / "scripts" / "inspect_financial_rows.py",
     ROOT / "src" / "researchforge" / "application" / "calibration.py",
+    ROOT / "src" / "researchforge" / "mcp_server.py",
+    ROOT / "src" / "researchforge" / "evaluation" / "harness.py",
+    ROOT / "scripts" / "mcp_smoke.py",
+    ROOT / "data" / "evaluation" / "v1.8" / "eval-suite.json",
+    V18_EVIDENCE_DIR / "agent-eval-offline.json",
+    V18_EVIDENCE_DIR / "owner-thread-eval.json",
+    V18_EVIDENCE_DIR / "failure-model-schema.json",
+    V18_EVIDENCE_DIR / "mcp-live-smoke.json",
     ROOT / "tests" / "application" / "test_calibration.py",
+    ROOT / "tests" / "test_mcp_server.py",
     G0_MANIFEST_PATH,
     G0_GOLDEN_CASES_PATH,
     PRIMARY_MANIFEST_PATH,
@@ -386,6 +412,7 @@ def validate_schema_shape(path: Path, schema: dict[str, Any]) -> None:
         ACTIVE_PRODUCT_SCHEMA_VERSION,
         V17_SCHEMA_VERSION,
         V173_SCHEMA_VERSION,
+        V18_SCHEMA_VERSION,
         CURRENT_SCHEMA_VERSION,
         *HISTORICAL_SCHEMA_VERSIONS,
     }
@@ -594,7 +621,10 @@ def validate_markdown_links() -> int:
     count = 0
     link_pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
     for path in ROOT.rglob("*.md"):
-        if any(part in {"node_modules", "dist", "playwright-report"} for part in path.parts):
+        if any(
+            part in {".venv", ".git", "node_modules", "dist", "playwright-report"}
+            for part in path.parts
+        ):
             continue
         for target in link_pattern.findall(path.read_text(encoding="utf-8")):
             if target.startswith(("http://", "https://", "mailto:")) or target.startswith("#"):
@@ -2022,7 +2052,8 @@ def main() -> int:
             "preserved V1.5 productization",
         )
         validate_schema_catalog(V17_SCHEMA_DIR, V17_REQUIRED_SCHEMAS, "active V1.7 product")
-        validate_schema_catalog(V173_SCHEMA_DIR, V173_REQUIRED_SCHEMAS, "active V1.7.3 runtime")
+        validate_schema_catalog(V173_SCHEMA_DIR, V173_REQUIRED_SCHEMAS, "preserved V1.7.3 runtime")
+        validate_schema_catalog(V18_SCHEMA_DIR, V18_REQUIRED_SCHEMAS, "active V1.8 engineering")
         for version, directory in HISTORICAL_SCHEMA_DIRS.items():
             validate_schema_catalog(
                 directory,
@@ -2035,6 +2066,7 @@ def main() -> int:
         schema_paths.extend(sorted(ACTIVE_PRODUCT_SCHEMA_DIR.glob("*.schema.json")))
         schema_paths.extend(sorted(V17_SCHEMA_DIR.glob("*.schema.json")))
         schema_paths.extend(sorted(V173_SCHEMA_DIR.glob("*.schema.json")))
+        schema_paths.extend(sorted(V18_SCHEMA_DIR.glob("*.schema.json")))
         for version in HISTORICAL_SCHEMA_VERSIONS:
             schema_paths.extend(sorted(HISTORICAL_SCHEMA_DIRS[version].glob("*.schema.json")))
         for path in schema_paths:
@@ -2090,6 +2122,42 @@ def main() -> int:
             schemas,
             "V1.7.3 runtime",
         )
+        v18_examples = validate_example_catalog(
+            V18_EXAMPLE_DIR,
+            V18_EXAMPLES,
+            V18_SCHEMA_DIR,
+            schemas,
+            "V1.8 engineering",
+        )
+        v18_agent_schema_path = (V18_SCHEMA_DIR / "agent-evaluation.schema.json").resolve()
+        v18_failure_schema_path = (V18_SCHEMA_DIR / "failure-analysis.schema.json").resolve()
+        for evidence_name in ("agent-eval-offline.json", "owner-thread-eval.json"):
+            evidence = load_json(V18_EVIDENCE_DIR / evidence_name)
+            validate_instance(
+                evidence, schemas[v18_agent_schema_path], v18_agent_schema_path, schemas
+            )
+        failure_evidence = load_json(V18_EVIDENCE_DIR / "failure-model-schema.json")
+        validate_instance(
+            failure_evidence,
+            schemas[v18_failure_schema_path],
+            v18_failure_schema_path,
+            schemas,
+        )
+        mcp_smoke = load_json(V18_EVIDENCE_DIR / "mcp-live-smoke.json")
+        expected_mcp_tools = [
+            item["name"] for item in v18_examples["mcp-toolset.example.json"]["tools"]
+        ]
+        if mcp_smoke.get("tools") != expected_mcp_tools:
+            raise ContractError("V1.8 MCP live-smoke toolset drifted from the frozen MCP contract")
+        existing_mcp_run = mcp_smoke.get("existing_run")
+        if not isinstance(existing_mcp_run, dict) or (
+            existing_mcp_run.get("fact_count") != 6
+            or existing_mcp_run.get("trace_stage_count") != 10
+            or existing_mcp_run.get("terminal_state") != "succeeded"
+            or existing_mcp_run.get("synthesis_mode") != "model"
+        ):
+            raise ContractError("V1.8 MCP live-smoke evidence is incomplete")
+
         active_product_examples = validate_example_catalog(
             ACTIVE_PRODUCT_EXAMPLE_DIR,
             ACTIVE_PRODUCT_EXAMPLES,
@@ -2105,6 +2173,14 @@ def main() -> int:
                 schemas,
                 version.upper(),
             )
+
+        v18_agent_schema = schemas[(V18_SCHEMA_DIR / "agent-evaluation.schema.json").resolve()]
+        if v18_agent_schema["properties"]["schema_version"].get("const") != V18_ARTIFACT_VERSION:
+            raise ContractError("V1.8 Agent Evaluation schema version is not frozen")
+        if v18_examples["mcp-toolset.example.json"]["backend_authority"] != (
+            "existing_researchforge_backend"
+        ):
+            raise ContractError("V1.8 MCP must remain a thin adapter over the existing backend")
 
         v173_run_schema = schemas[(V173_SCHEMA_DIR / "run-manifest.schema.json").resolve()]
         if v173_run_schema["properties"]["schema_version"].get("const") != V173_ARTIFACT_VERSION:
@@ -2190,8 +2266,9 @@ def main() -> int:
         markdown_link_count = validate_markdown_links()
 
         print(
-            f"PASS: {len(V173_REQUIRED_SCHEMAS)} active V1.7.3 runtime, "
-            f"{len(V17_REQUIRED_SCHEMAS)} active V1.7, "
+            f"PASS: {len(V18_REQUIRED_SCHEMAS)} active V1.8 engineering, "
+            f"{len(V173_REQUIRED_SCHEMAS)} preserved V1.7.3 runtime, "
+            f"{len(V17_REQUIRED_SCHEMAS)} preserved V1.7, "
             f"{len(ACTIVE_PRODUCT_REQUIRED_SCHEMAS)} preserved V1.5 productization, "
             f"{len(REQUIRED_SCHEMAS)} preserved V1.4, "
             f"{len(HISTORICAL_REQUIRED_SCHEMAS['v1.3'])} historical V1.3, and "
@@ -2199,7 +2276,8 @@ def main() -> int:
         )
         print(f"PASS: {reference_count} local schema references resolved")
         print(
-            f"PASS: {len(V173_EXAMPLES)} V1.7.3 runtime, "
+            f"PASS: {len(V18_EXAMPLES)} V1.8 engineering, "
+            f"{len(V173_EXAMPLES)} V1.7.3 runtime, "
             f"{len(ACTIVE_PRODUCT_EXAMPLES)} V1.5 productization, "
             f"{len(CURRENT_EXAMPLES)} V1.4, "
             f"{len(HISTORICAL_EXAMPLES['v1.3'])} V1.3, and "
@@ -2207,6 +2285,10 @@ def main() -> int:
         )
         print("PASS: insufficient_data cannot persist a Research Result artifact")
         print("PASS: model, simulation, budget, retrieval, and split semantics validated")
+        print(
+            "PASS: V1.8 offline/thread eval, failure analysis, "
+            "and MCP live-smoke evidence validated"
+        )
         print("PASS: immutable fundamental-research Seed Skill manifest and hash validated")
         print(
             "PASS: G0 fixture package validated "
