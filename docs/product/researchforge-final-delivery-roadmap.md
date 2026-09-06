@@ -1,7 +1,7 @@
 # ResearchForge V1.8.5 Final Delivery Roadmap
 
 **Updated:** 2026-09-06
-**Status:** V1.8.5 Owner re-acceptance passed; final CAS reliability closeout pending
+**Status:** V1.8.5 Release Freeze complete
 
 ## Final product definition
 
@@ -120,9 +120,9 @@ Fresh V1.8.5 local gate: **233 pytest tests**, strict mypy over **120 source fil
 
 ## Phase F — Owner re-acceptance / Release Freeze
 
-**Status: Owner re-acceptance PASS; final CAS-fix CI pending.**
+**Status: COMPLETE — Owner re-acceptance and final CAS-fix CI PASS.**
 
-The first V1.7 Owner Acceptance failed on synthesis quality and remains preserved as historical evidence. After the V1.8.5 engineering and remote gates passed, the owner manually re-tested a representative 贵州茅台 risk-analysis run in the V1.8.5 Web workspace, observed `AI READY` + `MODEL SYNTHESIS` with supported conclusions/findings, and reported no release blocker. This manual acceptance satisfies the human release condition. A later status-only CI rerun exposed a low-probability same-digest CAS concurrency race, so Release Freeze remains open only until that reliability fix passes remote CI. There is no six-person Human Pilot prerequisite.
+The first V1.7 Owner Acceptance failed on synthesis quality and remains preserved as historical evidence. After the V1.8.5 engineering and remote gates passed, the owner manually re-tested a representative 贵州茅台 risk-analysis run in the V1.8.5 Web workspace, observed `AI READY` + `MODEL SYNTHESIS` with supported conclusions/findings, and reported no release blocker. This manual acceptance satisfies the human release condition. A later status-only CI rerun exposed a low-probability same-digest CAS concurrency race; the store now installs complete temporary artifacts atomically and treats an already-installed identical digest as idempotent success. The deterministic concurrency regression and public CI run `34012311498` passed, completing Release Freeze. There is no six-person Human Pilot prerequisite.
 
 ## Explicit non-goals
 

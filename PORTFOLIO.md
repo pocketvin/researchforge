@@ -98,8 +98,8 @@ problem: every important result must be traceable and every missing input must r
 - “The historical Evolution hypothesis is supported.”
 - “The system provides investment recommendations or predicts returns.”
 
-The V1.8.5 release criterion is engineering reliability plus owner re-acceptance, not a six-person
-Human Pilot. Owner re-acceptance has passed; a final same-digest CAS concurrency fix is being re-verified before Release Freeze is closed. This still does not justify a representative human-usability or market-demand claim. Coverage claims must be
+The V1.8.5 release criterion was engineering reliability plus owner re-acceptance, not a six-person
+Human Pilot. Owner re-acceptance and the final same-digest CAS reliability fix both passed, so Release Freeze is complete. This still does not justify a representative human-usability or market-demand claim. Coverage claims must be
 phrased around the implemented CN/US/HK official-source adapters, the deterministic six-fact
 numerical backbone plus full-filing Evidence retrieval, and explicit abstention on unsupported layouts.
 
