@@ -1,4 +1,4 @@
-"""Thin MCP interface over the existing ResearchForge research backend."""
+"""Thin MCP interface over the canonical ResearchForge V2 backend."""
 
 from __future__ import annotations
 
@@ -10,11 +10,11 @@ import urllib.request
 import uuid
 from datetime import UTC, datetime
 from typing import Any, Literal
+from urllib.parse import urlencode
 
 from mcp.server import MCPServer
 from mcp.types import ToolAnnotations
 
-from researchforge.application.general_research import EvidenceRetriever, QuestionRouter
 from researchforge.ingestion.discovery import Market, OfficialDisclosureDiscovery
 from researchforge.ingestion.errors import IngestionAbstention
 
@@ -22,7 +22,7 @@ JsonObject = dict[str, Any]
 
 
 class ResearchForgeApiClient:
-    """Small local API client so MCP never becomes a second research engine."""
+    """Small local API client so MCP remains transport, never a second research engine."""
 
     def __init__(self, base_url: str) -> None:
         self.base_url = base_url.rstrip("/")
@@ -44,11 +44,7 @@ class ResearchForgeApiClient:
         try:
             with urllib.request.urlopen(request, timeout=30) as response:
                 data = json.load(response)
-                return {
-                    "ok": True,
-                    "status_code": response.status,
-                    "data": data,
-                }
+                return {"ok": True, "status_code": response.status, "data": data}
         except urllib.error.HTTPError as exc:
             try:
                 error = json.loads(exc.read().decode("utf-8"))
@@ -70,10 +66,7 @@ def _unwrap(response: JsonObject) -> JsonObject:
     if response.get("ok") is True:
         data = response.get("data")
         return data if isinstance(data, dict) else {"items": data}
-    return {
-        "error": response.get("error"),
-        "status_code": response.get("status_code"),
-    }
+    return {"error": response.get("error"), "status_code": response.get("status_code")}
 
 
 def build_mcp_server(
@@ -82,18 +75,16 @@ def build_mcp_server(
     api_client: ResearchForgeApiClient | None = None,
     discovery: OfficialDisclosureDiscovery | None = None,
 ) -> MCPServer[None]:
-    """Build an MCP server whose tools reuse existing discovery/research components."""
+    """Build MCP tools over the same V2 research/data path as Web and n8n."""
     client = api_client or ResearchForgeApiClient(api_base)
     official_discovery = discovery or OfficialDisclosureDiscovery()
-    router = QuestionRouter()
-    retriever = EvidenceRetriever()
     server: MCPServer[None] = MCPServer(
         name="researchforge",
         title="ResearchForge",
-        description="Auditable public-company research tools over official filings.",
-        version="1.8.5",
+        description="Auditable public-company filing research over the canonical V2 runtime.",
+        version="2.0.0-alpha.1",
         instructions=(
-            "Use ResearchForge for evidence-grounded public-company research. "
+            "Use ResearchForge for evidence-grounded public-company filing research. "
             "Do not request trading instructions, price targets or investment recommendations."
         ),
     )
@@ -169,10 +160,7 @@ def build_mcp_server(
 
     @server.tool(
         name="run_company_research",
-        description=(
-            "Create one bounded ResearchForge General Research run. Returns a run_id; use read "
-            "tools to inspect status/result/trace."
-        ),
+        description="Create one V2 filing-research run; read the persisted result/trace by run_id.",
         annotations=ToolAnnotations(
             read_only_hint=False,
             destructive_hint=False,
@@ -189,108 +177,73 @@ def build_mcp_server(
         research_time: str | None = None,
         idempotency_key: str | None = None,
     ) -> JsonObject:
-        cutoff = research_time or datetime.now(UTC).isoformat()
-        key = idempotency_key or f"mcp-{uuid.uuid4().hex}"
         response = client.request(
-            "/v1/autonomous-research-runs",
+            "/v2/research-runs",
             method="POST",
             body={
                 "company_query": company_query,
                 "market_hint": market_hint,
                 "requested_period_label": period_label,
                 "research_question": research_question,
-                "research_time": cutoff,
-                "idempotency_key": key,
-                "research_mode": "general",
+                "research_time": research_time or datetime.now(UTC).isoformat(),
+                "idempotency_key": idempotency_key or f"mcp-{uuid.uuid4().hex}",
             },
         )
         return _unwrap(response)
 
     @server.tool(
         name="get_research_result",
-        description="Read the immutable result for a persisted ResearchForge run.",
+        description="Read the immutable report/result for a persisted V2 ResearchForge run.",
         annotations=ToolAnnotations(
-            read_only_hint=True,
-            destructive_hint=False,
-            idempotent_hint=True,
-            open_world_hint=False,
+            read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False
         ),
         structured_output=True,
     )
     def get_research_result(run_id: str) -> JsonObject:
-        return _unwrap(client.request(f"/v1/research-runs/{run_id}/result"))
+        return _unwrap(client.request(f"/v2/research-runs/{run_id}/result"))
 
     @server.tool(
         name="get_research_trace",
-        description="Read the sanitized workflow trace for a persisted ResearchForge run.",
+        description="Read the persisted public research events for a V2 run.",
         annotations=ToolAnnotations(
-            read_only_hint=True,
-            destructive_hint=False,
-            idempotent_hint=True,
-            open_world_hint=False,
+            read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False
         ),
         structured_output=True,
     )
     def get_research_trace(run_id: str) -> JsonObject:
-        return _unwrap(client.request(f"/v1/research-runs/{run_id}/trace"))
+        return _unwrap(client.request(f"/v2/research-runs/{run_id}/trace"))
 
     @server.tool(
         name="get_financial_facts",
-        description="Read verified deterministic Financial Facts for a persisted run.",
+        description="Read verified deterministic Financial Facts from the same V2 run workspace.",
         annotations=ToolAnnotations(
-            read_only_hint=True,
-            destructive_hint=False,
-            idempotent_hint=True,
-            open_world_hint=False,
+            read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False
         ),
         structured_output=True,
     )
     def get_financial_facts(run_id: str) -> JsonObject:
-        return _unwrap(client.request(f"/v1/research-runs/{run_id}/facts"))
+        return _unwrap(client.request(f"/v2/research-runs/{run_id}/facts"))
 
     @server.tool(
         name="search_filing_evidence",
-        description=(
-            "Search a persisted run's verified filing Evidence with the same bounded lexical "
-            "retriever used by ResearchForge."
-        ),
+        description="Search the persisted V2 run's complete official-filing index without new research.",
         annotations=ToolAnnotations(
-            read_only_hint=True,
-            destructive_hint=False,
-            idempotent_hint=True,
-            open_world_hint=False,
+            read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False
         ),
         structured_output=True,
     )
     def search_filing_evidence(run_id: str, question: str, limit: int = 8) -> JsonObject:
         if not 1 <= limit <= 20:
             return {"error": {"code": "INVALID_LIMIT", "message": "limit must be 1..20"}}
-        response = client.request(f"/v1/research-runs/{run_id}/evidence")
-        if response.get("ok") is not True:
-            return _unwrap(response)
-        raw = response.get("data")
-        if not isinstance(raw, list):
-            return {"error": {"code": "INVALID_EVIDENCE_RESPONSE"}}
-        chunks = tuple(item for item in raw if isinstance(item, dict))
-        intent = router.route(question)
-        selected = retriever.retrieve(chunks, question=question, intent=intent, limit=limit)
-        return {
-            "run_id": run_id,
-            "intent": intent.skill,
-            "count": len(selected),
-            "evidence": list(selected),
-        }
+        query = urlencode({"query": question, "kind": "all", "limit": limit})
+        return _unwrap(client.request(f"/v2/research-runs/{run_id}/search?{query}"))
 
     return server
 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="researchforge-mcp")
-    parser.add_argument(
-        "--transport",
-        choices=["stdio", "streamable-http"],
-        default="stdio",
-    )
+    parser.add_argument("--transport", choices=["stdio", "streamable-http"], default="stdio")
     parser.add_argument(
         "--api-base",
         default=os.getenv("RESEARCHFORGE_API_BASE", "http://127.0.0.1:8000"),

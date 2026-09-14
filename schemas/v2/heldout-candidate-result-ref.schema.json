@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "minLength": 1,
+      "title": "Case Id",
+      "type": "string"
+    },
+    "candidate_key": {
+      "minLength": 1,
+      "title": "Candidate Key",
+      "type": "string"
+    },
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "result_path": {
+      "minLength": 1,
+      "title": "Result Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "case_id",
+    "candidate_key",
+    "run_id",
+    "result_path"
+  ],
+  "title": "CandidateResultRef",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-candidate-result-ref.schema.json"
+}

@@ -169,3 +169,17 @@ Confidence is categorical and evidence-based:
 - `low`: evidence is indirect, conflicting, or incomplete.
 
 The model's self-reported probability is not a confidence measure.
+
+## Capital-intensity measurement
+
+Capital intensity is treated as **capital required per unit of revenue**, not as profitability. A filing-only run therefore distinguishes direct capital-demand measures from return measures. When the required statement rows are recoverable, ResearchForge computes:
+
+1. current reinvestment intensity: `capital expenditures / revenue`;
+2. fixed-asset capital intensity: `average net PP&E / revenue`;
+3. total-asset capital intensity: `average total assets / revenue`.
+
+The balance-sheet numerators use the average of current and immediately prior comparable fiscal-period balances. The second and third measures are the inverse presentation of fixed-asset turnover and total-asset turnover respectively. ROA/ROIC may be reported separately as return or efficiency context, but they MUST NOT substitute for capital-intensity measurement. All derived ratios require a `CalculationRecord`; the model must not perform or promote its own arithmetic.
+
+These absolute measures do **not** by themselves define a universal categorical threshold for “capital intensive”. If the filing does not contain an explicit characterization, company threshold, or relevant comparison benchmark, the Agent reports the absolute measures but marks a required categorical classification `limited` / `cannot_determine`. It must not invent high/medium/low cutoffs from model memory. If the filing itself explicitly characterizes the business or supplies a comparison basis, that source evidence can support a categorical conclusion and remains subject to counter-evidence review.
+
+If a required filing input cannot be recovered reliably, the Agent may likewise deliver a limited conclusion with the missing dimension stated explicitly.

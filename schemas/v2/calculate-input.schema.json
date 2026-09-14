@@ -1,0 +1,34 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "formula": {
+      "enum": [
+        "growth_rate",
+        "absolute_change",
+        "gross_profit",
+        "gross_margin",
+        "cash_conversion"
+      ],
+      "title": "Formula",
+      "type": "string"
+    },
+    "fact_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Fact Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "formula",
+    "fact_ids"
+  ],
+  "title": "CalculateInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/calculate-input.schema.json"
+}

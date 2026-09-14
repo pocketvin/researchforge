@@ -1,13 +1,13 @@
-import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   server: {
     port: 5173,
     proxy: {
       '/v1': process.env.RESEARCHFORGE_API_PROXY ?? 'http://localhost:8000',
+      '/v2': process.env.RESEARCHFORGE_API_PROXY ?? 'http://localhost:8000',
     },
   },
   test: {

@@ -1,0 +1,24 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "source_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Source Id",
+      "type": "string"
+    },
+    "value": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Value",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_id",
+    "value"
+  ],
+  "title": "NumericAssertion",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/numeric-assertion.schema.json"
+}

@@ -217,16 +217,20 @@ REQUIRED_CONTRACTS = {
     ROOT / "scripts" / "docker_smoke.py",
     ROOT / "scripts" / "extract_primary_pdf_text.py",
     ROOT / "scripts" / "inspect_financial_rows.py",
-    ROOT / "src" / "researchforge" / "application" / "calibration.py",
     ROOT / "src" / "researchforge" / "mcp_server.py",
-    ROOT / "src" / "researchforge" / "evaluation" / "harness.py",
+    ROOT / "src" / "researchforge" / "api" / "app.py",
+    ROOT / "src" / "researchforge" / "budget.py",
+    ROOT / "src" / "researchforge" / "policy.py",
+    ROOT / "src" / "researchforge" / "v2" / "api.py",
+    ROOT / "src" / "researchforge" / "v2" / "runtime.py",
+    ROOT / "src" / "researchforge" / "v2" / "preparation.py",
+    ROOT / "integrations" / "n8n" / "researchforge-v2.workflow.json",
     ROOT / "scripts" / "mcp_smoke.py",
     ROOT / "data" / "evaluation" / "v1.8" / "eval-suite.json",
     V18_EVIDENCE_DIR / "agent-eval-offline.json",
     V18_EVIDENCE_DIR / "owner-thread-eval.json",
     V18_EVIDENCE_DIR / "failure-model-schema.json",
     V18_EVIDENCE_DIR / "mcp-live-smoke.json",
-    ROOT / "tests" / "application" / "test_calibration.py",
     ROOT / "tests" / "test_mcp_server.py",
     G0_MANIFEST_PATH,
     G0_GOLDEN_CASES_PATH,
@@ -962,10 +966,10 @@ def validate_v15_product_semantics(
 
     active_requirements = {
         ROOT / "README.md": (
-            "Auditable autonomous financial research for public companies",
-            "Company name / ticker + optional market + optional period + research question",
-            "V1.7 General Company Research",
-            "Quality Lab",
+            "Auditable filing research over one canonical V2 runtime",
+            "V2 is the **only live research runtime**",
+            "POST /v2/research-runs",
+            "Historical V1 evidence",
         ),
         ROOT / "docs" / "product" / "researchforge-v1.5-product-thesis.md": (
             "## 1. Problem",
@@ -2045,15 +2049,17 @@ def main() -> int:
         if b"ftyp" not in video_header or demo_video.stat().st_size < 1_000_000:
             raise ContractError("demo video is missing a valid MP4 file header or payload")
 
-        validate_schema_catalog(SCHEMA_DIR, REQUIRED_SCHEMAS, "current V1.4")
+        validate_schema_catalog(SCHEMA_DIR, REQUIRED_SCHEMAS, "preserved V1.4 contract")
         validate_schema_catalog(
             ACTIVE_PRODUCT_SCHEMA_DIR,
             ACTIVE_PRODUCT_REQUIRED_SCHEMAS,
             "preserved V1.5 productization",
         )
-        validate_schema_catalog(V17_SCHEMA_DIR, V17_REQUIRED_SCHEMAS, "active V1.7 product")
-        validate_schema_catalog(V173_SCHEMA_DIR, V173_REQUIRED_SCHEMAS, "preserved V1.7.3 runtime")
-        validate_schema_catalog(V18_SCHEMA_DIR, V18_REQUIRED_SCHEMAS, "active V1.8 engineering")
+        validate_schema_catalog(V17_SCHEMA_DIR, V17_REQUIRED_SCHEMAS, "preserved V1.7 contract")
+        validate_schema_catalog(V173_SCHEMA_DIR, V173_REQUIRED_SCHEMAS, "preserved V1.7.3 contract")
+        validate_schema_catalog(
+            V18_SCHEMA_DIR, V18_REQUIRED_SCHEMAS, "preserved V1.8 engineering contract"
+        )
         for version, directory in HISTORICAL_SCHEMA_DIRS.items():
             validate_schema_catalog(
                 directory,
@@ -2266,8 +2272,8 @@ def main() -> int:
         markdown_link_count = validate_markdown_links()
 
         print(
-            f"PASS: {len(V18_REQUIRED_SCHEMAS)} active V1.8 engineering, "
-            f"{len(V173_REQUIRED_SCHEMAS)} preserved V1.7.3 runtime, "
+            f"PASS: {len(V18_REQUIRED_SCHEMAS)} preserved V1.8 engineering, "
+            f"{len(V173_REQUIRED_SCHEMAS)} preserved V1.7.3 contract, "
             f"{len(V17_REQUIRED_SCHEMAS)} preserved V1.7, "
             f"{len(ACTIVE_PRODUCT_REQUIRED_SCHEMAS)} preserved V1.5 productization, "
             f"{len(REQUIRED_SCHEMAS)} preserved V1.4, "
@@ -2276,8 +2282,8 @@ def main() -> int:
         )
         print(f"PASS: {reference_count} local schema references resolved")
         print(
-            f"PASS: {len(V18_EXAMPLES)} V1.8 engineering, "
-            f"{len(V173_EXAMPLES)} V1.7.3 runtime, "
+            f"PASS: {len(V18_EXAMPLES)} preserved V1.8 engineering, "
+            f"{len(V173_EXAMPLES)} preserved V1.7.3 contract, "
             f"{len(ACTIVE_PRODUCT_EXAMPLES)} V1.5 productization, "
             f"{len(CURRENT_EXAMPLES)} V1.4, "
             f"{len(HISTORICAL_EXAMPLES['v1.3'])} V1.3, and "

@@ -1,5 +1,28 @@
 # Changelog
 
+## [Unreleased] — V2 canonical filing-research runtime
+
+### Runtime consolidation
+
+- Made V2 the sole live research runtime across Web, API, CLI, MCP and n8n; new research is created only through `/v2/research-runs`, with runtime source/cache/persistence under `artifacts/v2`.
+- Retired the V1 Web, `/v1` live API, V1 `ResearchRunService`, autonomous coordinator, old workflow/evaluation/evolution/database runtime and the PostgreSQL/Alembic product dependency. `/v1` is explicitly 404 through both API and Web.
+- Preserved useful shared primitives from earlier versions: official filing discovery/security, deterministic CN/HK/SEC extraction semantics, finance/domain formulas, content-addressed storage/file locking and durable checkpoints.
+- Kept historical V1 schemas, reviewed packages, benchmark/evolution evidence, screenshots, persisted Runs and frozen n8n workflow JSON as audit history only; they cannot satisfy a new product Run.
+- Reduced HK/SEC ingestion modules to the extraction/tag primitives V2 actually uses; removed the obsolete V1 package-materialization/fulltext retrieval path.
+
+### Code review and documentation closeout
+
+- Removed a false hybrid-runtime dependency on Kimi: the active route is DeepSeek + Qwen, while Kimi is optional standby metadata and no longer blocks startup when unconfigured.
+- Hardened provider readiness so blank `SecretStr` values are treated as missing credentials; optional Kimi configuration must provide both key and base URL or neither.
+- Sanitized internal V2 state tokens from normal Chinese user-facing prose while preserving structured raw status/IDs for engineering audit.
+- Reworked the GitHub README into a product-oriented English landing page and added a complete `README.zh-CN.md` Chinese version with matching architecture, quick-start, runtime, verification and quality-boundary facts.
+
+### Product surfaces and packaging
+
+- n8n now imports/publishes only the V2 workflow and acts as transport/presentation over the same V2 result/workspace/trace. MCP and CLI are thin V2 clients over the same persisted Run.
+- Removed PostgreSQL, Alembic, SQLAlchemy and psycopg from the product stack/dependency lock; the packaged API image no longer copies historical product/fixture/benchmark data.
+- Unified active version identity at `2.0.0-alpha.1` (`2.0.0a1` for the Python package) and `ResearchForge/2.0` source-fetch User-Agent metadata.
+
 ## [Unreleased] — V1.8.5 Agent Engineering Hardening
 
 ### Security and dependency refresh

@@ -1,0 +1,154 @@
+{
+  "$defs": {
+    "AtomicClaimAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "report_claim_id": {
+          "title": "Report Claim Id",
+          "type": "string"
+        },
+        "atomic_claim": {
+          "maxLength": 900,
+          "minLength": 1,
+          "title": "Atomic Claim",
+          "type": "string"
+        },
+        "correctness": {
+          "enum": [
+            "correct",
+            "partial",
+            "incorrect",
+            "unverifiable"
+          ],
+          "title": "Correctness",
+          "type": "string"
+        },
+        "citation_support": {
+          "enum": [
+            "supported",
+            "partial",
+            "unsupported",
+            "unverifiable"
+          ],
+          "title": "Citation Support",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 900,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "report_claim_id",
+        "atomic_claim",
+        "correctness",
+        "citation_support",
+        "reason"
+      ],
+      "title": "AtomicClaimAssessment",
+      "type": "object"
+    },
+    "RequirementAssessment": {
+      "additionalProperties": false,
+      "description": "Assessor mapping from one independent requirement to actual report claims.",
+      "properties": {
+        "requirement_id": {
+          "title": "Requirement Id",
+          "type": "string"
+        },
+        "report_claim_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Report Claim Ids",
+          "type": "array"
+        },
+        "verdict": {
+          "enum": [
+            "covered",
+            "partial",
+            "missed"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirement_id",
+        "verdict",
+        "reason"
+      ],
+      "title": "RequirementAssessment",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "requirement_assessments": {
+      "items": {
+        "$ref": "#/$defs/RequirementAssessment"
+      },
+      "maxItems": 24,
+      "title": "Requirement Assessments",
+      "type": "array"
+    },
+    "atomic_claim_assessments": {
+      "items": {
+        "$ref": "#/$defs/AtomicClaimAssessment"
+      },
+      "maxItems": 80,
+      "minItems": 1,
+      "title": "Atomic Claim Assessments",
+      "type": "array"
+    },
+    "premature_stop": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Premature Stop"
+    },
+    "unnecessary_continuation": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Unnecessary Continuation"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 12,
+      "title": "Notes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "requirement_assessments",
+    "atomic_claim_assessments",
+    "premature_stop",
+    "unnecessary_continuation",
+    "notes"
+  ],
+  "title": "SemanticAssessmentDraft",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/benchmark-semantic-assessment-draft.schema.json"
+}

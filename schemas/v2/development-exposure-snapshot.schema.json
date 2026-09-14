@@ -1,0 +1,64 @@
+{
+  "additionalProperties": false,
+  "description": "Content-stable development exposure set frozen before held-out execution.",
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "minLength": 1,
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "source_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Source Hashes",
+      "type": "object"
+    },
+    "company_aliases": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Company Aliases",
+      "type": "array"
+    },
+    "question_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Question Hashes",
+      "type": "array"
+    },
+    "case_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Case Ids",
+      "type": "array"
+    },
+    "document_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Document Hashes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "snapshot_id",
+    "source_hashes",
+    "company_aliases",
+    "question_hashes",
+    "case_ids",
+    "document_hashes"
+  ],
+  "title": "DevelopmentExposureSnapshot",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/development-exposure-snapshot.schema.json"
+}

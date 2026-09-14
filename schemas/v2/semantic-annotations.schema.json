@@ -1,0 +1,162 @@
+{
+  "$defs": {
+    "RequirementAssessment": {
+      "additionalProperties": false,
+      "description": "Assessor mapping from one independent requirement to actual report claims.",
+      "properties": {
+        "requirement_id": {
+          "title": "Requirement Id",
+          "type": "string"
+        },
+        "report_claim_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Report Claim Ids",
+          "type": "array"
+        },
+        "verdict": {
+          "enum": [
+            "covered",
+            "partial",
+            "missed"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirement_id",
+        "verdict",
+        "reason"
+      ],
+      "title": "RequirementAssessment",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Human or calibrated-assessor output bound to an exact report.",
+  "properties": {
+    "report_hash": {
+      "title": "Report Hash",
+      "type": "string"
+    },
+    "assessor_id": {
+      "title": "Assessor Id",
+      "type": "string"
+    },
+    "assessor_version": {
+      "title": "Assessor Version",
+      "type": "string"
+    },
+    "assessment_kind": {
+      "enum": [
+        "human",
+        "calibrated_model",
+        "uncalibrated_model"
+      ],
+      "title": "Assessment Kind",
+      "type": "string"
+    },
+    "requirement_assessments": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/RequirementAssessment"
+      },
+      "title": "Requirement Assessments",
+      "type": "array"
+    },
+    "assessed_report_claim_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Assessed Report Claim Ids",
+      "type": "array"
+    },
+    "assessed_atomic_claims": {
+      "minimum": 0,
+      "title": "Assessed Atomic Claims",
+      "type": "integer"
+    },
+    "correct_atomic_claims": {
+      "minimum": 0,
+      "title": "Correct Atomic Claims",
+      "type": "integer"
+    },
+    "assessed_cited_claims": {
+      "minimum": 0,
+      "title": "Assessed Cited Claims",
+      "type": "integer"
+    },
+    "supported_cited_claims": {
+      "minimum": 0,
+      "title": "Supported Cited Claims",
+      "type": "integer"
+    },
+    "claims_requiring_citations": {
+      "minimum": 0,
+      "title": "Claims Requiring Citations",
+      "type": "integer"
+    },
+    "claims_with_valid_support": {
+      "minimum": 0,
+      "title": "Claims With Valid Support",
+      "type": "integer"
+    },
+    "premature_stop": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Premature Stop"
+    },
+    "unnecessary_continuation": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unnecessary Continuation"
+    },
+    "notes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "report_hash",
+    "assessor_id",
+    "assessor_version",
+    "assessment_kind",
+    "assessed_atomic_claims",
+    "correct_atomic_claims",
+    "assessed_cited_claims",
+    "supported_cited_claims",
+    "claims_requiring_citations",
+    "claims_with_valid_support"
+  ],
+  "title": "SemanticAnnotations",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/semantic-annotations.schema.json"
+}

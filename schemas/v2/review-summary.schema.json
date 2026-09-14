@@ -1,0 +1,27 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "question_answered": {
+      "title": "Question Answered",
+      "type": "boolean"
+    },
+    "missing_material_topics": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 10,
+      "title": "Missing Material Topics",
+      "type": "array"
+    }
+  },
+  "required": [
+    "question_answered",
+    "missing_material_topics"
+  ],
+  "title": "ReviewSummary",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/review-summary.schema.json"
+}

@@ -1,0 +1,27 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "metrics": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 24,
+      "title": "Metrics",
+      "type": "array"
+    },
+    "period_labels": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 12,
+      "title": "Period Labels",
+      "type": "array"
+    }
+  },
+  "title": "FactsInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/facts-input.schema.json"
+}

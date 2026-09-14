@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "metric_code": {
+      "title": "Metric Code",
+      "type": "string"
+    },
+    "fiscal_year": {
+      "title": "Fiscal Year",
+      "type": "integer"
+    },
+    "fiscal_period": {
+      "title": "Fiscal Period",
+      "type": "string"
+    },
+    "period_basis": {
+      "title": "Period Basis",
+      "type": "string"
+    },
+    "currency": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Currency"
+    },
+    "value": {
+      "title": "Value",
+      "type": "string"
+    },
+    "absolute_tolerance": {
+      "default": "0",
+      "title": "Absolute Tolerance",
+      "type": "string"
+    },
+    "source_document_hash": {
+      "title": "Source Document Hash",
+      "type": "string"
+    },
+    "source_locator": {
+      "title": "Source Locator",
+      "type": "string"
+    }
+  },
+  "required": [
+    "metric_code",
+    "fiscal_year",
+    "fiscal_period",
+    "period_basis",
+    "currency",
+    "value",
+    "source_document_hash",
+    "source_locator"
+  ],
+  "title": "NumericReference",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/numeric-reference.schema.json"
+}

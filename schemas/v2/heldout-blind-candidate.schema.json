@@ -1,0 +1,70 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 240,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "direct_answer": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Direct Answer"
+    },
+    "executive_summary": {
+      "maxLength": 12000,
+      "minLength": 1,
+      "title": "Executive Summary",
+      "type": "string"
+    },
+    "findings": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 24,
+      "title": "Findings",
+      "type": "array"
+    },
+    "sections": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 16,
+      "title": "Sections",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 24,
+      "title": "Limitations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "run_id",
+    "title",
+    "executive_summary",
+    "findings",
+    "sections",
+    "limitations"
+  ],
+  "title": "BlindCandidate",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-blind-candidate.schema.json"
+}

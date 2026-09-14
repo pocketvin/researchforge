@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "offset": {
+      "default": 0,
+      "maximum": 10000000,
+      "minimum": 0,
+      "title": "Offset",
+      "type": "integer"
+    },
+    "max_chars": {
+      "default": 10000,
+      "maximum": 18000,
+      "minimum": 100,
+      "title": "Max Chars",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "artifact_id"
+  ],
+  "title": "ReadInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/read-input.schema.json"
+}

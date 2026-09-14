@@ -1,0 +1,122 @@
+{
+  "$defs": {
+    "NumericAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "value"
+      ],
+      "title": "NumericAssertion",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "text": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Text",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "observation",
+        "inference",
+        "risk",
+        "limitation"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 20,
+      "minItems": 1,
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "fact_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Fact Ids",
+      "type": "array"
+    },
+    "calculation_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Calculation Ids",
+      "type": "array"
+    },
+    "numeric_assertions": {
+      "items": {
+        "$ref": "#/$defs/NumericAssertion"
+      },
+      "maxItems": 20,
+      "title": "Numeric Assertions",
+      "type": "array"
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "uncertainty": {
+      "maxLength": 2000,
+      "title": "Uncertainty",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "title",
+    "text",
+    "kind",
+    "evidence_ids",
+    "fact_ids",
+    "calculation_ids",
+    "numeric_assertions",
+    "confidence",
+    "uncertainty"
+  ],
+  "title": "Finding",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/finding.schema.json"
+}

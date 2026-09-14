@@ -1,0 +1,163 @@
+{
+  "$defs": {
+    "HeldOutHumanJudgment": {
+      "additionalProperties": false,
+      "description": "A deliberately tiny human-input contract: one choice, no authored rubric or explanation.",
+      "properties": {
+        "schema_version": {
+          "const": "2.0.0",
+          "default": "2.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "case_id": {
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "review_mode": {
+          "enum": [
+            "pairwise_preference",
+            "meets_standard"
+          ],
+          "title": "Review Mode",
+          "type": "string"
+        },
+        "reviewer_id": {
+          "minLength": 1,
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "candidate_a_run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidate A Run Id"
+        },
+        "candidate_b_run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidate B Run Id"
+        },
+        "evaluated_run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evaluated Run Id"
+        },
+        "pairwise_verdict": {
+          "anyOf": [
+            {
+              "enum": [
+                "a_better",
+                "b_better",
+                "tie",
+                "neither"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pairwise Verdict"
+        },
+        "threshold_verdict": {
+          "anyOf": [
+            {
+              "enum": [
+                "meets_standard",
+                "does_not_meet_standard",
+                "cannot_judge"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Threshold Verdict"
+        }
+      },
+      "required": [
+        "case_id",
+        "review_mode",
+        "reviewer_id",
+        "reviewed_at"
+      ],
+      "title": "HeldOutHumanJudgment",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "suite_id": {
+      "minLength": 1,
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "bundle_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Hash",
+      "type": "string"
+    },
+    "review_mode": {
+      "enum": [
+        "pairwise_preference",
+        "meets_standard"
+      ],
+      "title": "Review Mode",
+      "type": "string"
+    },
+    "judgments": {
+      "items": {
+        "$ref": "#/$defs/HeldOutHumanJudgment"
+      },
+      "minItems": 1,
+      "title": "Judgments",
+      "type": "array"
+    }
+  },
+  "required": [
+    "suite_id",
+    "bundle_hash",
+    "review_mode",
+    "judgments"
+  ],
+  "title": "HumanJudgmentFile",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-human-judgment-file.schema.json"
+}

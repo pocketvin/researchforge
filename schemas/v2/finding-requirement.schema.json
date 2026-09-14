@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "description": "Independent semantic requirement; never a model-generated report claim ID.",
+  "properties": {
+    "requirement_id": {
+      "title": "Requirement Id",
+      "type": "string"
+    },
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "materiality": {
+      "default": "major",
+      "enum": [
+        "major",
+        "minor"
+      ],
+      "title": "Materiality",
+      "type": "string"
+    },
+    "reference_answer": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reference Answer"
+    }
+  },
+  "required": [
+    "requirement_id",
+    "description"
+  ],
+  "title": "FindingRequirement",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/finding-requirement.schema.json"
+}

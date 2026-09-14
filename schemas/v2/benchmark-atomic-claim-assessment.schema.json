@@ -1,0 +1,52 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "report_claim_id": {
+      "title": "Report Claim Id",
+      "type": "string"
+    },
+    "atomic_claim": {
+      "maxLength": 900,
+      "minLength": 1,
+      "title": "Atomic Claim",
+      "type": "string"
+    },
+    "correctness": {
+      "enum": [
+        "correct",
+        "partial",
+        "incorrect",
+        "unverifiable"
+      ],
+      "title": "Correctness",
+      "type": "string"
+    },
+    "citation_support": {
+      "enum": [
+        "supported",
+        "partial",
+        "unsupported",
+        "unverifiable"
+      ],
+      "title": "Citation Support",
+      "type": "string"
+    },
+    "reason": {
+      "maxLength": 900,
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "report_claim_id",
+    "atomic_claim",
+    "correctness",
+    "citation_support",
+    "reason"
+  ],
+  "title": "AtomicClaimAssessment",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/benchmark-atomic-claim-assessment.schema.json"
+}

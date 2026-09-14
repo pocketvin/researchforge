@@ -1,12 +1,32 @@
-from scripts.docker_smoke import reviewed_cache_request
+from scripts import docker_smoke
 
 
-def test_packaging_smoke_uses_network_independent_reviewed_cache_mode() -> None:
-    request = reviewed_cache_request("宁德时代", "CN", "2024H1")
+def test_packaging_smoke_is_v2_only_and_zero_provider(monkeypatch) -> None:
+    monkeypatch.setattr(
+        docker_smoke,
+        "request_text",
+        lambda url, timeout=10.0: "ok" if url.endswith("/healthz") else '<div id="root"></div>',
+    )
+    monkeypatch.setattr(
+        docker_smoke,
+        "request_json",
+        lambda url, timeout=10.0: {
+            "real_agent_loop": True,
+            "provider": "hybrid",
+            "model": "deepseek-v4-flash",
+            "agent_ready": True,
+        },
+    )
+    checked: list[tuple[str, int]] = []
+    monkeypatch.setattr(
+        docker_smoke,
+        "expect_status",
+        lambda url, expected, timeout=10.0: checked.append((url, expected)),
+    )
 
-    assert request["company_query"] == "宁德时代"
-    assert request["market_hint"] == "CN"
-    assert request["requested_period_label"] == "2024H1"
-    assert request["research_mode"] == "financial_snapshot"
-    assert request["research_time"] == "2026-09-05T00:00:00+08:00"
-    assert str(request["idempotency_key"]).startswith("docker-smoke-")
+    result = docker_smoke.run_smoke("http://test")
+
+    assert result["runtime"] == "v2"
+    assert result["provider_calls"] == 0
+    assert result["legacy_v1_live_api"] is False
+    assert any("/v1/runtime-capabilities" in url and status == 404 for url, status in checked)

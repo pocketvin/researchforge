@@ -20,23 +20,22 @@ class FakeApiClient(ResearchForgeApiClient):
     ) -> dict[str, object]:
         if path.endswith("/facts"):
             return {"ok": True, "status_code": 200, "data": [{"fact_id": "fact_1"}]}
-        if path.endswith("/evidence"):
+        if "/search?" in path:
             return {
                 "ok": True,
                 "status_code": 200,
-                "data": [
-                    {
-                        "chunk_id": "chunk_1",
-                        "section": "Financial statements",
-                        "text": "经营现金流 100",
-                        "locator": {"page_start": 1},
-                        "source_uri": "https://example.invalid/report.pdf",
-                    }
-                ],
+                "data": {
+                    "run_id": "run_mcp",
+                    "query": "现金流如何",
+                    "kind": "all",
+                    "count": 1,
+                    "results": [{"artifact_id": "ev_1", "snippet": "经营现金流 100"}],
+                },
             }
-        if path == "/v1/autonomous-research-runs" and method == "POST":
+        if path == "/v2/research-runs" and method == "POST":
             assert body is not None
-            assert body["research_mode"] == "general"
+            assert "research_mode" not in body
+            assert body["requested_period_label"] == "2025FY"
             return {
                 "ok": True,
                 "status_code": 202,
@@ -66,6 +65,7 @@ async def test_mcp_server_exposes_bounded_backend_tools() -> None:
         assert tools["run_company_research"].annotations.destructive_hint is False
         assert tools["run_company_research"].annotations.open_world_hint is True
 
+        # Preserved V1.8 contract freezes the seven tool names/annotations; runtime now routes them to V2.
         contract = json.loads(
             (ROOT / "examples/contracts/v1.8/mcp-toolset.example.json").read_text(encoding="utf-8")
         )
@@ -80,7 +80,7 @@ async def test_mcp_server_exposes_bounded_backend_tools() -> None:
 
 
 @pytest.mark.asyncio
-async def test_mcp_reuses_backend_facts_retrieval_and_submission() -> None:
+async def test_mcp_reuses_v2_facts_search_and_submission() -> None:
     server = build_mcp_server(api_client=FakeApiClient())
     async with Client(server) as client:
         facts = await client.call_tool("get_financial_facts", {"run_id": "run_mcp"})
@@ -92,7 +92,7 @@ async def test_mcp_reuses_backend_facts_retrieval_and_submission() -> None:
         )
         assert evidence.structured_content is not None
         assert evidence.structured_content["count"] == 1
-        assert evidence.structured_content["intent"] == "financial_health"
+        assert evidence.structured_content["results"][0]["artifact_id"] == "ev_1"
 
         submission = await client.call_tool(
             "run_company_research",

@@ -1,0 +1,283 @@
+{
+  "$defs": {
+    "SuiteCaseExecution": {
+      "additionalProperties": false,
+      "properties": {
+        "financebench_id": {
+          "title": "Financebench Id",
+          "type": "string"
+        },
+        "stratum": {
+          "title": "Stratum",
+          "type": "string"
+        },
+        "company": {
+          "title": "Company",
+          "type": "string"
+        },
+        "status": {
+          "default": "pending",
+          "enum": [
+            "pending",
+            "succeeded",
+            "failed",
+            "skipped"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Id"
+        },
+        "lifecycle_state": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lifecycle State"
+        },
+        "assessment_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assessment Path"
+        },
+        "estimated_cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Estimated Cost Usd"
+        },
+        "provider_calls": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider Calls"
+        },
+        "total_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Total Tokens"
+        },
+        "agent_turns": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent Turns"
+        },
+        "error_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Type"
+        },
+        "error_message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Message"
+        }
+      },
+      "required": [
+        "financebench_id",
+        "stratum",
+        "company"
+      ],
+      "title": "SuiteCaseExecution",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "execution_id": {
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "suite_id": {
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "suite_hash": {
+      "title": "Suite Hash",
+      "type": "string"
+    },
+    "implementation_hash": {
+      "title": "Implementation Hash",
+      "type": "string"
+    },
+    "git_head": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Git Head"
+    },
+    "git_dirty": {
+      "title": "Git Dirty",
+      "type": "boolean"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Finished At"
+    },
+    "stopped_reason": {
+      "anyOf": [
+        {
+          "enum": [
+            "completed",
+            "max_new_runs",
+            "estimated_cost_cap",
+            "case_failure",
+            "operator_stop"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stopped Reason"
+    },
+    "new_runs_started": {
+      "default": 0,
+      "title": "New Runs Started",
+      "type": "integer"
+    },
+    "estimated_cost_usd": {
+      "default": 0.0,
+      "title": "Estimated Cost Usd",
+      "type": "number"
+    },
+    "max_new_runs": {
+      "minimum": 0,
+      "title": "Max New Runs",
+      "type": "integer"
+    },
+    "max_estimated_cost_usd": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Estimated Cost Usd"
+    },
+    "target_case_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Target Case Ids",
+      "type": "array"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/SuiteCaseExecution"
+      },
+      "title": "Cases",
+      "type": "array"
+    }
+  },
+  "required": [
+    "execution_id",
+    "suite_id",
+    "suite_hash",
+    "implementation_hash",
+    "git_dirty",
+    "started_at",
+    "max_new_runs",
+    "target_case_ids",
+    "cases"
+  ],
+  "title": "BenchmarkSuiteExecution",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/benchmark-suite-execution.schema.json"
+}

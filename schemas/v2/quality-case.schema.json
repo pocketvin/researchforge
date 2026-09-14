@@ -1,0 +1,323 @@
+{
+  "$defs": {
+    "EvidenceAlternative": {
+      "additionalProperties": false,
+      "properties": {
+        "document_hash": {
+          "title": "Document Hash",
+          "type": "string"
+        },
+        "page_number": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Number"
+        },
+        "required_text": {
+          "minLength": 1,
+          "title": "Required Text",
+          "type": "string"
+        },
+        "match_mode": {
+          "default": "text",
+          "enum": [
+            "text",
+            "page"
+          ],
+          "title": "Match Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_hash",
+        "required_text"
+      ],
+      "title": "EvidenceAlternative",
+      "type": "object"
+    },
+    "EvidenceRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "requirement_id": {
+          "title": "Requirement Id",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "alternatives": {
+          "items": {
+            "$ref": "#/$defs/EvidenceAlternative"
+          },
+          "minItems": 1,
+          "title": "Alternatives",
+          "type": "array"
+        },
+        "materiality": {
+          "default": "major",
+          "enum": [
+            "major",
+            "minor"
+          ],
+          "title": "Materiality",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirement_id",
+        "description",
+        "alternatives"
+      ],
+      "title": "EvidenceRequirement",
+      "type": "object"
+    },
+    "FindingRequirement": {
+      "additionalProperties": false,
+      "description": "Independent semantic requirement; never a model-generated report claim ID.",
+      "properties": {
+        "requirement_id": {
+          "title": "Requirement Id",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "materiality": {
+          "default": "major",
+          "enum": [
+            "major",
+            "minor"
+          ],
+          "title": "Materiality",
+          "type": "string"
+        },
+        "reference_answer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Answer"
+        }
+      },
+      "required": [
+        "requirement_id",
+        "description"
+      ],
+      "title": "FindingRequirement",
+      "type": "object"
+    },
+    "NumericReference": {
+      "additionalProperties": false,
+      "properties": {
+        "metric_code": {
+          "title": "Metric Code",
+          "type": "string"
+        },
+        "fiscal_year": {
+          "title": "Fiscal Year",
+          "type": "integer"
+        },
+        "fiscal_period": {
+          "title": "Fiscal Period",
+          "type": "string"
+        },
+        "period_basis": {
+          "title": "Period Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Currency"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        },
+        "absolute_tolerance": {
+          "default": "0",
+          "title": "Absolute Tolerance",
+          "type": "string"
+        },
+        "source_document_hash": {
+          "title": "Source Document Hash",
+          "type": "string"
+        },
+        "source_locator": {
+          "title": "Source Locator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "metric_code",
+        "fiscal_year",
+        "fiscal_period",
+        "period_basis",
+        "currency",
+        "value",
+        "source_document_hash",
+        "source_locator"
+      ],
+      "title": "NumericReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "case_id": {
+      "title": "Case Id",
+      "type": "string"
+    },
+    "split": {
+      "enum": [
+        "development",
+        "validation",
+        "held_out",
+        "synthetic_sanity"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "question": {
+      "title": "Question",
+      "type": "string"
+    },
+    "company_id": {
+      "title": "Company Id",
+      "type": "string"
+    },
+    "research_time": {
+      "title": "Research Time",
+      "type": "string"
+    },
+    "corpus_hash": {
+      "title": "Corpus Hash",
+      "type": "string"
+    },
+    "reference_author": {
+      "title": "Reference Author",
+      "type": "string"
+    },
+    "reference_integrity": {
+      "default": "provided",
+      "enum": [
+        "provided",
+        "verified",
+        "suspect"
+      ],
+      "title": "Reference Integrity",
+      "type": "string"
+    },
+    "reference_integrity_notes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Reference Integrity Notes",
+      "type": "array"
+    },
+    "reference_reviewed_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reference Reviewed By"
+    },
+    "reference_reviewed_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reference Reviewed At"
+    },
+    "numeric_references": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/NumericReference"
+      },
+      "title": "Numeric References",
+      "type": "array"
+    },
+    "required_evidence": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/EvidenceRequirement"
+      },
+      "title": "Required Evidence",
+      "type": "array"
+    },
+    "required_findings": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/FindingRequirement"
+      },
+      "title": "Required Findings",
+      "type": "array"
+    },
+    "material_counter_evidence": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Material Counter Evidence",
+      "type": "array"
+    },
+    "acceptable_uncertainties": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Acceptable Uncertainties",
+      "type": "array"
+    }
+  },
+  "required": [
+    "case_id",
+    "split",
+    "question",
+    "company_id",
+    "research_time",
+    "corpus_hash",
+    "reference_author"
+  ],
+  "title": "QualityCase",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/quality-case.schema.json"
+}

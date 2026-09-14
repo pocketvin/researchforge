@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "BlindCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "run_id": {
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 240,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "direct_answer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Direct Answer"
+        },
+        "executive_summary": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Executive Summary",
+          "type": "string"
+        },
+        "findings": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 24,
+          "title": "Findings",
+          "type": "array"
+        },
+        "sections": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Sections",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 24,
+          "title": "Limitations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "run_id",
+        "title",
+        "executive_summary",
+        "findings",
+        "sections",
+        "limitations"
+      ],
+      "title": "BlindCandidate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "minLength": 1,
+      "title": "Case Id",
+      "type": "string"
+    },
+    "question": {
+      "minLength": 1,
+      "title": "Question",
+      "type": "string"
+    },
+    "review_mode": {
+      "enum": [
+        "pairwise_preference",
+        "meets_standard"
+      ],
+      "title": "Review Mode",
+      "type": "string"
+    },
+    "candidate_a": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BlindCandidate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "candidate_b": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BlindCandidate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "evaluated_candidate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BlindCandidate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "case_id",
+    "question",
+    "review_mode"
+  ],
+  "title": "BlindReviewCase",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-blind-review-case.schema.json"
+}

@@ -1,0 +1,64 @@
+{
+  "$defs": {
+    "DevelopmentIssuerAliasGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "group_key": {
+          "minLength": 1,
+          "title": "Group Key",
+          "type": "string"
+        },
+        "aliases": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Aliases",
+          "type": "array"
+        }
+      },
+      "required": [
+        "group_key",
+        "aliases"
+      ],
+      "title": "DevelopmentIssuerAliasGroup",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "exclusion_id": {
+      "minLength": 1,
+      "title": "Exclusion Id",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "issuer_alias_groups": {
+      "items": {
+        "$ref": "#/$defs/DevelopmentIssuerAliasGroup"
+      },
+      "minItems": 1,
+      "title": "Issuer Alias Groups",
+      "type": "array"
+    }
+  },
+  "required": [
+    "exclusion_id",
+    "rationale",
+    "issuer_alias_groups"
+  ],
+  "title": "DevelopmentIssuerExclusionManifest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/development-issuer-exclusion-manifest.schema.json"
+}

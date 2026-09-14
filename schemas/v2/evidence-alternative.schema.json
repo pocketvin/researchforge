@@ -1,0 +1,43 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "document_hash": {
+      "title": "Document Hash",
+      "type": "string"
+    },
+    "page_number": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Page Number"
+    },
+    "required_text": {
+      "minLength": 1,
+      "title": "Required Text",
+      "type": "string"
+    },
+    "match_mode": {
+      "default": "text",
+      "enum": [
+        "text",
+        "page"
+      ],
+      "title": "Match Mode",
+      "type": "string"
+    }
+  },
+  "required": [
+    "document_hash",
+    "required_text"
+  ],
+  "title": "EvidenceAlternative",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/evidence-alternative.schema.json"
+}

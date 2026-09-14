@@ -1,0 +1,26 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "group_key": {
+      "minLength": 1,
+      "title": "Group Key",
+      "type": "string"
+    },
+    "aliases": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Aliases",
+      "type": "array"
+    }
+  },
+  "required": [
+    "group_key",
+    "aliases"
+  ],
+  "title": "DevelopmentIssuerAliasGroup",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/development-issuer-alias-group.schema.json"
+}

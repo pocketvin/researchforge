@@ -1,0 +1,275 @@
+{
+  "$defs": {
+    "Hypothesis": {
+      "additionalProperties": false,
+      "properties": {
+        "hypothesis_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "investigating",
+            "supported",
+            "mixed",
+            "rejected",
+            "unresolved"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "materiality": {
+          "enum": [
+            "major",
+            "minor"
+          ],
+          "title": "Materiality",
+          "type": "string"
+        },
+        "evidence_for": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Evidence For",
+          "type": "array"
+        },
+        "evidence_against": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Evidence Against",
+          "type": "array"
+        },
+        "unknowns": {
+          "default": [],
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 10,
+          "title": "Unknowns",
+          "type": "array"
+        },
+        "would_change_conclusion": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Would Change Conclusion",
+          "type": "string"
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "statement",
+        "status",
+        "materiality",
+        "confidence"
+      ],
+      "title": "Hypothesis",
+      "type": "object"
+    },
+    "OpenQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "question_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+          "title": "Question Id",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "answered",
+            "not_answerable_from_filings"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "explanation": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Explanation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question_id",
+        "question",
+        "priority",
+        "status"
+      ],
+      "title": "OpenQuestion",
+      "type": "object"
+    },
+    "ResearchObjective": {
+      "additionalProperties": false,
+      "properties": {
+        "objective_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+          "title": "Objective Id",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "required",
+            "supporting"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "answered",
+            "limited"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "conclusion": {
+          "default": "",
+          "maxLength": 2400,
+          "title": "Conclusion",
+          "type": "string"
+        },
+        "remaining_uncertainty": {
+          "default": "",
+          "maxLength": 1600,
+          "title": "Remaining Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "objective_id",
+        "question",
+        "priority",
+        "status"
+      ],
+      "title": "ResearchObjective",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "objectives": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ResearchObjective"
+      },
+      "maxItems": 8,
+      "title": "Objectives",
+      "type": "array"
+    },
+    "hypotheses": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Hypothesis"
+      },
+      "maxItems": 16,
+      "title": "Hypotheses",
+      "type": "array"
+    },
+    "open_questions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/OpenQuestion"
+      },
+      "maxItems": 20,
+      "title": "Open Questions",
+      "type": "array"
+    },
+    "decision_summary": {
+      "default": "",
+      "maxLength": 1200,
+      "title": "Decision Summary",
+      "type": "string"
+    },
+    "core_question_status": {
+      "default": "investigating",
+      "enum": [
+        "investigating",
+        "answerable",
+        "evidence_exhausted"
+      ],
+      "title": "Core Question Status",
+      "type": "string"
+    },
+    "expected_value_of_more_research": {
+      "default": "high",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Expected Value Of More Research",
+      "type": "string"
+    }
+  },
+  "title": "WorkingState",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/working-state.schema.json"
+}

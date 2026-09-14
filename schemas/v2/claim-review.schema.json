@@ -1,0 +1,36 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "supported",
+        "partial",
+        "unsupported",
+        "contradicted",
+        "unverifiable"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    },
+    "reason": {
+      "maxLength": 1200,
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "verdict",
+    "reason"
+  ],
+  "title": "ClaimReview",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/claim-review.schema.json"
+}

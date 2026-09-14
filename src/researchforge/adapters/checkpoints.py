@@ -34,8 +34,9 @@ def _decode_typed(value: list[str]) -> tuple[str, bytes]:
 class DurableJsonCheckpointSaver(InMemorySaver):
     """Persist LangGraph checkpoints atomically without executable pickle data.
 
-    This adapter is intentionally limited to the single-process file runtime. The
-    PostgreSQL product stage replaces it for multi-process coordination.
+    This adapter is intentionally file-backed and process-safe through the project file lock.
+    A different persistence backend would require a new product decision rather than an implied
+    PostgreSQL migration.
     """
 
     format_version = 1

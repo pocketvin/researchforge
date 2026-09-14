@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only/live-safe MCP smoke over the authoritative ResearchForge backend."""
+"""Read-only/live-safe MCP smoke over the canonical ResearchForge V2 backend."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def _parser() -> argparse.ArgumentParser:
 
 async def _run(args: argparse.Namespace) -> dict[str, Any]:
     server = build_mcp_server(api_base=str(args.api_base))
-    payload: dict[str, Any] = {"schema_version": "1.8.0", "product_version": "1.8.5"}
+    payload: dict[str, Any] = {"schema_version": "2.0.0", "runtime": "v2"}
     async with Client(server) as client:
         listing = await client.list_tools()
         payload["tools"] = [tool.name for tool in listing.tools]
@@ -52,15 +52,14 @@ async def _run(args: argparse.Namespace) -> dict[str, Any]:
             evidence_data = evidence.structured_content or {}
             result_data = result.structured_content or {}
             trace_data = trace.structured_content or {}
+            report = result_data.get("report", {})
             payload["existing_run"] = {
                 "run_id": run_id,
                 "fact_count": len(facts_data.get("items", [])),
                 "evidence_count": evidence_data.get("count", 0),
-                "intent": evidence_data.get("intent"),
-                "synthesis_mode": result_data.get("synthesis_mode"),
-                "claim_count": len(result_data.get("claims", [])),
-                "terminal_state": trace_data.get("terminal_state"),
-                "trace_stage_count": len(trace_data.get("stages", [])),
+                "direct_answer": report.get("direct_answer"),
+                "finding_count": len(report.get("findings", [])),
+                "trace_event_count": len(trace_data.get("events", [])),
             }
     return payload
 

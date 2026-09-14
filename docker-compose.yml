@@ -1,18 +1,4 @@
 services:
-  postgres:
-    image: ${POSTGRES_IMAGE:-postgres:17-alpine}
-    environment:
-      POSTGRES_DB: researchforge
-      POSTGRES_USER: researchforge
-      POSTGRES_PASSWORD: researchforge
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U researchforge -d researchforge"]
-      interval: 3s
-      timeout: 3s
-      retries: 20
-    volumes:
-      - researchforge-postgres:/var/lib/postgresql/data
-
   api:
     build:
       context: .
@@ -20,17 +6,29 @@ services:
       args:
         PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.12-slim}
     environment:
-      RESEARCHFORGE_DATABASE_URL: postgresql+psycopg://researchforge:researchforge@postgres:5432/researchforge
-      RESEARCHFORGE_DATABASE_ENABLED: "true"
       RESEARCHFORGE_ARTIFACT_ROOT: /app/artifacts
-      RESEARCHFORGE_DATA_NAMESPACE: product
-      RESEARCHFORGE_DATA_ROOT: /app/data/product/packages
       RESEARCHFORGE_REASONING_MODE: ${RESEARCHFORGE_REASONING_MODE:-auto}
+      RESEARCHFORGE_PROVIDER: ${RESEARCHFORGE_PROVIDER:-openai}
+      RESEARCHFORGE_MODEL: ${RESEARCHFORGE_MODEL:-gpt-5.6-luna}
+      RESEARCHFORGE_REASONING_EFFORT: ${RESEARCHFORGE_REASONING_EFFORT:-medium}
+      RESEARCHFORGE_OPENAI_STORE: ${RESEARCHFORGE_OPENAI_STORE:-false}
+      RESEARCHFORGE_BUDGET_USD: ${RESEARCHFORGE_BUDGET_USD:-20.00}
+      RESEARCHFORGE_V2_RUN_BUDGET_USD: ${RESEARCHFORGE_V2_RUN_BUDGET_USD:-0.35}
+      RESEARCHFORGE_SEC_USER_AGENT: ${RESEARCHFORGE_SEC_USER_AGENT:-ResearchForge/2.0 researchforge@example.com}
       RESEARCHFORGE_ROTATED_KEY_CONFIRMED: ${RESEARCHFORGE_ROTATED_KEY_CONFIRMED:-0}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-    depends_on:
-      postgres:
-        condition: service_healthy
+      RESEARCHFORGE_QWEN_API_KEY: ${RESEARCHFORGE_QWEN_API_KEY:-}
+      RESEARCHFORGE_QWEN_BASE_URL: ${RESEARCHFORGE_QWEN_BASE_URL:-}
+      RESEARCHFORGE_QWEN_MODEL: ${RESEARCHFORGE_QWEN_MODEL:-qwen-plus}
+      RESEARCHFORGE_QWEN_REVIEW_MODEL: ${RESEARCHFORGE_QWEN_REVIEW_MODEL:-qwen-plus}
+      RESEARCHFORGE_QWEN_FALLBACK_SYNTHESIS_MODEL: ${RESEARCHFORGE_QWEN_FALLBACK_SYNTHESIS_MODEL:-qwen3-max}
+      RESEARCHFORGE_QWEN_VISION_MODEL: ${RESEARCHFORGE_QWEN_VISION_MODEL:-qwen3-vl-plus}
+      RESEARCHFORGE_DEEPSEEK_API_KEY: ${RESEARCHFORGE_DEEPSEEK_API_KEY:-}
+      RESEARCHFORGE_DEEPSEEK_BASE_URL: ${RESEARCHFORGE_DEEPSEEK_BASE_URL:-}
+      RESEARCHFORGE_DEEPSEEK_MODEL: ${RESEARCHFORGE_DEEPSEEK_MODEL:-deepseek-v4-flash}
+      RESEARCHFORGE_KIMI_API_KEY: ${RESEARCHFORGE_KIMI_API_KEY:-}
+      RESEARCHFORGE_KIMI_BASE_URL: ${RESEARCHFORGE_KIMI_BASE_URL:-}
+      RESEARCHFORGE_KIMI_MODEL: ${RESEARCHFORGE_KIMI_MODEL:-kimi-k3}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
       interval: 5s
@@ -60,5 +58,4 @@ services:
       - "127.0.0.1:${RESEARCHFORGE_WEB_PORT:-4173}:80"
 
 volumes:
-  researchforge-postgres:
   researchforge-artifacts:

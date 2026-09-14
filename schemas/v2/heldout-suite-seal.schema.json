@@ -1,0 +1,184 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "suite_id": {
+      "minLength": 1,
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "protocol_version": {
+      "const": "acceptance-v2",
+      "default": "acceptance-v2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "split": {
+      "const": "held_out",
+      "default": "held_out",
+      "title": "Split",
+      "type": "string"
+    },
+    "frozen_at": {
+      "format": "date-time",
+      "title": "Frozen At",
+      "type": "string"
+    },
+    "review_mode": {
+      "enum": [
+        "pairwise_preference",
+        "meets_standard"
+      ],
+      "title": "Review Mode",
+      "type": "string"
+    },
+    "bundle_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Hash",
+      "type": "string"
+    },
+    "runtime_manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Runtime Manifest Hash",
+      "type": "string"
+    },
+    "source_manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Manifest Hash",
+      "type": "string"
+    },
+    "case_count": {
+      "exclusiveMinimum": 0,
+      "title": "Case Count",
+      "type": "integer"
+    },
+    "company_count": {
+      "exclusiveMinimum": 0,
+      "title": "Company Count",
+      "type": "integer"
+    },
+    "stratum_counts": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Stratum Counts",
+      "type": "object"
+    },
+    "opaque_case_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Opaque Case Hashes",
+      "type": "array"
+    },
+    "opaque_company_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Opaque Company Hashes",
+      "type": "array"
+    },
+    "development_suite_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Development Suite Hashes",
+      "type": "array"
+    },
+    "development_exclusion_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Development Exclusion Hashes",
+      "type": "array"
+    },
+    "development_exposure_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Development Exposure Hashes",
+      "type": "array"
+    },
+    "runtime_inputs_frozen": {
+      "const": true,
+      "default": true,
+      "title": "Runtime Inputs Frozen",
+      "type": "boolean"
+    },
+    "automated_checks_required": {
+      "const": true,
+      "default": true,
+      "title": "Automated Checks Required",
+      "type": "boolean"
+    },
+    "human_judgment_required": {
+      "const": true,
+      "default": true,
+      "title": "Human Judgment Required",
+      "type": "boolean"
+    },
+    "human_input_contract": {
+      "const": "choice_only",
+      "default": "choice_only",
+      "title": "Human Input Contract",
+      "type": "string"
+    },
+    "reference_labels_required": {
+      "const": false,
+      "default": false,
+      "title": "Reference Labels Required",
+      "type": "boolean"
+    },
+    "labels_tracked_in_git": {
+      "const": false,
+      "default": false,
+      "title": "Labels Tracked In Git",
+      "type": "boolean"
+    },
+    "questions_tracked_in_git": {
+      "const": false,
+      "default": false,
+      "title": "Questions Tracked In Git",
+      "type": "boolean"
+    },
+    "first_result_policy": {
+      "const": "single_acceptance_pass",
+      "default": "single_acceptance_pass",
+      "title": "First Result Policy",
+      "type": "string"
+    },
+    "retirement_policy": {
+      "const": "retire_after_result_driven_tuning",
+      "default": "retire_after_result_driven_tuning",
+      "title": "Retirement Policy",
+      "type": "string"
+    }
+  },
+  "required": [
+    "suite_id",
+    "frozen_at",
+    "review_mode",
+    "bundle_hash",
+    "runtime_manifest_hash",
+    "source_manifest_hash",
+    "case_count",
+    "company_count",
+    "stratum_counts",
+    "opaque_case_hashes",
+    "opaque_company_hashes",
+    "development_suite_hashes",
+    "development_exclusion_hashes",
+    "development_exposure_hashes"
+  ],
+  "title": "HeldOutSuiteSeal",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-suite-seal.schema.json"
+}

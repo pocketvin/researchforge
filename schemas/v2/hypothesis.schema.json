@@ -1,0 +1,92 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "hypothesis_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Hypothesis Id",
+      "type": "string"
+    },
+    "statement": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "investigating",
+        "supported",
+        "mixed",
+        "rejected",
+        "unresolved"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "materiality": {
+      "enum": [
+        "major",
+        "minor"
+      ],
+      "title": "Materiality",
+      "type": "string"
+    },
+    "evidence_for": {
+      "default": [],
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 30,
+      "title": "Evidence For",
+      "type": "array"
+    },
+    "evidence_against": {
+      "default": [],
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 30,
+      "title": "Evidence Against",
+      "type": "array"
+    },
+    "unknowns": {
+      "default": [],
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 10,
+      "title": "Unknowns",
+      "type": "array"
+    },
+    "would_change_conclusion": {
+      "default": "",
+      "maxLength": 2000,
+      "title": "Would Change Conclusion",
+      "type": "string"
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    }
+  },
+  "required": [
+    "hypothesis_id",
+    "statement",
+    "status",
+    "materiality",
+    "confidence"
+  ],
+  "title": "Hypothesis",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/hypothesis.schema.json"
+}

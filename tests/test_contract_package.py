@@ -8,10 +8,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
-from researchforge.cli import main
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -26,7 +22,7 @@ def test_contract_validator_passes() -> None:
 
     assert completed.returncode == 0, completed.stderr
     assert (
-        "PASS: 4 active V1.8 engineering, 1 preserved V1.7.3 runtime, "
+        "PASS: 4 preserved V1.8 engineering, 1 preserved V1.7.3 contract, "
         "2 preserved V1.7, 9 preserved V1.5 productization" in completed.stdout
     )
     assert "12 V1.4" in completed.stdout
@@ -55,15 +51,3 @@ def test_historical_scope_hashes_are_immutable() -> None:
     for name, expected_digest in expected.items():
         path = ROOT / "docs" / "product" / name
         assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_digest
-
-
-def test_cli_reports_the_bounded_product_runtime(
-    capsys: pytest.CaptureFixture[str], tmp_path: Path
-) -> None:
-    main(["--artifact-root", str(tmp_path), "catalog"])
-    output = capsys.readouterr().out
-
-    assert '"implementation_level": "V1_5_REAL_DATA"' in output
-    assert '"data_namespace": "product"' in output
-    assert '"filing_analysis"' in output
-    assert '"peer_comparison"' not in output

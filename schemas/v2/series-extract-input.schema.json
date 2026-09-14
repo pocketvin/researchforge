@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "row_label": {
+      "maxLength": 180,
+      "minLength": 1,
+      "title": "Row Label",
+      "type": "string"
+    },
+    "metric_code": {
+      "enum": [
+        "revenue",
+        "capital_expenditures",
+        "net_income",
+        "operating_cash_flow",
+        "total_assets",
+        "fixed_assets",
+        "accounts_receivable",
+        "inventory"
+      ],
+      "title": "Metric Code",
+      "type": "string"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "row_label",
+    "metric_code"
+  ],
+  "title": "SeriesExtractInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/series-extract-input.schema.json"
+}

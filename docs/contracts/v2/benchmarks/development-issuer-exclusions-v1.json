@@ -1,0 +1,354 @@
+{
+  "schema_version": "2.0.0",
+  "exclusion_id": "researchforge-development-issuers-v1",
+  "rationale": "Issuers materially used in ResearchForge V1/V2 development, benchmark, owner acceptance, product smoke or public development evaluation are excluded from V2 held-out acceptance. The exclusion covers the entire FinanceBench public 150-question issuer universe, not only cases actually executed.",
+  "issuer_alias_groups": [
+    {
+      "group_key": "catl",
+      "aliases": [
+        "CATL",
+        "宁德时代",
+        "宁德时代新能源科技股份有限公司"
+      ]
+    },
+    {
+      "group_key": "eve-energy",
+      "aliases": [
+        "EVE Energy",
+        "亿纬锂能",
+        "惠州亿纬锂能股份有限公司"
+      ]
+    },
+    {
+      "group_key": "gotion-high-tech",
+      "aliases": [
+        "Gotion High-Tech",
+        "国轩高科",
+        "国轩高科股份有限公司"
+      ]
+    },
+    {
+      "group_key": "sunwoda",
+      "aliases": [
+        "Sunwoda",
+        "欣旺达",
+        "欣旺达电子股份有限公司"
+      ]
+    },
+    {
+      "group_key": "great-power",
+      "aliases": [
+        "Great Power",
+        "鹏辉能源",
+        "广州鹏辉能源科技股份有限公司"
+      ]
+    },
+    {
+      "group_key": "farasis-energy",
+      "aliases": [
+        "Farasis Energy",
+        "孚能科技",
+        "孚能科技（赣州）股份有限公司"
+      ]
+    },
+    {
+      "group_key": "byd",
+      "aliases": [
+        "BYD",
+        "比亚迪",
+        "比亚迪股份有限公司"
+      ]
+    },
+    {
+      "group_key": "zhuhai-cosmx",
+      "aliases": [
+        "Zhuhai CosMX",
+        "珠海冠宇",
+        "珠海冠宇电池股份有限公司"
+      ]
+    },
+    {
+      "group_key": "kweichow-moutai",
+      "aliases": [
+        "Kweichow Moutai",
+        "贵州茅台",
+        "贵州茅台酒股份有限公司"
+      ]
+    },
+    {
+      "group_key": "dahua-technology",
+      "aliases": [
+        "Dahua Technology",
+        "大华股份",
+        "浙江大华技术股份有限公司"
+      ]
+    },
+    {
+      "group_key": "nvidia",
+      "aliases": [
+        "NVIDIA",
+        "英伟达"
+      ]
+    },
+    {
+      "group_key": "tencent",
+      "aliases": [
+        "Tencent",
+        "腾讯",
+        "腾讯控股"
+      ]
+    },
+    {
+      "group_key": "apple",
+      "aliases": [
+        "Apple",
+        "Apple Inc."
+      ]
+    },
+    {
+      "group_key": "microsoft",
+      "aliases": [
+        "Microsoft",
+        "Microsoft Corporation"
+      ]
+    },
+    {
+      "group_key": "xiaomi",
+      "aliases": [
+        "Xiaomi",
+        "小米",
+        "小米集团"
+      ]
+    },
+    {
+      "group_key": "alibaba",
+      "aliases": [
+        "Alibaba",
+        "阿里巴巴",
+        "阿里巴巴集团"
+      ]
+    },
+    {
+      "group_key": "3m",
+      "aliases": [
+        "3M",
+        "3M Company"
+      ]
+    },
+    {
+      "group_key": "activision-blizzard",
+      "aliases": [
+        "Activision Blizzard"
+      ]
+    },
+    {
+      "group_key": "block",
+      "aliases": [
+        "Block",
+        "Square"
+      ]
+    },
+    {
+      "group_key": "amd",
+      "aliases": [
+        "AMD",
+        "Advanced Micro Devices"
+      ]
+    },
+    {
+      "group_key": "best-buy",
+      "aliases": [
+        "Best Buy"
+      ]
+    },
+    {
+      "group_key": "johnson-johnson",
+      "aliases": [
+        "Johnson & Johnson",
+        "JnJ"
+      ]
+    },
+    {
+      "group_key": "corning",
+      "aliases": [
+        "Corning"
+      ]
+    },
+    {
+      "group_key": "american-express",
+      "aliases": [
+        "American Express"
+      ]
+    },
+    {
+      "group_key": "pfizer",
+      "aliases": [
+        "Pfizer"
+      ]
+    },
+    {
+      "group_key": "aes-corporation",
+      "aliases": [
+        "AES Corporation",
+        "AES"
+      ]
+    },
+    {
+      "group_key": "adobe",
+      "aliases": [
+        "Adobe",
+        "Adobe Inc."
+      ]
+    },
+    {
+      "group_key": "amazon",
+      "aliases": [
+        "Amazon",
+        "Amazon.com",
+        "Amazon.com Inc."
+      ]
+    },
+    {
+      "group_key": "amcor",
+      "aliases": [
+        "Amcor",
+        "Amcor plc"
+      ]
+    },
+    {
+      "group_key": "american-water-works",
+      "aliases": [
+        "American Water Works",
+        "American Water Works Company"
+      ]
+    },
+    {
+      "group_key": "boeing",
+      "aliases": [
+        "Boeing",
+        "The Boeing Company"
+      ]
+    },
+    {
+      "group_key": "cvs-health",
+      "aliases": [
+        "CVS Health",
+        "CVS Health Corporation"
+      ]
+    },
+    {
+      "group_key": "coca-cola",
+      "aliases": [
+        "Coca-Cola",
+        "The Coca-Cola Company"
+      ]
+    },
+    {
+      "group_key": "costco",
+      "aliases": [
+        "Costco",
+        "Costco Wholesale",
+        "Costco Wholesale Corporation"
+      ]
+    },
+    {
+      "group_key": "foot-locker",
+      "aliases": [
+        "Foot Locker",
+        "Foot Locker, Inc."
+      ]
+    },
+    {
+      "group_key": "general-mills",
+      "aliases": [
+        "General Mills",
+        "General Mills, Inc."
+      ]
+    },
+    {
+      "group_key": "jpmorgan",
+      "aliases": [
+        "JPMorgan",
+        "JPMorgan Chase",
+        "JPMorgan Chase & Co."
+      ]
+    },
+    {
+      "group_key": "kraft-heinz",
+      "aliases": [
+        "Kraft Heinz",
+        "The Kraft Heinz Company"
+      ]
+    },
+    {
+      "group_key": "lockheed-martin",
+      "aliases": [
+        "Lockheed Martin",
+        "Lockheed Martin Corporation"
+      ]
+    },
+    {
+      "group_key": "mgm-resorts",
+      "aliases": [
+        "MGM Resorts",
+        "MGM Resorts International"
+      ]
+    },
+    {
+      "group_key": "netflix",
+      "aliases": [
+        "Netflix",
+        "Netflix, Inc."
+      ]
+    },
+    {
+      "group_key": "nike",
+      "aliases": [
+        "Nike",
+        "NIKE, Inc."
+      ]
+    },
+    {
+      "group_key": "paypal",
+      "aliases": [
+        "PayPal",
+        "PayPal Holdings"
+      ]
+    },
+    {
+      "group_key": "pepsico",
+      "aliases": [
+        "PepsiCo",
+        "PepsiCo, Inc."
+      ]
+    },
+    {
+      "group_key": "ulta-beauty",
+      "aliases": [
+        "Ulta Beauty",
+        "Ulta Beauty, Inc."
+      ]
+    },
+    {
+      "group_key": "verizon",
+      "aliases": [
+        "Verizon",
+        "Verizon Communications"
+      ]
+    },
+    {
+      "group_key": "walmart",
+      "aliases": [
+        "Walmart",
+        "Walmart Inc."
+      ]
+    },
+    {
+      "group_key": "live-oak-bancshares",
+      "aliases": [
+        "Live Oak Bancshares",
+        "Live Oak Bancshares, Inc."
+      ]
+    }
+  ]
+}

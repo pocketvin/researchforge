@@ -1,0 +1,53 @@
+{
+  "schema_version": "2.0.0",
+  "suite_id": "heldout-408d53e4e084d747",
+  "protocol_version": "acceptance-v2",
+  "split": "held_out",
+  "frozen_at": "2026-09-12T18:45:55.484742+08:00",
+  "review_mode": "meets_standard",
+  "bundle_hash": "5013990ff3ecf7ec763db4e5c0e2a3a97e8f321f4dcf7af9b70ff0012a09cb61",
+  "runtime_manifest_hash": "7c377bd0762e88486abb4af7bdc984b2b9c03f30a58057ba469c8d3fb3dab475",
+  "source_manifest_hash": "ee9e1ea51f4394bce2277e4246da915a00a0d0b60ffdf126914c35171e399c49",
+  "case_count": 8,
+  "company_count": 4,
+  "stratum_counts": {
+    "analytical_explanation": 2,
+    "direct_extraction": 2,
+    "evidence_limited": 2,
+    "numerical_analysis": 2
+  },
+  "opaque_case_hashes": [
+    "f5534f00874ae4647d427d11873072f32d72c9097f7d492f30f82181e608497c",
+    "39020f7e41d5bbc2600a413f04c15fd211df49eaa561a2e8dacb0676e3af5d1b",
+    "d172df49a2c5864d8ecdacd026f02b7b35eac32bcabe511e56c633fd233e1979",
+    "2e5bba58475bbb3ffabf310210c30ffb835b57a81196efc04f0c79ab0ccf040c",
+    "9c9303825dad347a9970741f7843295cd2b2bef981c5a3d5d08ae9c209024314",
+    "75701d47e29025bdd8a343585a2ff3d6e4a1b041d830556c5b74c53257f75d5f",
+    "99b750880d84a8ff22bcda519da6a65a5bdeb7dc489148004a413b7a6da03ad2",
+    "0092174f0415973beef8239ad31c2fd3bd913f3166525d1e70674526b6eea9a6"
+  ],
+  "opaque_company_hashes": [
+    "5799fd01381a86473cfa33c51e9f4ccac576c4cbce7915a2d554535e33768422",
+    "3f3129ea41b0aa75bac5dd087c28e5eabd8a89380333ab9338619d9cb02fbcd9",
+    "0e2b752db68e40552a2182f0bb11c328873b53cc92c125bbe2f560c1238c153e",
+    "b8791b4f675dae6616b9435fce8181d1149edcf71e4cadc245b45d2e0bb4fd9c"
+  ],
+  "development_suite_hashes": [
+    "7ac57d910eb8792975137fbb27c1f4fac0722375ed5d2411a1e52c4ae461847a"
+  ],
+  "development_exclusion_hashes": [
+    "4b20fe868c3bc59820f8153cb3efc8b2dcb2d97b9bdb5814d92223a68cc637d3"
+  ],
+  "development_exposure_hashes": [
+    "ae99b1635a5d39c20a5607045c67b7b3bdb7fb3eb87ce89d035bf290bddc0045"
+  ],
+  "runtime_inputs_frozen": true,
+  "automated_checks_required": true,
+  "human_judgment_required": true,
+  "human_input_contract": "choice_only",
+  "reference_labels_required": false,
+  "labels_tracked_in_git": false,
+  "questions_tracked_in_git": false,
+  "first_result_policy": "single_acceptance_pass",
+  "retirement_policy": "retire_after_result_driven_tuning"
+}

@@ -1,0 +1,156 @@
+{
+  "$defs": {
+    "HeldOutDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "minLength": 1,
+          "title": "Document Id",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "relative_path": {
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "source_uri": {
+          "minLength": 1,
+          "title": "Source Uri",
+          "type": "string"
+        },
+        "published_at": {
+          "minLength": 1,
+          "title": "Published At",
+          "type": "string"
+        },
+        "document_type": {
+          "minLength": 1,
+          "title": "Document Type",
+          "type": "string"
+        },
+        "reporting_period": {
+          "additionalProperties": true,
+          "title": "Reporting Period",
+          "type": "object"
+        }
+      },
+      "required": [
+        "document_id",
+        "title",
+        "relative_path",
+        "content_hash",
+        "source_uri",
+        "published_at",
+        "document_type",
+        "reporting_period"
+      ],
+      "title": "HeldOutDocument",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "case_id": {
+      "minLength": 1,
+      "title": "Case Id",
+      "type": "string"
+    },
+    "stratum": {
+      "minLength": 1,
+      "title": "Stratum",
+      "type": "string"
+    },
+    "company_group_key": {
+      "minLength": 1,
+      "title": "Company Group Key",
+      "type": "string"
+    },
+    "company_query": {
+      "minLength": 1,
+      "title": "Company Query",
+      "type": "string"
+    },
+    "company_id": {
+      "minLength": 1,
+      "title": "Company Id",
+      "type": "string"
+    },
+    "market_hint": {
+      "enum": [
+        "CN",
+        "US",
+        "HK"
+      ],
+      "title": "Market Hint",
+      "type": "string"
+    },
+    "requested_period_label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Requested Period Label"
+    },
+    "research_question": {
+      "minLength": 1,
+      "title": "Research Question",
+      "type": "string"
+    },
+    "research_time": {
+      "minLength": 1,
+      "title": "Research Time",
+      "type": "string"
+    },
+    "corpus_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Corpus Hash",
+      "type": "string"
+    },
+    "documents": {
+      "items": {
+        "$ref": "#/$defs/HeldOutDocument"
+      },
+      "maxItems": 6,
+      "minItems": 1,
+      "title": "Documents",
+      "type": "array"
+    }
+  },
+  "required": [
+    "case_id",
+    "stratum",
+    "company_group_key",
+    "company_query",
+    "company_id",
+    "market_hint",
+    "research_question",
+    "research_time",
+    "corpus_hash",
+    "documents"
+  ],
+  "title": "HeldOutRuntimeCase",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-runtime-case.schema.json"
+}

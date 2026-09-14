@@ -1,4 +1,4 @@
-// Produce one portable import artifact; keep Code nodes separately reviewable and testable.
+// Build the one n8n transport over the canonical V2 ResearchForge runtime.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -35,33 +35,33 @@ function http(name, url, position, post = false) {
   node(name, 'httpRequest', 4.2, parameters, position,
     { retryOnFail: true, maxTries: 3, waitBetweenTries: 1000, onError: 'continueRegularOutput' });
 }
+
 const backend = "$('Prepare request').first().json.backend_url";
 const runPath = "$('Accept submission').first().json.path";
-node('Research webhook', 'webhook', 2.1, { httpMethod: 'POST', path: 'researchforge-v17',
-  responseMode: 'responseNode', options: {} }, [0, 0], { webhookId: 'researchforge-v17' });
+node('Research webhook', 'webhook', 2.1, { httpMethod: 'POST', path: 'researchforge-v2',
+  responseMode: 'responseNode', options: {} }, [0, 0], { webhookId: 'researchforge-v2' });
 node('Research form', 'formTrigger', 2.1, {
-  path: 'researchforge-v17-form',
-  formTitle: 'ResearchForge V1.8.5 · 通用公司研究',
-  formDescription: '输入上市公司名称或股票代码。系统会自主识别 A 股/美股/港股并定位官方披露，再走与 Web 相同的证据、计算与研究链路。',
+  path: 'researchforge-v2-form',
+  formTitle: 'ResearchForge V2 · 财报研究',
+  formDescription: '与 Web / MCP 共用同一个 V2 研究 Runtime、数据缓存、证据链和报告。',
   formFields: { values: [
     { fieldLabel: 'Company / 公司或股票代码', fieldType: 'text', requiredField: true,
-      placeholder: '贵州茅台 / 600519 / NVDA / 00700' },
+      placeholder: '宁德时代 / NVDA / 00700' },
     { fieldLabel: 'Market / 市场', fieldType: 'dropdown', requiredField: true,
       fieldOptions: { values: [{ option: 'Auto / 自动识别' }, { option: 'A 股' }, { option: '美股' }, { option: '港股' }] } },
     { fieldLabel: 'Period / 报告期（可选）', fieldType: 'text', requiredField: false,
-      placeholder: '留空 = Latest；也可填 2025FY' },
+      placeholder: '留空 = Latest；例如 2024H1 / 2025FY' },
     { fieldLabel: 'Research Question / 研究问题', fieldType: 'textarea', requiredField: true,
-      placeholder: '例如：最近增长主要来自哪里？当前最值得关注的风险是什么？' },
+      placeholder: '例如：经营现金流是否健康？为什么净利润同比变化？' },
   ] },
-  responseMode: 'responseNode',
-  options: { buttonLabel: 'Research Company / 开始自主研究', appendAttribution: false },
-}, [0, 180], { webhookId: 'researchforge-v17-form' });
+  responseMode: 'responseNode', options: { buttonLabel: '开始 V2 财报研究', appendAttribution: false },
+}, [0, 180], { webhookId: 'researchforge-v2-form' });
 code('Prepare request', 'prepare.js', [220, 0]);
 check('Input valid', '={{ String($json.ok) }}', 'true', [440, 0]);
-http('Check product backend', `={{ ${backend} + '/healthz' }}`, [660, 0]);
+http('Check V2 backend', `={{ ${backend} + '/v2/capabilities' }}`, [660, 0]);
 code('Check backend', 'check-backend.js', [880, 0]);
 check('Backend ready', '={{ String($json.ok) }}', 'true', [1100, 0]);
-http('Create run', `={{ ${backend} + '/v1/autonomous-research-runs' }}`, [1320, 0], true);
+http('Create run', `={{ ${backend} + '/v2/research-runs' }}`, [1320, 0], true);
 code('Accept submission', 'accept-submission.js', [1540, 0]);
 check('Submission accepted', '={{ String($json.ok) }}', 'true', [1760, 0]);
 node('Wait before polling', 'wait', 1.1, { resume: 'timeInterval', amount: 2, unit: 'seconds' }, [1980, 0]);
@@ -69,20 +69,20 @@ http('Poll status', `={{ ${backend} + ${runPath} }}`, [2200, 0]);
 code('Classify status', 'classify-status.js', [2420, 0]);
 check('Run completed', '={{ $json.route }}', 'completed', [2640, 0]);
 check('Keep waiting', '={{ $json.route }}', 'waiting', [2640, 260]);
-['result', 'facts', 'calculations', 'evidence', 'trace'].forEach((kind, index) => {
-  http(`Fetch ${kind}`, `={{ ${backend} + ${runPath} + '/${kind}' }}`, [2860 + index * 220, 0]);
-});
-code('Map verified output', 'map-result.js', [3960, 0]);
-code('Render surface response', 'render-response.js', [4180, 0]);
-check('Form surface', "={{ $('Prepare request').first().json.surface }}", 'form', [4400, 0]);
+http('Fetch result', `={{ ${backend} + ${runPath} + '/result' }}`, [2860, 0]);
+http('Fetch workspace', `={{ ${backend} + ${runPath} + '/workspace' }}`, [3080, 0]);
+http('Fetch trace', `={{ ${backend} + ${runPath} + '/trace' }}`, [3300, 0]);
+code('Map verified output', 'map-result.js', [3520, 0]);
+code('Render surface response', 'render-response.js', [3740, 0]);
+check('Form surface', "={{ $('Prepare request').first().json.surface }}", 'form', [3960, 0]);
 node('Respond form', 'respondToWebhook', 1.4, { respondWith: 'text', responseBody: '={{ $json.formPage }}',
-  options: { responseCode: 200 } }, [4620, -100]);
+  options: { responseCode: 200 } }, [4180, -100]);
 node('Respond webhook', 'respondToWebhook', 1.4, { respondWith: 'json', responseBody: '={{ $json.transport }}',
-  options: { responseCode: '={{ $json.transport.http_status }}' } }, [4620, 100]);
-const chain = ['Research webhook', 'Prepare request', 'Input valid', 'Check product backend',
-  'Check backend', 'Backend ready', 'Create run', 'Accept submission', 'Submission accepted',
-  'Wait before polling', 'Poll status', 'Classify status', 'Run completed',
-  'Fetch result', 'Fetch facts', 'Fetch calculations', 'Fetch evidence', 'Fetch trace',
+  options: { responseCode: '={{ $json.transport.http_status }}' } }, [4180, 100]);
+
+const chain = ['Research webhook', 'Prepare request', 'Input valid', 'Check V2 backend', 'Check backend',
+  'Backend ready', 'Create run', 'Accept submission', 'Submission accepted', 'Wait before polling',
+  'Poll status', 'Classify status', 'Run completed', 'Fetch result', 'Fetch workspace', 'Fetch trace',
   'Map verified output', 'Render surface response', 'Form surface'];
 for (let i = 0; i < chain.length - 1; i++) connect(chain[i], chain[i + 1]);
 connect('Research form', 'Prepare request');
@@ -92,19 +92,19 @@ connect('Keep waiting', 'Wait before polling');
 connect('Keep waiting', 'Render surface response', 1);
 connect('Form surface', 'Respond form');
 connect('Form surface', 'Respond webhook', 1);
-node('Read me', 'stickyNote', 1, { width: 640, height: 280,
-  content: '## ResearchForge × n8n\nCompany/Ticker → official filing discovery → verified research.\n\n**Local-only.** Configure trusted backend/public URLs in Prepare request, never in user input.\n\nWait: 2s; ≤60 polls / 150s. Failure output never invents research. n8n timeout does not cancel backend.\n\nAll facts, calculations, evidence and conclusions come from the SAME backend as Web. No LLM, finance formula or verifier lives here.\n\nSee integrations/n8n/README.md for import, demo, retries and failures. Failure/ambiguity → explicit abstention; no invented research.',
-}, [0, -380]);
-const workflow = { id: 'researchforgeV17', name: 'ResearchForge — General Company Research V1.8.5',
+node('Read me', 'stickyNote', 1, { width: 640, height: 260,
+  content: '## ResearchForge V2 × n8n\nOne runtime only: n8n submits and reads `/v2/research-runs`; it does not own retrieval, finance, prompts, state or validation.\n\nWeb, MCP and n8n share the same official filing discovery, document cache, Research State, report and Trace.\n\nFailure stays explicit; n8n never invents a result or reruns a failed task automatically.',
+}, [0, -360]);
+const workflow = { id: 'researchforgeV17', name: 'ResearchForge — Filing Research V2',
   active: false, nodes, connections, pinData: {},
   settings: { executionOrder: 'v1', executionTimeout: 300,
     saveDataSuccessExecution: 'all', saveDataErrorExecution: 'all' }, tags: [] };
-const path = join(root, 'researchforge-v1.7.workflow.json');
+const path = join(root, 'researchforge-v2.workflow.json');
 const serialized = JSON.stringify(workflow, null, 2) + '\n';
 if (process.argv.includes('--check')) {
   if (readFileSync(path, 'utf8') !== serialized) throw new Error('Workflow JSON is stale; regenerate it.');
-  console.log('Portable n8n workflow matches source.');
+  console.log('Portable V2 n8n workflow matches source.');
 } else {
   writeFileSync(path, serialized);
-  console.log('Generated integrations/n8n/researchforge-v1.7.workflow.json');
+  console.log('Generated integrations/n8n/researchforge-v2.workflow.json');
 }

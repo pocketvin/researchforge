@@ -1,0 +1,82 @@
+{
+  "$defs": {
+    "EvidenceAlternative": {
+      "additionalProperties": false,
+      "properties": {
+        "document_hash": {
+          "title": "Document Hash",
+          "type": "string"
+        },
+        "page_number": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Number"
+        },
+        "required_text": {
+          "minLength": 1,
+          "title": "Required Text",
+          "type": "string"
+        },
+        "match_mode": {
+          "default": "text",
+          "enum": [
+            "text",
+            "page"
+          ],
+          "title": "Match Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_hash",
+        "required_text"
+      ],
+      "title": "EvidenceAlternative",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "requirement_id": {
+      "title": "Requirement Id",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "alternatives": {
+      "items": {
+        "$ref": "#/$defs/EvidenceAlternative"
+      },
+      "minItems": 1,
+      "title": "Alternatives",
+      "type": "array"
+    },
+    "materiality": {
+      "default": "major",
+      "enum": [
+        "major",
+        "minor"
+      ],
+      "title": "Materiality",
+      "type": "string"
+    }
+  },
+  "required": [
+    "requirement_id",
+    "description",
+    "alternatives"
+  ],
+  "title": "EvidenceRequirement",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/evidence-requirement.schema.json"
+}

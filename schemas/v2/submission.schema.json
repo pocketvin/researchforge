@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "stop_reason": {
+      "enum": [
+        "sufficient_evidence",
+        "evidence_exhausted"
+      ],
+      "title": "Stop Reason",
+      "type": "string"
+    },
+    "direct_answer": {
+      "default": "not_applicable",
+      "enum": [
+        "yes",
+        "no",
+        "mixed",
+        "cannot_determine",
+        "not_applicable"
+      ],
+      "title": "Direct Answer",
+      "type": "string"
+    },
+    "summary": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Summary",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 40,
+      "minItems": 1,
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "remaining_uncertainties": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Remaining Uncertainties",
+      "type": "array"
+    },
+    "why_stop": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Why Stop",
+      "type": "string"
+    }
+  },
+  "required": [
+    "stop_reason",
+    "summary",
+    "evidence_ids",
+    "remaining_uncertainties",
+    "why_stop"
+  ],
+  "title": "Submission",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/submission.schema.json"
+}

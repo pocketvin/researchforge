@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "company_query": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Company Query",
+      "type": "string"
+    },
+    "market_hint": {
+      "anyOf": [
+        {
+          "enum": [
+            "CN",
+            "US",
+            "HK"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Market Hint"
+    },
+    "requested_period_label": {
+      "anyOf": [
+        {
+          "maxLength": 16,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Requested Period Label"
+    },
+    "research_question": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Research Question",
+      "type": "string"
+    },
+    "research_time": {
+      "format": "date-time",
+      "title": "Research Time",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "maxLength": 256,
+      "minLength": 8,
+      "title": "Idempotency Key",
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_query",
+    "research_question",
+    "research_time",
+    "idempotency_key"
+  ],
+  "title": "ResearchRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/research-request.schema.json"
+}

@@ -1,4 +1,4 @@
-"""Framework-independent financial domain primitives."""
+"""Shared deterministic financial domain primitives for ResearchForge V2."""
 
 from researchforge.domain.finance import (
     absolute_change,
@@ -29,18 +29,8 @@ from researchforge.domain.models import (
     RestatementStatus,
     StatementScope,
 )
-from researchforge.domain.source_mapping import (
-    SOURCE_MAPPING_VERSION,
-    SOURCE_METRIC_MAPPINGS,
-    MappingTransform,
-    SourceMetricMapping,
-    StatementCode,
-    mapping_for,
-)
 
 __all__ = [
-    "SOURCE_MAPPING_VERSION",
-    "SOURCE_METRIC_MAPPINGS",
     "CalculationResult",
     "CalculationStatus",
     "ComparabilityResult",
@@ -49,14 +39,11 @@ __all__ = [
     "FactKind",
     "FinancialFact",
     "FiscalPeriod",
-    "MappingTransform",
     "MeasurementUnit",
     "MetricCode",
     "PeriodBasis",
     "ReportingPeriod",
     "RestatementStatus",
-    "SourceMetricMapping",
-    "StatementCode",
     "StatementScope",
     "absolute_change",
     "cash_conversion",
@@ -65,7 +52,6 @@ __all__ = [
     "gross_margin",
     "gross_profit",
     "growth_rate",
-    "mapping_for",
     "margin_change_pp",
     "normalize_to_base_units",
     "profit_cash_divergence",

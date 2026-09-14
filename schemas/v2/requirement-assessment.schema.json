@@ -1,0 +1,41 @@
+{
+  "additionalProperties": false,
+  "description": "Assessor mapping from one independent requirement to actual report claims.",
+  "properties": {
+    "requirement_id": {
+      "title": "Requirement Id",
+      "type": "string"
+    },
+    "report_claim_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Report Claim Ids",
+      "type": "array"
+    },
+    "verdict": {
+      "enum": [
+        "covered",
+        "partial",
+        "missed"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    },
+    "reason": {
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "requirement_id",
+    "verdict",
+    "reason"
+  ],
+  "title": "RequirementAssessment",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/requirement-assessment.schema.json"
+}

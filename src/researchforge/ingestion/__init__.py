@@ -1,6 +1,6 @@
-"""Real public-disclosure ingestion for the bounded V1.5 product namespace."""
+"""Shared official-disclosure discovery and extraction primitives for V2."""
 
+from researchforge.ingestion.discovery import OfficialDisclosureDiscovery
 from researchforge.ingestion.errors import IngestionAbstention
-from researchforge.ingestion.pipeline import FilingRegistry, ProductDisclosureIngestion
 
-__all__ = ["FilingRegistry", "IngestionAbstention", "ProductDisclosureIngestion"]
+__all__ = ["IngestionAbstention", "OfficialDisclosureDiscovery"]

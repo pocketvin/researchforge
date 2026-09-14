@@ -1,0 +1,73 @@
+{
+  "$defs": {
+    "ClaimReview": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "supported",
+            "partial",
+            "unsupported",
+            "contradicted",
+            "unverifiable"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 1200,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_id",
+        "verdict",
+        "reason"
+      ],
+      "title": "ClaimReview",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "claims": {
+      "items": {
+        "$ref": "#/$defs/ClaimReview"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Claims",
+      "type": "array"
+    },
+    "question_answered": {
+      "title": "Question Answered",
+      "type": "boolean"
+    },
+    "missing_material_topics": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 10,
+      "title": "Missing Material Topics",
+      "type": "array"
+    }
+  },
+  "required": [
+    "claims",
+    "question_answered",
+    "missing_material_topics"
+  ],
+  "title": "SemanticReview",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/semantic-review.schema.json"
+}

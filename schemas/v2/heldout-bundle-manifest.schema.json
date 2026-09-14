@@ -1,0 +1,71 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "default": "2.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "suite_id": {
+      "minLength": 1,
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "protocol_version": {
+      "const": "acceptance-v2",
+      "default": "acceptance-v2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "split": {
+      "const": "held_out",
+      "default": "held_out",
+      "title": "Split",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "review_mode": {
+      "enum": [
+        "pairwise_preference",
+        "meets_standard"
+      ],
+      "title": "Review Mode",
+      "type": "string"
+    },
+    "runtime_cases_file": {
+      "const": "runtime-cases.jsonl",
+      "default": "runtime-cases.jsonl",
+      "title": "Runtime Cases File",
+      "type": "string"
+    },
+    "source_directory": {
+      "const": "sources",
+      "default": "sources",
+      "title": "Source Directory",
+      "type": "string"
+    },
+    "case_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Case Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "suite_id",
+    "created_at",
+    "review_mode",
+    "case_ids"
+  ],
+  "title": "HeldOutBundleManifest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-bundle-manifest.schema.json"
+}

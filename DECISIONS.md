@@ -913,3 +913,163 @@ The MCP server uses the official Python SDK and exposes seven bounded tools. Res
 **Status:** ACCEPTED
 
 V1.8.0 upgrades the active dependency line, runs `pip-audit` and `npm audit` in CI, disables FastAPI interactive docs by default, keeps product services localhost-bound and adds explicit browser security headers. A later dependency CVE can therefore fail CI even when application tests still pass. Security findings are not inferred from test success alone.
+
+
+## RF-045 — Filing-only Agent Research V2
+
+Date: 2026-09-10. Status: implementation in progress; not an accepted replacement release.
+
+The owner explicitly authorized a single-agent tool loop over complete official filings,
+with page/table/figure/footnote navigation, explicit hypotheses and sufficiency/exhaustion
+stopping, deterministic financial computations, continuous persisted trace and an
+answer-first Web workspace. Initial retrieval is seed context rather than a closed universe.
+The system keeps provenance, point-in-time limits, budgets and cancellation outside model discretion.
+
+The new runtime, API, contracts and artifact namespace are versioned separately; V1.8.5
+and all frozen evolution evidence remain unchanged. External web research, multi-agent,
+slides, broad valuation/trading and production deployment are deferred.
+
+Hard validation and fallible semantic review are separate. Independent quality evaluation
+requires separately reviewed references and a frozen corpus; synthetic regressions cannot
+be presented as research-quality improvement or a hidden benchmark.
+
+Actual official CATL 2024H1 acquisition/parsing succeeded. The first real OpenAI-backed model call was
+rejected with `credit_balance_exhausted`. This was the actual state of RF-045 at the time; the provider blocker was later superseded by the owner-authorized hybrid route recorded in RF-046. No deterministic fake report was used as a substitute.
+
+Implementation note: `docs/product/v2-filing-research-implementation.md`.
+Fresh gates: `artifacts/v2-implementation/outputs/engineering-verification.json`.
+
+
+## RF-046 — Objective-bounded hybrid filing research
+
+Date: 2026-09-11. Status: implemented and real-flow verified; independent quality benchmark pending.
+
+V2 is provider-routable rather than provider-identical. DeepSeek V4 Flash owns high-frequency filing tool decisions, public Research-State reflection and structured synthesis. Qwen Plus independently reviews text-only final claims; Qwen3-VL Plus is selected only for evidence that actually requires page-image understanding. Kimi K3 remains standby after live reflection/final-synthesis latency failures. Provider-private message histories never cross provider boundaries; handoff is through typed public WorkingState, Research Objectives, evidence digests and run-owned IDs.
+
+The normal stopping contract is semantic rather than step-count based. The first public reflection derives 1–5 `required` Research Objectives from the user's explicit question; their IDs/questions/required identity are then locked. New discoveries may become `supporting` objectives but cannot silently expand the required completion gate. Counter-evidence is mandatory for material supported/mixed hypotheses, and the public state is reflected again after the counter-search even when it returns zero new chunks. Operational turn/time/budget caps remain safeguards only.
+
+Real CATL run `run_a35c700d98a14877b1d47ee09d77452e` succeeded with 3 Research Agent turns, 4/4 required objectives answered, targeted counter-evidence and 7 provider calls (6 DeepSeek, 1 Qwen). Hard numeric/citation validation passed. Semantic review is displayed per claim and remains explicitly non-ground-truth; partial support is not hidden as success. This real-flow pass is not an independent benchmark proving V2 research-quality superiority.
+
+
+## RF-047 — Source-bounded report safety, provider failover and benchmark-honest evaluation
+
+Date: 2026-09-11. Status: implemented and live-canary verified; release/quality acceptance pending.
+
+V2 no longer assumes a single provider stays available for an entire Run. DeepSeek remains the primary research/reflection/synthesis model while available. Eligible provider outages (timeout/connection or HTTP 402/408/429/5xx) are visible and run-sticky: Qwen Plus handles filing Tool Calling, Qwen3-Max handles structured Reflection/Synthesis, and Qwen Plus independently reviews each report Finding before a small whole-answer ReviewSummary. HTTP 400 is not masked by failover. Every fallback is persisted in Trace/usage; no response is presented as if it came from the primary provider.
+
+Initial evidence is still a seed rather than a closed retrieval universe, but cold start now uses a deterministic financial-metric alias dictionary plus named-statement context. This reduced a real 3M FY2018 CAPEX fallback canary from 7 Agent turns / 166,626 tokens to 2 turns / 33,023 tokens while preserving the correct `$1,577 million` answer and annotated source page. The same bounded metric vocabulary now carries common Chinese aliases and explicit Chinese statement unit parsing.
+
+Final prose cannot create new research truth. Structured report schemas are bound to the actual Run's evidence/fact/calculation IDs; numeric provenance remains deterministic. Repeated writer-only failures do not replay Research Agent work. A Safe Dossier Renderer may expose already-submitted public Objectives/Dossier without new inference or arithmetic, after which normal deterministic validation and claim-wise semantic review still apply. A genuine missing material research topic may return to the Agent; unsupported prose alone may not.
+
+Capital-intensity methodology is intentionally not optimized to a FinanceBench reference formulation. ResearchForge measures direct capital demand using `CAPEX / Revenue`, `Average Net PP&E / Revenue` and `Average Total Assets / Revenue`; ROA/ROIC are return context, not definitions of capital intensity. In filing-only scope, absence of an explicit source characterization or comparison threshold means the categorical question is limited/cannot-determine rather than answered with a model-invented high/medium/low cutoff.
+
+FinanceBench remains a pinned public canary track, not hidden/held-out product-quality evidence. Gold labels are loaded only after product execution. Model-based benchmark annotations remain uncalibrated, and assessor independence is derived from each Run's actual product model roles. A Judge that is the same model as product Synthesis is explicitly labeled as such. At the time of RF-047, the planned acceptance boundary still required separately reviewed references and human Judge calibration; RF-050 later superseded that human-labeling design with frozen unseen inputs plus choice-only blind owner judgment. Broad statistical superiority still requires a study larger than the compact owner suite.
+
+## RF-048 — Public development benchmarks must be versioned experiments, not pseudo-held-out scores
+
+Date: 2026-09-12. Status: implemented; held-out quality acceptance still pending.
+
+FinanceBench has been used repeatedly to discover and repair V2 behavior, so its open-source 150-question set is formally a **public development/canary** corpus. It must not be labeled validation, hidden, or held-out. The canonical tracked development suite contains only question/company/document/reasoning metadata; answer, justification and evidence labels are excluded from selection. The suite pins the source commit/SHA, selector seed/version and a canonical suite hash. Each execution pins a behavior-bearing implementation fingerprint and refuses resume after the implementation changes, preventing pre-fix and post-fix cases from being pooled into one apparent score.
+
+Development evaluation must remain diagnostic rather than self-congratulatory. Failed Tool results are not successful reusable observations and may never be collapsed into `no_new_information`. An unambiguous historical Tool argument shape may be migrated at the capability boundary only when values and identities are preserved exactly, with a persisted migration Trace; ambiguous inputs remain strict failures. Focused extraction/calculation tasks are not allowed to expand the final report beyond their required material objectives merely because additional evidence was observed.
+
+Benchmark compression must preserve claim-relevant cited evidence rather than blindly taking the beginning of a page/chunk. Reference labels remain post-run only and never enter product context. Model-based semantic annotations remain `uncalibrated_model`; their independence label is derived from actual product model roles. Public-development metrics, even when perfect on a canary, are not eligible evidence for a V2-superiority claim. A separate frozen multi-issuer held-out set is still required for quality acceptance. RF-050 supersedes the earlier independent-reference-review / human-Judge-calibration requirement with choice-only blind owner acceptance; public-development metrics remain ineligible for that claim.
+
+## RF-049 — Held-out quality acceptance is private, human-reviewed, sealed and single-use
+
+Date: 2026-09-12. Status: superseded by RF-050 before any real held-out seal was created.
+
+A V2 dataset is not held out merely because its `split` field says `held_out`. Acceptance inputs are
+kept in a private, Git-invisible bundle that physically separates runtime questions/source files from
+reference labels and human review attestations. The tracked repository may contain only the public
+protocol, schemas, the development-issuer exclusion manifest and a future opaque seal. Seal creation
+verifies source bytes, runtime/reference identity, reference integrity/reviewer metadata, issuer
+disjointness and coverage before any acceptance run can be armed.
+
+Acceptance-v1 requires at least 12 cases, 6 issuer groups and 4 task strata. Every case requires a
+primary human review attestation; every stratum requires at least one second blind human review by a
+different reviewer, and disagreements must be adjudicated before freeze. The development-issuer
+exclusion manifest covers issuers materially used in V1/V2 research development, owner acceptance,
+product smokes and the public FinanceBench development suite, so they cannot be recycled as held-out
+acceptance issuers. Private bundle paths inside the repository must be `.gitignore`-covered and have
+no tracked files.
+
+A seal is single-use for the declared acceptance pass. The only retry permitted on that seal is an
+explicit infrastructure `technical_failure` with a recorded reason and the identical implementation
+hash. A valid low-quality result is not retryable as held out. Once results/reference labels are
+inspected and used to change prompts, tools, formulas, retrieval, stop policy, reporting or model
+routing, that seal is retired to regression/development status and a new disjoint seal is required.
+The seal and private bundle can be re-verified byte-for-byte at any time without exposing questions
+or labels.
+
+The presence of the held-out contracts and sealing tools is not evidence that V2 has passed an
+independent quality evaluation. As of this decision, committed real held-out seal count is zero.
+
+## RF-050 — Held-out human acceptance is choice-only, not a manual labeling project
+
+Date: 2026-09-12. Status: acceptance-v2 protocol/tooling implemented; no real held-out seal exists.
+
+RF-049 over-specified the human role. ResearchForge does not require people to author hidden gold
+answers, reconcile every filing number, mark evidence, enumerate counter-evidence or produce review
+attestations. Acceptance-v2 freezes only unseen runtime questions, issuer/cutoff identity, source
+bytes and the review mode. Development issuers remain excluded and the seal remains single-use.
+
+The default owner acceptance suite is intentionally compact: at least 8 cases, 4 issuer groups and
+4 task strata. Automated checks own source identity, deterministic numeric/provenance validation,
+citation validity, evidence observation and trajectory diagnostics. After all candidate Runs finish,
+one case requires exactly one human choice. Pairwise mode permits only `A better`, `B better`, `Tie`
+or `Neither`; threshold mode permits only `Meets standard`, `Does not meet standard` or
+`Cannot judge`. The machine-readable human-judgment contract intentionally has no explanation,
+corrected-answer, evidence-label or confidence field.
+
+The compact suite may support literal owner-acceptance statements such as “6/8 blind comparisons
+preferred V2” or “7/8 outputs met the bar”. It must not be inflated into a broad statistical claim
+of universal financial-research superiority. Result-driven tuning retires the seal exactly as before.
+
+## RF-051 — Held-out acceptance is bounded; suite I is retired and does not auto-spawn J
+
+Date: 2026-09-13. Status: accepted development/acceptance-control decision; final V2 Owner Acceptance still pending.
+
+Real private held-out suites A through I were used as single-use acceptance probes. Once a suite's results were inspected and used to tune retrieval, stopping, numeric provenance, reporting or review behavior, that suite became development exposure and could not be promoted back to formal evidence. Suite E demonstrated that technical success alone was insufficient: all eight product runs completed, but the owner accepted only one output. Later suites continued to expose genuine product failures. The final fresh suite I completed one case and failed the second with `SAFE_REPORT_SEMANTIC_REJECTED`; its attempt is retired and tuning is recorded.
+
+The acceptance process therefore stops the automatic alphabet progression. ResearchForge must not mechanically generate J/K/L after each discovered issue. After a fresh-suite failure, first classify the failure as systemic or bounded, fix only justified product defects, and decide explicitly whether another fresh formal suite is worth the cost. A retired-suite development recheck can prove that a specific defect was repaired, but it can never restore that suite's held-out status or count as Owner Acceptance.
+
+I's exposed failure chain was systemic enough to justify development repair. The analytical state could expand an explicit retrospective management bridge into adjacent but non-core disclosures; a percentage parser could mis-bind a later `decrease` phrase to an earlier positive reported percentage; Reflection could fail a whole Run on a prose-only maximum-length overflow; and Safe Dossier wording did not normalize every indirect filing-wide absence form accepted by its own source-state inputs. These were repaired by tightening management-bridge scope/stop policy, narrowing percentage direction binding across punctuation/numeric boundaries, deterministically bounding only pure public-state string-length overflow fields while leaving structural errors fail-closed, and aligning Safe Dossier absence normalization with deterministic presentation validation. Internal-ID punctuation shells are also removed from fallback prose.
+
+Post-repair focused evidence is development evidence only: `tests/v2` passes **197/197** with `compileall` clean; zero-cost replay of the retired California BanCorp state now exposes `required_before_submit=[submit_research]` with no sufficient-evidence blocker; and reconstructing the Safe Dossier from the final retired state passes deterministic validation while keeping operating cash flow, OREO, shareholders' equity and litigation out of the core driver findings. No fresh formal suite has run after these changes, so independent V2 Owner Acceptance remains unproven.
+
+## RF-052 — Product V2 runtime must match hybrid routing, and cash-flow health is multidimensional
+
+Date: 2026-09-13. Status: implemented development/product-runtime decision; final V2 Owner Acceptance still pending.
+
+The V2 source/runtime already supported the owner-authorized hybrid route, but the packaged Docker API forwarded only the OpenAI key and reasoning mode. A real Web run therefore reported `provider=openai`, `model=gpt-5.6-luna` and failed its first model request with `RateLimitError` even though the local `.env` correctly selected `hybrid` and contained the DeepSeek/Qwen/Kimi configuration. Product startup is no longer allowed to rely on source defaults or `.env` inspection alone. Compose forwards every behavior-bearing V2 provider setting into the API container; `/v2/capabilities` exposes only effective non-secret role names; and `start_demo.py` verifies the running V2 provider, primary model, Reflection/Synthesis, semantic-review, fallback and vision routes immediately after the API health gate. A mismatch stops startup before Owner use.
+
+Cash-flow health/quality questions use `cash_flow_health_multidimensional_v1`. The required evidence dimensions are operating cash generation and profit conversion, net cash change and liquidity, investing/financing cash flows, and working-capital/one-off effects. `OCF / Net Income > 1`, OCF growth or a management liquidity statement can support one dimension but cannot by themselves establish that overall cash flow is healthy. Material positive and negative evidence must produce `mixed`; `yes/no` is reserved for materially aligned dimensions. Factoring, endorsement or discounting cannot be described as inflating or pulling forward OCF unless the filing explicitly connects that accounting treatment to operating cash flow.
+
+User-facing cash-flow fallback prose is deliberately more conservative than the research notebook. Unbenchmarked degree/ranking words such as `较强`, `较厚`, `可观`, `相当部分` and `主要来源` are neutralized to exact amounts, ratios, directions or sign-level contribution language, while source numbers and `mixed` polarity are preserved. Internal-ID removal also cleans both Western and Chinese punctuation shells. This is a presentation safety transform only; it does not manufacture calculations, thresholds or new claims.
+
+Verification is split honestly. The provider-wiring repair was exercised in real product runs: after the fix, calls routed to DeepSeek/Qwen with zero OpenAI product calls. A subsequent CATL 2024H1 cash-flow development run reached the correct `mixed` Research State but failed semantic review because of degree/causal wording. After removing those phrases, no additional live model run was spent. Instead, the persisted failed state was replayed with the current code at zero model cost: Safe Dossier retained `direct_answer=mixed`, four cash-flow dimensions and original numeric evidence, removed every reviewer-flagged degree phrase, and passed deterministic validation with no errors. Current combined focused gate is **204/204 pytest PASS**, `compileall` PASS, targeted Ruff PASS and `git diff --check` PASS. This development evidence does not establish fresh held-out or live semantic Owner Acceptance.
+
+## RF-053 — Retire the legacy V1 Web; V2 becomes the sole browser research surface
+
+Date: 2026-09-14. Status: owner-authorized and implemented.
+
+The browser product no longer carries two parallel research experiences. The V1 React research workspace and its historical Quality Lab navigation are removed from the frontend source/bundle. `frontend/src/main.tsx` mounts the V2 `ResearchWorkspace` directly, `/` is the canonical Web entry, and `/research/v2` remains only as a compatibility alias that renders the same V2 workspace. V2 itself no longer links back to an “old research” page.
+
+This decision retires a Web surface, not the V1 data/contracts/backend compatibility boundary. `/v1` APIs, persisted V1 Runs/results/artifacts, reviewed product packages and the stable n8n V17 workflow remain available. The frontend nginx `/v1` proxy is retained for compatibility even though the current browser bundle does not call it. No historical V1 artifact is rewritten or deleted.
+
+Legacy-only frontend implementation/test files (`App.tsx`, `App.test.tsx`, root V1 `api.ts`, `types.ts`, `styles.css`, and V1-specific browser scenarios) are removed or replaced by V2-only coverage. Future Web work targets the V2 workspace only; V1 remains backend/history compatibility rather than a user-facing browser product.
+
+## RF-054 — V2 is the sole live research runtime; V1 becomes immutable audit history
+
+Date: 2026-09-14. Status: owner-authorized and implemented.
+
+RF-053 retired only the V1 browser surface and deliberately preserved the old backend while V2 product integration was still being converged. That backend-preservation clause is now superseded. ResearchForge has one live research runtime: V2. Web, `POST /v2/research-runs`, CLI, MCP and n8n all create/read the same `ResearchRepository` artifacts under `artifacts/v2`; no surface may start or call the V1 `ResearchRunService`, autonomous coordinator, V1 LangGraph workflow, V1 evaluation/evolution runtime or database index. `/v1` is not a compatibility product API and must return 404.
+
+The consolidation intentionally keeps only reusable lower-level primitives whose semantics remain valid in V2: official issuer/filing discovery and source-host validation, deterministic statement/XBRL extraction, finance/domain formulas and period semantics, content-addressed storage/file locking, checkpoints, provider budget/policy/configuration. HK and SEC modules are reduced to the extraction/tag primitives V2 actually consumes; legacy product-package materialization and the separate V1 full-text retrieval stack are removed.
+
+PostgreSQL/Alembic/SQLAlchemy/psycopg are removed from the product runtime and dependency lock. The canonical container stack is API + Frontend, with n8n optional through its profile; API persistence/cache is file/CAS-based under the V2 artifact volume. The packaged API image does not copy `data/product`, fixtures, benchmark packages, archives or migrations. Reintroducing a database requires a new approved requirement rather than historical precedent.
+
+Historical V1 assets are not deleted merely because their execution code is retired. Frozen schemas/contracts, reviewed product packages, benchmark/evolution evidence, screenshots, prior Runs/artifacts, `project-status.json` and V1 n8n workflow JSON remain immutable audit/reproducibility material. They are never eligible as fallback product data and cannot be reactivated through another surface without an explicit new decision.
+
+The active product version identity is V2 (`2.0.0-alpha.1`; Python distribution `2.0.0a1`). Final held-out Owner Acceptance remains a separate quality question: single-runtime consolidation and green engineering gates do not convert the retired A–I held-out suites into acceptance evidence and do not authorize an automatic J suite.

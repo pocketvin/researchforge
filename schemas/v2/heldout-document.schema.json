@@ -1,0 +1,59 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "document_id": {
+      "minLength": 1,
+      "title": "Document Id",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "relative_path": {
+      "minLength": 1,
+      "title": "Relative Path",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "source_uri": {
+      "minLength": 1,
+      "title": "Source Uri",
+      "type": "string"
+    },
+    "published_at": {
+      "minLength": 1,
+      "title": "Published At",
+      "type": "string"
+    },
+    "document_type": {
+      "minLength": 1,
+      "title": "Document Type",
+      "type": "string"
+    },
+    "reporting_period": {
+      "additionalProperties": true,
+      "title": "Reporting Period",
+      "type": "object"
+    }
+  },
+  "required": [
+    "document_id",
+    "title",
+    "relative_path",
+    "content_hash",
+    "source_uri",
+    "published_at",
+    "document_type",
+    "reporting_period"
+  ],
+  "title": "HeldOutDocument",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/heldout-document.schema.json"
+}

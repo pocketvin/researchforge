@@ -1,0 +1,17 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "page_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Page Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "page_id"
+  ],
+  "title": "ImageInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/image-input.schema.json"
+}

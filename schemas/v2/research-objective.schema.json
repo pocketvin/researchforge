@@ -1,0 +1,65 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "objective_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+      "title": "Objective Id",
+      "type": "string"
+    },
+    "question": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Question",
+      "type": "string"
+    },
+    "priority": {
+      "enum": [
+        "required",
+        "supporting"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "answered",
+        "limited"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "default": [],
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 30,
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "conclusion": {
+      "default": "",
+      "maxLength": 2400,
+      "title": "Conclusion",
+      "type": "string"
+    },
+    "remaining_uncertainty": {
+      "default": "",
+      "maxLength": 1600,
+      "title": "Remaining Uncertainty",
+      "type": "string"
+    }
+  },
+  "required": [
+    "objective_id",
+    "question",
+    "priority",
+    "status"
+  ],
+  "title": "ResearchObjective",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/research-objective.schema.json"
+}

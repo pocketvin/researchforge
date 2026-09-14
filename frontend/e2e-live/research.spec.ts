@@ -1,45 +1,12 @@
-import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-for (const [company, period] of [
-  ['宁德时代', '2024H1'],
-  ['宁德时代', '2024FY'],
-  ['比亚迪', '2024H1'],
-]) {
-  test(`autonomous reviewed-cache backend research: ${company}/${period}`, async ({ page }) => {
-    // Keep this browser→API integration gate deterministic: official-provider network
-    // quality is covered by Golden Regression, while this suite exercises reviewed-cache runtime.
-    await page.route('**/v1/autonomous-research-runs', async (route) => {
-      const request = route.request()
-      if (request.method() !== 'POST') return route.continue()
-      const payload = request.postDataJSON() as Record<string, unknown>
-      await route.continue({
-        postData: JSON.stringify({ ...payload, research_mode: 'financial_snapshot' }),
-      })
-    })
-    await page.goto('/')
-    await page.getByLabel('Company search').fill(company)
-    await page.getByLabel('Market selector').selectOption('CN')
-    await page.getByLabel('Period input').fill(period)
-    await page.locator('textarea.question-input').fill(`${period}利润是否真正转化为经营现金流？`)
-    const responsePromise = page.waitForResponse((response) =>
-      response.url().endsWith('/result') && response.status() === 200,
-    )
-    await page.getByRole('button', { name: 'Research Company / 开始自主研究' }).click()
-    const response = await responsePromise
-    const result = await response.json() as {
-      schema_version: string
-      executive_summary: string
-      limitations: string[]
-    }
-    expect(result.schema_version).toBe('1.4.0')
-    await expect(page.getByText(result.executive_summary, { exact: true })).toBeVisible()
-    for (const section of ['Financial Facts', 'Calculations', 'Supporting Evidence', 'Research Trace']) {
-      await page.locator('details').filter({ hasText: section }).locator('summary').press('Enter')
-    }
-    await expect(page.locator('.stage-item')).toHaveCount(10)
-    await expect(page.getByText(result.limitations[0], { exact: true })).toBeVisible()
-    const issues = await new AxeBuilder({ page }).analyze()
-    expect(issues.violations.filter((issue) => issue.impact === 'critical')).toEqual([])
-  })
-}
+test('live backend serves only the V2 research web surface', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByRole('heading', { name: '开始一项研究' })).toBeVisible()
+  await expect(page.getByLabel('V2 公司')).toHaveValue('宁德时代')
+  await expect(page.getByLabel('V2 年份')).toBeVisible()
+  await expect(page.getByLabel('V2 报告类型')).toBeVisible()
+  await expect(page.getByRole('link', { name: '旧版研究' })).toHaveCount(0)
+  await expect(page.getByText('方法与实验')).toHaveCount(0)
+})

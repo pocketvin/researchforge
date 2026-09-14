@@ -5,8 +5,9 @@ from urllib.request import Request
 
 import pytest
 
-from researchforge.ingestion import discovery, hk_ifrs, sec_xbrl
+from researchforge.ingestion import discovery
 from researchforge.ingestion.errors import IngestionAbstention
+from researchforge.v2.preparation import OfficialRedirects, validate_url
 
 
 class _FakeResponse(BytesIO):
@@ -24,33 +25,16 @@ class _FakeResponse(BytesIO):
         return self._final_url
 
 
-def test_sec_fetch_rejects_redirect_to_non_official_host(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        sec_xbrl,
-        "urlopen",
-        lambda *args, **kwargs: _FakeResponse(b"<html></html>", "https://evil.example/file"),
-    )
-
+def test_v2_acquisition_rejects_non_official_direct_url() -> None:
     with pytest.raises(IngestionAbstention) as caught:
-        sec_xbrl._fetch("https://www.sec.gov/Archives/demo.htm")
-
+        validate_url("https://evil.example/report.pdf")
     assert caught.value.code == "UNTRUSTED_SOURCE_URI"
 
 
-def test_hk_pdf_fetch_rejects_redirect_to_non_official_host(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(
-        hk_ifrs,
-        "urlopen",
-        lambda *args, **kwargs: _FakeResponse(b"%PDF-1.7 demo", "https://evil.example/file.pdf"),
-    )
-
+def test_v2_acquisition_rejects_redirect_to_non_official_host() -> None:
+    handler = OfficialRedirects()
     with pytest.raises(IngestionAbstention) as caught:
-        hk_ifrs.HkIfrsProductIngestion._fetch(
-            "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/demo.pdf"
-        )
-
+        handler.redirect_request(None, None, 302, "redirect", {}, "https://evil.example/file.pdf")
     assert caught.value.code == "UNTRUSTED_SOURCE_URI"
 
 

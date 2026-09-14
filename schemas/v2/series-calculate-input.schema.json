@@ -1,0 +1,55 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "formula": {
+      "enum": [
+        "ratio_percent",
+        "average_ratio_percent",
+        "flow_to_average_balance_percent",
+        "average_balance_to_flow_percent",
+        "average",
+        "sum"
+      ],
+      "title": "Formula",
+      "type": "string"
+    },
+    "series_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$",
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "title": "Series Ids",
+      "type": "array"
+    },
+    "round_decimals": {
+      "default": 4,
+      "maximum": 6,
+      "minimum": 0,
+      "title": "Round Decimals",
+      "type": "integer"
+    },
+    "period_label": {
+      "anyOf": [
+        {
+          "maxLength": 16,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Period Label"
+    }
+  },
+  "required": [
+    "formula",
+    "series_ids"
+  ],
+  "title": "SeriesCalculateInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://researchforge.local/schemas/v2/series-calculate-input.schema.json"
+}
