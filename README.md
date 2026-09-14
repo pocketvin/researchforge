@@ -77,6 +77,7 @@ The recommended local route is `hybrid`:
 | Claim-wise semantic review | Qwen Plus |
 | Research fallback | Qwen Plus |
 | Fallback reflection / synthesis | Qwen3-Max |
+| Semantic-review fallback | DeepSeek V4 Flash |
 | Page-image inspection | Qwen3-VL Plus |
 | Kimi | Optional standby metadata; not required by the active route |
 

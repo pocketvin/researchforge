@@ -76,7 +76,9 @@ def test_verify_runtime_checks_hybrid_role_routing(monkeypatch) -> None:
         "synthesis_model": "deepseek-v4-flash",
         "semantic_review_model": "qwen-plus",
         "research_fallback_model": "qwen-plus",
-        "fallback_semantic_review_model": "qwen3-max",
+        "fallback_reflection_model": "qwen3-max",
+        "fallback_synthesis_model": "qwen3-max",
+        "fallback_semantic_review_model": "deepseek-v4-flash",
         "vision_model": "qwen3-vl-plus",
     }
 

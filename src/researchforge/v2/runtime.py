@@ -620,7 +620,7 @@ class ResearchService:
                     {
                         "schema_version": "2.0.0",
                         "run_id": run_id,
-                        "events": repository.events(run_id, limit=10000),
+                        "events": repository.events(run_id, limit=None),
                     },
                 )
                 repository.update(
@@ -655,7 +655,7 @@ class ResearchService:
                     {
                         "schema_version": "2.0.0",
                         "run_id": run_id,
-                        "events": repository.events(run_id, limit=10000),
+                        "events": repository.events(run_id, limit=None),
                     },
                 )
                 repository.update(
@@ -852,10 +852,18 @@ def build_service(project_root: Path, artifact_root: Path) -> ResearchService:
             "research_fallback_model": (
                 settings.researchforge_qwen_model if provider == "hybrid" else None
             ),
-            "fallback_semantic_review_model": (
+            "fallback_reflection_model": (
                 settings.researchforge_qwen_fallback_synthesis_model
                 if provider == "hybrid"
                 else None
+            ),
+            "fallback_synthesis_model": (
+                settings.researchforge_qwen_fallback_synthesis_model
+                if provider == "hybrid"
+                else None
+            ),
+            "fallback_semantic_review_model": (
+                settings.researchforge_deepseek_model if provider == "hybrid" else None
             ),
             "reasoning_effort": settings.researchforge_reasoning_effort,
             "timeout_seconds": 900,

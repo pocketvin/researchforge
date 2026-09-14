@@ -10,6 +10,14 @@
 - Kept historical V1 schemas, reviewed packages, benchmark/evolution evidence, screenshots, persisted Runs and frozen n8n workflow JSON as audit history only; they cannot satisfy a new product Run.
 - Reduced HK/SEC ingestion modules to the extraction/tag primitives V2 actually uses; removed the obsolete V1 package-materialization/fulltext retrieval path.
 
+### P1 reliability hardening
+
+- Replaced indefinitely persisted provider-budget reservations with 300-second crash leases; stale and legacy amount-only reservations are reclaimed while confirmed spend remains durable.
+- Pinned verified document-cache fallback to the current parser version so an outage cannot silently revive stale parse semantics.
+- Removed the 2,000-event audit truncation: terminal trace reads are complete and SSE drains bounded event batches fully before emitting terminal.
+- Corrected runtime capability metadata so Qwen fallback Reflection/Synthesis and the actual DeepSeek semantic-review fallback are reported as separate roles and checked by Owner startup.
+- Moved report-period format/market validation into `ResearchRequest`, so unsupported combinations such as CN `Q4` return 422 before a Run is queued.
+
 ### Code review and documentation closeout
 
 - Removed a false hybrid-runtime dependency on Kimi: the active route is DeepSeek + Qwen, while Kimi is optional standby metadata and no longer blocks startup when unconfigured.

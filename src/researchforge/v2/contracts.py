@@ -3,6 +3,7 @@ research."""
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import Annotated, Any, Literal
 
@@ -11,6 +12,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 Json = dict[str, Any]
 Identifier = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,254}$")]
 Text = Annotated[str, Field(min_length=1, max_length=4000)]
+_PERIOD_LABEL_RE = re.compile(r"^(?:19|20|21)\d{2}(FY|H1|Q1|Q2|Q3)$")
+_MARKET_PERIOD_SUFFIXES: dict[str, frozenset[str]] = {
+    "CN": frozenset({"FY", "H1", "Q1", "Q3"}),
+    "US": frozenset({"FY", "Q1", "Q2", "Q3"}),
+    "HK": frozenset({"FY", "H1"}),
+}
 
 
 class Contract(BaseModel):
@@ -31,6 +38,20 @@ class ResearchRequest(Contract):
             raise ValueError("research_time must include a timezone")
         if not self.company_query.strip() or not self.research_question.strip():
             raise ValueError("company and question must not be blank")
+        if self.requested_period_label is not None:
+            match = _PERIOD_LABEL_RE.fullmatch(self.requested_period_label)
+            if match is None:
+                raise ValueError(
+                    "requested_period_label must be YYYY followed by FY, H1, Q1, Q2, or Q3"
+                )
+            suffix = match.group(1)
+            if (
+                self.market_hint is not None
+                and suffix not in _MARKET_PERIOD_SUFFIXES[self.market_hint]
+            ):
+                raise ValueError(
+                    f"requested period {suffix} is not supported for market {self.market_hint}"
+                )
         return self
 
 

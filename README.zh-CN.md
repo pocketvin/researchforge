@@ -75,6 +75,7 @@ flowchart TD
 | Claim-wise 语义复核 | Qwen Plus |
 | Research fallback | Qwen Plus |
 | Fallback Reflection / Synthesis | Qwen3-Max |
+| 语义复核 fallback | DeepSeek V4 Flash |
 | 财报原页图像理解 | Qwen3-VL Plus |
 | Kimi | 当前仅为可选 standby metadata，不是主链硬依赖 |
 

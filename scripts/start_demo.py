@@ -93,7 +93,9 @@ def verify_runtime(expected_reasoning_mode: str) -> None:
             "synthesis_model": settings.researchforge_deepseek_model,
             "semantic_review_model": settings.researchforge_qwen_review_model,
             "research_fallback_model": settings.researchforge_qwen_model,
-            "fallback_semantic_review_model": settings.researchforge_qwen_fallback_synthesis_model,
+            "fallback_reflection_model": settings.researchforge_qwen_fallback_synthesis_model,
+            "fallback_synthesis_model": settings.researchforge_qwen_fallback_synthesis_model,
+            "fallback_semantic_review_model": settings.researchforge_deepseek_model,
             "vision_model": settings.researchforge_qwen_vision_model,
         }
         mismatches = {

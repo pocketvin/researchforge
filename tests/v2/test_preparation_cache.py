@@ -10,7 +10,7 @@ import pytest
 from researchforge.adapters.storage import canonical_json_bytes
 from researchforge.ingestion.errors import IngestionAbstention
 from researchforge.v2.contracts import Json, ResearchRequest
-from researchforge.v2.preparation import FilingPreparer
+from researchforge.v2.preparation import PARSER_VERSION, FilingPreparer
 from researchforge.v2.storage import ResearchRepository, atomic_bytes
 
 
@@ -49,6 +49,7 @@ def install_package(repo: ResearchRepository, marker: bytes) -> Json:
         "objects": {},
         "facts": {},
         "gaps": ["synthetic"],
+        "parser_version": PARSER_VERSION,
     }
     package_digest = repo.cas.put(package).digest
     cache = repo.root / "document-cache" / f"cache-{digest[:10]}.json"
@@ -91,4 +92,24 @@ def test_verified_cache_fallback_rejects_ambiguous_matching_packages(
     monkeypatch.setattr(preparer.discovery, "discover", provider_unavailable)
     with pytest.raises(IngestionAbstention) as exc_info:
         preparer.prepare(req, manifest["run_id"], lambda: None)
+    assert exc_info.value.code == "DISCLOSURE_PROVIDER_UNAVAILABLE"
+
+
+def test_verified_cache_fallback_rejects_stale_parser_version(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = ResearchRepository(tmp_path)
+    package = install_package(repo, b"stale-parser")
+    package["parser_version"] = "v2-native-previous"
+    package_digest = repo.cas.put(package).digest
+    cache = next((repo.root / "document-cache").glob("*.json"))
+    atomic_bytes(cache, canonical_json_bytes({"digest": package_digest}))
+    req = request("cache-stale-parser")
+    manifest, _ = repo.create(req, {})
+    preparer = FilingPreparer(repo)
+    monkeypatch.setattr(preparer.discovery, "discover", provider_unavailable)
+
+    with pytest.raises(IngestionAbstention) as exc_info:
+        preparer.prepare(req, manifest["run_id"], lambda: None)
+
     assert exc_info.value.code == "DISCLOSURE_PROVIDER_UNAVAILABLE"

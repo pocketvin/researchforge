@@ -1073,3 +1073,19 @@ PostgreSQL/Alembic/SQLAlchemy/psycopg are removed from the product runtime and d
 Historical V1 assets are not deleted merely because their execution code is retired. Frozen schemas/contracts, reviewed product packages, benchmark/evolution evidence, screenshots, prior Runs/artifacts, `project-status.json` and V1 n8n workflow JSON remain immutable audit/reproducibility material. They are never eligible as fallback product data and cannot be reactivated through another surface without an explicit new decision.
 
 The active product version identity is V2 (`2.0.0-alpha.1`; Python distribution `2.0.0a1`). Final held-out Owner Acceptance remains a separate quality question: single-runtime consolidation and green engineering gates do not convert the retired A–I held-out suites into acceptance evidence and do not authorize an automatic J suite.
+
+## RF-055 — Crash recovery must not weaken budget, cache, trace, routing or intake truth
+
+Date: 2026-09-14. Status: owner-authorized P1 reliability hardening implemented.
+
+The second V2 code audit found five engineering-boundary defects that could remain hidden behind green normal-flow tests. They are treated as runtime correctness issues rather than research-method changes.
+
+Provider budget reservations are temporary concurrency guards, not billing records. A single provider request is bounded to at most 120 seconds in the active runtime, so persisted reservations now carry a creation timestamp and a 300-second lease. Live reservations survive ordinary object/process reconstruction inside that window; stale reservations and the pre-lease amount-only format are reclaimed instead of consuming aggregate project budget forever. Confirmed spend remains durable. As with existing failed requests that return no provider usage, a stale lease is not promoted into invented billing truth.
+
+Verified filing-cache fallback may only reuse a package whose `parser_version` equals the active `PARSER_VERSION`. A provider outage is not permission to revive output from older parsing semantics.
+
+The event journal is the durable audit truth. API trace reads no longer impose the former 2,000-event product truncation, terminal trace artifacts persist the complete journal, and SSE may batch transport internally but must drain every persisted event after the requested cursor before sending `terminal`.
+
+Runtime capability metadata must describe the route the provider code will actually execute. Qwen Plus remains claim-wise semantic review; Qwen3-Max is fallback Reflection/Synthesis after a research-provider failover; text-only semantic-review fallback is DeepSeek V4 Flash with reduced independence. Owner startup verifies these distinct roles.
+
+Finally, period validity is an intake contract. Supported combinations are CN `FY/H1/Q1/Q3`, US `FY/Q1/Q2/Q3`, and HK `FY/H1`; a missing period still means latest available. Malformed or market-incompatible explicit periods are rejected before queueing rather than creating an `insufficient_data` Run whose failure was knowable at intake.

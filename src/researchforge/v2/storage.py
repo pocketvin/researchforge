@@ -196,10 +196,12 @@ class ResearchRepository:
             )
         return event
 
-    def events(self, run_id: str, after: int = 0, limit: int = 1000) -> list[Json]:
+    def events(self, run_id: str, after: int = 0, limit: int | None = 1000) -> list[Json]:
         self._pointer(run_id)
         folder = self.root / "events" / safe_id(run_id)
-        paths = [path for path in sorted(folder.glob("*.json")) if int(path.stem) > after][:limit]
+        paths = [path for path in sorted(folder.glob("*.json")) if int(path.stem) > after]
+        if limit is not None:
+            paths = paths[:limit]
         return [
             cast(Json, self.cas.get(json.loads(path.read_text())[("digest")])) for path in paths
         ]

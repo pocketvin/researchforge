@@ -304,6 +304,8 @@ class FilingPreparer:
                 package = cast(
                     Json, self.repository.cas.get(json.loads(path.read_text())["digest"])
                 )
+                if package.get("parser_version") != PARSER_VERSION:
+                    continue
                 entity = cast(Json, package["entity"])
                 company_id = str(entity.get("company_id", ""))
                 if expected_company_id is not None:

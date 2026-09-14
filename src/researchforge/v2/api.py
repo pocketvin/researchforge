@@ -18,6 +18,8 @@ from researchforge.v2.reporting import sanitize_public_prose
 from researchforge.v2.runtime import ResearchService
 from researchforge.v2.storage import TERMINAL, safe_id
 
+SSE_EVENT_BATCH_SIZE = 1000
+
 
 def _sanitize_text_fields(item: Any, fields: tuple[str, ...]) -> Json:
     if not isinstance(item, dict):
@@ -131,6 +133,8 @@ def build_router(service: ResearchService) -> APIRouter:
             "synthesis_model": service.configuration.get("synthesis_model"),
             "semantic_review_model": service.configuration.get("semantic_review_model"),
             "research_fallback_model": service.configuration.get("research_fallback_model"),
+            "fallback_reflection_model": service.configuration.get("fallback_reflection_model"),
+            "fallback_synthesis_model": service.configuration.get("fallback_synthesis_model"),
             "fallback_semantic_review_model": service.configuration.get(
                 "fallback_semantic_review_model"
             ),
@@ -192,7 +196,7 @@ def build_router(service: ResearchService) -> APIRouter:
             "schema_version": "2.0.0",
             "run_id": run_id,
             "terminal_state": manifest["lifecycle_state"],
-            "events": repository.events(run_id, after, 2000),
+            "events": repository.events(run_id, after, limit=None),
         }
 
     @router.get("/research-runs/{run_id}/events")
@@ -224,11 +228,20 @@ def build_router(service: ResearchService) -> APIRouter:
             cursor = after
             last_heartbeat = time.monotonic()
             while not await request.is_disconnected():
-                batch = await asyncio.to_thread(service.repository.events, run_id, after=cursor)
+                batch = await asyncio.to_thread(
+                    service.repository.events,
+                    run_id,
+                    after=cursor,
+                    limit=SSE_EVENT_BATCH_SIZE,
+                )
                 for event in batch:
                     cursor = max(cursor, int(event["sequence"]))
                     data = json.dumps(event, ensure_ascii=False, allow_nan=False)
                     yield f"id: {cursor}\nevent: research\ndata: {data}\n\n"
+                if len(batch) >= SSE_EVENT_BATCH_SIZE:
+                    # Drain persisted backlog before considering terminal state. A terminal event
+                    # must never hide later journal pages from a reconnecting audit client.
+                    continue
                 current = await asyncio.to_thread(service.repository.get, run_id)
                 if current["lifecycle_state"] in {
                     "succeeded",
@@ -238,11 +251,21 @@ def build_router(service: ResearchService) -> APIRouter:
                     "insufficient_data",
                 }:
                     # Drain events persisted between the preceding read and terminal state.
-                    tail = await asyncio.to_thread(service.repository.events, run_id, after=cursor)
-                    for event in tail:
-                        cursor = max(cursor, int(event["sequence"]))
-                        data = json.dumps(event, ensure_ascii=False, allow_nan=False)
-                        yield f"id: {cursor}\nevent: research\ndata: {data}\n\n"
+                    while True:
+                        tail = await asyncio.to_thread(
+                            service.repository.events,
+                            run_id,
+                            after=cursor,
+                            limit=SSE_EVENT_BATCH_SIZE,
+                        )
+                        if not tail:
+                            break
+                        for event in tail:
+                            cursor = max(cursor, int(event["sequence"]))
+                            data = json.dumps(event, ensure_ascii=False, allow_nan=False)
+                            yield f"id: {cursor}\nevent: research\ndata: {data}\n\n"
+                        if len(tail) < SSE_EVENT_BATCH_SIZE:
+                            break
                     yield (
                         "event: terminal\ndata: "
                         + json.dumps({"lifecycle_state": current["lifecycle_state"]})

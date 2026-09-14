@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from fastapi.testclient import TestClient
 from researchforge.api.app import create_app
 from researchforge.v2.contracts import ResearchRequest
 from researchforge.v2.runtime import ResearchService
-from researchforge.v2.storage import ResearchRepository
+from researchforge.v2.storage import ResearchRepository, now
 
 
 def request(key: str = "api-v2-test") -> ResearchRequest:
@@ -35,7 +36,9 @@ def service(tmp_path: Path) -> ResearchService:
             "synthesis_model": "deepseek-v4-flash",
             "semantic_review_model": "qwen-plus",
             "research_fallback_model": "qwen-plus",
-            "fallback_semantic_review_model": "qwen3-max",
+            "fallback_reflection_model": "qwen3-max",
+            "fallback_synthesis_model": "qwen3-max",
+            "fallback_semantic_review_model": "deepseek-v4-flash",
             "vision_model": "qwen3-vl-plus",
             "data_namespace": "product",
         },
@@ -53,8 +56,33 @@ def test_health_and_capabilities_are_v2_only(tmp_path: Path) -> None:
     assert capabilities.status_code == 200
     assert capabilities.json()["provider"] == "hybrid"
     assert capabilities.json()["agent_ready"] is False
+    assert capabilities.json()["fallback_reflection_model"] == "qwen3-max"
+    assert capabilities.json()["fallback_synthesis_model"] == "qwen3-max"
+    assert capabilities.json()["fallback_semantic_review_model"] == "deepseek-v4-flash"
     assert client.get("/v1/runtime-capabilities").status_code == 404
     assert client.get("/v1/catalog").status_code == 404
+
+
+def test_create_run_rejects_invalid_or_market_incompatible_period_before_queueing(
+    tmp_path: Path,
+) -> None:
+    runtime = service(tmp_path)
+    client = TestClient(create_app(runtime))
+    payload = request("api-invalid-period").model_dump(mode="json")
+
+    invalid = client.post(
+        "/v2/research-runs",
+        json={**payload, "requested_period_label": "2024Q4"},
+    )
+    assert invalid.status_code == 422
+    assert runtime.repository.list_runs(limit=10) == []
+
+    incompatible = client.post(
+        "/v2/research-runs",
+        json={**payload, "market_hint": "HK", "requested_period_label": "2024Q1"},
+    )
+    assert incompatible.status_code == 422
+    assert runtime.repository.list_runs(limit=10) == []
 
 
 def test_create_run_fails_closed_without_model_and_rejects_advice(tmp_path: Path) -> None:
@@ -225,3 +253,32 @@ def test_v2_history_reads_only_v2_runs(tmp_path: Path) -> None:
     client = TestClient(create_app(runtime))
     history = client.get("/v2/research-runs?limit=10").json()
     assert {item["run_id"] for item in history} == {first["run_id"], second["run_id"]}
+
+
+def test_trace_and_sse_drain_the_complete_terminal_event_journal(
+    tmp_path: Path, monkeypatch
+) -> None:
+    from researchforge.v2 import api as v2_api
+
+    runtime = service(tmp_path)
+    manifest, _ = runtime.repository.create(request("api-complete-trace"), runtime.configuration)
+    run_id = manifest["run_id"]
+    for index in range(12):
+        runtime.repository.emit(run_id, "audit_event", "audit", f"event {index}", "running")
+    runtime.repository.update(
+        run_id,
+        lifecycle_state="failed",
+        finished_at=now(),
+        failure={"code": "SYNTHETIC", "message": "synthetic"},
+    )
+    monkeypatch.setattr(v2_api, "SSE_EVENT_BATCH_SIZE", 5)
+    client = TestClient(create_app(runtime))
+
+    trace = client.get(f"/v2/research-runs/{run_id}/trace").json()["events"]
+    assert len(trace) == 13  # run_queued + twelve synthetic audit events
+    assert [event["sequence"] for event in trace] == list(range(1, 14))
+
+    stream = client.get(f"/v2/research-runs/{run_id}/events")
+    ids = [int(value) for value in re.findall(r"^id: (\d+)$", stream.text, flags=re.MULTILINE)]
+    assert ids == list(range(1, 14))
+    assert "event: terminal" in stream.text
